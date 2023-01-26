@@ -51,11 +51,20 @@ make build-python PYTHON=$(command -v python3)
 sudo make install-python PYTHON=$(command -v python3)
 ```
 
+### Install rpi-rgb-led-matrix-7c
+
+TODO: check if we need to keep the directory structure?
+
+```shell
+cd /opt/7c/rpi-rgb-led-matrix/bindings/python
+git clone https://bitbucket.org/suprematic/rpi-rgb-led-matrix-7c.git
+```
+
 
 ### Run smoke-test
 
 ```shell
-cd /opt/7c/rpi-rgb-led-matrix/bindings/python/7c
+cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
 ./m1.sh
 ```
 
