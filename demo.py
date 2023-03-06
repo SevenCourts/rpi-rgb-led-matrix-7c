@@ -233,7 +233,7 @@ class M1_Demo(SampleBase):
         canvas.SetImage(Image.open("images/flags/france.png").convert('RGB'),  0, 3+FLAG_HEIGHT+2+FLAG_HEIGHT+3+3)
         canvas.SetImage(Image.open("images/flags/ukraine.png").convert('RGB'), 0, 3+FLAG_HEIGHT+2+FLAG_HEIGHT+3+3+FLAG_HEIGHT+2)
 
-        self.render_names_doubles(canvas, "Bianchi", "Rodríguez", "Lavigne", "Shinkarenko")
+        self.render_names_doubles(canvas, "Bianchi", "Rodríguez", "Lavigne", "Shevchenko")
         
         self.render_score_3_sets(canvas, show_game_score)
 
@@ -442,9 +442,7 @@ class M1_Demo(SampleBase):
         duration_logo = min(3, duration)
         self.show_image_centered(canvas, "images/logos/a-rete_160x43.png", duration_logo)
         self.show_image_centered(canvas, "images/logos/tom-schilke_192x55.png", duration_logo)
-        #self.show_image_centered(canvas, "images/logos/sv1845_64x64.png", duration_logo)
         
-
         # 1.2. Idle mode: Clock + Weather + etc.
         self.show_title_text(canvas, "Ora, meteo,\nmessaggi di saluto, ecc.", COLOR_GREEN_7c, title_duration)
         self.show_big_clock_with_weather(canvas, duration)
@@ -461,16 +459,11 @@ class M1_Demo(SampleBase):
         self.show_title_text(canvas, "Punteggio Game-by-game\n(modalità 'Easy')", COLOR_GREEN_7c, title_duration)
         self.show_score_doubles_with_flags_short(canvas, False, duration)
 
-        # 2.3. Match mode: point-by-point custom
-        self.show_title_text(canvas, "Personalizza\ni font e colori\nper adattarli al tuo stile", COLOR_GREEN_7c, title_duration)
-        self.show_score_singles_with_flags_custom(canvas, duration)
-
         # 3. Some texts
-        self.show_title_text(canvas, "Vedere in azione\nsul CAMPO 1 et 6", COLOR_BLUE_7c, duration)
         self.show_title_text(canvas, "API per l'integrazione\ncon qualsiasi sistema\ndi punteggio, torneo,\no back-office", COLOR_GREEN_7c, title_duration)
         self.show_title_text(canvas, "Web e video in diretta", COLOR_BLUE_7c, title_duration)
         self.show_title_text(canvas, "Viene gestito tramite un'app\no un pulsante Bluetooth", COLOR_GREEN_7c, title_duration)
-        self.show_title_text(canvas, "PREZZO SPECIALE PadelTrend\n\nXS1 399 EUR    M1 999 EUR\nAltre misure:\nsu richiesta", COLOR_GOLD_7c, duration)
+        self.show_title_text(canvas, "PREZZO SPECIALE PER LA FIERA\n\nM1 999 EUR    XS1 499 EUR\nAltre misure:\nsu richiesta", COLOR_GOLD_7c, duration)
 
     def run_demo_sequence_court_1(self, canvas, duration):
         self.show_image_centered(canvas, "images/logos/padel_trend_expo_119x64.png", duration)
@@ -485,7 +478,7 @@ class M1_Demo(SampleBase):
         canvas = self.matrix.CreateFrameCanvas()
 
         self.run_demo_sequence_italian(canvas, duration, title_duration)
-        self.run_demo_sequence_english(canvas, duration, title_duration)
+        # self.run_demo_sequence_english(canvas, duration, title_duration)
         
         #self.show_flags(canvas, duration)
         #self.show_fonts(canvas, duration)
