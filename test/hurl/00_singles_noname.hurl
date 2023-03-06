@@ -1,4 +1,4 @@
-POST http://192.168.114.30:5000/score/xyz
+POST {{tableau_server_url}}/score/xyz
 Content-Type: application/json
 {"client-id":"hurl-test",
 "target-panels":["{{7c_target_panel}}"],
