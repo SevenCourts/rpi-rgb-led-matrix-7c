@@ -74,14 +74,18 @@ def register():
         log(url, e)
         return None
 
-def match_info(panel_id):
+def fetch_panel_info(panel_id):
     url = match_url(panel_id)
     with urllib.request.urlopen(url, timeout=10) as response:
-        if response.status == 200:
-            j = json.loads(response.read().decode('utf-8'))
-            log(url, "match:", j)
-            return j
         log("url='" + url + "', status= " + str(response.status))
+        if response.status == 200:
+            match = json.loads(response.read().decode('utf-8'))
+            log("match:", match)
+            return match
+        elif response.status == 205:
+            idle_info = json.loads(response.read().decode('utf-8') or 'null')
+            log("idle-info:", idle_info)
+            return idle_info        
     return None
 
 def player_name(p, noname="Noname"):
@@ -93,7 +97,7 @@ class SevenCourtsM1(SampleBase):
 
     def run(self):
         self.canvas = self.matrix.CreateFrameCanvas()
-        self.display_idle_mode()
+        self.display_idle_mode(None)
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
         while True:
@@ -103,11 +107,13 @@ class SevenCourtsM1(SampleBase):
             try:
                 while True:
                     self.canvas.Clear()
-                    match = match_info(panel_id)
-                    if match != None:
-                        self.display_match(match)
-                    else:
-                        self.display_idle_mode()
+                    panel_info = fetch_panel_info(panel_id)
+                    if panel_info == None:
+                        self.display_idle_mode(None)
+                    elif 'idle-info' in panel_info:
+                        self.display_idle_mode(panel_info["idle-info"])
+                    elif 'team1' in panel_info:
+                        self.display_match(panel_info)
                     self.canvas = self.matrix.SwapOnVSync(self.canvas)
                     time.sleep(1)
             except URLError as e:
@@ -143,17 +149,46 @@ class SevenCourtsM1(SampleBase):
             if panel_id != None:
                 return panel_id
             else:
-                self.display_idle_mode()
+                self.display_idle_mode(None)
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
             time.sleep(1)
 
-    def display_idle_mode(self):
-        # also some other stuff in the future
+    def display_idle_mode(self, idle_info):
+        
+        # display idle mode message
+        if idle_info != None:
+            message = idle_info["message"] or ''
+
+            color = COLOR_BLUE_7c
+            h_available = PANEL_HEIGHT - 2 - 20 - 2 # minus clock
+            w_available = PANEL_WIDTH
+
+            lines = message.split('\n')
+            
+            if len(lines) == 1:
+                l0 = lines[0]
+                font = pick_font_that_fits(w_available, h_available, l0)
+                x0 = max(0, (w_available - width_in_pixels(font, l0)) / 2)
+                y0 = y_font_center(font, h_available)
+                graphics.DrawText(self.canvas, font, x0, y0, color, l0)
+            else:
+                l0 = lines[0]
+                l1 = lines[1]
+                font = pick_font_that_fits(w_available, h_available, l0, l1)
+
+                x0 = max(0, (w_available - width_in_pixels(font, l0)) / 2)
+                y0 = y_font_center(font, h_available / 2)
+                graphics.DrawText(self.canvas, font, x0, y0, color, l0)
+                
+                x1 = max(0, (w_available - width_in_pixels(font, l1)) / 2)
+                y1 = y0 + y_font_center(font, h_available / 2)
+                graphics.DrawText(self.canvas, font, x1, y1, color, l1)
+
         self.display_clock()
 
     def display_clock(self):
         text = datetime.now().strftime('%H:%M')        
-        draw_text(self.canvas, 120, 60, text, FONT_CLOCK, COLOR_CLOCK)
+        draw_text(self.canvas, 124, 62, text, FONT_CLOCK, COLOR_CLOCK)
 
     def display_set_digit(self, x, y, font, color, score):
         # FIXME meh
