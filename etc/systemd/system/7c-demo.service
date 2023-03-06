@@ -1,0 +1,23 @@
+[Unit]
+Description=SevenCourts Demo
+
+Requires=local-fs.target
+After=local-fs.target
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Restart=on-failure
+
+## Dirs
+ProtectSystem=strict
+ProtectHome=true
+WorkingDirectory=/opt/7c
+
+## Env
+#Environment=BLOCKING_MAX_THREADS=16
+
+ExecStart=/bin/sh rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c/demo.sh
+
+[Install]
+WantedBy=basic.target
