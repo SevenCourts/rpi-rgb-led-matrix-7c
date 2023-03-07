@@ -49,6 +49,7 @@ make
 sudo apt-get update --allow-releaseinfo-change && sudo apt-get install python3-dev python3-pillow -y
 make build-python PYTHON=$(command -v python3)
 sudo make install-python PYTHON=$(command -v python3)
+sudo pip3 install requests
 ```
 
 ### Install rpi-rgb-led-matrix-7c
