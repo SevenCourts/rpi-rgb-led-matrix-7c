@@ -74,6 +74,7 @@ The panel should display current time.
 
 ```shell
 cp etc/systemd/system/7c.service /etc/systemd/system/7c.service
+cp etc/systemd/system/7c-demo.service /etc/systemd/system/7c-demo.service
 ```
 
 Service start:
