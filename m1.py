@@ -165,6 +165,14 @@ class SevenCourtsM1(SampleBase):
                 h_available = PANEL_HEIGHT
 
                 image_url = BASE_URL + "/" + idle_info["image-url"]
+
+                # TODO cache image by ETag
+                # request = urllib.request.Request(image_url, method="HEAD")
+                # response = urllib.request.urlopen(request)
+                # print (response.status)
+                # etag = str(response.headers["ETag"])
+                # print ("ETag: {0}".format(etag))
+                
                 image = Image.open(requests.get(image_url, stream=True).raw)
                 
                 # print ("original w: {0}, h: {1}".format(image.width, image.height))
