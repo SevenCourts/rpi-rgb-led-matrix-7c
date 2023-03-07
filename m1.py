@@ -18,6 +18,7 @@ from PIL import Image
 import json
 import socket
 import logging
+import requests
 
 PANEL_NAME = socket.gethostname()
 
@@ -58,7 +59,7 @@ W_SCORE_SET = 20
 X_SCORE_GAME = 163
 X_SCORE_SERVICE = 155
 
-def match_url(panel_id):
+def panel_info_url(panel_id):
     return BASE_URL + "/panels/" + panel_id + "/match"
 
 def register():
@@ -75,7 +76,7 @@ def register():
         return None
 
 def fetch_panel_info(panel_id):
-    url = match_url(panel_id)
+    url = panel_info_url(panel_id)
     with urllib.request.urlopen(url, timeout=10) as response:
         log("url='" + url + "', status= " + str(response.status))
         if response.status == 200:
@@ -157,32 +158,56 @@ class SevenCourtsM1(SampleBase):
         
         # display idle mode message
         if idle_info != None:
-            message = idle_info["message"] or ''
 
-            color = COLOR_BLUE_7c
-            h_available = PANEL_HEIGHT - 2 - 20 - 2 # minus clock
-            w_available = PANEL_WIDTH
+            if 'image-url' in idle_info and idle_info["image-url"] != None:
 
-            lines = message.split('\n')
-            
-            if len(lines) == 1:
-                l0 = lines[0]
-                font = pick_font_that_fits(w_available, h_available, l0)
-                x0 = max(0, (w_available - width_in_pixels(font, l0)) / 2)
-                y0 = y_font_center(font, h_available)
-                graphics.DrawText(self.canvas, font, x0, y0, color, l0)
-            else:
-                l0 = lines[0]
-                l1 = lines[1]
-                font = pick_font_that_fits(w_available, h_available, l0, l1)
+                w_available = 122 # left from clock
+                h_available = PANEL_HEIGHT
 
-                x0 = max(0, (w_available - width_in_pixels(font, l0)) / 2)
-                y0 = y_font_center(font, h_available / 2)
-                graphics.DrawText(self.canvas, font, x0, y0, color, l0)
+                image_url = BASE_URL + "/" + idle_info["image-url"]
+                image = Image.open(requests.get(image_url, stream=True).raw)
                 
-                x1 = max(0, (w_available - width_in_pixels(font, l1)) / 2)
-                y1 = y0 + y_font_center(font, h_available / 2)
-                graphics.DrawText(self.canvas, font, x1, y1, color, l1)
+                # print ("original w: {0}, h: {1}".format(image.width, image.height))
+
+                if (image.height > h_available or image.width > w_available):
+                    # Make image fit our screen
+                    image.thumbnail((w_available, h_available), Image.LANCZOS)                    
+                
+                x = (w_available - image.width) / 2
+                y = (h_available - image.height) / 2
+
+                # print ("result w: {0}, h: {1}".format(image.width, image.height))
+
+                self.canvas.SetImage(image.convert('RGB'), x, y)
+                
+            else:
+
+                message = idle_info["message"] or ''
+
+                color = COLOR_BLUE_7c
+                h_available = PANEL_HEIGHT - 2 - 20 - 2 # minus clock
+                w_available = PANEL_WIDTH
+
+                lines = message.split('\n')
+                
+                if len(lines) == 1:
+                    l0 = lines[0]
+                    font = pick_font_that_fits(w_available, h_available, l0)
+                    x0 = max(0, (w_available - width_in_pixels(font, l0)) / 2)
+                    y0 = y_font_center(font, h_available)
+                    graphics.DrawText(self.canvas, font, x0, y0, color, l0)
+                else:
+                    l0 = lines[0]
+                    l1 = lines[1]
+                    font = pick_font_that_fits(w_available, h_available, l0, l1)
+
+                    x0 = max(0, (w_available - width_in_pixels(font, l0)) / 2)
+                    y0 = y_font_center(font, h_available / 2)
+                    graphics.DrawText(self.canvas, font, x0, y0, color, l0)
+                    
+                    x1 = max(0, (w_available - width_in_pixels(font, l1)) / 2)
+                    y1 = y0 + y_font_center(font, h_available / 2)
+                    graphics.DrawText(self.canvas, font, x1, y1, color, l1)
 
         self.display_clock()
 
