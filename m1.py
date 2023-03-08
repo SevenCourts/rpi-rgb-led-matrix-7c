@@ -155,44 +155,45 @@ class SevenCourtsM1(SampleBase):
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
             time.sleep(1)
 
+    def display_image(self, image):
+        w_available = 122 # left from clock
+        h_available = PANEL_HEIGHT
+        # print ("original w: {0}, h: {1}".format(image.width, image.height))
+
+        if (image.height > h_available or image.width > w_available):
+            # Make image fit our screen
+            image.thumbnail((w_available, h_available), Image.LANCZOS)                    
+        
+        x = (w_available - image.width) / 2
+        y = (h_available - image.height) / 2
+
+        print ("result w: {0}, h: {1}".format(image.width, image.height))
+
+        self.canvas.SetImage(image.convert('RGB'), x, y)
+
+
     def display_idle_mode(self, idle_info):
         
         # display idle mode message
         if idle_info != None:
 
-            if 'image-url' in idle_info and idle_info["image-url"] != None:
-
-                w_available = 122 # left from clock
-                h_available = PANEL_HEIGHT
-
+            if 'image-preset' in idle_info and idle_info["image-preset"] != None:
+                path = "images/logos/" + idle_info["image-preset"]
+                print(path)
+                image = Image.open(path)
+                self.display_image(image)
+            elif 'image-url' in idle_info and idle_info["image-url"] != None:
                 image_url = BASE_URL + "/" + idle_info["image-url"]
-
                 # TODO cache image by ETag
                 # request = urllib.request.Request(image_url, method="HEAD")
                 # response = urllib.request.urlopen(request)
                 # print (response.status)
                 # etag = str(response.headers["ETag"])
                 # print ("ETag: {0}".format(etag))
-                
                 image = Image.open(requests.get(image_url, stream=True).raw)
-                
-                # print ("original w: {0}, h: {1}".format(image.width, image.height))
-
-                if (image.height > h_available or image.width > w_available):
-                    # Make image fit our screen
-                    image.thumbnail((w_available, h_available), Image.LANCZOS)                    
-                
-                x = (w_available - image.width) / 2
-                y = (h_available - image.height) / 2
-
-                # print ("result w: {0}, h: {1}".format(image.width, image.height))
-
-                self.canvas.SetImage(image.convert('RGB'), x, y)
-                
+                self.display_image(image)
             else:
-
                 message = idle_info["message"] or ''
-
                 color = COLOR_BLUE_7c
                 h_available = PANEL_HEIGHT - 2 - 20 - 2 # minus clock
                 w_available = PANEL_WIDTH
