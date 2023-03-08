@@ -116,10 +116,18 @@ The panel should display current time.
 
 ## Install development environment
 
+### Python
+
+- Install Python 3.9
+    - [Download](https://www.python.org/downloads/release/python-3916/)
+    - [Mac: Homebrew](https://formulae.brew.sh/formula/python@3.9)
+        - `brew install python@3.9`
+    - Install python extensions:
+        - `pip install Pillow`
+        - `pip install requests`
+
 ### RGBMatrixEmulator
 
-- Install [Python 3.10.9](https://www.python.org/downloads/release/python-3109/)
-- Install Pillow with `pip install Pillow`
 - Install RGBMatrixEmulator with `pip install RGBMatrixEmulator`
 - Clone [RGBMatrixEmulator](https://github.com/ty-porter/RGBMatrixEmulator)
 
