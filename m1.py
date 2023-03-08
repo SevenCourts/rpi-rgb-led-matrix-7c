@@ -22,8 +22,7 @@ import requests
 
 PANEL_NAME = socket.gethostname()
 
-BASE_URL = "https://prod.tableau.tennismath.com"
-# BASE_URL = "http://192.168.114.30:5000" # shinych thinkstation1
+BASE_URL = os.getenv('TABLEAU_SERVER_BASE_URL', 'https://prod.tableau.tennismath.com')
 
 REGISTRATION_URL = BASE_URL + "/panels/"
 
