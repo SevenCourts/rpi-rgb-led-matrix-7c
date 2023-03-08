@@ -19,6 +19,9 @@ import json
 import socket
 import logging
 import requests
+import tempfile
+
+IMAGE_CACHE_DIR = tempfile.TemporaryDirectory()
 
 PANEL_NAME = socket.gethostname()
 
@@ -60,6 +63,9 @@ W_SCORE_SET = 20
 X_SCORE_GAME = 163
 X_SCORE_SERVICE = 155
 
+W_LOGO = 122 # left from clock
+H_LOGO = PANEL_HEIGHT
+
 def panel_info_url(panel_id):
     return BASE_URL + "/panels/" + panel_id + "/match"
 
@@ -92,6 +98,13 @@ def fetch_panel_info(panel_id):
 
 def player_name(p, noname="Noname"):
     return p["lastname"] or p["firstname"] or noname
+
+def thumbnail(image):
+    # print ("original w: {0}, h: {1}".format(image.width, image.height))
+    if (image.height > H_LOGO or image.width > W_LOGO):
+        image.thumbnail((W_LOGO, H_LOGO), Image.LANCZOS)
+    # print ("result w: {0}, h: {1}".format(image.width, image.height))
+    return image
 
 class SevenCourtsM1(SampleBase):
     def __init__(self, *args, **kwargs):
@@ -155,43 +168,36 @@ class SevenCourtsM1(SampleBase):
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
             time.sleep(1)
 
-    def display_image(self, image):
-        w_available = 122 # left from clock
-        h_available = PANEL_HEIGHT
-        # print ("original w: {0}, h: {1}".format(image.width, image.height))
-
-        if (image.height > h_available or image.width > w_available):
-            # Make image fit our screen
-            image.thumbnail((w_available, h_available), Image.LANCZOS)                    
-        
-        x = (w_available - image.width) / 2
-        y = (h_available - image.height) / 2
-
-        # print ("result w: {0}, h: {1}".format(image.width, image.height))
-
+    def display_logo(self, image):
+        x = (W_LOGO - image.width) / 2
+        y = (H_LOGO - image.height) / 2
         self.canvas.SetImage(image.convert('RGB'), x, y)
 
-
     def display_idle_mode(self, idle_info):
-        
-        # display idle mode message
         if idle_info != None:
-
             if 'image-preset' in idle_info and idle_info["image-preset"] != None:
                 path = "images/logos/" + idle_info["image-preset"]
-                print(path)
                 image = Image.open(path)
-                self.display_image(image)
+                self.display_logo(image)
             elif 'image-url' in idle_info and idle_info["image-url"] != None:
                 image_url = BASE_URL + "/" + idle_info["image-url"]
-                # TODO cache image by ETag
-                # request = urllib.request.Request(image_url, method="HEAD")
-                # response = urllib.request.urlopen(request)
-                # print (response.status)
-                # etag = str(response.headers["ETag"])
-                # print ("ETag: {0}".format(etag))
-                image = Image.open(requests.get(image_url, stream=True).raw)
-                self.display_image(image)
+                
+                request = urllib.request.Request(image_url, method="HEAD")
+                response = urllib.request.urlopen(request)
+                etag = str(response.headers["ETag"])
+
+                if etag != None:
+                    path = IMAGE_CACHE_DIR.name + "/" + etag
+                    if (os.path.isfile(path)):
+                        image = Image.open(path)
+                    else:
+                        image = Image.open(requests.get(image_url, stream=True).raw)
+                        image = thumbnail(image)
+                        image.save(path, 'png')
+                else:
+                    image = Image.open(requests.get(image_url, stream=True).raw)
+                    image = thumbnail(image)
+                self.display_logo(image)
             else:
                 message = idle_info["message"] or ''
                 color = COLOR_BLUE_7c
@@ -223,7 +229,7 @@ class SevenCourtsM1(SampleBase):
 
     def display_clock(self):
         text = datetime.now().strftime('%H:%M')        
-        draw_text(self.canvas, 124, 62, text, FONT_CLOCK, COLOR_CLOCK)
+        draw_text(self.canvas, W_LOGO + 2, 62, text, FONT_CLOCK, COLOR_CLOCK)
 
     def display_set_digit(self, x, y, font, color, score):
         # FIXME meh
