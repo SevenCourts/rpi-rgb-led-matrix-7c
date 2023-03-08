@@ -167,7 +167,7 @@ class SevenCourtsM1(SampleBase):
         x = (w_available - image.width) / 2
         y = (h_available - image.height) / 2
 
-        print ("result w: {0}, h: {1}".format(image.width, image.height))
+        # print ("result w: {0}, h: {1}".format(image.width, image.height))
 
         self.canvas.SetImage(image.convert('RGB'), x, y)
 
