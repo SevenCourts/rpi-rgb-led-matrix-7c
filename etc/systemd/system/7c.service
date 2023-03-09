@@ -10,7 +10,7 @@ Type=simple
 Restart=on-failure
 
 ## Dirs
-ProtectSystem=strict
+#ProtectSystem=strict
 ProtectHome=true
 WorkingDirectory=/opt/7c
 
