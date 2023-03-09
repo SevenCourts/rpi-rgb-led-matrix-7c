@@ -186,7 +186,9 @@ class SevenCourtsM1(SampleBase):
                 response = urllib.request.urlopen(request)
                 etag = str(response.headers["ETag"])
 
-                if etag != None:
+                useCaching = False
+
+                if useCaching and etag != None:
                     path = IMAGE_CACHE_DIR.name + "/" + etag
                     if (os.path.isfile(path)):
                         image = Image.open(path)
