@@ -229,11 +229,11 @@ class M1_Demo(SampleBase):
         canvas.Clear()
 
         canvas.SetImage(Image.open("images/flags/italy.png").convert('RGB'),   0, 3)
-        canvas.SetImage(Image.open("images/flags/spain.png").convert('RGB'),   0, 3+FLAG_HEIGHT+2)
-        canvas.SetImage(Image.open("images/flags/france.png").convert('RGB'),  0, 3+FLAG_HEIGHT+2+FLAG_HEIGHT+3+3)
-        canvas.SetImage(Image.open("images/flags/ukraine.png").convert('RGB'), 0, 3+FLAG_HEIGHT+2+FLAG_HEIGHT+3+3+FLAG_HEIGHT+2)
+        canvas.SetImage(Image.open("images/flags/germany.png").convert('RGB'),   0, 3+FLAG_HEIGHT+2)
+        canvas.SetImage(Image.open("images/flags/argentina.png").convert('RGB'),  0, 3+FLAG_HEIGHT+2+FLAG_HEIGHT+3+3)
+        canvas.SetImage(Image.open("images/flags/switzerland.png").convert('RGB'), 0, 3+FLAG_HEIGHT+2+FLAG_HEIGHT+3+3+FLAG_HEIGHT+2)
 
-        self.render_names_doubles(canvas, "Bianchi", "Rodríguez", "Lavigne", "Shevchenko")
+        self.render_names_doubles(canvas, "Giordano", "Müller", "Álvarez", "Hunziker")
         
         self.render_score_3_sets(canvas, show_game_score)
 
@@ -243,8 +243,8 @@ class M1_Demo(SampleBase):
     def show_score_doubles_with_flags_short(self, canvas, show_game_score, duration):
         canvas.Clear()
         canvas.SetImage(Image.open("images/flags/italy.png").convert('RGB'), 0, 6 + 3)
-        canvas.SetImage(Image.open("images/flags/spain.png").convert('RGB'), 0, 6 + 3+FLAG_HEIGHT+2+FLAG_HEIGHT+3+3)
-        self.render_names_doubles(canvas, "Rossi", "Bianchi", "González", "López")        
+        canvas.SetImage(Image.open("images/flags/portugal.png").convert('RGB'), 0, 6 + 3+FLAG_HEIGHT+2+FLAG_HEIGHT+3+3)
+        self.render_names_doubles(canvas, "Marino", "Bruno", "Sousa", "Carvalho")        
         self.render_score_3_sets(canvas, show_game_score)
         canvas = self.matrix.SwapOnVSync(canvas)
         time.sleep(duration)
