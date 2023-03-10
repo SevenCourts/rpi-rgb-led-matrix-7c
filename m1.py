@@ -89,7 +89,7 @@ def fetch_panel_info(panel_id):
         if response.status == 200:
             match = json.loads(response.read().decode('utf-8'))
             log("match:", match)
-            return match
+            return match or None # FIX: the server can return False if match is over, this leads to error then
         elif response.status == 205:
             idle_info = json.loads(response.read().decode('utf-8') or 'null')
             log("idle-info:", idle_info)
