@@ -119,7 +119,7 @@ Full documentation: see the [Wiki page](https://wiki.suprematic.team/books/tenni
 ```
 mkdir -p /root/.ssh/
 cp ssh/authorized_keys /root/.ssh/authorized_keys
-apt install openvpn
+apt -y install openvpn
 cp etc/openvpn/client/callhome.conf /etc/openvpn/client/callhome.conf
 mkdir -p /etc/systemd/system/openvpn-client@callhome.service.d/
 cp etc/systemd/system/openvpn-client@callhome.service.d/override.conf /etc/systemd/system/openvpn-client@callhome.service.d/override.conf
