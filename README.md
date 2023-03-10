@@ -114,20 +114,37 @@ The panel should display current time.
 
 ## Install 'Call Home' VPN
 
-[Wiki page](https://wiki.suprematic.team/books/tennis-cast-scoreboard/page/call-home-vpn-for-7c-scoreboard)
+Full documentation: see the [Wiki page](https://wiki.suprematic.team/books/tennis-cast-scoreboard/page/call-home-vpn-for-7c-scoreboard).
 
 ```
+mkdir -p /root/.ssh/
+cp ssh/authorized_keys /root/.ssh/authorized_keys
 apt install openvpn
 cp etc/openvpn/client/callhome.conf /etc/openvpn/client/callhome.conf
 mkdir -p /etc/systemd/system/openvpn-client@callhome.service.d/
 cp etc/systemd/system/openvpn-client@callhome.service.d/override.conf /etc/systemd/system/openvpn-client@callhome.service.d/override.conf
-
 systemctl daemon-reload
 systemctl enable --now openvpn-client@callhome
-mkdir /root/.ssh/
-cp ssh/authorized_keys /root/.ssh/authorized_keys
+```
+
+### Check the log:
 
 ```
+journalctl -e -u openvpn-client@callhome
+journalctl -f -u openvpn-client@callhome
+```
+
+### Connect to the OpenVPN client
+
+- Login to `7c-vpn.suprematic.team` via SSH using personal LDAP credentials
+
+```
+sudo -i
+cat /var/log/openvpn/openvpn-status.log
+ssh root@<ip-address>
+```
+
+Connect to chosen scoreboard via SSH from `7c-vpn.suprematic.team`
 
 
 ## Install development environment
