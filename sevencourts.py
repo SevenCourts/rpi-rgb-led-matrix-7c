@@ -1,4 +1,5 @@
 import os
+import socket
 if os.getenv('USE_RGB_MATRIX_EMULATOR', False):
   from RGBMatrixEmulator import graphics
 else:
@@ -110,6 +111,17 @@ Y_FONT_SYMBOL_NORMAL_HEIGHTS = {
     FONTS_V2[4] : 6,
     FONTS_V2[5] : 5
 }
+
+def ip_address():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        result = s.getsockname()[0]
+        s.close()
+    except Exception as e:
+        log(e)
+        result = "###"
+    return result
 
 def y_font_offset(font):
     ## This works only on emulator

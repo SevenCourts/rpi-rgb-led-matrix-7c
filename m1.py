@@ -70,7 +70,7 @@ def panel_info_url(panel_id):
     return BASE_URL + "/panels/" + panel_id + "/match"
 
 def register():
-    data = json.dumps({"code": PANEL_NAME}).encode('utf-8')
+    data = json.dumps({"code": PANEL_NAME, "ip": ip_address()}).encode('utf-8')
     url = REGISTRATION_URL
     request = urllib.request.Request(url, data=data, method='POST')
     try:
