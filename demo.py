@@ -436,8 +436,6 @@ class M1_Demo(SampleBase):
 
     def run_demo_sequence_italian(self, canvas, duration, title_duration):
 
-        self.show_title_text(canvas, "PREZZO SPECIALE\n\n999 EUR / 499 EUR", COLOR_GOLD_7c, duration, FONT_M)
-
         # 0. Title slide: SevenCourts logo + slogan
         self.show_title_slide(canvas, "Tabelloni interattivi per OGNI club", duration * 2)
         self.show_title_text(canvas, "www.sevencourts.com/it", COLOR_GREEN_7c, duration, FONT_M)
@@ -472,7 +470,7 @@ class M1_Demo(SampleBase):
         # self.show_title_text(canvas, "API per l'integrazione\ncon qualsiasi sistema\ndi punteggio, torneo,\no back-office", COLOR_GREEN_7c, title_duration)
         # self.show_title_text(canvas, "Web e video in diretta", COLOR_BLUE_7c, title_duration)
         # self.show_title_text(canvas, "Viene gestito tramite un'app\no un pulsante Bluetooth", COLOR_BLUE_7c, title_duration)
-        self.show_title_text(canvas, "PREZZO SPECIALE PER LA FIERA\n\nM1 999 EUR    XS1 499 EUR\n\nAltre misure: su richiesta", COLOR_GOLD_7c, duration)
+        self.show_title_text(canvas, "PREZZO SPECIALE\n\n999 EUR / 499 EUR", COLOR_GOLD_7c, duration, FONT_M)
 
     def run_demo_sequence_court_1(self, canvas, duration):
         self.show_image_centered(canvas, "images/logos/padel_trend_expo_119x64.png", duration)
