@@ -118,11 +118,11 @@ Full documentation: see the [Wiki page](https://wiki.suprematic.team/books/tenni
 
 ```
 mkdir -p /root/.ssh/
-cp ssh/authorized_keys /root/.ssh/authorized_keys
-apt -y install openvpn
-cp etc/openvpn/client/callhome.conf /etc/openvpn/client/callhome.conf
+cp 7c-vpn/ssh/authorized_keys /root/.ssh/authorized_keys
+cp 7c-vpn/etc/openvpn/client/callhome.conf /etc/openvpn/client/callhome.conf
 mkdir -p /etc/systemd/system/openvpn-client@callhome.service.d/
-cp etc/systemd/system/openvpn-client@callhome.service.d/override.conf /etc/systemd/system/openvpn-client@callhome.service.d/override.conf
+cp 7c-vpn/etc/systemd/system/openvpn-client@callhome.service.d/override.conf /etc/systemd/system/openvpn-client@callhome.service.d/override.conf
+apt -y install openvpn
 systemctl daemon-reload
 systemctl enable --now openvpn-client@callhome
 ```
@@ -140,7 +140,7 @@ journalctl -f -u openvpn-client@callhome
 
 ```
 sudo -i
-cat /var/log/openvpn/openvpn-status.log
+cat /var/log/openvpn/openvpn-status.log | grep CLIENT_LIST
 ssh root@<ip-address>
 ```
 
