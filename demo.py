@@ -344,15 +344,13 @@ class M1_Demo(SampleBase):
     def show_title_slide(self, canvas, text, duration):
         canvas.Clear()
         image = Image.open("images/logos/sevencourts_192x21.png")
-        canvas.SetImage(image.convert('RGB'), 0, 20)
-        graphics.DrawText(canvas, FONT_XS, 4, 60, COLOR_GREY, text)
+        canvas.SetImage(image.convert('RGB'), 0, 10)
+        graphics.DrawText(canvas, FONT_XS, 5, 55, COLOR_GREY, text)
         canvas = self.matrix.SwapOnVSync(canvas)
         time.sleep(duration)
 
-    def show_title_text(self, canvas, text, color, duration):
+    def show_title_text(self, canvas, text, color, duration, font=FONT_S):
         canvas.Clear()
-
-        font = FONT_S
 
         lines = text.split('\n')
         h_total = font.height * len(lines)
@@ -362,7 +360,7 @@ class M1_Demo(SampleBase):
             line_width = 0
             for c in line:
                 line_width+=font.CharacterWidth(ord(c))
-            x = (PANEL_WIDTH-line_width)/2            
+            x = max(0, (PANEL_WIDTH-line_width)/2)
             graphics.DrawText(canvas, font, x, y, color, line)
         canvas = self.matrix.SwapOnVSync(canvas)
         time.sleep(duration)
@@ -438,38 +436,42 @@ class M1_Demo(SampleBase):
 
     def run_demo_sequence_italian(self, canvas, duration, title_duration):
 
+        self.show_title_text(canvas, "PREZZO SPECIALE\n\n999 EUR / 499 EUR", COLOR_GOLD_7c, duration, FONT_M)
+
         # 0. Title slide: SevenCourts logo + slogan
         self.show_title_slide(canvas, "Tabelloni interattivi per OGNI club", duration * 2)
-        self.show_title_text(canvas, "Vieni a trovarci\na padiglione 4 stand 2", COLOR_BLUE_7c, title_duration)
+        self.show_title_text(canvas, "www.sevencourts.com/it", COLOR_GREEN_7c, duration, FONT_M)
+        self.show_title_text(canvas, "Vieni a trovarci\na padiglione 4 stand 2", COLOR_BLUE_7c, title_duration, FONT_M)
 
         # 1.1. Idle mode: sequence of logos of our references
-        self.show_title_text(canvas, "Logo dello sponsor,\ndel club o del torneo", COLOR_GREEN_7c, title_duration)
+        self.show_title_text(canvas, "Logo dello sponsor,\ndel club o del torneo", COLOR_GREEN_7c, title_duration, FONT_M)
 
         duration_logo = min(3, duration)
+        self.show_image_centered(canvas, "images/logos/pix_115x58.png", duration_logo)
         self.show_image_centered(canvas, "images/logos/decathlon_192x56.png", duration_logo)
-        self.show_image_centered(canvas, "images/logos/a-rete_160x43.png", duration_logo)
+        #self.show_image_centered(canvas, "images/logos/a-rete_160x43.png", duration_logo)
 
         # 1.2. Idle mode: Clock + Weather + etc.
-        self.show_title_text(canvas, "Ora, meteo,\nmessaggi di saluto, ecc.", COLOR_GREEN_7c, title_duration)
+        self.show_title_text(canvas, "Ora, meteo,\nmessaggi di saluto, ecc.", COLOR_GREEN_7c, title_duration, FONT_M)
         # self.show_big_clock_with_weather(canvas, duration)
         self.show_clock_with_weather_and_announcement(canvas, "Felice matrimonio!\nAnna e Marco", duration)
 
         # 2.1. Match mode: point-by-point
-        self.show_title_text(canvas, "Il momento del Grande Slam\nper il tuo club!", COLOR_GREEN_7c, title_duration)
+        self.show_title_text(canvas, "Il momento\ndel Grande Slam\nper il tuo club!", COLOR_GREEN_7c, title_duration, FONT_M)
         self.show_score_singles_with_flags(canvas, True, duration)
-        self.show_title_text(canvas, "Punteggio Point-by-point\n(modalità 'Pro')", COLOR_GREEN_7c, title_duration)
+        #self.show_title_text(canvas, "Punteggio Point-by-point\n(modalità 'Pro')", COLOR_GREEN_7c, title_duration)
         self.show_score_doubles_with_flags_short(canvas, True, duration)
         self.show_score_doubles_with_flags_long(canvas, True, duration)
 
         # 2.2. Match mode: game-by-game
-        self.show_title_text(canvas, "Punteggio Game-by-game\n(modalità 'Easy')", COLOR_GREEN_7c, title_duration)
-        self.show_score_doubles_with_flags_short(canvas, False, duration)
+        #self.show_title_text(canvas, "Punteggio Game-by-game\n(modalità 'Easy')", COLOR_GREEN_7c, title_duration)
+        #self.show_score_doubles_with_flags_short(canvas, False, duration)
 
         # 3. Some texts
-        self.show_title_text(canvas, "Vieni a trovarci\na padiglione 4 stand 2", COLOR_BLUE_7c, duration)
-        self.show_title_text(canvas, "API per l'integrazione\ncon qualsiasi sistema\ndi punteggio, torneo,\no back-office", COLOR_GREEN_7c, title_duration)
+        # self.show_title_text(canvas, "Vieni a trovarci\na padiglione 4 stand 2", COLOR_BLUE_7c, duration)
+        # self.show_title_text(canvas, "API per l'integrazione\ncon qualsiasi sistema\ndi punteggio, torneo,\no back-office", COLOR_GREEN_7c, title_duration)
         # self.show_title_text(canvas, "Web e video in diretta", COLOR_BLUE_7c, title_duration)
-        self.show_title_text(canvas, "Viene gestito tramite un'app\no un pulsante Bluetooth", COLOR_BLUE_7c, title_duration)
+        # self.show_title_text(canvas, "Viene gestito tramite un'app\no un pulsante Bluetooth", COLOR_BLUE_7c, title_duration)
         self.show_title_text(canvas, "PREZZO SPECIALE PER LA FIERA\n\nM1 999 EUR    XS1 499 EUR\n\nAltre misure: su richiesta", COLOR_GOLD_7c, duration)
 
     def run_demo_sequence_court_1(self, canvas, duration):
