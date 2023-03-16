@@ -88,30 +88,6 @@ systemctl enable 7c.service
 ```
 
 
-### Final test
-
-```shell
-reboot
-```
-
-The panel should display current time.
-
-
-## Change WiFi to customer network
-
-- Get WiFi SSID and key
-- In `dietpi-config`:
-    - Go to "7: Network Options: Adapters"
-    - Go to "WiFi"
-    - Go to "Scan"
-    - Select "SUPREMATIC_INTERNAL" and remove it
-    - Select the 0th slot
-    - Select "Manual"
-        - Enter SSID
-        - Enter key
-    - done, back, back, exit, ok
-
-
 ## Install 'Call Home' VPN
 
 Full documentation: see the [Wiki page](https://wiki.suprematic.team/books/tennis-cast-scoreboard/page/call-home-vpn-for-7c-scoreboard).
@@ -134,7 +110,7 @@ journalctl -e -u openvpn-client@callhome
 journalctl -f -u openvpn-client@callhome
 ```
 
-### Connect to the OpenVPN client
+### Test: connect to the panel via SSH
 
 - Login to `7c-vpn.suprematic.team` via SSH using personal LDAP credentials
 
@@ -145,6 +121,29 @@ ssh root@<ip-address>
 ```
 
 Connect to chosen scoreboard via SSH from `7c-vpn.suprematic.team`
+
+## Final test
+
+```shell
+reboot
+```
+
+The panel should display current time.
+
+
+## Change WiFi to customer network
+
+- Get WiFi SSID and key
+- In `dietpi-config`:
+    - Go to "7: Network Options: Adapters"
+    - Go to "WiFi"
+    - Go to "Scan"
+    - Select "SUPREMATIC_INTERNAL" and remove it
+    - Select the 0th slot
+    - Select "Manual"
+        - Enter SSID
+        - Enter key
+    - done, back, back, exit, ok
 
 
 ## Install development environment
