@@ -116,11 +116,25 @@ journalctl -f -u openvpn-client@callhome
 
 ```
 sudo -i
-cat /var/log/openvpn/openvpn-status.log | grep CLIENT_LIST
-ssh root@<ip-address>
+./7c.sh
 ```
 
-Connect to chosen scoreboard via SSH from `7c-vpn.suprematic.team`
+Should display the list of scoreboards: hostnames together with their respective IP addresses as they are accessible from the 7c-vpn server.
+
+```
+10.8.0.4
+7C-M1-R2
+---
+10.8.0.2
+7C-M1-R3
+---
+```
+
+Connect to chosen scoreboard via SSH from `7c-vpn.suprematic.team`:
+
+```
+ssh 10.8.0.4
+```
 
 ## Final test
 
