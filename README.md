@@ -2,14 +2,18 @@
 
 ## Pre-requisites
 
-1) Define PANEL_NAME (e.g. `7C-M1-R2`)
+1) Define PANEL_NAME (the last 8 digits of the serial number)
+
+```
+cat /sys/firmware/devicetree/base/serial-number | tail -c +9
+```
 
 2) Use SUPREMATIC_INTERNAL WiFi for initial set-up
 
 
 ## Install firmware
 
-### OS & dev tools
+### OS & dev tools (DietPI, the subject to change)
 
 - Install [DietPI](https://dietpi.com/docs/install/)
 
@@ -93,12 +97,12 @@ systemctl enable 7c.service
 Full documentation: see the [Wiki page](https://wiki.suprematic.team/books/tennis-cast-scoreboard/page/call-home-vpn-for-7c-scoreboard).
 
 ```
+apt-get install openvpn -y
 mkdir -p /root/.ssh/
 cp 7c-vpn/ssh/authorized_keys /root/.ssh/authorized_keys
 cp 7c-vpn/etc/openvpn/client/callhome.conf /etc/openvpn/client/callhome.conf
 mkdir -p /etc/systemd/system/openvpn-client@callhome.service.d/
 cp 7c-vpn/etc/systemd/system/openvpn-client@callhome.service.d/override.conf /etc/systemd/system/openvpn-client@callhome.service.d/override.conf
-apt -y install openvpn
 systemctl daemon-reload
 systemctl enable --now openvpn-client@callhome
 ```
