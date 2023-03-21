@@ -1,0 +1,19 @@
+[Unit]
+Description=SevenCourts controller
+
+Requires=wpa_supplicant.service
+After=network-online.target bluetooth.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+
+## Dirs
+ProtectHome=true
+WorkingDirectory=/opt/7c
+
+ExecStart=/opt/7c/7c_m1_controller --log=debug run
+
+[Install]
+WantedBy=multi-user.target

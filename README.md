@@ -1,14 +1,19 @@
 # 7C-M1 set-up
 
+Use Ethernet for initial set-up.
+
 ## Pre-requisites
 
-1) Define PANEL_NAME (the last 8 digits of the serial number)
+Define PANEL_NAME (the last 8 digits of the serial number):
 
 ```
 cat /sys/firmware/devicetree/base/serial-number | tail -c +9
+
 ```
 
-2) Use SUPREMATIC_INTERNAL WiFi for initial set-up
+Set the hostname via `raspi-config`.
+
+**FIXME**: do it via `7c-hostname.service`
 
 
 ## Install firmware
@@ -139,6 +144,16 @@ Connect to chosen scoreboard via SSH from `7c-vpn.suprematic.team`:
 ```
 ssh 10.8.0.4
 ```
+
+## Install 7c-controller
+
+```
+curl -o /opt/7c/7c_m1_controller https://dl.suprematic.net/index.php/s/YHWrGCaJ42XTpdx
+chmod u+x /opt/7c/7c_m1_controller
+cp etc/systemd/system/7c-controller.service /etc/systemd/system/7c-controller.service
+systemd enable 7c-controller
+```
+
 
 ## Final test
 
