@@ -492,14 +492,14 @@ class SevenCourtsM1(SampleBase):
         self.display_winner(match)
 
     def draw_error_indicator(self):
-        b = (0, 0, 0)
-        r = (255, 0, 0)
-        red_dot = [
-            [b,r,r,b],
-            [r,r,r,r],
-            [r,r,r,r],
-            [b,r,r,b]]
-        draw_matrix(self.canvas, red_dot, PANEL_WIDTH - 4, PANEL_HEIGHT - 4)
+        x = (0, 0, 0)
+        o = (111, 168, 220) # COLOR_BLUE_7c
+        dot = [
+            [x,o,o,x],
+            [o,o,o,o],
+            [o,o,o,o],
+            [x,o,o,x]]
+        draw_matrix(self.canvas, dot, PANEL_WIDTH - 4, PANEL_HEIGHT - 4)
 
 # Main function
 if __name__ == "__main__":
