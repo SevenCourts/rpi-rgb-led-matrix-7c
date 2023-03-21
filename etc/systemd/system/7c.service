@@ -7,15 +7,12 @@ DefaultDependencies=no
 
 [Service]
 Type=simple
-Restart=on-failure
+Restart=always
+RestartSec=5
 
 ## Dirs
-#ProtectSystem=strict
 ProtectHome=true
 WorkingDirectory=/opt/7c
-
-## Env
-#Environment=BLOCKING_MAX_THREADS=16
 
 ExecStart=/bin/sh rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c/m1.sh
 
