@@ -18,7 +18,12 @@ Set the hostname via `raspi-config`.
 
 ## Install firmware
 
-### OS & dev tools (DietPI, the subject to change)
+### OS & dev tools
+
+
+- Install [Raspberry PI OS Lite 64 bit](https://www.raspberrypi.com/documentation/computers/getting-started.html#installing-the-operating-system)
+
+    
 
 - Install [DietPI](https://dietpi.com/docs/install/)
 
