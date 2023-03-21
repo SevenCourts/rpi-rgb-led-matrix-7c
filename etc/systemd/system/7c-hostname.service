@@ -1,0 +1,19 @@
+[Unit]
+Description=SevenCourts hostname setter
+
+Requires=local-fs.target
+After=local-fs.target
+DefaultDependencies=no
+
+RequiredBy=7c.service
+
+[Service]
+Type=oneshot
+
+## Dirs
+ProtectHome=true
+
+ExecStart=/bin/sh /opt/7c/7h-set-hostname.sh
+
+[Install]
+WantedBy=basic.target
