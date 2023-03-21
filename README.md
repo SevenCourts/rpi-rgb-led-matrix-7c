@@ -1,35 +1,10 @@
 # 7C-M1 set-up
 
-Use Ethernet for initial set-up.
-
-## Pre-requisites
-
-Define PANEL_NAME (the last 8 digits of the serial number):
-
-```
-cat /sys/firmware/devicetree/base/serial-number | tail -c +9
-
-```
-
-Set the hostname via `raspi-config`.
-
-**FIXME**: do it via `7c-hostname.service`
-
-
 ## Install firmware
 
 ### OS & dev tools
 
-
 - Install [Raspberry PI OS Lite 64 bit](https://www.raspberrypi.com/documentation/computers/getting-started.html#installing-the-operating-system)
-
-    
-
-- Install [DietPI](https://dietpi.com/docs/install/)
-
-- Copy (overwrite) the prepared `dietpi/dietpi.txt` to the SD card
-    - change `AUTO_SETUP_NET_HOSTNAME` to PANEL_NAME
-- Setup WiFi credentials in `dietpi-wifi.txt`
 
 - Insert the SD card to Raspi and boot
 
@@ -37,14 +12,26 @@ Set the hostname via `raspi-config`.
     - For SUPREMATIC Mikrotik router: http://192.168.114.1/webfig/#IP:DHCP_Server.Leases
     - Or use any IP scanner available
 
-- Log in with `ssh root@<ip-address>`
-    - (The first boot will take some time)
-    - Leave `dietpi` software password    
-    - Disable the UART serial console in the dialog
-    - `dietpi-software` dialog starts, search and install (same can be done with `apt`):
-      - `git`
-      - `vim`
-      - `build-essential`
+- Log in with `ssh user@<ip-address>` (password: `password`)
+- Change timezone to Europe/Berlin via `raspi-config` / Localization. **FIXME**: do it via shell.
+
+### Install dependencies
+
+```
+sudo -i
+apt update
+apt install git vim build-essential
+```
+
+### Set hostname
+
+Define PANEL_NAME (the last 8 digits of the serial number):
+
+```
+cat /sys/firmware/devicetree/base/serial-number | tail -c +9
+```
+Set the hostname via `raspi-config` manually. **FIXME**: do it via `7c-hostname.service`
+
       
 ### Install and make rpi-rgb-led-matrix SDK
 
@@ -101,6 +88,15 @@ Service auto-start:
 systemctl enable 7c.service
 ```
 
+## Install 7c-controller
+
+```
+curl -o /opt/7c/7c_m1_controller https://dl.suprematic.net/index.php/s/YHWrGCaJ42XTpdx/download
+chmod u+x /opt/7c/7c_m1_controller
+cp etc/systemd/system/7c-controller.service /etc/systemd/system/7c-controller.service
+systemd enable 7c-controller
+```
+
 
 ## Install 'Call Home' VPN
 
@@ -150,38 +146,27 @@ Connect to chosen scoreboard via SSH from `7c-vpn.suprematic.team`:
 ssh 10.8.0.4
 ```
 
-## Install 7c-controller
-
-```
-curl -o /opt/7c/7c_m1_controller https://dl.suprematic.net/index.php/s/YHWrGCaJ42XTpdx
-chmod u+x /opt/7c/7c_m1_controller
-cp etc/systemd/system/7c-controller.service /etc/systemd/system/7c-controller.service
-systemd enable 7c-controller
-```
-
 
 ## Final test
 
-```shell
-reboot
-```
 
-The panel should display current time.
+Disconnect from Ethernet, reboot.
+
+=> The panel should display current time and the blue dot.
 
 
-## Change WiFi to customer network
+### Test WiFi setting
 
-- Get WiFi SSID and key
-- In `dietpi-config`:
-    - Go to "7: Network Options: Adapters"
-    - Go to "WiFi"
-    - Go to "Scan"
-    - Select "SUPREMATIC_INTERNAL" and remove it
-    - Select the 0th slot
-    - Select "Manual"
-        - Enter SSID
-        - Enter key
-    - done, back, back, exit, ok
+- Open SevenCourts Admin iOS app
+- Connect the panel to "SUPREMATIC_INTERNAL" network
+
+=> The panel should display current time only.
+
+Reboot. The panel should display:
+
+=> ~15 seconds of black screen
+=> ~5 second current time and the blue dot
+=> current time only
 
 
 ## Install development environment
