@@ -4,7 +4,9 @@
 
 ### OS & dev tools
 
-- Install [Raspberry PI OS Lite 64 bit](https://www.raspberrypi.com/documentation/computers/getting-started.html#installing-the-operating-system)
+test new
+
+- Install [Raspberry PI OS Lite 64 bit](https://www.raspberypi.com/documentation/computers/getting-started.html#installing-the-operating-system)
 
 - Insert the SD card to Raspi and boot
 
