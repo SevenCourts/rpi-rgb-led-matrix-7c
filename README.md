@@ -4,11 +4,11 @@
 
 ### OS & dev tools
 
-test new
 
 - Install [Raspberry PI OS Lite 64 bit](https://www.raspberypi.com/documentation/computers/getting-started.html#installing-the-operating-system)
 
 - Insert the SD card to Raspi and boot
+- **FIXME** Set login "user" and pasword "password"  
 
 - Find out the IP address of the Raspi
     - For SUPREMATIC Mikrotik router: http://192.168.114.1/webfig/#IP:DHCP_Server.Leases
