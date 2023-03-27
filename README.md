@@ -8,11 +8,16 @@
 - Install [Raspberry PI OS Lite 64 bit](https://www.raspberypi.com/documentation/computers/getting-started.html#installing-the-operating-system)
 
 - Insert the SD card to Raspi and boot
-- **FIXME** Set login "user" and pasword "password"  
+- **FIXME**: Set login: "user" and pasword: "password"  
 
 - Find out the IP address of the Raspi
     - For SUPREMATIC Mikrotik router: http://192.168.114.1/webfig/#IP:DHCP_Server.Leases
     - Or use any IP scanner available
+- Turn on ssh:
+    - Enter `sudo raspi-config` in a terminal window.
+    - Select Interfacing Options.
+    - Navigate to and select SSH.
+    - Choose Yes.
 
 - Log in with `ssh user@<ip-address>` (password: `password`)
 - Change timezone to Europe/Berlin via `raspi-config` / Localization. **FIXME**: do it via shell.
@@ -64,7 +69,7 @@ git clone https://bitbucket.org/suprematic/rpi-rgb-led-matrix-7c.git
 ```
 
 
-### Run smoke-test
+### Run smoke-test (Failed)
 
 ```shell
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
