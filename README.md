@@ -4,20 +4,20 @@
 
 ### OS & dev tools
 
+- Install [Raspberry PI OS Lite 64 bit](https://www.raspberrypi.com/documentation/computers/getting-started.html#installing-the-operating-system)
+- Insert the SD card to Raspi, connect monitor, keyboard, ethernet
+- On the first boot **FIXME**: set login: "user" and password: "password"
+- Turn on ssh:
+    - Enter `sudo raspi-config` in a terminal window
+    - Select Interfacing Options
+    - Navigate to and select SSH
+    - Choose Yes
 
-- Install [Raspberry PI OS Lite 64 bit](https://www.raspberypi.com/documentation/computers/getting-started.html#installing-the-operating-system)
-
-- Insert the SD card to Raspi and boot
-- **FIXME**: Set login: "user" and pasword: "password"  
-
+The rest can be done via SSH:
+    
 - Find out the IP address of the Raspi
     - For SUPREMATIC Mikrotik router: http://192.168.114.1/webfig/#IP:DHCP_Server.Leases
     - Or use any IP scanner available
-- Turn on ssh:
-    - Enter `sudo raspi-config` in a terminal window.
-    - Select Interfacing Options.
-    - Navigate to and select SSH.
-    - Choose Yes.
 
 - Log in with `ssh user@<ip-address>` (password: `password`)
 - Change timezone to Europe/Berlin via `raspi-config` / Localization. **FIXME**: do it via shell.
@@ -37,7 +37,9 @@ Define PANEL_NAME (the last 8 digits of the serial number):
 ```
 cat /sys/firmware/devicetree/base/serial-number | tail -c +9
 ```
-Set the hostname via `raspi-config` manually. **FIXME**: do it via `7c-hostname.service`
+Set the hostname via `raspi-config` manually. 
+
+**FIXME**: do it via `7c-hostname.service`
 
       
 ### Install and make rpi-rgb-led-matrix SDK
@@ -73,12 +75,11 @@ git clone https://bitbucket.org/suprematic/rpi-rgb-led-matrix-7c.git
 
 ```shell
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
-vim /etc/modprobe.d/alsa-blacklist.conf
-blacklist snd_bcm2835
+echo "blacklist snd_bcm2835" >> /etc/modprobe.d/alsa-blacklist.conf
 ./m1.sh
 ```
 
-The panel should display current time.
+The panel should display current time and no blue dot.
 
 ## Set up 7c systemd service
 
@@ -87,14 +88,10 @@ cp etc/systemd/system/7c.service /etc/systemd/system/7c.service
 cp etc/systemd/system/7c-demo.service /etc/systemd/system/7c-demo.service
 ```
 
-Service start:
-```shell
-systemctl start 7c.service
-```
+Enable service and start now:
 
-Service auto-start:
 ```shell
-systemctl enable 7c.service
+systemctl enable --now 7c.service
 ```
 
 ## Install 7c-controller
@@ -167,9 +164,9 @@ Disconnect from Ethernet, reboot.
 ### Test WiFi setting
 
 - Open SevenCourts Admin iOS app
-- Connect the panel to "SUPREMATIC_INTERNAL" network
+- Connect the panel to a WiFi network (e.g. SUPREMATIC_INTERNAL)
 
-=> The panel should display current time only.
+=> The panel should display current time and no blue dot.
 
 Reboot. The panel should display:
 
