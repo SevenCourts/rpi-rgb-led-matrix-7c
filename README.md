@@ -73,8 +73,8 @@ git clone https://bitbucket.org/suprematic/rpi-rgb-led-matrix-7c.git
 
 ```shell
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
-vim /etc/modprobe.d/alsa-blacklist.conf
-blacklist snd_bcm2835
+echo "blacklist snd_bcm2835" >> /etc/modprobe.d/alsa-blacklist.conf
+reboot
 ./m1.sh
 ```
 
