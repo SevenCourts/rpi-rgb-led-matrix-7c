@@ -5,9 +5,16 @@
 ### OS & dev tools
 
 - Install [Raspberry PI OS Lite 64 bit](https://www.raspberrypi.com/documentation/computers/getting-started.html#installing-the-operating-system)
+- Insert the SD card to Raspi, connect monitor, keyboard, ethernet
+- On the first boot **FIXME**: set login: "user" and password: "password"
+- Turn on ssh:
+    - Enter `sudo raspi-config` in a terminal window
+    - Select Interfacing Options
+    - Navigate to and select SSH
+    - Choose Yes
 
-- Insert the SD card to Raspi and boot
-
+The rest can be done via SSH:
+    
 - Find out the IP address of the Raspi
     - For SUPREMATIC Mikrotik router: http://192.168.114.1/webfig/#IP:DHCP_Server.Leases
     - Or use any IP scanner available
@@ -57,6 +64,13 @@ cd /opt/7c/rpi-rgb-led-matrix/bindings/python
 git clone https://bitbucket.org/suprematic/rpi-rgb-led-matrix-7c.git
 ```
 
+### Turn off sound card
+
+```
+echo "blacklist snd_bcm2835" >> /etc/modprobe.d/alsa-blacklist.conf
+reboot
+```
+
 ### Run smoke-test
 
 ```shell
@@ -64,7 +78,7 @@ cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
 ./m1.sh
 ```
 
-The panel should display current time.
+The panel should display current time and no blue dot.
 
 ### Set up 7c hostname systemd servives
 
@@ -90,14 +104,10 @@ cp etc/systemd/system/7c.service /etc/systemd/system/7c.service
 cp etc/systemd/system/7c-demo.service /etc/systemd/system/7c-demo.service
 ```
 
-Service start:
-```shell
-systemctl start 7c.service
-```
+Enable service and start now:
 
-Service auto-start:
 ```shell
-systemctl enable 7c.service
+systemctl enable --now 7c.service
 ```
 
 ## Install 7c-controller
@@ -171,9 +181,9 @@ Disconnect from Ethernet, reboot.
 ### Test WiFi setting
 
 - Open SevenCourts Admin iOS app
-- Connect the panel to "SUPREMATIC_INTERNAL" network
+- Connect the panel to a WiFi network (e.g. SUPREMATIC_INTERNAL)
 
-=> The panel should display current time only.
+=> The panel should display current time and no blue dot.
 
 Reboot. The panel should display:
 
