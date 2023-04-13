@@ -78,8 +78,8 @@ echo "blacklist snd_bcm2835" >> /etc/modprobe.d/alsa-blacklist.conf
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
 cp opt/7c/7c-set-hostname.sh /opt/7c/7c-set-hostname.sh
 chmod u+x /opt/7c/7c-set-hostname.sh
-etc/systemd/system/7c-hostname.service /etc/systemd/system/7c-hostname.service
-systemctl enable --now 7c-hostname
+cp etc/systemd/system/7c-hostname.service /etc/systemd/system/7c-hostname.service
+systemctl enable 7c-hostname
 ```
 
 
