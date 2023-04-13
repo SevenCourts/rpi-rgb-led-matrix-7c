@@ -103,7 +103,7 @@ systemctl enable 7c.service
 curl -o /opt/7c/7c_m1_controller https://dl.suprematic.net/index.php/s/YHWrGCaJ42XTpdx/download
 chmod u+x /opt/7c/7c_m1_controller
 cp etc/systemd/system/7c-controller.service /etc/systemd/system/7c-controller.service
-systemd enable 7c-controller
+systemctl enable 7c-controller
 ```
 
 
