@@ -35,12 +35,13 @@ timedatectl set-timezone Europe/Berlin
 
 ```
 apt update
-apt install git vim build-essential
+apt install git vim build-essential -y
 ```
 
 ### Install and make rpi-rgb-led-matrix SDK
 
 ```shell
+mkdir /opt/7c
 cd /opt/7c
 git clone https://github.com/suprematic/rpi-rgb-led-matrix.git
 cd rpi-rgb-led-matrix/
@@ -74,7 +75,6 @@ echo "blacklist snd_bcm2835" >> /etc/modprobe.d/alsa-blacklist.conf
 ### Set up 7c hostname systemd service
 
 ```
-mkdir /opt/7c
 cp opt/7c/7c-set-hostname.sh /opt/7c/7c-set-hostname.sh
 chmod u+x /opt/7c/7c-set-hostname.sh
 etc/systemd/system/7c-hostname.service /etc/systemd/system/7c-hostname.service
