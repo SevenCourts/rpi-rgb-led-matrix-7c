@@ -13,30 +13,26 @@
     - Or use any IP scanner available
 
 - Log in with `ssh user@<ip-address>` (password: `password`)
-- Change timezone to Europe/Berlin via `raspi-config` / Localization. **FIXME**: do it via shell.
+
+- Open sudo session with `sudo -i`
+
+
+### Change timezone to Europe/Berlin
+
+```
+timedatectl set-timezone Europe/Berlin
+```
 
 ### Install dependencies
 
 ```
-sudo -i
 apt update
 apt install git vim build-essential
 ```
 
-### Set hostname
-
-Define PANEL_NAME (the last 8 digits of the serial number):
-
-```
-cat /sys/firmware/devicetree/base/serial-number | tail -c +9
-```
-Set the hostname via `raspi-config` manually. **FIXME**: do it via `7c-hostname.service`
-
-      
 ### Install and make rpi-rgb-led-matrix SDK
 
 ```shell
-mkdir /opt/7c
 cd /opt/7c
 git clone https://github.com/suprematic/rpi-rgb-led-matrix.git
 cd rpi-rgb-led-matrix/
@@ -61,7 +57,6 @@ cd /opt/7c/rpi-rgb-led-matrix/bindings/python
 git clone https://bitbucket.org/suprematic/rpi-rgb-led-matrix-7c.git
 ```
 
-
 ### Run smoke-test
 
 ```shell
@@ -71,7 +66,24 @@ cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
 
 The panel should display current time.
 
-## Set up 7c systemd service
+### Set up 7c hostname systemd servives
+
+```
+mkdir /opt/7c
+cp opt/7c/7c-set-hostname.sh /opt/7c/7c-set-hostname.sh
+chmod u+x /opt/7c/7c-set-hostname.sh
+etc/systemd/system/7c-hostname.service /etc/systemd/system/7c-hostname.service
+systemctl enable --now 7c-hostname
+```
+
+Validate the hostname set:
+```
+hostname
+```
+Should output the last 8 bytes of `/sys/firmware/devicetree/base/serial-number` file contents.
+
+
+## Set up 7c systemd services
 
 ```shell
 cp etc/systemd/system/7c.service /etc/systemd/system/7c.service
@@ -91,7 +103,8 @@ systemctl enable 7c.service
 ## Install 7c-controller
 
 ```
-curl -o /opt/7c/7c_m1_controller https://dl.suprematic.net/index.php/s/YHWrGCaJ42XTpdx/download
+curl -o /opt/7c/7c_m1_controller.zip https://dl.suprematic.net/index.php/s/YHWrGCaJ42XTpdx/download
+unzip 7c_m1_controller.zip
 chmod u+x /opt/7c/7c_m1_controller
 cp etc/systemd/system/7c-controller.service /etc/systemd/system/7c-controller.service
 systemd enable 7c-controller
