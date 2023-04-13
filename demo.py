@@ -65,7 +65,7 @@ class M1_Demo(SampleBase):
         
         y_T1 = 26
         y_T2 = 58
-        y_service_delta = 14
+        y_service_delta = 12
         x_game = 163
         x_service = 155
 
@@ -74,7 +74,7 @@ class M1_Demo(SampleBase):
             graphics.DrawText(canvas, font, x_game, y_T1, color_score_set, "30")
 
             b = (0, 0 ,0)            
-            w = (color_score_game.red, color_score_game.green, color_score_game.blue)
+            w = (192, 192, 0)
             ball = [
                 [b,b,b,b,b],
                 [b,b,w,b,b],
@@ -266,7 +266,7 @@ class M1_Demo(SampleBase):
         canvas.Clear()
         self.render_weather(canvas)
         lines = text.split('\n')
-        graphics.DrawText(canvas, FONT_S, 2, 20, COLOR_GREY, lines[0])
+        graphics.DrawText(canvas, FONT_M, 2, 20, COLOR_GREY, lines[0])
         graphics.DrawText(canvas, FONT_M, 2, 40, COLOR_GREY, lines[1])
         canvas.SetImage(Image.open("images/clipart/heart_19x16.png").convert('RGB'), 36, 45)
         canvas = self.matrix.SwapOnVSync(canvas)
@@ -341,11 +341,11 @@ class M1_Demo(SampleBase):
         canvas = self.matrix.SwapOnVSync(canvas)
         time.sleep(duration)
 
-    def show_title_slide(self, canvas, text, duration):
+    def show_title_slide(self, canvas, text, duration, font=FONT_XS):
         canvas.Clear()
         image = Image.open("images/logos/sevencourts_192x21.png")
         canvas.SetImage(image.convert('RGB'), 0, 10)
-        graphics.DrawText(canvas, FONT_XS, 5, 55, COLOR_GREY, text)
+        graphics.DrawText(canvas, font, 5, 55, COLOR_GREY, text)
         canvas = self.matrix.SwapOnVSync(canvas)
         time.sleep(duration)
 
@@ -472,6 +472,41 @@ class M1_Demo(SampleBase):
         # self.show_title_text(canvas, "Viene gestito tramite un'app\no un pulsante Bluetooth", COLOR_BLUE_7c, title_duration)
         self.show_title_text(canvas, "PREZZO SPECIALE\n\n999 EUR / 499 EUR", COLOR_GOLD_7c, duration, FONT_M)
 
+    def run_demo_sequence_german(self, canvas, duration, title_duration):
+
+        # 0. Title slide: SevenCourts logo + slogan
+        self.show_title_slide(canvas, "Anzeigetafeln für JEDEN Verein", duration * 2, FONT_S)
+        self.show_title_text(canvas, "www.sevencourts.com/de", COLOR_GREEN_7c, duration, FONT_M)
+        
+        # 1.1. Idle mode: sequence of logos of our references
+        self.show_title_text(canvas, "Sponsoren-, Verein-,\noder Turnierlogo", COLOR_GREEN_7c, title_duration, FONT_M)
+
+        duration_logo = min(3, duration)
+        self.show_image_centered(canvas, "images/logos/tennis-point_bw_192x48.png", duration_logo)
+        self.show_image_centered(canvas, "images/logos/waldau_64x64.png", duration_logo)
+        self.show_image_centered(canvas, "images/logos/pgpt_192x54.png", duration_logo)
+        
+        # 1.2. Idle mode: Clock + Weather + etc.
+        self.show_title_text(canvas, "Uhrzeit, Wetter,\nAnkündigungen, u.s.w.", COLOR_GREEN_7c, title_duration, FONT_M)        
+        self.show_clock_with_weather_and_announcement(canvas, "  Alles Gute!\nAnne und Stefan", duration)
+
+        # 2.1. Match mode: point-by-point
+        self.show_title_text(canvas, "Grand-Slam-Moment\nfür deinen Verein!", COLOR_GREEN_7c, title_duration, FONT_M)
+        self.show_score_singles_with_flags(canvas, True, duration)        
+        self.show_score_doubles_with_flags_short(canvas, True, duration)
+        self.show_score_doubles_with_flags_long(canvas, True, duration)
+
+        # 2.2. Match mode: game-by-game
+        #self.show_title_text(canvas, "Punteggio Game-by-game\n(modalità 'Easy')", COLOR_GREEN_7c, title_duration)
+        #self.show_score_doubles_with_flags_short(canvas, False, duration)
+
+        # 3. Some texts
+        # self.show_title_text(canvas, "Vieni a trovarci\na padiglione 4 stand 2", COLOR_BLUE_7c, duration)
+        # self.show_title_text(canvas, "API per l'integrazione\ncon qualsiasi sistema\ndi punteggio, torneo,\no back-office", COLOR_GREEN_7c, title_duration)
+        # self.show_title_text(canvas, "Web e video in diretta", COLOR_BLUE_7c, title_duration)
+        # self.show_title_text(canvas, "Viene gestito tramite un'app\no un pulsante Bluetooth", COLOR_BLUE_7c, title_duration)
+        self.show_title_text(canvas, "SPEZIALPREIS\n\n999 EUR / 499 EUR", COLOR_GOLD_7c, duration, FONT_M)
+
     def run_demo_sequence_court_1(self, canvas, duration):
         self.show_image_centered(canvas, "images/logos/padel_trend_expo_119x64.png", duration)
         self.show_clock_with_sponsor_logo(canvas, "images/logos/gimpadel_111x28.png", duration)        
@@ -484,7 +519,8 @@ class M1_Demo(SampleBase):
     def run_slide_show(self, duration, title_duration):
         canvas = self.matrix.CreateFrameCanvas()
 
-        self.run_demo_sequence_italian(canvas, duration, title_duration)
+        self.run_demo_sequence_german(canvas, duration, title_duration)
+        # self.run_demo_sequence_italian(canvas, duration, title_duration)
         # self.run_demo_sequence_english(canvas, duration, title_duration)
         
         #self.show_flags(canvas, duration)
