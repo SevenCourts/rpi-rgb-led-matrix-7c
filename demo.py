@@ -65,7 +65,7 @@ class M1_Demo(SampleBase):
         
         y_T1 = 26
         y_T2 = 58
-        y_service_delta = 12
+        y_service_delta = 14
         x_game = 163
         x_service = 155
 
@@ -475,7 +475,7 @@ class M1_Demo(SampleBase):
     def run_demo_sequence_german(self, canvas, duration, title_duration):
 
         # 0. Title slide: SevenCourts logo + slogan
-        self.show_title_slide(canvas, "Anzeigetafeln für JEDEN Verein", duration * 2, FONT_S)
+        self.show_title_slide(canvas, "Anzeigetafeln für JEDEN Verein", duration, FONT_S)
         self.show_title_text(canvas, "www.sevencourts.com/de", COLOR_GREEN_7c, duration, FONT_M)
         
         # 1.1. Idle mode: sequence of logos of our references
