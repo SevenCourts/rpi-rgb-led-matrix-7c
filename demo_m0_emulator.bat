@@ -1,2 +1,2 @@
 SET USE_RGB_MATRIX_EMULATOR=True
-demo_m0.bat
+demo_m0.bat %*
