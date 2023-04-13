@@ -6,18 +6,19 @@
 
 - Install [Raspberry PI OS Lite 64 bit](https://www.raspberrypi.com/documentation/computers/getting-started.html#installing-the-operating-system)
 - Insert the SD card to Raspi, connect monitor, keyboard, ethernet
-- On the first boot **FIXME**: set login: "user" and password: "password"
+- On the first boot: set login: "user" and password: "password" 
+    - **FIXME** define non-default login/password
 - Turn on ssh:
     - Enter `sudo raspi-config` in a terminal window
-    - Select Interfacing Options
-    - Navigate to and select SSH
-    - Choose Yes
+    - Select "Interfacing Options"
+    - Navigate to and select "SSH"
+    - Choose "Yes"
 
 The rest can be done via SSH:
     
 - Find out the IP address of the Raspi
-    - For SUPREMATIC Mikrotik router: http://192.168.114.1/webfig/#IP:DHCP_Server.Leases
-    - Or use any IP scanner available
+    - e.g. with SUPREMATIC Mikrotik router: http://192.168.114.1/webfig/#IP:DHCP_Server.Leases
+    - or use any IP scanner software
 
 - Log in with `ssh user@<ip-address>` (password: `password`)
 
@@ -68,19 +69,9 @@ git clone https://bitbucket.org/suprematic/rpi-rgb-led-matrix-7c.git
 
 ```
 echo "blacklist snd_bcm2835" >> /etc/modprobe.d/alsa-blacklist.conf
-reboot
 ```
 
-### Run smoke-test
-
-```shell
-cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
-./m1.sh
-```
-
-The panel should display current time and no blue dot.
-
-### Set up 7c hostname systemd servives
+### Set up 7c hostname systemd service
 
 ```
 mkdir /opt/7c
@@ -89,12 +80,6 @@ chmod u+x /opt/7c/7c-set-hostname.sh
 etc/systemd/system/7c-hostname.service /etc/systemd/system/7c-hostname.service
 systemctl enable --now 7c-hostname
 ```
-
-Validate the hostname set:
-```
-hostname
-```
-Should output the last 8 bytes of `/sys/firmware/devicetree/base/serial-number` file contents.
 
 
 ## Set up 7c systemd services
@@ -136,25 +121,52 @@ systemctl daemon-reload
 systemctl enable --now openvpn-client@callhome
 ```
 
-### Check the log:
 
+
+## Tests
+
+The board is connected to Ethernet.
+
+
+```shell
+reboot
 ```
+
+=> The panel should display some time (may be different from current) and the blue dot.
+
+
+```shell
+ssh user@<ip-address>
+sudo -i
+```
+
+### Validate the hostname set:
+
+```shell
+hostname
+```
+Should output the last 8 bytes of `/sys/firmware/devicetree/base/serial-number` file contents.
+
+
+### Check the 'Call home VPN' log:
+
+```shell
 journalctl -e -u openvpn-client@callhome
 journalctl -f -u openvpn-client@callhome
 ```
 
-### Test: connect to the panel via SSH
+### Connect to the panel via "Call home VPN" server
 
 - Login to `7c-vpn.suprematic.team` via SSH using personal LDAP credentials
 
-```
+```shell
 sudo -i
 ./7c.sh
 ```
 
 Should display the list of scoreboards: hostnames together with their respective IP addresses as they are accessible from the 7c-vpn server.
 
-```
+```shell
 10.8.0.4
 7C-M1-R2
 ---
@@ -163,15 +175,13 @@ Should display the list of scoreboards: hostnames together with their respective
 ---
 ```
 
-Connect to chosen scoreboard via SSH from `7c-vpn.suprematic.team`:
+Connect to the chosen scoreboard via SSH from `7c-vpn.suprematic.team`:
 
-```
+```shell
 ssh 10.8.0.4
 ```
 
-
-## Final test
-
+### Final test
 
 Disconnect from Ethernet, reboot.
 
@@ -180,7 +190,7 @@ Disconnect from Ethernet, reboot.
 
 ### Test WiFi setting
 
-- Open SevenCourts Admin iOS app
+- Open "SevenCourts Admin" iOS app
 - Connect the panel to a WiFi network (e.g. SUPREMATIC_INTERNAL)
 
 => The panel should display current time and no blue dot.
@@ -190,6 +200,7 @@ Reboot. The panel should display:
 => ~15 seconds of black screen
 => ~5 second current time and the blue dot
 => current time only
+
 
 
 ## Install development environment
