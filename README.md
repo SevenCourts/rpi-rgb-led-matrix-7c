@@ -75,7 +75,7 @@ echo "blacklist snd_bcm2835" >> /etc/modprobe.d/alsa-blacklist.conf
 ### Set up 7c hostname systemd service
 
 ```
-cd rpi-rgb-led-matrix-7c
+cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
 cp opt/7c/7c-set-hostname.sh /opt/7c/7c-set-hostname.sh
 chmod u+x /opt/7c/7c-set-hostname.sh
 etc/systemd/system/7c-hostname.service /etc/systemd/system/7c-hostname.service
@@ -99,9 +99,12 @@ systemctl enable --now 7c.service
 ## Install 7c-controller
 
 ```
-curl -o /opt/7c/7c_m1_controller.zip https://dl.suprematic.net/index.php/s/YHWrGCaJ42XTpdx/download
+cd /opt/7c
+curl -o 7c_m1_controller.zip https://dl.suprematic.net/index.php/s/YHWrGCaJ42XTpdx/download
 unzip 7c_m1_controller.zip
-chmod u+x /opt/7c/7c_m1_controller
+chmod u+x 7c_m1_controller
+
+cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
 cp etc/systemd/system/7c-controller.service /etc/systemd/system/7c-controller.service
 systemctl enable 7c-controller
 ```
