@@ -140,12 +140,14 @@ ssh user@<ip-address>
 sudo -i
 ```
 
-### Validate the hostname set:
+### Validate and register the hostname:
 
 ```shell
 hostname
 ```
 Should output the last 8 bytes of `/sys/firmware/devicetree/base/serial-number` file contents.
+
+Insert the hostname into the "Hostname" column of https://docs.google.com/spreadsheets/d/1ewMfZ9fwiHdyakF1-PI1sjMTP-t4OwbRadxDGT6VGtM/edit#gid=696316085 spreadsheet.
 
 
 ### Check the 'Call home VPN' log:
