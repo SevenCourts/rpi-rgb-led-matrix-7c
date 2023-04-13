@@ -13,7 +13,7 @@ Type=oneshot
 ## Dirs
 ProtectHome=true
 
-ExecStart=/bin/sh /opt/7c/7h-set-hostname.sh
+ExecStart=/bin/sh /opt/7c/7c-set-hostname.sh
 
 [Install]
 WantedBy=basic.target
