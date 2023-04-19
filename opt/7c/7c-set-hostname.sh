@@ -1,3 +1,4 @@
 #!/bin/bash
-
-hostname `cat /sys/firmware/devicetree/base/serial-number | tail -c +9`
+name=`cat /sys/firmware/devicetree/base/serial-number | tail -c +9`
+hostname $name
+echo 'Set hostname to '$name
