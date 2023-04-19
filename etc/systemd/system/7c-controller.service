@@ -1,8 +1,8 @@
 [Unit]
 Description=SevenCourts controller
 
-Requires=wpa_supplicant.service
-After=network-online.target bluetooth.target
+Requires=wpa_supplicant.service 7c-hostname.service
+After=network-online.target bluetooth.target 7c-hostname.service
 
 [Service]
 Type=simple

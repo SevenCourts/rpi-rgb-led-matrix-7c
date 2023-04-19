@@ -5,8 +5,6 @@ Requires=local-fs.target
 After=local-fs.target
 DefaultDependencies=no
 
-RequiredBy=7c.service
-
 [Service]
 Type=oneshot
 
