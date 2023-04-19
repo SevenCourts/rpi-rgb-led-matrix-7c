@@ -1,8 +1,8 @@
 [Unit]
 Description=SevenCourts scoreboard
 
-Requires=local-fs.target
-After=local-fs.target
+Requires=local-fs.target 7c-hostname.service
+After=7c-hostname.service
 DefaultDependencies=no
 
 [Service]
