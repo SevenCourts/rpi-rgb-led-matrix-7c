@@ -483,9 +483,9 @@ class M1_Demo(SampleBase):
 
         duration_logo = min(3, duration)
         self.show_image_centered(canvas, "images/logos/pgpt_192x54.png", duration_logo)
-        self.show_image_centered(canvas, "images/logos/waldau_64x64.png", duration_logo)
+        self.show_image_centered(canvas, "images/logos/tec-waldau_64x64.png", duration_logo)
         self.show_image_centered(canvas, "images/logos/wtb_grey_light_192x49.png", duration_logo)
-        self.show_image_centered(canvas, "images/logos/fuerte-61x64-smart.png", duration_logo)        
+        self.show_image_centered(canvas, "images/logos/fuerte_61x64.png", duration_logo)        
         self.show_image_centered(canvas, "images/logos/tennis-point_bw_192x48.png", duration_logo)
         
         # 1.2. Idle mode: Clock + Weather + etc.
