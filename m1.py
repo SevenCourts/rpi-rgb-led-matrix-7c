@@ -63,8 +63,7 @@ W_SCORE_SET = 20
 X_SCORE_GAME = 163
 X_SCORE_SERVICE = 155
 
-W_LOGO = 122 # left from clock
-H_LOGO = PANEL_HEIGHT
+W_LOGO_WITH_CLOCK = 122 # left from clock
 
 def panel_info_url(panel_id):
     return BASE_URL + "/panels/" + panel_id + "/match"
@@ -99,10 +98,10 @@ def fetch_panel_info(panel_id):
 def player_name(p, noname="Noname"):
     return p["lastname"] or p["firstname"] or noname
 
-def thumbnail(image):
+def thumbnail(image, w=PANEL_WIDTH, h=PANEL_HEIGHT):
     # print ("original w: {0}, h: {1}".format(image.width, image.height))
-    if (image.height > H_LOGO or image.width > W_LOGO):
-        image.thumbnail((W_LOGO, H_LOGO), Image.LANCZOS)
+    if (image.width > w or image.height > h):
+        image.thumbnail((w, h), Image.LANCZOS)
     # print ("result w: {0}, h: {1}".format(image.width, image.height))
     return image
 
@@ -168,17 +167,22 @@ class SevenCourtsM1(SampleBase):
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
             time.sleep(1)
 
-    def display_logo(self, image):
-        x = (W_LOGO - image.width) / 2
-        y = (H_LOGO - image.height) / 2
+    def display_logo(self, image, show_clock):
+        w = W_LOGO_WITH_CLOCK if show_clock else PANEL_WIDTH
+        x = (w - image.width) / 2
+        y = (PANEL_HEIGHT - image.height) / 2
         self.canvas.SetImage(image.convert('RGB'), x, y)
 
     def display_idle_mode(self, idle_info):
         if idle_info != None:
+
+            show_clock = True
+
             if 'image-preset' in idle_info and idle_info["image-preset"] != None:
                 path = "images/logos/" + idle_info["image-preset"]
                 image = Image.open(path)
-                self.display_logo(image)
+                show_clock = image.width < W_LOGO_WITH_CLOCK
+                self.display_logo(image, show_clock)
             elif 'image-url' in idle_info and idle_info["image-url"] != None:
                 image_url = BASE_URL + "/" + idle_info["image-url"]
                 
@@ -192,14 +196,23 @@ class SevenCourtsM1(SampleBase):
                     path = IMAGE_CACHE_DIR.name + "/" + etag
                     if (os.path.isfile(path)):
                         image = Image.open(path)
+                        show_clock = image.width < W_LOGO_WITH_CLOCK
                     else:
                         image = Image.open(requests.get(image_url, stream=True).raw)
-                        image = thumbnail(image)
+                        
+                        show_clock = image.width < W_LOGO_WITH_CLOCK
+                        image_max_width = W_LOGO_WITH_CLOCK if show_clock else PANEL_WIDTH
+                        
+                        image = thumbnail(image, image_max_width)
                         image.save(path, 'png')
                 else:
                     image = Image.open(requests.get(image_url, stream=True).raw)
-                    image = thumbnail(image)
-                self.display_logo(image)
+
+                    show_clock = image.width < W_LOGO_WITH_CLOCK
+                    image_max_width = W_LOGO_WITH_CLOCK if show_clock else PANEL_WIDTH
+
+                    image = thumbnail(image, image_max_width)
+                self.display_logo(image, show_clock)
             else:
                 message = idle_info["message"] or ''
                 color = COLOR_BLUE_7c
@@ -227,11 +240,15 @@ class SevenCourtsM1(SampleBase):
                     y1 = y0 + y_font_center(font, h_available / 2)
                     graphics.DrawText(self.canvas, font, x1, y1, color, l1)
 
-        self.display_clock()
+            if show_clock:
+                self.display_clock()
+        else:
+            # TODO display something neutral instead of clock
+            self.display_clock()
 
     def display_clock(self):
         text = datetime.now().strftime('%H:%M')        
-        draw_text(self.canvas, W_LOGO + 2, 62, text, FONT_CLOCK, COLOR_CLOCK)
+        draw_text(self.canvas, W_LOGO_WITH_CLOCK + 2, 62, text, FONT_CLOCK, COLOR_CLOCK)
 
     def display_set_digit(self, x, y, font, color, score):
         # FIXME meh
