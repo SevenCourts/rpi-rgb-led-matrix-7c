@@ -3,6 +3,7 @@ Description=SevenCourts hostname setter
 
 Requires=local-fs.target
 After=local-fs.target
+Before=bluetooth.target
 DefaultDependencies=no
 
 [Service]
