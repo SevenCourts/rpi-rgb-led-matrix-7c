@@ -70,7 +70,8 @@ def panel_info_url(panel_id):
     return BASE_URL + "/panels/" + panel_id + "/match"
 
 def register():
-    git_commit_id = subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode()
+    # git_commit_id = subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode()
+    git_commit_id = 'FIXME'
     data = json.dumps({"code": PANEL_NAME, "ip": ip_address(), "firmware_version": git_commit_id}).encode('utf-8')
     url = REGISTRATION_URL
     request = urllib.request.Request(url, data=data, method='POST')
