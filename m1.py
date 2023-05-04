@@ -20,6 +20,7 @@ import socket
 import logging
 import requests
 import tempfile
+import subprocess
 
 IMAGE_CACHE_DIR = tempfile.TemporaryDirectory()
 
@@ -69,7 +70,8 @@ def panel_info_url(panel_id):
     return BASE_URL + "/panels/" + panel_id + "/match"
 
 def register():
-    data = json.dumps({"code": PANEL_NAME, "ip": ip_address()}).encode('utf-8')
+    git_commit_id = subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode()
+    data = json.dumps({"code": PANEL_NAME, "ip": ip_address(), "firmware_version": git_commit_id}).encode('utf-8')
     url = REGISTRATION_URL
     request = urllib.request.Request(url, data=data, method='POST')
     try:
