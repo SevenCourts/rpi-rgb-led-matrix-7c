@@ -484,7 +484,7 @@ class SevenCourtsM1(SampleBase):
         # FIXME winner is not displayed
         b = (0, 0 ,0)
         r = (128, 0, 0)
-        y = (128, 96, 0)
+        y = (255, 215, 0)
         w = (96, 64, 0)
         cup = [
             [b,b,y,y,y,y,y,b,b],
