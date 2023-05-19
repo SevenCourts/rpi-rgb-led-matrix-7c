@@ -32,6 +32,8 @@ BASE_URL = os.getenv('TABLEAU_SERVER_BASE_URL', 'https://prod.tableau.tennismath
 
 REGISTRATION_URL = BASE_URL + "/panels/"
 
+PANEL_ID = os.getenv('TABLEAU_PANEL_ID')
+
 # Style constants
 
 # Style sheet
@@ -55,7 +57,7 @@ if os.getenv('USE_RGB_MATRIX_EMULATOR', False):
 else:
   FONT_CLOCK = FONTS_V0[0]
   FONT_SCORE = FONTS_V0[0]
-  
+
 COLOR_CLOCK = COLOR_GREY
 
 UPPER_CASE_NAMES = True
@@ -95,7 +97,7 @@ def fetch_panel_info(panel_id):
         elif response.status == 205:
             idle_info = json.loads(response.read().decode('utf-8') or 'null')
             log("idle-info:", idle_info)
-            return idle_info        
+            return idle_info
     return None
 
 def player_name(p, noname="Noname"):
@@ -110,7 +112,7 @@ def thumbnail(image, w=PANEL_WIDTH, h=PANEL_HEIGHT):
 
 class SevenCourtsM1(SampleBase):
     def __init__(self, *args, **kwargs):
-        super(SevenCourtsM1, self).__init__(*args, **kwargs)        
+        super(SevenCourtsM1, self).__init__(*args, **kwargs)
 
     def run(self):
         self.canvas = self.matrix.CreateFrameCanvas()
@@ -144,31 +146,34 @@ class SevenCourtsM1(SampleBase):
                 log('Unexpected exception in #run', e)
 
     def register(self):
-        panel_id = None
-        while True:
-            self.canvas.Clear()
+        if PANEL_ID:
+            return PANEL_ID
+        else:
+            panel_id = None
+            while True:
+                self.canvas.Clear()
 
-            try:
-                panel_id = register()
-            except URLError as e:
-                logging.exception(e)
-                log('URLError in #register', e)
-                self.draw_error_indicator()
-            except socket.timeout as e:
-                logging.exception(e)
-                log('Socket timeout in #register', e)
-                self.draw_error_indicator()
-            except Exception as e:
-                logging.exception(e)
-                log('Unexpected exception in #register', e)
-                self.draw_error_indicator()            
+                try:
+                    panel_id = register()
+                except URLError as e:
+                    logging.exception(e)
+                    log('URLError in #register', e)
+                    self.draw_error_indicator()
+                except socket.timeout as e:
+                    logging.exception(e)
+                    log('Socket timeout in #register', e)
+                    self.draw_error_indicator()
+                except Exception as e:
+                    logging.exception(e)
+                    log('Unexpected exception in #register', e)
+                    self.draw_error_indicator()
 
-            if panel_id != None:
-                return panel_id
-            else:
-                self.display_idle_mode(None)
-            self.canvas = self.matrix.SwapOnVSync(self.canvas)
-            time.sleep(1)
+                if panel_id != None:
+                    return panel_id
+                else:
+                    self.display_idle_mode(None)
+                self.canvas = self.matrix.SwapOnVSync(self.canvas)
+                time.sleep(1)
 
     def display_logo(self, image, show_clock):
         w = W_LOGO_WITH_CLOCK if show_clock else PANEL_WIDTH
@@ -188,7 +193,7 @@ class SevenCourtsM1(SampleBase):
                 self.display_logo(image, show_clock)
             elif 'image-url' in idle_info and idle_info["image-url"] != None:
                 image_url = BASE_URL + "/" + idle_info["image-url"]
-                
+
                 request = urllib.request.Request(image_url, method="HEAD")
                 response = urllib.request.urlopen(request)
                 etag = str(response.headers["ETag"])
@@ -202,10 +207,10 @@ class SevenCourtsM1(SampleBase):
                         show_clock = image.width < W_LOGO_WITH_CLOCK
                     else:
                         image = Image.open(requests.get(image_url, stream=True).raw)
-                        
+
                         show_clock = image.width < W_LOGO_WITH_CLOCK
                         image_max_width = W_LOGO_WITH_CLOCK if show_clock else PANEL_WIDTH
-                        
+
                         image = thumbnail(image, image_max_width)
                         image.save(path, 'png')
                 else:
@@ -223,7 +228,7 @@ class SevenCourtsM1(SampleBase):
                 w_available = PANEL_WIDTH
 
                 lines = message.split('\n')
-                
+
                 if len(lines) == 1:
                     l0 = lines[0]
                     font = pick_font_that_fits(w_available, h_available, l0)
@@ -238,7 +243,7 @@ class SevenCourtsM1(SampleBase):
                     x0 = max(0, (w_available - width_in_pixels(font, l0)) / 2)
                     y0 = y_font_center(font, h_available / 2)
                     graphics.DrawText(self.canvas, font, x0, y0, color, l0)
-                    
+
                     x1 = max(0, (w_available - width_in_pixels(font, l1)) / 2)
                     y1 = y0 + y_font_center(font, h_available / 2)
                     graphics.DrawText(self.canvas, font, x1, y1, color, l1)
@@ -250,7 +255,7 @@ class SevenCourtsM1(SampleBase):
             self.display_clock()
 
     def display_clock(self):
-        text = datetime.now().strftime('%H:%M')        
+        text = datetime.now().strftime('%H:%M')
         draw_text(self.canvas, W_LOGO_WITH_CLOCK + 2, 62, text, FONT_CLOCK, COLOR_CLOCK)
 
     def display_set_digit(self, x, y, font, color, score):
@@ -279,7 +284,7 @@ class SevenCourtsM1(SampleBase):
             t1_set1 = match["team1"]["setScores"][0]
             t2_set1 = match["team2"]["setScores"][0]
             t1_set2 = t2_set2 = t1_set3 = t2_set3 = ""
-            
+
             if is_match_over:
                 c_t1_set1 = COLOR_SCORE_SET_WON if t1_set1>t2_set1 else COLOR_SCORE_SET_LOST
                 c_t2_set1 = COLOR_SCORE_SET_WON if t2_set1>t1_set1 else COLOR_SCORE_SET_LOST
@@ -295,7 +300,7 @@ class SevenCourtsM1(SampleBase):
             t1_set2 = match["team1"]["setScores"][1]
             t2_set2 = match["team2"]["setScores"][1]
             t1_set3 = t2_set3 = ""
-            
+
             c_t1_set1 = COLOR_SCORE_SET_WON if t1_set1>t2_set1 else COLOR_SCORE_SET_LOST
             c_t2_set1 = COLOR_SCORE_SET_WON if t2_set1>t1_set1 else COLOR_SCORE_SET_LOST
             if is_match_over:
@@ -332,7 +337,7 @@ class SevenCourtsM1(SampleBase):
         t2_game = match["team2"].get("gameScore", "")
         t1_game = str(t1_game if t1_game != None else "")
         t2_game = str(t2_game if t2_game != None else "")
-        
+
         # center score digits
         y_T1 = y_font_center(FONT_SCORE, PANEL_HEIGHT/2)
         y_T2 = y_T1 + (PANEL_HEIGHT/2)
@@ -341,7 +346,7 @@ class SevenCourtsM1(SampleBase):
         x_score = min(x_set1, X_SCORE_SERVICE) - MARGIN_NAMES_SCOREBOARD
         fill_rect(self.canvas, x_score, 0, PANEL_WIDTH - x_score, PANEL_HEIGHT, COLOR_SCORE_BACKGROUND)
 
-        
+
         self.display_set_digit(x_set1, y_T1, FONT_SCORE, c_t1_set1, t1_set1)
         self.display_set_digit(x_set2, y_T1, FONT_SCORE, c_t1_set2, t1_set2)
         self.display_set_digit(x_set3, y_T1, FONT_SCORE, c_t1_set3, t1_set3)
@@ -362,12 +367,12 @@ class SevenCourtsM1(SampleBase):
                 [y,y,y,w,y],
                 [y,y,w,y,y],
                 [y,w,y,y,y],
-                [b,y,y,y,b]]        
+                [b,y,y,y,b]]
             y_service_t1 = int(PANEL_HEIGHT/2/2 - len(ball)/2)
             y_service_t2 = y_service_t1 + PANEL_HEIGHT/2
-            if t1_on_serve:            
+            if t1_on_serve:
                 draw_matrix(self.canvas, ball, X_SCORE_SERVICE, y_service_t1)
-            elif t2_on_serve:            
+            elif t2_on_serve:
                 draw_matrix(self.canvas, ball, X_SCORE_SERVICE, y_service_t2)
 
 
@@ -375,7 +380,7 @@ class SevenCourtsM1(SampleBase):
     def display_names(self, match):
 
         # 1. flags
-        t1p1_flag = match["team1"]["p1"]["flag"]            
+        t1p1_flag = match["team1"]["p1"]["flag"]
         t2p1_flag = match["team2"]["p1"]["flag"]
         if match["isDoubles"]:
             t1p2_flag = match["team1"]["p2"]["flag"]
@@ -383,7 +388,7 @@ class SevenCourtsM1(SampleBase):
         else:
             t1p2_flag = t2p2_flag = ''
 
-        display_flags = max(len(t1p1_flag), len(t1p2_flag), len(t2p1_flag), len(t2p2_flag)) > 0        
+        display_flags = max(len(t1p1_flag), len(t1p2_flag), len(t2p1_flag), len(t2p2_flag)) > 0
         same_flags_in_teams = (t1p1_flag == t1p2_flag) & (t2p1_flag == t2p2_flag)
         if display_flags:
             t1p1_flag = load_flag_image(t1p1_flag)
@@ -466,7 +471,7 @@ class SevenCourtsM1(SampleBase):
                 if same_flags_in_teams:
                     # 9    (12)    11 10    (12)    10
                     y_flag_t1 = 9
-                    y_flag_t2 = y_flag_t1 + FLAG_HEIGHT + 11 + 10                    
+                    y_flag_t2 = y_flag_t1 + FLAG_HEIGHT + 11 + 10
                     self.canvas.SetImage(t1p1_flag, 0, y_flag_t1)
                     self.canvas.SetImage(t2p1_flag, 0, y_flag_t2)
                 else:
