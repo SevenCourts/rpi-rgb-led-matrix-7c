@@ -12,12 +12,12 @@ Restart=on-failure
 ## Dirs
 ProtectSystem=strict
 ProtectHome=true
-WorkingDirectory=/opt/7c
+WorkingDirectory=/opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
 
 ## Env
 #Environment=BLOCKING_MAX_THREADS=16
 
-ExecStart=/bin/sh rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c/demo.sh
+ExecStart=/bin/sh demo.sh
 
 [Install]
 WantedBy=basic.target

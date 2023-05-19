@@ -12,9 +12,9 @@ RestartSec=5
 
 ## Dirs
 ProtectHome=true
-WorkingDirectory=/opt/7c
+WorkingDirectory=/opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
 
-ExecStart=/bin/sh rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c/m1.sh
+ExecStart=/bin/sh m1.sh
 
 [Install]
 WantedBy=basic.target
