@@ -88,7 +88,9 @@ def register():
 
 def fetch_panel_info(panel_id):
     url = panel_info_url(panel_id)
-    with urllib.request.urlopen(url, timeout=10) as response:
+    req = urllib.request.Request(url)
+    req.add_header('Is-Panel-Preview', 'false' if PANEL_ID is None else 'true')
+    with urllib.request.urlopen(req, timeout=10) as response:
         log("url='" + url + "', status= " + str(response.status))
         if response.status == 200:
             match = json.loads(response.read().decode('utf-8'))
