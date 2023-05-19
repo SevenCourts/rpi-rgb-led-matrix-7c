@@ -207,6 +207,31 @@ Reboot. The panel should display:
 => ~5 second current time and the blue dot
 => current time only
 
+## Update Firmware
+
+- Login to `7c-vpn.suprematic.team` via SSH using personal LDAP credentials
+
+```shell
+sudo -i
+./7c.sh
+```
+
+Should display the list of scoreboards: hostnames together with their respective IP addresses as they are accessible from the 7c-vpn server.
+
+```shell
+10.8.0.4
+7C-M1-R2
+---
+10.8.0.2
+7C-M1-R3
+---
+```
+
+Start update script for each panel, e.g.:
+
+```shell
+./7c-update-panel.sh 10.8.0.2
+```
 
 
 ## Install development environment
