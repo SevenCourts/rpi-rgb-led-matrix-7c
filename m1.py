@@ -381,14 +381,19 @@ class SevenCourtsM1(SampleBase):
 
     def display_names(self, match):
 
-        # 1. flags
-        t1p1_flag = match["team1"]["p1"]["flag"]
-        t2p1_flag = match["team2"]["p1"]["flag"]
-        if match["isDoubles"]:
-            t1p2_flag = match["team1"]["p2"]["flag"]
-            t2p2_flag = match["team2"]["p2"]["flag"]
+        ios_teca_client_v1_1_27 = match["team1"]["p1"] == None and match["team2"]["p1"] == None
+
+        # 1. flags        
+        if ios_teca_client_v1_1_27:
+            t1p1_flag = t2p1_flag = t1p2_flag = t2p2_flag = ''
         else:
-            t1p2_flag = t2p2_flag = ''
+            t1p1_flag = match["team1"]["p1"]["flag"]
+            t2p1_flag = match["team2"]["p1"]["flag"]
+            if match["isDoubles"]:
+                t1p2_flag = match["team1"]["p2"]["flag"]
+                t2p2_flag = match["team2"]["p2"]["flag"]
+            else:
+                t1p2_flag = t2p2_flag = ''
 
         display_flags = max(len(t1p1_flag), len(t1p2_flag), len(t2p1_flag), len(t2p2_flag)) > 0
         same_flags_in_teams = (t1p1_flag == t1p2_flag) & (t2p1_flag == t2p2_flag)
@@ -414,7 +419,11 @@ class SevenCourtsM1(SampleBase):
             x_scoreboard = X_MIN_SCOREBOARD
         name_max_width = x_scoreboard - flag_width - 1 - MARGIN_NAMES_SCOREBOARD
 
-        if match["isTeamEvent"] or not match["isDoubles"]:
+        if ios_teca_client_v1_1_27:
+            t1p1 = match["team1"]["name"]
+            t2p1 = match["team2"]["name"]
+            t1p2 = t2p2 = ''
+        elif match["isTeamEvent"] or not match["isDoubles"]:
             if match["isTeamEvent"]:
                 t1p1 = match["team1"]["name"]
                 t2p1 = match["team2"]["name"]
