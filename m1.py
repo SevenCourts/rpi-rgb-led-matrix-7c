@@ -73,18 +73,13 @@ W_LOGO_WITH_CLOCK = 122 # left from clock
 def panel_info_url(panel_id):
     return BASE_URL + "/panels/" + panel_id + "/match"
 
-def register():
+def register(url):
     data = json.dumps({"code": PANEL_NAME, "ip": ip_address(), "firmware_version": GIT_COMMIT_ID}).encode('utf-8')
-    url = REGISTRATION_URL
     request = urllib.request.Request(url, data=data, method='POST')
-    try:
-        with urllib.request.urlopen(request, timeout=10) as response:
-            j = json.loads(response.read().decode('utf-8'))
-            log(url, "registered:", j)
-            return j["id"]
-    except HTTPError as e:
-        log(url, e)
-        return None
+    with urllib.request.urlopen(request, timeout=10) as response:
+        j = json.loads(response.read().decode('utf-8'))
+        log(url, "registered:", j)
+        return j["id"]
 
 def fetch_panel_info(panel_id):
     url = panel_info_url(panel_id)
@@ -155,11 +150,11 @@ class SevenCourtsM1(SampleBase):
             while True:
                 self.canvas.Clear()
 
+                url = REGISTRATION_URL;
                 try:
-                    panel_id = register()
+                    panel_id = register(url)
                 except URLError as e:
-                    logging.exception(e)
-                    log('URLError in #register', e)
+                    log(e.reason, url, '#register')
                     self.draw_error_indicator()
                 except socket.timeout as e:
                     logging.exception(e)
