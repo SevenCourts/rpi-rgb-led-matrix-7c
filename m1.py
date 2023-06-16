@@ -81,6 +81,14 @@ def uptime():
         log(e, 'Cannot get uptime')
         return -1
 
+# FIXME without this call, getting CPU temperature fails when is called from within class instance
+# TODO wtf?!
+try:
+    from gpiozero import CPUTemperature
+    print(CPUTemperature().temperature)
+except Exception as e:
+    log(e, 'Cannot get initial CPU temperature')
+
 def cpu_temperature():
     try:
         from gpiozero import CPUTemperature
