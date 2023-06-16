@@ -101,8 +101,8 @@ def fetch_panel_info(panel_id):
     url = panel_info_url(panel_id)
     req = urllib.request.Request(url)
     req.add_header('7C-Is-Panel-Preview', 'false' if PANEL_ID is None else 'true')
-    req.add_header('7C-Uptime', uptime())
-    req.add_header('7C-CPU-Temperature', cpu_temperature())
+    req.add_header('7C-Uptime', str(uptime()))
+    req.add_header('7C-CPU-Temperature', str(cpu_temperature()))
     with urllib.request.urlopen(req, timeout=10) as response:
         log("url='" + url + "', status= " + str(response.status))
         if response.status == 200:
