@@ -73,6 +73,22 @@ W_LOGO_WITH_CLOCK = 122 # left from clock
 def panel_info_url(panel_id):
     return BASE_URL + "/panels/" + panel_id + "/match"
 
+def uptime():
+    try:
+        with open('/proc/uptime', 'r') as f:
+            return float(f.readline().split()[0])
+    except Exception as e:
+        log(e, 'Cannot get uptime')
+        return -1
+
+def cpu_temperature():
+    try:
+        from gpiozero import CPUTemperature
+        return CPUTemperature().temperature
+    except Exception as e:
+        log(e, 'Cannot get CPU temperature')
+        return -1
+
 def register(url):
     data = json.dumps({"code": PANEL_NAME, "ip": ip_address(), "firmware_version": GIT_COMMIT_ID}).encode('utf-8')
     request = urllib.request.Request(url, data=data, method='POST')
@@ -84,7 +100,9 @@ def register(url):
 def fetch_panel_info(panel_id):
     url = panel_info_url(panel_id)
     req = urllib.request.Request(url)
-    req.add_header('Is-Panel-Preview', 'false' if PANEL_ID is None else 'true')
+    req.add_header('7C-Is-Panel-Preview', 'false' if PANEL_ID is None else 'true')
+    req.add_header('7C-Uptime', uptime())
+    req.add_header('7C-CPU-Temperature', cpu_temperature())
     with urllib.request.urlopen(req, timeout=10) as response:
         log("url='" + url + "', status= " + str(response.status))
         if response.status == 200:
