@@ -19,12 +19,14 @@ import json
 import socket
 import logging
 import requests
-import tempfile
 import subprocess
 
 GIT_COMMIT_ID = subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode()
 
-IMAGE_CACHE_DIR = tempfile.TemporaryDirectory()
+IMAGE_CACHE_DIR = "/opt/7c/cache-images"
+os.makedirs(IMAGE_CACHE_DIR, exist_ok = True)
+# The default 0o777 does not work, see https://stackoverflow.com/questions/5231901/permission-problems-when-creating-a-dir-with-os-makedirs-in-python
+os.chmod(IMAGE_CACHE_DIR, 0o777)
 
 PANEL_NAME = socket.gethostname()
 
@@ -221,10 +223,8 @@ class SevenCourtsM1(SampleBase):
                 response = urllib.request.urlopen(request)
                 etag = str(response.headers["ETag"])
 
-                useCaching = False
-
-                if useCaching and etag != None:
-                    path = IMAGE_CACHE_DIR.name + "/" + etag
+                if etag != None:
+                    path = IMAGE_CACHE_DIR + "/" + etag
                     if (os.path.isfile(path)):
                         image = Image.open(path)
                         show_clock = image.width < W_LOGO_WITH_CLOCK
