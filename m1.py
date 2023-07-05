@@ -298,6 +298,11 @@ class SevenCourtsM1(SampleBase):
         t2_set_scores = match["team2"]["setScores"]
 
         is_match_over = match["matchResult"] in ('T1_WON', 'T2_WON', 'DRAW')
+        
+        t1_game = match["team1"].get("gameScore", "")
+        t2_game = match["team2"].get("gameScore", "")
+        t1_game = str(t1_game if t1_game != None else "")
+        t2_game = str(t2_game if t2_game != None else "")
 
         if (len(t1_set_scores)==0):
             t1_set1 = t2_set1 = t1_set2 = t2_set2 = t1_set3 = t2_set3 = ""
@@ -350,16 +355,21 @@ class SevenCourtsM1(SampleBase):
             if is_match_over:
                 c_t1_set3 = COLOR_SCORE_SET_WON if t1_set3>t2_set3 else COLOR_SCORE_SET_LOST
                 c_t2_set3 = COLOR_SCORE_SET_WON if t2_set3>t1_set3 else COLOR_SCORE_SET_LOST
+                
+                # A crutch fix to nicely display match-tie-break result.
+                # Match/score metadata is missing to do it properly.
+                if t1_set3>=10 or t2_set3>=10:
+                    t1_game = str(t1_set3)
+                    t2_game = str(t2_set3)                    
+                    t1_set3 = "" # meh
+                    t2_set3 = "" # meh
+                
             else:
                 c_t1_set3 = c_t2_set3 = COLOR_SCORE_SET
             x_set1 = X_MIN_SCOREBOARD
             x_set2 = x_set1 + W_SCORE_SET
             x_set3 = x_set2 + W_SCORE_SET
 
-        t1_game = match["team1"].get("gameScore", "")
-        t2_game = match["team2"].get("gameScore", "")
-        t1_game = str(t1_game if t1_game != None else "")
-        t2_game = str(t2_game if t2_game != None else "")
 
         # center score digits
         y_T1 = y_font_center(FONT_SCORE, PANEL_HEIGHT/2)
