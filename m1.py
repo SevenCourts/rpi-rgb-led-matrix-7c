@@ -357,7 +357,7 @@ class SevenCourtsM1(SampleBase):
                 c_t2_set3 = COLOR_SCORE_SET_WON if t2_set3>t1_set3 else COLOR_SCORE_SET_LOST
                 
                 # A crutch fix to nicely display match-tie-break result.
-                # Match/score metadata is missing to do it properly.
+                # FIXME Match/score metadata is missing to do it properly.
                 if t1_set3>=10 or t2_set3>=10:
                     t1_game = str(t1_set3)
                     t2_game = str(t2_set3)                    
@@ -366,6 +366,19 @@ class SevenCourtsM1(SampleBase):
                 
             else:
                 c_t1_set3 = c_t2_set3 = COLOR_SCORE_SET
+                
+                GAME_SCORES = ('15', '30', '40', 'A')
+                # meh, this will not work when score in MTB will be 15 what is rare but not excluded
+                # FIXME Match/score metadata is missing to do it properly.
+                is_match_tiebreak = t1_set3==0 and t2_set3==0 and t1_game not in GAME_SCORES and t2_game not in GAME_SCORES
+                if is_match_tiebreak:
+                    t1_set3 = t1_set2
+                    t2_set3 = t2_set2
+                    t1_set2 = t1_set1
+                    t2_set2 = t2_set1
+                    t1_set1 = ""
+                    t2_set1 = ""            
+                
             x_set1 = X_MIN_SCOREBOARD
             x_set2 = x_set1 + W_SCORE_SET
             x_set3 = x_set2 + W_SCORE_SET
