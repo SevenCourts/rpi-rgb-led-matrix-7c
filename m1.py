@@ -539,7 +539,7 @@ class SevenCourtsM1(SampleBase):
             [b,b,y,y,y,y,y,b,b]]
         match_result = match.get("matchResult", None)
         medal_delta=12
-        x_medal=PANEL_WIDTH - 2*medal_delta
+        x_medal=X_SCORE_SERVICE
         if match_result == "T1_WON":
             draw_matrix(self.canvas, cup, x_medal, medal_delta)
         elif match_result == "T2_WON":
