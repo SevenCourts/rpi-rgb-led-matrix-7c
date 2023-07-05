@@ -1,13 +1,9 @@
-import smbus
 import time
 import datetime
 import SDL_DS1307
-import logging
 
-
-#Open I2C interface
-#bus = smbus.SMBus(0)  # Rev 1 Pi uses 0
-bus = smbus.SMBus(1) # Rev 2 Pi uses 1
+def log(*args):
+    print(*args, flush=True)
 
 print ("RTC with Pi3 USING SDL_DS1307 Library Version 1.0 - From SwitchDoc Labs")
 print ("Program started at:\n\t" + time.strftime("%Y-%m-%d %H:%M:%S"))
