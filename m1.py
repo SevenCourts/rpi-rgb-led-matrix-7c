@@ -383,14 +383,15 @@ class SevenCourtsM1(SampleBase):
         # service indicator
         if match.get("hideServiceIndicator", False) != True and not is_match_over:
             b = (0, 0 ,0)
-            y = (192, 192, 0)
-            w = (192, 192, 192)
+            y = (255, 255, 0)            
             ball = [
-                [b,y,y,y,b],
-                [y,y,y,w,y],
-                [y,y,w,y,y],
-                [y,w,y,y,y],
-                [b,y,y,y,b]]
+                [b,b,y,y,y,b,b],
+                [b,y,y,y,y,y,b],
+                [y,y,y,y,y,y,y],
+                [y,y,y,y,y,y,y],
+                [y,y,y,y,y,y,y],
+                [b,y,y,y,y,y,b],
+                [b,b,y,y,y,b,b]]
             y_service_t1 = int(PANEL_HEIGHT/2/2 - len(ball)/2)
             y_service_t2 = y_service_t1 + PANEL_HEIGHT/2
             if t1_on_serve:
