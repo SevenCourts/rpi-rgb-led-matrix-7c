@@ -369,16 +369,18 @@ class SevenCourtsM1(SampleBase):
         x_score = min(x_set1, X_SCORE_SERVICE) - MARGIN_NAMES_SCOREBOARD
         fill_rect(self.canvas, x_score, 0, PANEL_WIDTH - x_score, PANEL_HEIGHT, COLOR_SCORE_BACKGROUND)
 
+        x_T1_score_game = X_SCORE_GAME if len(t1_game) != 1 else X_SCORE_GAME + 8
+        x_T2_score_game = X_SCORE_GAME if len(t2_game) != 1 else X_SCORE_GAME + 8 
 
         self.display_set_digit(x_set1, y_T1, FONT_SCORE, c_t1_set1, t1_set1)
         self.display_set_digit(x_set2, y_T1, FONT_SCORE, c_t1_set2, t1_set2)
         self.display_set_digit(x_set3, y_T1, FONT_SCORE, c_t1_set3, t1_set3)
-        graphics.DrawText(self.canvas, FONT_SCORE, X_SCORE_GAME, y_T1, COLOR_SCORE_GAME, str(t1_game))
+        graphics.DrawText(self.canvas, FONT_SCORE, x_T1_score_game, y_T1, COLOR_SCORE_GAME, t1_game)
 
         self.display_set_digit(x_set1, y_T2, FONT_SCORE, c_t2_set1, t2_set1)
         self.display_set_digit(x_set2, y_T2, FONT_SCORE, c_t2_set2, t2_set2)
         self.display_set_digit(x_set3, y_T2, FONT_SCORE, c_t2_set3, t2_set3)
-        graphics.DrawText(self.canvas, FONT_SCORE, X_SCORE_GAME, y_T2, COLOR_SCORE_GAME, str(t2_game))
+        graphics.DrawText(self.canvas, FONT_SCORE, x_T2_score_game, y_T2, COLOR_SCORE_GAME, t2_game)
 
         # service indicator
         if match.get("hideServiceIndicator", False) != True and not is_match_over:
