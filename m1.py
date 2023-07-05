@@ -358,11 +358,16 @@ class SevenCourtsM1(SampleBase):
                 
                 # A crutch fix to nicely display match-tie-break result.
                 # FIXME Match/score metadata is missing to do it properly.
-                if t1_set3>=10 or t2_set3>=10:
+                is_match_tiebreak = t1_set3>=10 or t2_set3>=10
+                if is_match_tiebreak:
                     t1_game = str(t1_set3)
                     t2_game = str(t2_set3)                    
-                    t1_set3 = "" # meh
-                    t2_set3 = "" # meh
+                    t1_set3 = t1_set2
+                    t2_set3 = t2_set2
+                    t1_set2 = t1_set1
+                    t2_set2 = t2_set1
+                    t1_set1 = ""
+                    t2_set1 = ""
                 
             else:
                 c_t1_set3 = c_t2_set3 = COLOR_SCORE_SET
@@ -377,7 +382,7 @@ class SevenCourtsM1(SampleBase):
                     t1_set2 = t1_set1
                     t2_set2 = t2_set1
                     t1_set1 = ""
-                    t2_set1 = ""            
+                    t2_set1 = ""
                 
             x_set1 = X_MIN_SCOREBOARD
             x_set2 = x_set1 + W_SCORE_SET
