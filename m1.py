@@ -23,6 +23,7 @@ import subprocess
 
 GIT_COMMIT_ID = subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode()
 
+# FIXME use not hardcoded directory (TBD)
 IMAGE_CACHE_DIR = "/opt/7c/cache-images"
 os.makedirs(IMAGE_CACHE_DIR, exist_ok = True)
 # The default 0o777 does not work, see https://stackoverflow.com/questions/5231901/permission-problems-when-creating-a-dir-with-os-makedirs-in-python
