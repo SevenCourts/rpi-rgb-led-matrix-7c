@@ -10,7 +10,7 @@
     - **FIXME** define non-default login/password
 - Turn on ssh:
     - Enter `sudo raspi-config` in a terminal window
-    - Select "Interfacing Options"
+    - Select "Interface Options"
     - Navigate to and select "SSH"
     - Choose "Yes"
 
@@ -25,10 +25,31 @@ The rest can be done via SSH:
 - Open sudo session with `sudo -i`
 
 
-### Change timezone to Europe/Berlin
+### Set the country code (must do to enable WiFi)
+
+Find your country's code here: https://en.wikipedia.org/wiki/ISO_3166-1
+
+```
+raspi-config nonint do_wifi_country DE
+```
+
+or (Derek)
+
+```
+raspi-config nonint do_wifi_country US
+```
+
+
+### Change timezone
 
 ```
 timedatectl set-timezone Europe/Berlin
+```
+
+or (Derek)
+
+```
+timedatectl set-timezone US/Eastern
 ```
 
 ### Install dependencies
