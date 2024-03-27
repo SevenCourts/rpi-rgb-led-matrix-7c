@@ -269,7 +269,7 @@ Start update script for each panel, e.g.:
 
 ### RGBMatrixEmulator
 
-- Install RGBMatrixEmulator with `pip install RGBMatrixEmulator`
+- Install RGBMatrixEmulator with `pip install RGBMatrixEmulator==0.10.0`
 - Clone [RGBMatrixEmulator](https://github.com/ty-porter/RGBMatrixEmulator)
 
 Smoke-test with:
