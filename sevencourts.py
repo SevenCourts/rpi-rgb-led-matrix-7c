@@ -9,8 +9,8 @@ from PIL import Image
 from functools import partial
 
 # Constants for the 7C M1 panel (P5 192 x 64)
-PANEL_WIDTH = 192
-PANEL_HEIGHT = 64
+PANEL_WIDTH = 64
+PANEL_HEIGHT = 192
 
 FLAG_HEIGHT = 12
 FLAG_WIDTH = 18
@@ -204,4 +204,4 @@ def draw_matrix(canvas, m, x0, y0):
 
 def fill_rect(canvas, x0: int, y0: int, w: int, h: int, color):
     for x in range (x0, x0+w):
-        graphics.DrawLine(canvas, x, y0, x, y0+h, color)
+        graphics.DrawLine(canvas, x, y0, x, y0+h-1, color)
