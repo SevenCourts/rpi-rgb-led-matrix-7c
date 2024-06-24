@@ -163,11 +163,11 @@ class M1_Demo_Entrance(SampleBase):
         
         ### Ads        
         y = 160
-        canvas.SetImage(Image.open("images/logos/ITF\ITF_64x32_white_bg.png").convert('RGB'), 0, y)
+        canvas.SetImage(Image.open("images/logos/ITF/ITF_64x32_white_bg.png").convert('RGB'), 0, y)
         
-        #canvas.SetImage(Image.open("images/logos/ITF\ITF_64x32_grey_bg.png").convert('RGB'), 0, y)
+        #canvas.SetImage(Image.open("images/logos/ITF/ITF_64x32_grey_bg.png").convert('RGB'), 0, y)
         
-        #canvas.SetImage(Image.open("images/logos/ITF\ITF_64x32_transparent_bg.png").convert('RGB'), 0, y)
+        #canvas.SetImage(Image.open("images/logos/ITF/ITF_64x32_transparent_bg.png").convert('RGB'), 0, y)
         
         
         canvas = self.matrix.SwapOnVSync(canvas)
