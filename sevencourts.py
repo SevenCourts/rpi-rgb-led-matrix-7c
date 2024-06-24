@@ -9,8 +9,8 @@ from PIL import Image
 from functools import partial
 
 # Constants for the 7C M1 panel (P5 192 x 64)
-PANEL_WIDTH = 64
-PANEL_HEIGHT = 192
+PANEL_WIDTH = 192
+PANEL_HEIGHT = 64
 
 FLAG_HEIGHT = 12
 FLAG_WIDTH = 18
