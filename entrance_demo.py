@@ -48,6 +48,10 @@ X_SET3 = 60
 Y_MARGIN_COURT_T1 = 4        
 Y_MARGIN_T1_T2 = 6
 
+ORIENTATION_HORIZONTAL = True
+W = PANEL_WIDTH if ORIENTATION_HORIZONTAL else PANEL_HEIGHT
+H = PANEL_HEIGHT if ORIENTATION_HORIZONTAL else PANEL_WIDTH
+
 def draw_court_name(canvas, n: int, court_name):
     y = 32 * n
     
