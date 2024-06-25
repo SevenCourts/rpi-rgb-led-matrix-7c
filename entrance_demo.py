@@ -143,10 +143,12 @@ class M1_Demo_Entrance(SampleBase):
             
             self.run_demo_entrance()
 
-            self.matrix.options.pixel_mapper_config = "Rotate:270" if rotate else ""
+            #self.matrix.options.pixel_mapper_config = "Rotate:270" if rotate else ""
             
             rotate = not(rotate)
             time.sleep(1)
+            
+            self.process()
         
  
     def show_flags(self, canvas):
