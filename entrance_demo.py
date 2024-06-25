@@ -127,8 +127,15 @@ class M1_Demo_Entrance(SampleBase):
         super(M1_Demo_Entrance, self).__init__(*args, **kwargs)        
 
     def run(self):        
-        self.run_demo_entrance()
+        
+        rotate = False
 
+        while True:
+            self.run_demo_entrance()
+            self.matrix.options.pixel_mapper_config = "Rotate:270" if rotate else ""
+            rotate = not(rotate)
+            time.sleep(1)
+        
  
     def show_flags(self, canvas):
         canvas.Clear()
@@ -172,7 +179,7 @@ class M1_Demo_Entrance(SampleBase):
                 
         canvas = self.matrix.SwapOnVSync(canvas)
         
-        time.sleep(2000)
+
 
 
 # Main function
