@@ -58,8 +58,8 @@ H = PANEL_HEIGHT if ORIENTATION_HORIZONTAL else PANEL_WIDTH
 W_FLAG = 18
 H_FLAG = 12
 
-W_FLAG_SMALL = 9
-H_FLAG_SMALL = 6
+W_FLAG_SMALL = W_FLAG / 2 # 9
+H_FLAG_SMALL = H_FLAG / 2 # 6
 
 W_TILE = int(PANEL_WIDTH / 3)  # 64
 H_TILE = int(PANEL_HEIGHT / 2)  # 32
@@ -132,7 +132,9 @@ def draw_tournament_sponsor(canvas, tick):
     canvas.SetImage(Image.open(file_image).convert('RGB'), x, y)
 
 def display_flag(canvas, flag, x, y):
-    canvas.SetImage(Image.open(flag).convert('RGB'), x, y)
+    image = Image.open(flag).convert('RGB')
+    image.thumbnail((W_FLAG_SMALL, H_FLAG_SMALL), Image.LANCZOS)
+    canvas.SetImage(image, x, y)
 
 
 def display_flags(canvas, flags, grid_w, grid_h):
@@ -141,9 +143,9 @@ def display_flags(canvas, flags, grid_w, grid_h):
     for _x in range(grid_w):
         for _y in range(grid_h):        
             i = _x*grid_h + _y
-            log(i)
-            x = (1 + W_FLAG) * _x
-            y = (1 + H_FLAG) * _y
+            #log(i)
+            x = (1 + W_FLAG_SMALL) * _x
+            y = (1 + H_FLAG_SMALL) * _y
             try:
                 display_flag(canvas, flags[i], x, y)
             except IndexError as e:
@@ -167,7 +169,7 @@ class M1_Demo_Entrance(SampleBase):
         while True:
             self.run_demo_flags(tick)
             tick += 1
-            time.sleep(10)
+            time.sleep(20)
 
  
     def show_flags(self, canvas):
@@ -225,8 +227,11 @@ class M1_Demo_Entrance(SampleBase):
         # (10 x (18+1)) = 190
         # (5 x (12+1)) = 65
 
-        grid_w = W // W_FLAG
-        grid_h = H // H_FLAG
+        grid_w = int (W // (W_FLAG_SMALL + 1))
+        grid_h = int (H // (H_FLAG_SMALL + 1))
+
+        log(grid_w)
+        log(grid_h)
 
         batch_size = grid_w * grid_h
         _from = tick * batch_size
