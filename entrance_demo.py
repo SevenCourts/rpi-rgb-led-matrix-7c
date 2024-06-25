@@ -13,6 +13,7 @@ from sevencourts import *
 import time
 from datetime import datetime
 from PIL import Image
+import logging
 
 # Style constants
 COLOR_CUSTOM = graphics.Color(0, 177, 64)
@@ -131,6 +132,8 @@ class M1_Demo_Entrance(SampleBase):
         rotate = False
 
         while True:
+            log(self.matrix.options.pixel_mapper_config)
+
             self.run_demo_entrance()
             self.matrix.options.pixel_mapper_config = "Rotate:270" if rotate else ""
             rotate = not(rotate)
