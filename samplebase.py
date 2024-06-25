@@ -72,6 +72,8 @@ class SampleBase(object):
         if not self.args.drop_privileges:
           options.drop_privileges=False
 
+        self.default_options = options
+        
         self.matrix = RGBMatrix(options = options)
 
         try:

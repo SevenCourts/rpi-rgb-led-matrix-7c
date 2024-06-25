@@ -4,9 +4,9 @@ import os
 # Set the environment variable USE_RGB_MATRIX_EMULATOR to use with emulator https://github.com/ty-porter/RGBMatrixEmulator
 # Do not set to use with real SDK https://github.com/hzeller/rpi-rgb-led-matrix
 if os.getenv('USE_RGB_MATRIX_EMULATOR', False):
-  from RGBMatrixEmulator import graphics
+  from RGBMatrixEmulator import RGBMatrix, RGBMatrixOptions, graphics
 else:
-  from rgbmatrix import graphics
+  from rgbmatrix import RGBMatrix, RGBMatrixOptions, graphics
 
 from samplebase import SampleBase
 from sevencourts import *
@@ -139,12 +139,14 @@ class M1_Demo_Entrance(SampleBase):
             log(getattr(self.matrix, "brightness"))
             log(getattr(self.matrix, "height"))
             log(getattr(self.matrix, "width"))
-            log(getattr(self.matrix, "options"))
-            
-            # log(self.matrix.options.pixel_mapper_config)
+            log(self.default_options)
 
+            
             self.run_demo_entrance()
-            self.matrix.options.pixel_mapper_config = "Rotate:270" if rotate else ""
+
+            self.default_options.pixel_mapper_config = "Rotate:270" if rotate else ""
+            self.matrix = RGBMatrix(options = self.default_options)
+
             rotate = not(rotate)
             time.sleep(1)
         
