@@ -299,7 +299,7 @@ class SevenCourtsM1(SampleBase):
         t2_set_scores = match["team2"]["setScores"]
 
         is_match_over = match["matchResult"] in ('T1_WON', 'T2_WON', 'DRAW')
-        
+
         t1_game = match["team1"].get("gameScore", "")
         t2_game = match["team2"].get("gameScore", "")
         t1_game = str(t1_game if t1_game != None else "")
@@ -356,23 +356,23 @@ class SevenCourtsM1(SampleBase):
             if is_match_over:
                 c_t1_set3 = COLOR_SCORE_SET_WON if t1_set3>t2_set3 else COLOR_SCORE_SET_LOST
                 c_t2_set3 = COLOR_SCORE_SET_WON if t2_set3>t1_set3 else COLOR_SCORE_SET_LOST
-                
+
                 # A crutch fix to nicely display match-tie-break result.
                 # FIXME Match/score metadata is missing to do it properly.
                 is_match_tiebreak = t1_set3>=10 or t2_set3>=10
                 if is_match_tiebreak:
                     t1_game = str(t1_set3)
-                    t2_game = str(t2_set3)                    
+                    t2_game = str(t2_set3)
                     t1_set3 = t1_set2
                     t2_set3 = t2_set2
                     t1_set2 = t1_set1
                     t2_set2 = t2_set1
                     t1_set1 = ""
                     t2_set1 = ""
-                
+
             else:
                 c_t1_set3 = c_t2_set3 = COLOR_SCORE_SET
-                
+
                 GAME_SCORES = ('15', '30', '40', 'A')
                 # meh, this will not work when score in MTB will be 15 what is rare but not excluded
                 # FIXME Match/score metadata is missing to do it properly.
@@ -384,7 +384,7 @@ class SevenCourtsM1(SampleBase):
                     t2_set2 = t2_set1
                     t1_set1 = ""
                     t2_set1 = ""
-                
+
             x_set1 = X_MIN_SCOREBOARD
             x_set2 = x_set1 + W_SCORE_SET
             x_set3 = x_set2 + W_SCORE_SET
@@ -399,7 +399,7 @@ class SevenCourtsM1(SampleBase):
         fill_rect(self.canvas, x_score, 0, PANEL_WIDTH - x_score, PANEL_HEIGHT, COLOR_SCORE_BACKGROUND)
 
         x_T1_score_game = X_SCORE_GAME if len(t1_game) != 1 else X_SCORE_GAME + 8
-        x_T2_score_game = X_SCORE_GAME if len(t2_game) != 1 else X_SCORE_GAME + 8 
+        x_T2_score_game = X_SCORE_GAME if len(t2_game) != 1 else X_SCORE_GAME + 8
 
         # Americano
         if match.get("isTotalPointsMatch", False) != True:
@@ -417,7 +417,7 @@ class SevenCourtsM1(SampleBase):
         # service indicator
         if match.get("hideServiceIndicator", False) != True and not is_match_over:
             b = (0, 0 ,0)
-            y = (255, 255, 0)            
+            y = (255, 255, 0)
             ball = [
                 [b,b,y,y,y,b,b],
                 [b,y,y,y,y,y,b],
@@ -439,7 +439,7 @@ class SevenCourtsM1(SampleBase):
 
         ios_teca_client_v1_1_27 = match["team1"]["p1"] == None and match["team2"]["p1"] == None
 
-        # 1. flags        
+        # 1. flags
         if ios_teca_client_v1_1_27:
             t1p1_flag = t2p1_flag = t1p2_flag = t2p2_flag = ''
         else:
@@ -459,10 +459,10 @@ class SevenCourtsM1(SampleBase):
         display_flags = max(t1p1_flag_len, t1p2_flag_len, t2p1_flag_len, t2p2_flag_len) > 0
         same_flags_in_teams = (t1p1_flag == t1p2_flag) & (t2p1_flag == t2p2_flag)
         if display_flags:
-            t1p1_flag = load_flag_image(t1p1_flag)
-            t1p2_flag = load_flag_image(t1p2_flag)
-            t2p1_flag = load_flag_image(t2p1_flag)
-            t2p2_flag = load_flag_image(t2p2_flag)
+            t1p1_flag = None if not t1p1_flag else load_flag_image(t1p1_flag)
+            t1p2_flag = None if not t1p2_flag else load_flag_image(t1p2_flag)
+            t2p1_flag = None if not t2p1_flag else load_flag_image(t2p1_flag)
+            t2p2_flag = None if not t2p2_flag else load_flag_image(t2p2_flag)
             flag_width = FLAG_WIDTH
         else:
             flag_width = 0
@@ -545,18 +545,29 @@ class SevenCourtsM1(SampleBase):
                     y_flag_t1p2 = y_flag_t1p1 + FLAG_HEIGHT + 3
                     y_flag_t2p1 = y_flag_t1p2 + FLAG_HEIGHT + 3 + 3
                     y_flag_t2p2 = y_flag_t2p1 + FLAG_HEIGHT + 3
-                    self.canvas.SetImage(t1p1_flag, 0, y_flag_t1p1)
-                    self.canvas.SetImage(t1p2_flag, 0, y_flag_t1p2)
-                    self.canvas.SetImage(t2p1_flag, 0, y_flag_t2p1)
-                    self.canvas.SetImage(t2p2_flag, 0, y_flag_t2p2)
+
+                    if t1p1_flag != None:
+                        self.canvas.SetImage(t1p1_flag, 0, y_flag_t1p1)
+
+                    if t1p2_flag != None:
+                        self.canvas.SetImage(t1p2_flag, 0, y_flag_t1p2)
+
+                    if t2p1_flag != None:
+                        self.canvas.SetImage(t2p1_flag, 0, y_flag_t2p1)
+
+                    if t2p2_flag != None:
+                        self.canvas.SetImage(t2p2_flag, 0, y_flag_t2p2)
 
     def display_singles_flags(self, img_t1, img_t2):
-        y_flag_t1 = max(0, PANEL_HEIGHT/2/2 - img_t1.height/2)
-        y_flag_t2 = max(PANEL_HEIGHT/2, PANEL_HEIGHT/2 + PANEL_HEIGHT/2/2 - img_t2.height/2)
-        self.canvas.SetImage(img_t1, 0, y_flag_t1)
-        self.canvas.SetImage(img_t2, 0, y_flag_t2)
-    
-    
+        if img_t1 != None:
+            y_flag_t1 = max(0, PANEL_HEIGHT/2/2 - img_t1.height/2)
+            self.canvas.SetImage(img_t1, 0, y_flag_t1)
+
+        if img_t2 != None:
+            y_flag_t2 = max(PANEL_HEIGHT/2, PANEL_HEIGHT/2 + PANEL_HEIGHT/2/2 - img_t2.height/2)
+            self.canvas.SetImage(img_t2, 0, y_flag_t2)
+
+
     def display_winner(self, match):
         # FIXME winner is not displayed
         b = (0, 0 ,0)
