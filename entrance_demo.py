@@ -133,8 +133,12 @@ class M1_Demo_Entrance(SampleBase):
 
         while True:
             log(self.matrix)
-            log(self.matrix.options)
-            log(self.matrix.options.pixel_mapper_config)
+            log(type(self.matrix))
+            log(dir(self.matrix))
+            log(id(self.matrix))
+            log(getattr(self.matrix, "options"))
+            
+            # log(self.matrix.options.pixel_mapper_config)
 
             self.run_demo_entrance()
             self.matrix.options.pixel_mapper_config = "Rotate:270" if rotate else ""
