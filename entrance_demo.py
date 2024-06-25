@@ -132,6 +132,8 @@ class M1_Demo_Entrance(SampleBase):
         rotate = False
 
         while True:
+            log(self.matrix)
+            log(self.matrix.options)
             log(self.matrix.options.pixel_mapper_config)
 
             self.run_demo_entrance()
