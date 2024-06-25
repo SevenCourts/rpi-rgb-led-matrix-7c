@@ -129,25 +129,14 @@ class M1_Demo_Entrance(SampleBase):
 
     def run(self):        
         
-        rotate = False
+        
 
         while True:
-            log(self.matrix)
-            log(type(self.matrix))
-            log(dir(self.matrix))
-            log(id(self.matrix))
-            log(getattr(self.matrix, "brightness"))
-            log(getattr(self.matrix, "height"))
-            log(getattr(self.matrix, "width"))
-            
             
             self.run_demo_entrance()
 
-            #self.matrix.options.pixel_mapper_config = "Rotate:270" if rotate else ""
-            
-            rotate = not(rotate)
             time.sleep(1)
-            
+            self.rotated = not(self.rotated)
             self.process()
         
  
