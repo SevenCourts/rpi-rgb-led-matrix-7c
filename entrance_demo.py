@@ -136,6 +136,9 @@ class M1_Demo_Entrance(SampleBase):
             log(type(self.matrix))
             log(dir(self.matrix))
             log(id(self.matrix))
+            log(getattr(self.matrix, "brightness"))
+            log(getattr(self.matrix, "height"))
+            log(getattr(self.matrix, "width"))
             log(getattr(self.matrix, "options"))
             
             # log(self.matrix.options.pixel_mapper_config)
