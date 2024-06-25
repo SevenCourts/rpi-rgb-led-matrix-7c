@@ -35,7 +35,6 @@ class SampleBase(object):
         self.parser.add_argument("--led-no-drop-privs", dest="drop_privileges", help="Don't drop privileges from 'root' after initializing the hardware.", action='store_false')
         self.parser.set_defaults(drop_privileges=True)
 
-        self.rotated = False
 
     def usleep(self, value):
         time.sleep(value / 1000000.0)
@@ -45,8 +44,6 @@ class SampleBase(object):
 
     def process(self):
         self.args = self.parser.parse_args()
-
-        
 
         options = RGBMatrixOptions()
 
@@ -63,9 +60,7 @@ class SampleBase(object):
         options.pwm_lsb_nanoseconds = self.args.led_pwm_lsb_nanoseconds
         options.led_rgb_sequence = self.args.led_rgb_sequence                
         options.panel_type = self.args.led_panel_type
-
-        options.pixel_mapper_config = self.args.led_pixel_mapper if not(self.rotated) else "Rotate:270"        
-
+        options.pixel_mapper_config = self.args.led_pixel_mapper
 
         if self.args.led_show_refresh:
           options.show_refresh_rate = 1
@@ -78,9 +73,6 @@ class SampleBase(object):
           options.drop_privileges=False
 
         self.matrix = RGBMatrix(options = options)
-        print("==")
-        #print(self.matrix.options)
-        print(dir(self.matrix))
 
         try:
             # Start loop

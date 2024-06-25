@@ -50,9 +50,8 @@ Y_MARGIN_COURT_T1 = 4
 Y_MARGIN_T1_T2 = 6
 
 ORIENTATION_HORIZONTAL = False
-# ORIENTATION_HORIZONTAL = True
-
 ORIENTATION_VERTICAL = not(ORIENTATION_HORIZONTAL)
+
 W = PANEL_WIDTH if ORIENTATION_HORIZONTAL else PANEL_HEIGHT
 H = PANEL_HEIGHT if ORIENTATION_HORIZONTAL else PANEL_WIDTH
 
@@ -118,7 +117,10 @@ def draw_tournament_title(canvas, title1, title2, color_fg, color_bg):
     graphics.DrawText(canvas, FONT_S, 0, 12, color_fg, title1)
     graphics.DrawText(canvas, FONT_S, 2, 24, color_fg, title2)
     
-def draw_tournament_sponsor(canvas, file_image):
+def draw_tournament_sponsor(canvas, tick):
+
+    file_image = "images/logos/ITF/ITF_64x32_white_bg.png" if tick % 2 else "images/logos/TC BW Vaihingen-Rohr/tc bw vaihingen-rohr 64x32.png"
+
     x = 0
     y = H_TILE if ORIENTATION_HORIZONTAL else (H - H_TILE)
     canvas.SetImage(Image.open(file_image).convert('RGB'), x, y)
@@ -127,27 +129,12 @@ class M1_Demo_Entrance(SampleBase):
     def __init__(self, *args, **kwargs):
         super(M1_Demo_Entrance, self).__init__(*args, **kwargs)        
 
-    def run(self):        
-        
-        
-
+    def run(self):
+        tick = 0
         while True:
-            
-            self.run_demo_entrance()
-
-            log("__")
-            log(dir(self.matrix))
-            log(self.matrix.options)
-
-            time.sleep(5)
-            self.rotated = not(self.rotated)
-
-            
-
-
-            
-            self.process()
-        
+            tick += 1
+            self.run_demo_entrance(tick)
+            time.sleep(1)
  
     def show_flags(self, canvas):
         canvas.Clear()
@@ -160,6 +147,7 @@ class M1_Demo_Entrance(SampleBase):
         canvas.SetImage(Image.open("images/flags/ukraine.png").convert('RGB'), 0*18, 3*12)
 
         canvas = self.matrix.SwapOnVSync(canvas)        
+
 
     def show_centered_text(self, canvas, text, color, font=FONT_XXS):
         canvas.Clear()
@@ -176,9 +164,8 @@ class M1_Demo_Entrance(SampleBase):
             graphics.DrawText(canvas, font, x, y, color, line)
         canvas = self.matrix.SwapOnVSync(canvas)
         
-        
     
-    def run_demo_entrance(self):
+    def run_demo_entrance(self, tick):
     
         canvas = self.matrix.CreateFrameCanvas()
         
@@ -187,11 +174,11 @@ class M1_Demo_Entrance(SampleBase):
         draw_match(canvas, 2, "2.Brunold Auto", "Seibold", "Schädel", 6, 3, 2, 2)
         draw_match(canvas, 3, "3.Lapp", "Kende", "Kling")
         draw_match(canvas, 4, "4.Egeler", "Mikulslyte", "Radovanovic", 2, 0)        
-        draw_tournament_sponsor(canvas, "images/logos/ITF/ITF_64x32_white_bg.png")
+        draw_tournament_sponsor(canvas, tick)
+
+
                 
         canvas = self.matrix.SwapOnVSync(canvas)
-        
-
 
 
 # Main function
