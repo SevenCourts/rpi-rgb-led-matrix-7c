@@ -49,11 +49,17 @@ X_SET3 = 60
 Y_MARGIN_COURT_T1 = 4        
 Y_MARGIN_T1_T2 = 6
 
-ORIENTATION_HORIZONTAL = False
+ORIENTATION_HORIZONTAL = True
 ORIENTATION_VERTICAL = not(ORIENTATION_HORIZONTAL)
 
 W = PANEL_WIDTH if ORIENTATION_HORIZONTAL else PANEL_HEIGHT
 H = PANEL_HEIGHT if ORIENTATION_HORIZONTAL else PANEL_WIDTH
+
+W_FLAG = 18
+H_FLAG = 12
+
+W_FLAG_SMALL = 9
+H_FLAG_SMALL = 6
 
 W_TILE = int(PANEL_WIDTH / 3)  # 64
 H_TILE = int(PANEL_HEIGHT / 2)  # 32
@@ -124,6 +130,33 @@ def draw_tournament_sponsor(canvas, tick):
     x = 0
     y = H_TILE if ORIENTATION_HORIZONTAL else (H - H_TILE)
     canvas.SetImage(Image.open(file_image).convert('RGB'), x, y)
+
+def display_flag(canvas, flag, x, y):
+    canvas.SetImage(Image.open(flag).convert('RGB'), x, y)
+
+
+def display_flags(canvas, flags, grid_w, grid_h):
+    canvas.Clear()
+
+    for _x in range(grid_w):
+        for _y in range(grid_h):        
+            i = _x*grid_h + _y
+            log(i)
+            x = (1 + W_FLAG) * _x
+            y = (1 + H_FLAG) * _y
+            try:
+                display_flag(canvas, flags[i], x, y)
+            except IndexError as e:
+                log ("oops")
+
+
+    #canvas.SetImage(Image.open("images/flags/france.png").convert('RGB'), 0*18, 0*12)
+    #canvas.SetImage(Image.open("images/flags/germany.png").convert('RGB'), 1*18, 1*12)
+    #canvas.SetImage(Image.open("images/flags/italy.png").convert('RGB'), 2*18, 2*12)
+    #canvas.SetImage(Image.open("images/flags/portugal.png").convert('RGB'), 3*18, 3*12)
+    #canvas.SetImage(Image.open("images/flags/spain.png").convert('RGB'), 4*18, 0*12)
+    #canvas.SetImage(Image.open("images/flags/ukraine.png").convert('RGB'), 0*18, 3*12)
+
     
 class M1_Demo_Entrance(SampleBase):
     def __init__(self, *args, **kwargs):
@@ -132,9 +165,10 @@ class M1_Demo_Entrance(SampleBase):
     def run(self):
         tick = 0
         while True:
+            self.run_demo_flags(tick)
             tick += 1
-            self.run_demo_entrance(tick)
-            time.sleep(1)
+            time.sleep(10)
+
  
     def show_flags(self, canvas):
         canvas.Clear()
@@ -177,6 +211,30 @@ class M1_Demo_Entrance(SampleBase):
         draw_tournament_sponsor(canvas, tick)
 
 
+                
+        canvas = self.matrix.SwapOnVSync(canvas)
+
+
+    def run_demo_flags(self, tick):
+    
+        canvas = self.matrix.CreateFrameCanvas()
+        
+        import glob
+        all_flags = glob.glob("images/flags/*.png")
+        # 10x5 
+        # (10 x (18+1)) = 190
+        # (5 x (12+1)) = 65
+
+        grid_w = W // W_FLAG
+        grid_h = H // H_FLAG
+
+        batch_size = grid_w * grid_h
+        _from = tick * batch_size
+        _to = _from + batch_size
+
+        batch = all_flags[_from:_to]
+
+        display_flags(canvas, batch, grid_w, grid_h)
                 
         canvas = self.matrix.SwapOnVSync(canvas)
 
