@@ -78,6 +78,9 @@ class SampleBase(object):
           options.drop_privileges=False
 
         self.matrix = RGBMatrix(options = options)
+        print("==")
+        print(self.matrix.options)
+        print(dir(self.matrix))
 
         try:
             # Start loop

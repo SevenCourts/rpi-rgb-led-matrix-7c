@@ -135,8 +135,17 @@ class M1_Demo_Entrance(SampleBase):
             
             self.run_demo_entrance()
 
-            time.sleep(1)
+            log("__")
+            log(dir(self.matrix))
+            log(self.matrix.options)
+
+            time.sleep(5)
             self.rotated = not(self.rotated)
+
+            
+
+
+            
             self.process()
         
  
