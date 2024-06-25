@@ -204,4 +204,4 @@ def draw_matrix(canvas, m, x0, y0):
 
 def fill_rect(canvas, x0: int, y0: int, w: int, h: int, color):
     for x in range (x0, x0+w):
-        graphics.DrawLine(canvas, x, y0, x, y0+h, color)
+        graphics.DrawLine(canvas, x, y0, x, y0+h-1, color)

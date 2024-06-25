@@ -181,6 +181,7 @@ class SevenCourtsM1(SampleBase):
 
                 url = REGISTRATION_URL;
                 try:
+                    log('Registering panel at: ' + url)
                     panel_id = register(url)
                 except URLError as e:
                     log(e.reason, url, '#register')
@@ -451,7 +452,12 @@ class SevenCourtsM1(SampleBase):
             else:
                 t1p2_flag = t2p2_flag = ''
 
-        display_flags = max(len(t1p1_flag), len(t1p2_flag), len(t2p1_flag), len(t2p2_flag)) > 0
+        t1p1_flag_len = 0 if t1p1_flag == None else len(t1p1_flag)
+        t1p2_flag_len = 0 if t1p2_flag == None else len(t1p2_flag)
+        t2p1_flag_len = 0 if t2p1_flag == None else len(t2p1_flag)
+        t2p2_flag_len = 0 if t2p2_flag == None else len(t2p2_flag)
+
+        display_flags = max(t1p1_flag_len, t1p2_flag_len, t2p1_flag_len, t2p2_flag_len) > 0
         same_flags_in_teams = (t1p1_flag == t1p2_flag) & (t2p1_flag == t2p2_flag)
         if display_flags:
             t1p1_flag = load_flag_image(t1p1_flag)
