@@ -79,7 +79,7 @@ class SampleBase(object):
 
         self.matrix = RGBMatrix(options = options)
         print("==")
-        print(self.matrix.options)
+        #print(self.matrix.options)
         print(dir(self.matrix))
 
         try:
