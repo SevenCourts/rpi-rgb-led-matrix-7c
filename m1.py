@@ -181,6 +181,7 @@ class SevenCourtsM1(SampleBase):
 
                 url = REGISTRATION_URL;
                 try:
+                    log('Registering panel at: ' + url)
                     panel_id = register(url)
                 except URLError as e:
                     log(e.reason, url, '#register')
