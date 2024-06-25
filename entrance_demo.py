@@ -139,14 +139,12 @@ class M1_Demo_Entrance(SampleBase):
             log(getattr(self.matrix, "brightness"))
             log(getattr(self.matrix, "height"))
             log(getattr(self.matrix, "width"))
-            log(self.default_options)
-
+            
             
             self.run_demo_entrance()
 
-            self.default_options.pixel_mapper_config = "Rotate:270" if rotate else ""
-            self.matrix = RGBMatrix(options = self.default_options)
-
+            self.matrix.options.pixel_mapper_config = "Rotate:270" if rotate else ""
+            
             rotate = not(rotate)
             time.sleep(1)
         
