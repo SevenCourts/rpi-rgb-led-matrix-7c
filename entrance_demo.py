@@ -38,7 +38,6 @@ COLOR_BG_COURT_NAME = COLOR_GREY
 COLOR_FG_COURT_NAME = COLOR_BLACK
 COLOR_FG_PLAYER_NAME = COLOR_GREEN_7c
 
-COLOR_BG_SCORE = COLOR_BLACK
 COLOR_FG_SCORE = COLOR_GREY
 COLOR_FG_SCORE_WON = COLOR_WHITE
 COLOR_FG_SCORE_LOST = COLOR_GREY_DARK
@@ -120,7 +119,7 @@ def draw_match(canvas, n: int, court_name, t1_name, t2_name, t1_set1=-1, t2_set1
         graphics.DrawText(canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set1, t1_set1, False), str(t2_set1))
 
 
-def draw_match_2(canvas, n: int, court_name, t1_name, t2_name, t1_flag, t2_flag, t1_set1=-1, t2_set1=-1, t1_set2=-1, t2_set2=-1, t1_set3=-1, t2_set3=-1):
+def draw_match_with_flags(canvas, n: int, court_name, t1_name, t2_name, t1_flag, t2_flag, t1_set1=-1, t2_set1=-1, t1_set2=-1, t2_set2=-1, t1_set3=-1, t2_set3=-1):
 
     
     
@@ -138,30 +137,22 @@ def draw_match_2(canvas, n: int, court_name, t1_name, t2_name, t1_flag, t2_flag,
 
     y += H_FONT_XS
     x = x0 + W_FLAG_SMALL + 1
-    
-    graphics.DrawText(canvas, FONT_XS, x, y, COLOR_FG_PLAYER_NAME, t1_name)
-    
+    w_name_max = W_TILE - W_FLAG_SMALL
     if (t1_set3 > -1):
-        x = x0 + X_SET1 - 2
-        w = x0 + W_TILE - x
-        h = H_FONT_XS
-        fill_rect(canvas, x, y - H_FONT_XS , w, h, COLOR_BG_SCORE)
+        w_name_max = X_SET1 - 2 - W_FLAG_SMALL
         graphics.DrawText(canvas, FONT_XS, x0 + X_SET1, y, score_color(t1_set1, t2_set1), str(t1_set1))
         graphics.DrawText(canvas, FONT_XS, x0 + X_SET2, y, score_color(t1_set2, t2_set2), str(t1_set2))
         graphics.DrawText(canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set3, t2_set3, False), str(t1_set3))
     elif (t1_set2 > -1):
-        x = x0 + X_SET2 - 2
-        w = x0 + W_TILE - x
-        h = H_FONT_XS
-        fill_rect(canvas, x, y - H_FONT_XS , w, h, COLOR_BG_SCORE)
+        w_name_max = X_SET2 - 2 - W_FLAG_SMALL
         graphics.DrawText(canvas, FONT_XS, x0 + X_SET2, y, score_color(t1_set1, t2_set1), str(t1_set1))
         graphics.DrawText(canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set2, t2_set2, False), str(t1_set2))
     elif (t1_set1 > -1):
-        x = x0 + X_SET3 - 2
-        w = x0 + W_TILE - x
-        h = H_FONT_XS
-        fill_rect(canvas, x, y - H_FONT_XS , w, h, COLOR_BG_SCORE)
+        w_name_max = X_SET3 - 2 - W_FLAG_SMALL
         graphics.DrawText(canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set1, t2_set1, False), str(t1_set1))
+
+    t1_name = truncate_text(FONT_XS, w_name_max, t1_name)
+    graphics.DrawText(canvas, FONT_XS, x, y, COLOR_FG_PLAYER_NAME, t1_name)
     
     y += Y_MARGIN_T1_T2
 
@@ -171,27 +162,17 @@ def draw_match_2(canvas, n: int, court_name, t1_name, t2_name, t1_flag, t2_flag,
     y += H_FONT_XS
     x = x0 + W_FLAG_SMALL + 1
 
+    t2_name = truncate_text(FONT_XS, w_name_max, t2_name)
     graphics.DrawText(canvas, FONT_XS, x, y, COLOR_FG_PLAYER_NAME, t2_name)
     
     if (t2_set3 > -1):
-        x = x0 + X_SET1 - 2
-        w = x0 + W_TILE - x
-        h = H_FONT_XS
-        fill_rect(canvas, x, y - H_FONT_XS , w, h, COLOR_BG_SCORE)
         graphics.DrawText(canvas, FONT_XS, x0 + X_SET1, y, score_color(t2_set1, t1_set1), str(t2_set1))
         graphics.DrawText(canvas, FONT_XS, x0 + X_SET2, y, score_color(t2_set2, t1_set2), str(t2_set2))
         graphics.DrawText(canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set3, t1_set3, False), str(t2_set3))
     elif (t2_set2 > -1):
-        x = x0 + X_SET2 - 2
-        w = x0 + W_TILE - x
-        h = H_FONT_XS
-        fill_rect(canvas, x, y - H_FONT_XS , w, h, COLOR_BG_SCORE)
         graphics.DrawText(canvas, FONT_XS, x0 + X_SET2, y, score_color(t2_set1, t1_set1), str(t2_set1))
         graphics.DrawText(canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set2, t1_set2, False), str(t2_set2))
     elif (t2_set1 > -1):
-        x = x0 + X_SET3 - 2
-        w = x0 + W_TILE - x
-        h = H_FONT_XS
         graphics.DrawText(canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set1, t1_set1, False), str(t2_set1))
 
 def draw_tournament_title(canvas, title1, title2, color_fg, color_bg):
@@ -251,7 +232,7 @@ class M1_Demo_Entrance(SampleBase):
     def run(self):
         tick = 0
         while True:
-            self.run_demo_entrance_2(tick)
+            self.run_demo_entrance_with_flags(tick)
             tick += 1
             time.sleep(5)
 
@@ -260,10 +241,10 @@ class M1_Demo_Entrance(SampleBase):
         canvas = self.matrix.CreateFrameCanvas()
         
         draw_tournament_title(canvas, "Stuttgarter", "Stadtpokal", COLOR_WHITE, COLOR_BW_VAIHINGEN_ROHR_BLUE)
-        draw_match(canvas, 1, "1.Stuttgart", "Clement", "Jurikova", 1, 6, 6, 2, 3, 4)
-        draw_match(canvas, 2, "2.Brunold Auto", "Seibold", "Schädel", 6, 3, 2, 2)
-        draw_match(canvas, 3, "3.Lapp", "Kende", "Kling")
-        draw_match(canvas, 4, "4.Egeler", "Mikulslyte", "Radovanovic", 2, 0)        
+        draw_match(canvas, 1, "1.Stuttgart", "Clementenko", "Jurikovanko", 1, 6, 6, 2, 3, 4)
+        draw_match(canvas, 2, "2.Brunold Auto", "Seiboldenko", "Schädelstein", 6, 3, 2, 2)
+        draw_match(canvas, 3, "3.Lapp", "Kenderenko", "Klingiling", 2, 0)
+        draw_match(canvas, 4, "4.Egeler", "Mikulslyte", "Radovanovic")        
         draw_tournament_sponsor(canvas, tick)
 
 
@@ -271,15 +252,15 @@ class M1_Demo_Entrance(SampleBase):
         canvas = self.matrix.SwapOnVSync(canvas)
 
 
-    def run_demo_entrance_2(self, tick):
+    def run_demo_entrance_with_flags(self, tick):
     
         canvas = self.matrix.CreateFrameCanvas()
         
         draw_tournament_title(canvas, "Stuttgarter", "Stadtpokal", COLOR_WHITE, COLOR_BW_VAIHINGEN_ROHR_BLUE)
-        draw_match_2(canvas, 1, "1.Stuttgart", "Clement", "Jurikova", "germany", "serbia", 1, 6, 6, 2, 3, 4)
-        draw_match_2(canvas, 2, "2.Brunold Auto", "Seibold", "Schädel", "germany", "germany", 6, 3, 2, 2)
-        draw_match_2(canvas, 3, "3.Lapp", "Köläkädüxßa", "Kling", "japan", "switzerland")
-        draw_match_2(canvas, 4, "4.Egeler", "Mikulslyte", "Radovanovic", "lithuania", "croatia", 2, 0)        
+        draw_match_with_flags(canvas, 1, "1.Stuttgart", "Clementenko", "Jurikova", "germany", "serbia", 1, 6, 6, 2, 3, 4)
+        draw_match_with_flags(canvas, 2, "2.Brunold Auto", "Seiboldenko", "Schädel", "germany", "germany", 6, 3, 2, 2)
+        draw_match_with_flags(canvas, 3, "3.Lapp", "Köläkäiüißenko", "Kling", "japan", "switzerland", 2, 0)
+        draw_match_with_flags(canvas, 4, "4.Egeler", "Mikulslytenko", "Radovanovic", "lithuania", "croatia")
         draw_tournament_sponsor(canvas, tick)
 
 

@@ -140,6 +140,17 @@ def width_in_pixels(font, text):
     #print('<{}> => {}'.format(text,result))
     return result
 
+def truncate_text(font, max_width, text):
+    result = ""
+    total_width = 0
+    for c in text:
+        total_width += font.CharacterWidth(ord(c))
+        if (total_width <= max_width):
+            result += c
+        else:
+            break
+    return result
+
 def font_fits(font, width, height, *texts):
     
     font_symbol_height = y_font_offset(font)
