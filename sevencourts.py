@@ -48,20 +48,20 @@ FONTS_V0 = [
 
 # Spleen fonts
 FONTS_V1 = [
-    load_font("fonts/spleen-16x32.bdf"),
-    load_font("fonts/spleen-12x24.bdf"),
-    load_font("fonts/spleen-8x16.bdf"),
-    load_font("fonts/spleen-6x12.bdf"),
-    load_font("fonts/spleen-5x8.bdf"),
+    load_font("fonts/spleen-2.1.0/spleen-16x32.bdf"),
+    load_font("fonts/spleen-2.1.0/spleen-12x24.bdf"),
+    load_font("fonts/spleen-2.1.0/spleen-8x16.bdf"),
+    load_font("fonts/spleen-2.1.0/spleen-6x12.bdf"),
+    load_font("fonts/spleen-5x8-german-characters/spleen-5x8.bdf"),
     load_font("fonts/tom-thumb.bdf")]
 
 # Spleen with a compromise L font
 FONTS_V2 = [
-    load_font("fonts/spleen-16x32.bdf"),
+    load_font("fonts/spleen-2.1.0/spleen-16x32.bdf"),
     load_font("fonts/10x20.bdf"),
-    load_font("fonts/spleen-8x16.bdf"),
-    load_font("fonts/spleen-6x12.bdf"),
-    load_font("fonts/spleen-5x8.bdf"),
+    load_font("fonts/spleen-2.1.0/spleen-8x16.bdf"),
+    load_font("fonts/spleen-2.1.0/spleen-6x12.bdf"),
+    load_font("fonts/spleen-5x8-german-characters/spleen-5x8.bdf"),
     load_font("fonts/tom-thumb.bdf")]
 
 FONTS = FONTS_V1

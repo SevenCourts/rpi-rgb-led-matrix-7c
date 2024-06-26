@@ -278,7 +278,7 @@ class M1_Demo_Entrance(SampleBase):
         draw_tournament_title(canvas, "Stuttgarter", "Stadtpokal", COLOR_WHITE, COLOR_BW_VAIHINGEN_ROHR_BLUE)
         draw_match_2(canvas, 1, "1.Stuttgart", "Clement", "Jurikova", "germany", "serbia", 1, 6, 6, 2, 3, 4)
         draw_match_2(canvas, 2, "2.Brunold Auto", "Seibold", "Schädel", "germany", "germany", 6, 3, 2, 2)
-        draw_match_2(canvas, 3, "3.Lapp", "Kende", "Kling", "japan", "russia")
+        draw_match_2(canvas, 3, "3.Lapp", "Köläkädüxßa", "Kling", "japan", "switzerland")
         draw_match_2(canvas, 4, "4.Egeler", "Mikulslyte", "Radovanovic", "lithuania", "croatia", 2, 0)        
         draw_tournament_sponsor(canvas, tick)
 
