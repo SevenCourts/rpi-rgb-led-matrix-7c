@@ -38,6 +38,7 @@ COLOR_BG_COURT_NAME = COLOR_GREY
 COLOR_FG_COURT_NAME = COLOR_BLACK
 COLOR_FG_PLAYER_NAME = COLOR_GREEN_7c
 
+COLOR_BG_SCORE = COLOR_BLACK
 COLOR_FG_SCORE = COLOR_GREY
 COLOR_FG_SCORE_WON = COLOR_WHITE
 COLOR_FG_SCORE_LOST = COLOR_GREY_DARK
@@ -49,7 +50,7 @@ X_SET3 = 60
 Y_MARGIN_COURT_T1 = 4        
 Y_MARGIN_T1_T2 = 6
 
-ORIENTATION_HORIZONTAL = True
+ORIENTATION_HORIZONTAL = False
 ORIENTATION_VERTICAL = not(ORIENTATION_HORIZONTAL)
 
 W = PANEL_WIDTH if ORIENTATION_HORIZONTAL else PANEL_HEIGHT
@@ -64,6 +65,7 @@ H_FLAG_SMALL = H_FLAG / 2 # 6
 W_TILE = int(PANEL_WIDTH / 3)  # 64
 H_TILE = int(PANEL_HEIGHT / 2)  # 32
 
+H_FONT_XS = Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(FONT_XS)
 H_FONT_XXS = Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(FONT_XXS)        
 
 def draw_court_name(canvas, x: int, y: int, court_name):    
@@ -86,8 +88,7 @@ def draw_match(canvas, n: int, court_name, t1_name, t2_name, t1_set1=-1, t2_set1
     y0 = 32 * n if ORIENTATION_VERTICAL else (0 if n % 2 else H_TILE)
     x0 = 0 if ORIENTATION_VERTICAL else (W_TILE if n<3 else W_TILE*2)
     
-    draw_court_name(canvas, x0, y0, court_name)
-        
+    draw_court_name(canvas, x0, y0, court_name)        
     
     y = y0 + 1 + H_FONT_XXS + 1 + Y_MARGIN_COURT_T1 + Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(FONT_XS)            
     
@@ -118,6 +119,81 @@ def draw_match(canvas, n: int, court_name, t1_name, t2_name, t1_set1=-1, t2_set1
     elif (t2_set1 > -1):
         graphics.DrawText(canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set1, t1_set1, False), str(t2_set1))
 
+
+def draw_match_2(canvas, n: int, court_name, t1_name, t2_name, t1_flag, t2_flag, t1_set1=-1, t2_set1=-1, t1_set2=-1, t2_set2=-1, t1_set3=-1, t2_set3=-1):
+
+    
+    
+    y0 = 32 * n if ORIENTATION_VERTICAL else (0 if n % 2 else H_TILE)
+    x0 = 0 if ORIENTATION_VERTICAL else (W_TILE if n<3 else W_TILE*2)
+    
+    draw_court_name(canvas, x0, y0, court_name)
+
+    h_court_name = H_FONT_XXS + Y_MARGIN_COURT_T1
+        
+    y = y0 + 1 + h_court_name + 1
+
+    t1_flag_file = "images/flags/" + t1_flag + ".png"
+    display_flag_small(canvas, t1_flag_file, x0, y)
+
+    y += H_FONT_XS
+    x = x0 + W_FLAG_SMALL + 1
+    
+    graphics.DrawText(canvas, FONT_XS, x, y, COLOR_FG_PLAYER_NAME, t1_name)
+    
+    if (t1_set3 > -1):
+        x = x0 + X_SET1 - 2
+        w = x0 + W_TILE - x
+        h = H_FONT_XS
+        fill_rect(canvas, x, y - H_FONT_XS , w, h, COLOR_BG_SCORE)
+        graphics.DrawText(canvas, FONT_XS, x0 + X_SET1, y, score_color(t1_set1, t2_set1), str(t1_set1))
+        graphics.DrawText(canvas, FONT_XS, x0 + X_SET2, y, score_color(t1_set2, t2_set2), str(t1_set2))
+        graphics.DrawText(canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set3, t2_set3, False), str(t1_set3))
+    elif (t1_set2 > -1):
+        x = x0 + X_SET2 - 2
+        w = x0 + W_TILE - x
+        h = H_FONT_XS
+        fill_rect(canvas, x, y - H_FONT_XS , w, h, COLOR_BG_SCORE)
+        graphics.DrawText(canvas, FONT_XS, x0 + X_SET2, y, score_color(t1_set1, t2_set1), str(t1_set1))
+        graphics.DrawText(canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set2, t2_set2, False), str(t1_set2))
+    elif (t1_set1 > -1):
+        x = x0 + X_SET3 - 2
+        w = x0 + W_TILE - x
+        h = H_FONT_XS
+        fill_rect(canvas, x, y - H_FONT_XS , w, h, COLOR_BG_SCORE)
+        graphics.DrawText(canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set1, t2_set1, False), str(t1_set1))
+    
+    y += Y_MARGIN_T1_T2
+
+    t2_flag_file = "images/flags/" + t2_flag + ".png"
+    display_flag_small(canvas, t2_flag_file, x0, y)
+
+    y += H_FONT_XS
+    x = x0 + W_FLAG_SMALL + 1
+
+    graphics.DrawText(canvas, FONT_XS, x, y, COLOR_FG_PLAYER_NAME, t2_name)
+    
+    if (t2_set3 > -1):
+        x = x0 + X_SET1 - 2
+        w = x0 + W_TILE - x
+        h = H_FONT_XS
+        fill_rect(canvas, x, y - H_FONT_XS , w, h, COLOR_BG_SCORE)
+        graphics.DrawText(canvas, FONT_XS, x0 + X_SET1, y, score_color(t2_set1, t1_set1), str(t2_set1))
+        graphics.DrawText(canvas, FONT_XS, x0 + X_SET2, y, score_color(t2_set2, t1_set2), str(t2_set2))
+        graphics.DrawText(canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set3, t1_set3, False), str(t2_set3))
+    elif (t2_set2 > -1):
+        x = x0 + X_SET2 - 2
+        w = x0 + W_TILE - x
+        h = H_FONT_XS
+        fill_rect(canvas, x, y - H_FONT_XS , w, h, COLOR_BG_SCORE)
+        graphics.DrawText(canvas, FONT_XS, x0 + X_SET2, y, score_color(t2_set1, t1_set1), str(t2_set1))
+        graphics.DrawText(canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set2, t1_set2, False), str(t2_set2))
+    elif (t2_set1 > -1):
+        x = x0 + X_SET3 - 2
+        w = x0 + W_TILE - x
+        h = H_FONT_XS
+        graphics.DrawText(canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set1, t1_set1, False), str(t2_set1))
+
 def draw_tournament_title(canvas, title1, title2, color_fg, color_bg):
     fill_rect(canvas, 0, 0, W_TILE, H_TILE, color_bg)
     graphics.DrawText(canvas, FONT_S, 0, 12, color_fg, title1)
@@ -132,6 +208,10 @@ def draw_tournament_sponsor(canvas, tick):
     canvas.SetImage(Image.open(file_image).convert('RGB'), x, y)
 
 def display_flag(canvas, flag, x, y):
+    image = Image.open(flag).convert('RGB')    
+    canvas.SetImage(image, x, y)
+
+def display_flag_small(canvas, flag, x, y):
     image = Image.open(flag).convert('RGB')
     image.thumbnail((W_FLAG_SMALL, H_FLAG_SMALL), Image.LANCZOS)
     canvas.SetImage(image, x, y)
@@ -151,14 +231,18 @@ def display_flags(canvas, flags, grid_w, grid_h):
             except IndexError as e:
                 log ("oops")
 
-
-    #canvas.SetImage(Image.open("images/flags/france.png").convert('RGB'), 0*18, 0*12)
-    #canvas.SetImage(Image.open("images/flags/germany.png").convert('RGB'), 1*18, 1*12)
-    #canvas.SetImage(Image.open("images/flags/italy.png").convert('RGB'), 2*18, 2*12)
-    #canvas.SetImage(Image.open("images/flags/portugal.png").convert('RGB'), 3*18, 3*12)
-    #canvas.SetImage(Image.open("images/flags/spain.png").convert('RGB'), 4*18, 0*12)
-    #canvas.SetImage(Image.open("images/flags/ukraine.png").convert('RGB'), 0*18, 3*12)
-
+def display_centered_text(canvas, text, color, font=FONT_XXS):
+    lines = text.split('\n')
+    h_total = font.height * len(lines)
+    for i in range(len(lines)):
+        line = lines[i]
+        y = (PANEL_HEIGHT-h_total)/2 + (i+1)*font.height - 2
+        line_width = 0
+        for c in line:
+            line_width+=font.CharacterWidth(ord(c))
+        x = max(0, (PANEL_WIDTH-line_width)/2)
+        graphics.DrawText(canvas, font, x, y, color, line)
+            
     
 class M1_Demo_Entrance(SampleBase):
     def __init__(self, *args, **kwargs):
@@ -167,40 +251,10 @@ class M1_Demo_Entrance(SampleBase):
     def run(self):
         tick = 0
         while True:
-            self.run_demo_flags(tick)
+            self.run_demo_entrance_2(tick)
             tick += 1
-            time.sleep(20)
+            time.sleep(5)
 
- 
-    def show_flags(self, canvas):
-        canvas.Clear()
-
-        canvas.SetImage(Image.open("images/flags/france.png").convert('RGB'), 0*18, 0*12)
-        canvas.SetImage(Image.open("images/flags/germany.png").convert('RGB'), 1*18, 1*12)
-        canvas.SetImage(Image.open("images/flags/italy.png").convert('RGB'), 2*18, 2*12)
-        canvas.SetImage(Image.open("images/flags/portugal.png").convert('RGB'), 3*18, 3*12)
-        canvas.SetImage(Image.open("images/flags/spain.png").convert('RGB'), 4*18, 0*12)
-        canvas.SetImage(Image.open("images/flags/ukraine.png").convert('RGB'), 0*18, 3*12)
-
-        canvas = self.matrix.SwapOnVSync(canvas)        
-
-
-    def show_centered_text(self, canvas, text, color, font=FONT_XXS):
-        canvas.Clear()
-
-        lines = text.split('\n')
-        h_total = font.height * len(lines)
-        for i in range(len(lines)):
-            line = lines[i]
-            y = (PANEL_HEIGHT-h_total)/2 + (i+1)*font.height - 2
-            line_width = 0
-            for c in line:
-                line_width+=font.CharacterWidth(ord(c))
-            x = max(0, (PANEL_WIDTH-line_width)/2)
-            graphics.DrawText(canvas, font, x, y, color, line)
-        canvas = self.matrix.SwapOnVSync(canvas)
-        
-    
     def run_demo_entrance(self, tick):
     
         canvas = self.matrix.CreateFrameCanvas()
@@ -210,6 +264,22 @@ class M1_Demo_Entrance(SampleBase):
         draw_match(canvas, 2, "2.Brunold Auto", "Seibold", "Schädel", 6, 3, 2, 2)
         draw_match(canvas, 3, "3.Lapp", "Kende", "Kling")
         draw_match(canvas, 4, "4.Egeler", "Mikulslyte", "Radovanovic", 2, 0)        
+        draw_tournament_sponsor(canvas, tick)
+
+
+                
+        canvas = self.matrix.SwapOnVSync(canvas)
+
+
+    def run_demo_entrance_2(self, tick):
+    
+        canvas = self.matrix.CreateFrameCanvas()
+        
+        draw_tournament_title(canvas, "Stuttgarter", "Stadtpokal", COLOR_WHITE, COLOR_BW_VAIHINGEN_ROHR_BLUE)
+        draw_match_2(canvas, 1, "1.Stuttgart", "Clement", "Jurikova", "germany", "serbia", 1, 6, 6, 2, 3, 4)
+        draw_match_2(canvas, 2, "2.Brunold Auto", "Seibold", "Schädel", "germany", "germany", 6, 3, 2, 2)
+        draw_match_2(canvas, 3, "3.Lapp", "Kende", "Kling", "japan", "russia")
+        draw_match_2(canvas, 4, "4.Egeler", "Mikulslyte", "Radovanovic", "lithuania", "croatia", 2, 0)        
         draw_tournament_sponsor(canvas, tick)
 
 
