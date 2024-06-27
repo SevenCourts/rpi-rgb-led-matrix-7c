@@ -4,7 +4,6 @@ Description=SevenCourts scoreboard vertical mode
 Requires=local-fs.target 7c-hostname.service
 After=7c-hostname.service
 DefaultDependencies=no
-Conflicts=7c.service
 
 [Service]
 Type=simple
