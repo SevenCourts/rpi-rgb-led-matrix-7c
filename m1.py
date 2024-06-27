@@ -246,6 +246,13 @@ class SevenCourtsM1(SampleBase):
 
                     image = thumbnail(image, image_max_width)
                 self.display_logo(image, show_clock)
+            elif 'itftennis' in idle_info and idle_info["itftennis"] != None:
+                itftennis = idle_info["itftennis"]
+                # s.https://suprematic.slack.com/archives/DF1LE3XLY/p1719413956323839
+                tournament_name = itftennis["tournament-name"] or ''
+                graphics.DrawText(self.canvas, FONT_L, 0, 32, COLOR_YELLOW, tournament_name)
+                # TODO show signage, wip
+
             else:
                 message = idle_info["message"] or ''
                 color = COLOR_BLUE_7c
