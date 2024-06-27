@@ -8,6 +8,7 @@ python3 ./m1.py \
   --led-rows=32 \
   --led-parallel=2 \
   --led-chain=3 \
+  --led-pixel-mapper="Rotate:90" \
   --led-pwm-lsb-nanoseconds=50 \
   --led-slowdown-gpio=5 \
   --led-multiplexing=1 \

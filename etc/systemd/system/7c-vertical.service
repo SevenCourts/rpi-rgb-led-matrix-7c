@@ -1,10 +1,10 @@
 [Unit]
-Description=SevenCourts scoreboard
+Description=SevenCourts scoreboard vertical mode
 
 Requires=local-fs.target 7c-hostname.service
 After=7c-hostname.service
-Conflicts=7c-vertical.service
 DefaultDependencies=no
+Conflicts=7c.service
 
 [Service]
 Type=simple
