@@ -4,9 +4,9 @@ import os
 # Set the environment variable USE_RGB_MATRIX_EMULATOR to use with emulator https://github.com/ty-porter/RGBMatrixEmulator
 # Do not set to use with real SDK https://github.com/hzeller/rpi-rgb-led-matrix
 if os.getenv('USE_RGB_MATRIX_EMULATOR', False):
-  from RGBMatrixEmulator import graphics, RGBMatrix, RGBMatrixOptions
+  from RGBMatrixEmulator import graphics
 else:
-  from rgbmatrix import graphics, RGBMatrix, RGBMatrixOptions
+  from rgbmatrix import graphics
 
 
 from samplebase import SampleBase
@@ -137,6 +137,16 @@ def thumbnail(image, w=PANEL_WIDTH, h=PANEL_HEIGHT):
     # print ("result w: {0}, h: {1}".format(image.width, image.height))
     return image
 
+
+def display_itftournament(tournament):
+    # XXX the panel must be started in VERTICAL mode (./m1_vertical.sh)
+
+    # s.https://suprematic.slack.com/archives/DF1LE3XLY/p1719413956323839
+    tournament_name = panel_info["tournament-name"]
+    graphics.DrawText(self.canvas, FONT_L, 0, 32, COLOR_YELLOW, tournament_name)
+
+
+
 class SevenCourtsM1(SampleBase):
     def __init__(self, *args, **kwargs):
         super(SevenCourtsM1, self).__init__(*args, **kwargs)
@@ -159,22 +169,7 @@ class SevenCourtsM1(SampleBase):
                     elif 'idle-info' in panel_info:
                         self.display_idle_mode(panel_info["idle-info"])
                     elif 'tournament-name' in panel_info:
-                        # s.https://suprematic.slack.com/archives/DF1LE3XLY/p1719413956323839
-                        tournament_name = panel_info["tournament-name"]                        
-                        graphics.DrawText(self.canvas, FONT_L, 0, 32, COLOR_YELLOW, tournament_name)
-                        # TODO show signage, wip
-
-                        options = self.matrix.options
-
-                        self.matrix.Clear()
-
-                        options.pixel_mapper_config = "Rotate:90"
-
-                        self.matrix = RGBMatrix(options = options)
-                        
-                        graphics.DrawText(self.canvas, FONT_L, 0, 32, COLOR_RED, tournament_name)
-
-
+                        display_itftournament(panel_info)                        
                     elif 'team1' in panel_info:
                         self.display_match(panel_info)
                     self.canvas = self.matrix.SwapOnVSync(self.canvas)
