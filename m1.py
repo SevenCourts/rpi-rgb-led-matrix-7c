@@ -74,6 +74,48 @@ X_SCORE_SERVICE = 155
 
 W_LOGO_WITH_CLOCK = 122 # left from clock
 
+
+
+
+
+COLOR_SEPARATOR_LINE = COLOR_GREY_DARKEST
+COLOR_BW_VAIHINGEN_ROHR_BLUE = graphics.Color(0x09, 0x65, 0xA6) #0965A6
+COLOR_BG_COURT_NAME = COLOR_GREY
+COLOR_FG_COURT_NAME = COLOR_BLACK
+COLOR_FG_PLAYER_NAME = COLOR_GREEN_7c
+
+COLOR_FG_SCORE = COLOR_GREY
+COLOR_FG_SCORE_WON = COLOR_WHITE
+COLOR_FG_SCORE_LOST = COLOR_GREY_DARK
+
+X_SET1 = 48
+X_SET2 = 54
+X_SET3 = 60
+
+Y_MARGIN_COURT_T1 = 4        
+Y_MARGIN_T1_T2 = 6
+
+ORIENTATION_HORIZONTAL = False
+ORIENTATION_VERTICAL = not(ORIENTATION_HORIZONTAL)
+
+W = PANEL_WIDTH if ORIENTATION_HORIZONTAL else PANEL_HEIGHT
+H = PANEL_HEIGHT if ORIENTATION_HORIZONTAL else PANEL_WIDTH
+
+W_FLAG = 18
+H_FLAG = 12
+
+W_FLAG_SMALL = W_FLAG / 2 # 9
+H_FLAG_SMALL = H_FLAG / 2 # 6
+
+W_TILE = int(PANEL_WIDTH / 3)  # 64
+H_TILE = int(PANEL_HEIGHT / 2)  # 32
+
+H_FONT_XS = Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(FONT_XS)
+H_FONT_XXS = Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(FONT_XXS)        
+
+
+
+
 def panel_info_url(panel_id):
     return BASE_URL + "/panels/" + panel_id + "/match"
 
@@ -137,15 +179,11 @@ def thumbnail(image, w=PANEL_WIDTH, h=PANEL_HEIGHT):
     # print ("result w: {0}, h: {1}".format(image.width, image.height))
     return image
 
-
-def display_itftournament(tournament):
-    # XXX the panel must be started in VERTICAL mode (./m1_vertical.sh)
-
-    # s.https://suprematic.slack.com/archives/DF1LE3XLY/p1719413956323839
-    tournament_name = panel_info["tournament-name"]
-    graphics.DrawText(self.canvas, FONT_L, 0, 32, COLOR_YELLOW, tournament_name)
-
-
+def score_color(t1: int, t2: int, finished=True):
+    if (finished):
+        return COLOR_FG_SCORE_WON if (t1 > t2) else COLOR_FG_SCORE_LOST    
+    else:
+        return COLOR_FG_SCORE
 
 class SevenCourtsM1(SampleBase):
     def __init__(self, *args, **kwargs):
@@ -169,7 +207,7 @@ class SevenCourtsM1(SampleBase):
                     elif 'idle-info' in panel_info:
                         self.display_idle_mode(panel_info["idle-info"])
                     elif 'tournament-name' in panel_info:
-                        display_itftournament(panel_info)                        
+                        self.display_itftournament(panel_info)                        
                     elif 'team1' in panel_info:
                         self.display_match(panel_info)
                     self.canvas = self.matrix.SwapOnVSync(self.canvas)
@@ -214,6 +252,102 @@ class SevenCourtsM1(SampleBase):
                     self.display_idle_mode(None)
                 self.canvas = self.matrix.SwapOnVSync(self.canvas)
                 time.sleep(1)
+
+    def display_itftournament(self, tournament):
+        # XXX the panel must be started in VERTICAL mode (./m1_vertical.sh)
+
+        # s.https://suprematic.slack.com/archives/DF1LE3XLY/p1719413956323839
+        tournament_name = tournament["tournament-name"]
+        
+        self.draw_tournament_title(tournament_name, "Stadtpokal", COLOR_WHITE, COLOR_BW_VAIHINGEN_ROHR_BLUE)
+        self.draw_match_with_flags(1, "1.Stuttgart", "Clementenko", "Jurikova", "germany", "serbia", 1, 6, 6, 2, 3, 4)
+        self.draw_match_with_flags(2, "2.Brunold Auto", "Seiboldenko", "Schädel", "germany", "germany", 6, 3, 2, 2)
+        self.draw_match_with_flags(3, "3.Lapp", "Köläkäiüißenko", "Kling", "japan", "switzerland", 2, 0)
+        self.draw_match_with_flags(4, "4.Egeler", "Mikulslytenko", "Radovanovic", "lithuania", "croatia")
+        self.draw_tournament_sponsor()
+
+
+    def draw_court_name(self, x: int, y: int, court_name):    
+        graphics.DrawLine(self.canvas, x, y, PANEL_WIDTH, y, COLOR_SEPARATOR_LINE)        
+        y += 1    
+        fill_rect(self.canvas, x, y, 64, 1+H_FONT_XXS+1, COLOR_BG_COURT_NAME)        
+        y += H_FONT_XXS + 1    
+        graphics.DrawText(self.canvas, FONT_XXS, x+1, y, COLOR_FG_COURT_NAME, court_name)
+
+    def display_flag_small(self, flag, x, y):
+        image = Image.open(flag).convert('RGB')
+        image.thumbnail((W_FLAG_SMALL, H_FLAG_SMALL), Image.LANCZOS)
+        self.canvas.SetImage(image, x, y)
+
+    def draw_match_with_flags(self, n: int, court_name, t1_name, t2_name, t1_flag, t2_flag, t1_set1=-1, t2_set1=-1, t1_set2=-1, t2_set2=-1, t1_set3=-1, t2_set3=-1):
+        
+        y0 = 32 * n if ORIENTATION_VERTICAL else (0 if n % 2 else H_TILE)
+        x0 = 0 if ORIENTATION_VERTICAL else (W_TILE if n<3 else W_TILE*2)
+        
+        self.draw_court_name(x0, y0, court_name)
+
+        h_court_name = H_FONT_XXS + Y_MARGIN_COURT_T1
+            
+        y = y0 + 1 + h_court_name + 1
+
+        t1_flag_file = "images/flags/" + t1_flag + ".png"
+        self.display_flag_small(t1_flag_file, x0, y)
+
+        y += H_FONT_XS
+        x = x0 + W_FLAG_SMALL + 1
+        w_name_max = W_TILE - W_FLAG_SMALL
+        if (t1_set3 > -1):
+            w_name_max = X_SET1 - 2 - W_FLAG_SMALL
+            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET1, y, score_color(t1_set1, t2_set1), str(t1_set1))
+            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, score_color(t1_set2, t2_set2), str(t1_set2))
+            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set3, t2_set3, False), str(t1_set3))
+        elif (t1_set2 > -1):
+            w_name_max = X_SET2 - 2 - W_FLAG_SMALL
+            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, score_color(t1_set1, t2_set1), str(t1_set1))
+            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set2, t2_set2, False), str(t1_set2))
+        elif (t1_set1 > -1):
+            w_name_max = X_SET3 - 2 - W_FLAG_SMALL
+            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set1, t2_set1, False), str(t1_set1))
+
+        t1_name = truncate_text(FONT_XS, w_name_max, t1_name)
+        graphics.DrawText(self.canvas, FONT_XS, x, y, COLOR_FG_PLAYER_NAME, t1_name)
+        
+        y += Y_MARGIN_T1_T2
+
+        t2_flag_file = "images/flags/" + t2_flag + ".png"
+        self.display_flag_small(t2_flag_file, x0, y)
+
+        y += H_FONT_XS
+        x = x0 + W_FLAG_SMALL + 1
+
+        t2_name = truncate_text(FONT_XS, w_name_max, t2_name)
+        graphics.DrawText(self.canvas, FONT_XS, x, y, COLOR_FG_PLAYER_NAME, t2_name)
+        
+        if (t2_set3 > -1):
+            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET1, y, score_color(t2_set1, t1_set1), str(t2_set1))
+            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, score_color(t2_set2, t1_set2), str(t2_set2))
+            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set3, t1_set3, False), str(t2_set3))
+        elif (t2_set2 > -1):
+            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, score_color(t2_set1, t1_set1), str(t2_set1))
+            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set2, t1_set2, False), str(t2_set2))
+        elif (t2_set1 > -1):
+            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set1, t1_set1, False), str(t2_set1))
+
+    def draw_tournament_title(self, title1, title2, color_fg, color_bg):
+        fill_rect(self.canvas, 0, 0, W_TILE, H_TILE, color_bg)
+        graphics.DrawText(self.canvas, FONT_S, 0, 12, color_fg, title1)
+        graphics.DrawText(self.canvas, FONT_S, 2, 24, color_fg, title2)
+
+    def draw_tournament_sponsor(self):
+        file_image = "images/logos/ITF/ITF_64x32_white_bg.png" 
+        #if tick % 2 else "images/logos/TC BW Vaihingen-Rohr/tc bw vaihingen-rohr 64x32.png"
+        x = 0
+        y = H_TILE if ORIENTATION_HORIZONTAL else (H - H_TILE)
+        self.canvas.SetImage(Image.open(file_image).convert('RGB'), x, y)        
+
+
+
+
 
     def display_logo(self, image, show_clock):
         w = W_LOGO_WITH_CLOCK if show_clock else PANEL_WIDTH
