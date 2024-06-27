@@ -164,12 +164,13 @@ class SevenCourtsM1(SampleBase):
                         graphics.DrawText(self.canvas, FONT_L, 0, 32, COLOR_YELLOW, tournament_name)
                         # TODO show signage, wip
 
-                        
+                        options = self.matrix.options
+
                         self.matrix.Clear()
 
-                        self.initial_options.pixel_mapper_config = "Rotate:90"
+                        options.pixel_mapper_config = "Rotate:90"
 
-                        self.matrix = RGBMatrix(options = self.initial_options)
+                        self.matrix = RGBMatrix(options = options)
                         
                         graphics.DrawText(self.canvas, FONT_L, 0, 32, COLOR_RED, tournament_name)
 
