@@ -180,7 +180,7 @@ def thumbnail(image, w=PANEL_WIDTH, h=PANEL_HEIGHT):
     return image
 
 def score_color(t1: int, t2: int, finished=True):
-    if (finished):
+    if (finished and t1 and t2):
         return COLOR_FG_SCORE_WON if (t1 > t2) else COLOR_FG_SCORE_LOST    
     else:
         return COLOR_FG_SCORE
