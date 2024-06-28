@@ -257,13 +257,67 @@ class SevenCourtsM1(SampleBase):
         # XXX the panel must be started in VERTICAL mode (./m1_vertical.sh)
 
         # s.https://suprematic.slack.com/archives/DF1LE3XLY/p1719413956323839
+
         tournament_name = tournament["tournament-name"]
+        self.draw_tournament_title(tournament_name, "###", COLOR_WHITE, COLOR_BW_VAIHINGEN_ROHR_BLUE)
+
+        courts = tournament["courts"]
+        court_number = 1
+        for court in courts:
+            court_name = court["court-name"]
+            match = court["match"]
+            if match:
+                status = match["status"]
+                set_scores = match["set-scores"]
+                if len(set_scores) == 0:
+                    t1_set1 = -1
+                    t2_set1 = -1
+                    t1_set2 = -1
+                    t2_set2 = -1
+                    t1_set3 = -1
+                    t2_set3 = -1
+
+                elif len(set_scores) == 1:
+                    t1_set1 = set_scores[0][0]
+                    t2_set1 = set_scores[1][0]
+                    t2_set2 = -1
+                    t1_set2 = -1
+                    t1_set3 = -1
+                    t2_set3 = -1
+
+                elif len(set_scores) == 2:
+                    t1_set1 = set_scores[0][0]
+                    t2_set1 = set_scores[1][0]
+                    t1_set2 = set_scores[0][1]
+                    t2_set2 = set_scores[1][1]
+                    t1_set3 = -1
+                    t2_set3 = -1
+
+                elif len(set_scores) == 3:
+                    t1_set1 = set_scores[0][0]
+                    t1_set2 = set_scores[0][1]
+                    t1_set3 = set_scores[1][0]
+                    t2_set1 = set_scores[1][1]
+                    t2_set2 = set_scores[2][0]
+                    t2_set3 = set_scores[2][1]
+                
+                is_doubles = match["is-doubles"]
+                t1 = match["team1"]
+                t1_name = t1["name"]
+                t1_flag = t1["flag"]
+                t2 = match["team2"]
+                t2_name = t2["name"]
+                t2_flag = t2["flag"]
+                self.draw_match_with_flags(court_number, court_name, t1_name, t2_name, t1_flag, t2_flag, t1_set1, t2_set1, t1_set2, t2_set2, t1_set3, t2_set3)
+            else:
+                self.draw_match_with_flags(court_number, court_name, "", "")
+            
+            court_number += 1
         
-        self.draw_tournament_title(tournament_name, "Stadtpokal", COLOR_WHITE, COLOR_BW_VAIHINGEN_ROHR_BLUE)
-        self.draw_match_with_flags(1, "1.Stuttgart", "Clementenko", "Jurikova", "germany", "serbia", 1, 6, 6, 2, 3, 4)
-        self.draw_match_with_flags(2, "2.Brunold Auto", "Seiboldenko", "Schädel", "germany", "germany", 6, 3, 2, 2)
-        self.draw_match_with_flags(3, "3.Lapp", "Köläkäiüißenko", "Kling", "japan", "switzerland", 2, 0)
-        self.draw_match_with_flags(4, "4.Egeler", "Mikulslytenko", "Radovanovic", "lithuania", "croatia")
+        #self.draw_match_with_flags(1, "1.Stuttgart", "Clementenko", "Jurikova", "germany", "serbia", 1, 6, 6, 2, 3, 4)
+        #self.draw_match_with_flags(2, "2.Brunold Auto", "Seiboldenko", "Schädel", "germany", "germany", 6, 3, 2, 2)
+        #self.draw_match_with_flags(3, "3.Lapp", "Köläkäiüißenko", "Kling", "japan", "switzerland", 2, 0)
+        #self.draw_match_with_flags(4, "4.Egeler", "Mikulslytenko", "Radovanovic", "lithuania", "croatia")
         self.draw_tournament_sponsor()
 
 
@@ -279,7 +333,7 @@ class SevenCourtsM1(SampleBase):
         image.thumbnail((W_FLAG_SMALL, H_FLAG_SMALL), Image.LANCZOS)
         self.canvas.SetImage(image, x, y)
 
-    def draw_match_with_flags(self, n: int, court_name, t1_name, t2_name, t1_flag, t2_flag, t1_set1=-1, t2_set1=-1, t1_set2=-1, t2_set2=-1, t1_set3=-1, t2_set3=-1):
+    def draw_match_with_flags(self, n: int, court_name, t1_name, t2_name, t1_flag=None, t2_flag=None, t1_set1=-1, t2_set1=-1, t1_set2=-1, t2_set2=-1, t1_set3=-1, t2_set3=-1):
         
         y0 = 32 * n if ORIENTATION_VERTICAL else (0 if n % 2 else H_TILE)
         x0 = 0 if ORIENTATION_VERTICAL else (W_TILE if n<3 else W_TILE*2)
@@ -290,8 +344,9 @@ class SevenCourtsM1(SampleBase):
             
         y = y0 + 1 + h_court_name + 1
 
-        t1_flag_file = "images/flags/" + t1_flag + ".png"
-        self.display_flag_small(t1_flag_file, x0, y)
+        if t1_flag:
+            t1_flag_file = "images/flags/" + t1_flag + ".png"
+            self.display_flag_small(t1_flag_file, x0, y)
 
         y += H_FONT_XS
         x = x0 + W_FLAG_SMALL + 1
@@ -314,8 +369,9 @@ class SevenCourtsM1(SampleBase):
         
         y += Y_MARGIN_T1_T2
 
-        t2_flag_file = "images/flags/" + t2_flag + ".png"
-        self.display_flag_small(t2_flag_file, x0, y)
+        if t2_flag:
+            t2_flag_file = "images/flags/" + t2_flag + ".png"
+            self.display_flag_small(t2_flag_file, x0, y)
 
         y += H_FONT_XS
         x = x0 + W_FLAG_SMALL + 1
