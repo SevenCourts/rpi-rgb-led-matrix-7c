@@ -352,16 +352,16 @@ class SevenCourtsM1(SampleBase):
             
         y += H_FONT_XS
         w_name_max = W_TILE - w_flag
-        if t1_set3:
+        if t1_set3 is not None:
             w_name_max = X_SET1 - 2 - w_flag
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET1, y, score_color(t1_set1, t2_set1), str(t1_set1))
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, score_color(t1_set2, t2_set2), str(t1_set2))
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set3, t2_set3, False), str(t1_set3))
-        elif t1_set2:
+        elif t1_set2 is not None:
             w_name_max = X_SET2 - 2 - w_flag
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, score_color(t1_set1, t2_set1), str(t1_set1))
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set2, t2_set2, False), str(t1_set2))
-        elif t1_set1:
+        elif t1_set1 is not None:
             w_name_max = X_SET3 - 2 - w_flag
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set1, t2_set1, False), str(t1_set1))
 
