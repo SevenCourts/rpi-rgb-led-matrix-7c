@@ -271,26 +271,26 @@ class SevenCourtsM1(SampleBase):
                 status = match["status"]
                 set_scores = match["set-scores"]
                 if len(set_scores) == 0:
-                    t1_set1 = -1
-                    t2_set1 = -1
-                    t1_set2 = -1
-                    t2_set2 = -1
-                    t1_set3 = -1
-                    t2_set3 = -1
+                    t1_set1 = None
+                    t2_set1 = None
+                    t1_set2 = None
+                    t2_set2 = None
+                    t1_set3 = None
+                    t2_set3 = None
                 elif len(set_scores) == 1:
                     t1_set1 = set_scores[0][0]
                     t2_set1 = set_scores[0][1]
-                    t2_set2 = -1
-                    t1_set2 = -1
-                    t1_set3 = -1
-                    t2_set3 = -1
+                    t2_set2 = None
+                    t1_set2 = None
+                    t1_set3 = None
+                    t2_set3 = None
                 elif len(set_scores) == 2:
                     t1_set1 = set_scores[0][0]
                     t2_set1 = set_scores[0][1]
                     t1_set2 = set_scores[1][0]
                     t2_set2 = set_scores[1][1]
-                    t1_set3 = -1
-                    t2_set3 = -1
+                    t1_set3 = None
+                    t2_set3 = None
                 elif len(set_scores) == 3:
                     t1_set1 = set_scores[0][0]
                     t1_set2 = set_scores[0][1]
@@ -342,40 +342,44 @@ class SevenCourtsM1(SampleBase):
             
         y = y0 + 1 + h_court_name + 1
 
+        x_name = x0
+        w_flag = 0
         if t1_flag:
+            w_flag = W_FLAG_SMALL
+            x_name = x0 + W_FLAG_SMALL + 1
             t1_flag_file = "images/flags/" + t1_flag + ".png"
             self.display_flag_small(t1_flag_file, x0, y)
-
+            
         y += H_FONT_XS
-        x = x0 + W_FLAG_SMALL + 1
-        w_name_max = W_TILE - W_FLAG_SMALL
+        w_name_max = W_TILE - w_flag
         if t1_set3:
-            w_name_max = X_SET1 - 2 - W_FLAG_SMALL
+            w_name_max = X_SET1 - 2 - w_flag
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET1, y, score_color(t1_set1, t2_set1), str(t1_set1))
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, score_color(t1_set2, t2_set2), str(t1_set2))
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set3, t2_set3, False), str(t1_set3))
         elif t1_set2:
-            w_name_max = X_SET2 - 2 - W_FLAG_SMALL
+            w_name_max = X_SET2 - 2 - w_flag
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, score_color(t1_set1, t2_set1), str(t1_set1))
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set2, t2_set2, False), str(t1_set2))
         elif t1_set1:
-            w_name_max = X_SET3 - 2 - W_FLAG_SMALL
+            w_name_max = X_SET3 - 2 - w_flag
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set1, t2_set1, False), str(t1_set1))
 
         t1_name = truncate_text(FONT_XS, w_name_max, t1_name)
-        graphics.DrawText(self.canvas, FONT_XS, x, y, COLOR_FG_PLAYER_NAME, t1_name)
+        graphics.DrawText(self.canvas, FONT_XS, x_name, y, COLOR_FG_PLAYER_NAME, t1_name)
         
         y += Y_MARGIN_T1_T2
 
+        x_name = x0
         if t2_flag:
+            w_name_max += W_FLAG_SMALL
+            x_name = x0 + W_FLAG_SMALL + 1
             t2_flag_file = "images/flags/" + t2_flag + ".png"
             self.display_flag_small(t2_flag_file, x0, y)
 
         y += H_FONT_XS
-        x = x0 + W_FLAG_SMALL + 1
-
         t2_name = truncate_text(FONT_XS, w_name_max, t2_name)
-        graphics.DrawText(self.canvas, FONT_XS, x, y, COLOR_FG_PLAYER_NAME, t2_name)
+        graphics.DrawText(self.canvas, FONT_XS, x_name, y, COLOR_FG_PLAYER_NAME, t2_name)
         
         if t2_set3:
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET1, y, score_color(t2_set1, t1_set1), str(t2_set1))
