@@ -293,7 +293,7 @@ class SevenCourtsM1(SampleBase):
                     t2_set3 = None
                 elif len(set_scores) == 3:
                     t1_set1 = set_scores[0][0]
-                    t1_set2 = set_scores[0][1]
+                    t2_set1 = set_scores[0][1]
                     t1_set2 = set_scores[1][0]
                     t2_set2 = set_scores[1][1]
                     t1_set3 = set_scores[2][0]
