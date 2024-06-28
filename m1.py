@@ -258,14 +258,15 @@ class SevenCourtsM1(SampleBase):
 
         # s.https://suprematic.slack.com/archives/DF1LE3XLY/p1719413956323839
 
-        tournament_name = tournament["tournament-name"]
+        tournament_name = tournament.get("tournament-name")
+        # TODO 2-line separator
         self.draw_tournament_title(tournament_name, "###", COLOR_WHITE, COLOR_BW_VAIHINGEN_ROHR_BLUE)
 
-        courts = tournament["courts"]
+        courts = tournament.get("courts")
         court_number = 1
         for court in courts:
-            court_name = court["court-name"]
-            match = court["match"]
+            court_name = court.get("court-name")
+            match = court.get("match")
             if match:
                 status = match["status"]
                 set_scores = match["set-scores"]
@@ -276,7 +277,6 @@ class SevenCourtsM1(SampleBase):
                     t2_set2 = -1
                     t1_set3 = -1
                     t2_set3 = -1
-
                 elif len(set_scores) == 1:
                     t1_set1 = set_scores[0][0]
                     t2_set1 = set_scores[0][1]
@@ -284,7 +284,6 @@ class SevenCourtsM1(SampleBase):
                     t1_set2 = -1
                     t1_set3 = -1
                     t2_set3 = -1
-
                 elif len(set_scores) == 2:
                     t1_set1 = set_scores[0][0]
                     t2_set1 = set_scores[0][1]
@@ -292,7 +291,6 @@ class SevenCourtsM1(SampleBase):
                     t2_set2 = set_scores[1][1]
                     t1_set3 = -1
                     t2_set3 = -1
-
                 elif len(set_scores) == 3:
                     t1_set1 = set_scores[0][0]
                     t1_set2 = set_scores[0][1]
@@ -301,13 +299,13 @@ class SevenCourtsM1(SampleBase):
                     t2_set2 = set_scores[2][0]
                     t2_set3 = set_scores[2][1]
                 
-                is_doubles = match["is-doubles"]
-                t1 = match["team1"]
-                t1_name = t1["name"]
-                t1_flag = t1["flag"]
-                t2 = match["team2"]
-                t2_name = t2["name"]
-                t2_flag = t2["flag"]
+                is_doubles = match.get("is-doubles")
+                t1 = match.get("team1")
+                t1_name = t1.get("name")
+                t1_flag = t1.get("flag")
+                t2 = match.get("team2")
+                t2_name = t2.get("name")
+                t2_flag = t2.get("flag")
                 self.draw_match_with_flags(court_number, court_name, t1_name, t2_name, t1_flag, t2_flag, t1_set1, t2_set1, t1_set2, t2_set2, t1_set3, t2_set3)
             else:
                 self.draw_match_with_flags(court_number, court_name, "", "")
@@ -333,7 +331,7 @@ class SevenCourtsM1(SampleBase):
         image.thumbnail((W_FLAG_SMALL, H_FLAG_SMALL), Image.LANCZOS)
         self.canvas.SetImage(image, x, y)
 
-    def draw_match_with_flags(self, n: int, court_name, t1_name, t2_name, t1_flag=None, t2_flag=None, t1_set1=-1, t2_set1=-1, t1_set2=-1, t2_set2=-1, t1_set3=-1, t2_set3=-1):
+    def draw_match_with_flags(self, n: int, court_name, t1_name, t2_name, t1_flag=None, t2_flag=None, t1_set1=None, t2_set1=None, t1_set2=None, t2_set2=None, t1_set3=None, t2_set3=None):
         
         y0 = 32 * n if ORIENTATION_VERTICAL else (0 if n % 2 else H_TILE)
         x0 = 0 if ORIENTATION_VERTICAL else (W_TILE if n<3 else W_TILE*2)
@@ -351,16 +349,16 @@ class SevenCourtsM1(SampleBase):
         y += H_FONT_XS
         x = x0 + W_FLAG_SMALL + 1
         w_name_max = W_TILE - W_FLAG_SMALL
-        if (t1_set3 > -1):
+        if t1_set3:
             w_name_max = X_SET1 - 2 - W_FLAG_SMALL
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET1, y, score_color(t1_set1, t2_set1), str(t1_set1))
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, score_color(t1_set2, t2_set2), str(t1_set2))
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set3, t2_set3, False), str(t1_set3))
-        elif (t1_set2 > -1):
+        elif t1_set2:
             w_name_max = X_SET2 - 2 - W_FLAG_SMALL
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, score_color(t1_set1, t2_set1), str(t1_set1))
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set2, t2_set2, False), str(t1_set2))
-        elif (t1_set1 > -1):
+        elif t1_set1:
             w_name_max = X_SET3 - 2 - W_FLAG_SMALL
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set1, t2_set1, False), str(t1_set1))
 
@@ -379,14 +377,14 @@ class SevenCourtsM1(SampleBase):
         t2_name = truncate_text(FONT_XS, w_name_max, t2_name)
         graphics.DrawText(self.canvas, FONT_XS, x, y, COLOR_FG_PLAYER_NAME, t2_name)
         
-        if (t2_set3 > -1):
+        if t2_set3:
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET1, y, score_color(t2_set1, t1_set1), str(t2_set1))
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, score_color(t2_set2, t1_set2), str(t2_set2))
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set3, t1_set3, False), str(t2_set3))
-        elif (t2_set2 > -1):
+        elif t2_set2:
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, score_color(t2_set1, t1_set1), str(t2_set1))
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set2, t1_set2, False), str(t2_set2))
-        elif (t2_set1 > -1):
+        elif t2_set1:
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set1, t1_set1, False), str(t2_set1))
 
     def draw_tournament_title(self, title1, title2, color_fg, color_bg):
