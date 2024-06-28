@@ -371,11 +371,15 @@ class SevenCourtsM1(SampleBase):
         y += Y_MARGIN_T1_T2
 
         x_name = x0
+        w_flag = 0
         if t2_flag:
+            w_flag = W_FLAG_SMALL
             w_name_max += W_FLAG_SMALL
             x_name = x0 + W_FLAG_SMALL + 1
             t2_flag_file = "images/flags/" + t2_flag + ".png"
             self.display_flag_small(t2_flag_file, x0, y)
+
+        w_name_max = W_TILE - w_flag
 
         y += H_FONT_XS
         t2_name = truncate_text(FONT_XS, w_name_max, t2_name)
