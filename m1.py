@@ -318,7 +318,7 @@ class SevenCourtsM1(SampleBase):
         y += H_FONT_XXS + 1
         graphics.DrawText(self.canvas, FONT_XXS, x + 1, y, COLOR_FG_COURT_NAME, court_name)
 
-    def display_flag_small(self, flag, x, y):
+    def draw_flag_small(self, flag, x, y):
         image = Image.open(flag).convert('RGB')
         image.thumbnail((W_FLAG_SMALL, H_FLAG_SMALL), Image.LANCZOS)
         self.canvas.SetImage(image, x, y)
@@ -341,7 +341,7 @@ class SevenCourtsM1(SampleBase):
             w_flag = W_FLAG_SMALL
             x_name = x0 + W_FLAG_SMALL + 1
             t1_flag_file = "images/flags/" + t1_flag + ".png"
-            self.display_flag_small(t1_flag_file, x0, y)
+            self.draw_flag_small(t1_flag_file, x0, y)
 
         y += H_FONT_XS
         w_name_max = W_TILE - w_flag
@@ -358,8 +358,8 @@ class SevenCourtsM1(SampleBase):
             w_name_max = X_SET3 - 2 - w_flag
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set1, t2_set1, False), str(t1_set1))
 
-        t1_name = truncate_text(FONT_XS, w_name_max, t1_name)
-        graphics.DrawText(self.canvas, FONT_XS, x_name, y, COLOR_FG_PLAYER_NAME, t1_name)
+        t1_name_truncated = truncate_text(FONT_XS, w_name_max, t1_name)
+        graphics.DrawText(self.canvas, FONT_XS, x_name, y, COLOR_FG_PLAYER_NAME, t1_name_truncated)
 
         y += Y_MARGIN_T1_T2
 
@@ -367,26 +367,28 @@ class SevenCourtsM1(SampleBase):
         w_flag = 0
         if t2_flag:
             w_flag = W_FLAG_SMALL
-            w_name_max += W_FLAG_SMALL
             x_name = x0 + W_FLAG_SMALL + 1
             t2_flag_file = "images/flags/" + t2_flag + ".png"
-            self.display_flag_small(t2_flag_file, x0, y)
+            self.draw_flag_small(t2_flag_file, x0, y)
 
         w_name_max = W_TILE - w_flag
 
         y += H_FONT_XS
-        t2_name = truncate_text(FONT_XS, w_name_max, t2_name)
-        graphics.DrawText(self.canvas, FONT_XS, x_name, y, COLOR_FG_PLAYER_NAME, t2_name)
-
-        if t2_set3:
+        if t2_set3 is not None:
+            w_name_max = X_SET1 - 2 - w_flag
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET1, y, score_color(t2_set1, t1_set1), str(t2_set1))
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, score_color(t2_set2, t1_set2), str(t2_set2))
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set3, t1_set3, False), str(t2_set3))
-        elif t2_set2:
+        elif t2_set2 is not None:
+            w_name_max = X_SET2 - 2 - w_flag
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, score_color(t2_set1, t1_set1), str(t2_set1))
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set2, t1_set2, False), str(t2_set2))
-        elif t2_set1:
+        elif t2_set1 is not None:
+            w_name_max = X_SET3 - 2 - w_flag
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set1, t1_set1, False), str(t2_set1))
+
+        t2_name_truncated = truncate_text(FONT_XS, w_name_max, t2_name)
+        graphics.DrawText(self.canvas, FONT_XS, x_name, y, COLOR_FG_PLAYER_NAME, t2_name_truncated)
 
     def draw_tournament_title(self, title1, title2, color_fg, color_bg):
         fill_rect(self.canvas, 0, 0, W_TILE, H_TILE, color_bg)
