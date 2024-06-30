@@ -36,7 +36,7 @@ COLOR_SEPARATOR_LINE = COLOR_GREY_DARKEST
 COLOR_BW_VAIHINGEN_ROHR_BLUE = graphics.Color(0x09, 0x65, 0xA6)  # #0965A6
 COLOR_BG_COURT_NAME = COLOR_GREY
 COLOR_FG_COURT_NAME = COLOR_BLACK
-COLOR_FG_PLAYER_NAME = COLOR_GREEN_7c
+COLOR_FG_PLAYER_NAME = COLOR_7C_GREEN
 
 COLOR_FG_SCORE = COLOR_GREY
 COLOR_FG_SCORE_WON = COLOR_WHITE
@@ -52,8 +52,8 @@ Y_MARGIN_T1_T2 = 6
 ORIENTATION_HORIZONTAL = False
 ORIENTATION_VERTICAL = not ORIENTATION_HORIZONTAL
 
-W = PANEL_WIDTH if ORIENTATION_HORIZONTAL else PANEL_HEIGHT
-H = PANEL_HEIGHT if ORIENTATION_HORIZONTAL else PANEL_WIDTH
+W = W_PANEL if ORIENTATION_HORIZONTAL else H_PANEL
+H = H_PANEL if ORIENTATION_HORIZONTAL else W
 
 W_FLAG = 18
 H_FLAG = 12
@@ -61,15 +61,15 @@ H_FLAG = 12
 W_FLAG_SMALL = W_FLAG / 2  # 9
 H_FLAG_SMALL = H_FLAG / 2  # 6
 
-W_TILE = int(PANEL_WIDTH / 3)  # 64
-H_TILE = int(PANEL_HEIGHT / 2)  # 32
+W_TILE = int(W / 3)  # 64
+H_TILE = int(H / 2)  # 32
 
 H_FONT_XS = Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(FONT_XS)
 H_FONT_XXS = Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(FONT_XXS)
 
 
 def draw_court_name(canvas, x: int, y: int, court_name):
-    graphics.DrawLine(canvas, x, y, PANEL_WIDTH, y, COLOR_SEPARATOR_LINE)
+    graphics.DrawLine(canvas, x, y, W_PANEL, y, COLOR_SEPARATOR_LINE)
     y += 1
     fill_rect(canvas, x, y, 64, 1 + H_FONT_XXS + 1, COLOR_BG_COURT_NAME)
     y += H_FONT_XXS + 1
@@ -186,7 +186,7 @@ def draw_tournament_sponsor(canvas, tick):
         else "images/logos/TC BW Vaihingen-Rohr/tc bw vaihingen-rohr 64x32.png"
 
     x = 0
-    y = H_TILE if ORIENTATION_HORIZONTAL else (H - H_TILE)
+    y = H_TILE if ORIENTATION_HORIZONTAL else (H_PANEL - H_TILE)
     canvas.SetImage(Image.open(file_image).convert('RGB'), x, y)
 
 
@@ -228,11 +228,11 @@ def display_centered_text(canvas, text, color, font=FONT_XXS):
     h_total = font.height * len(lines)
     for i in range(len(lines)):
         line = lines[i]
-        y = (PANEL_HEIGHT - h_total) / 2 + (i + 1) * font.height - 2
+        y = (H_PANEL - h_total) / 2 + (i + 1) * font.height - 2
         line_width = 0
         for c in line:
             line_width += font.CharacterWidth(ord(c))
-        x = max(0, (PANEL_WIDTH - line_width) / 2)
+        x = max(0, (W_PANEL - line_width) / 2)
         graphics.DrawText(canvas, font, x, y, color, line)
 
 
@@ -266,11 +266,11 @@ class M1DemoEntrance(SampleBase):
         h_total = font.height * len(lines)
         for i in range(len(lines)):
             line = lines[i]
-            y = (PANEL_HEIGHT - h_total) / 2 + (i + 1) * font.height - 2
+            y = (H_PANEL - h_total) / 2 + (i + 1) * font.height - 2
             line_width = 0
             for c in line:
                 line_width += font.CharacterWidth(ord(c))
-            x = max(0, (PANEL_WIDTH - line_width) / 2)
+            x = max(0, (W_PANEL - line_width) / 2)
             graphics.DrawText(canvas, font, x, y, color, line)
         self.matrix.SwapOnVSync(canvas)
 
@@ -311,8 +311,8 @@ class M1DemoEntrance(SampleBase):
         # (10 x (18+1)) = 190
         # (5 x (12+1)) = 65
 
-        grid_w = int(W // (W_FLAG_SMALL + 1))
-        grid_h = int(H // (H_FLAG_SMALL + 1))
+        grid_w = int(W_PANEL // (W_FLAG_SMALL + 1))
+        grid_h = int(H_PANEL // (H_FLAG_SMALL + 1))
 
         log(grid_w)
         log(grid_h)

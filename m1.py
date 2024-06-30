@@ -23,6 +23,8 @@ import logging
 import requests
 import subprocess
 
+SECONDS_START = int(time.time())
+
 GIT_COMMIT_ID = subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode()
 
 # FIXME use not hardcoded directory (TBD)
@@ -70,47 +72,35 @@ COLOR_CLOCK = COLOR_GREY
 UPPER_CASE_NAMES = True
 MARGIN_NAMES_SCOREBOARD = 3
 
-X_MIN_SCOREBOARD = int(PANEL_WIDTH / 2)
+X_MIN_SCOREBOARD = int(W_PANEL / 2)
 W_SCORE_SET = 20
 X_SCORE_GAME = 163
 X_SCORE_SERVICE = 155
 
 W_LOGO_WITH_CLOCK = 122  # left from clock
 
-COLOR_SEPARATOR_LINE = COLOR_GREY_DARKEST
-COLOR_BW_VAIHINGEN_ROHR_BLUE = graphics.Color(0x09, 0x65, 0xA6)  # #0965A6
-COLOR_BG_COURT_NAME = COLOR_GREY
-COLOR_FG_COURT_NAME = COLOR_BLACK
-COLOR_FG_PLAYER_NAME = COLOR_GREEN_7c
+__COLOR_BW_VAIHINGEN_ROHR_BLUE = graphics.Color(0x09, 0x65, 0xA6)  # #0965A6
 
-COLOR_FG_SCORE = COLOR_GREY
-COLOR_FG_SCORE_WON = COLOR_WHITE
-COLOR_FG_SCORE_LOST = COLOR_GREY_DARK
+COLOR_SIGNAGE_BG_TOURNAMENT_NAME = __COLOR_BW_VAIHINGEN_ROHR_BLUE
+COLOR_SIGNAGE_FG_TOURNAMENT_NAME = COLOR_WHITE
+
+COLOR_SIGNAGE_FG_COURT_SEPARATOR_LINE = COLOR_GREY  # COLOR_GREY_DARKEST
+COLOR_SIGNAGE_BG_COURT_NAME = COLOR_7C_BLUE  # COLOR_GREY
+COLOR_SIGNAGE_FG_COURT_NAME = COLOR_BLACK
+
+COLOR_SIGNAGE_FG_TEAM_NAME = COLOR_7C_GREEN
+COLOR_SIGNAGE_FG_SCORE = COLOR_GREY
+COLOR_SIGNAGE_FG_SCORE_WON = COLOR_WHITE
+COLOR_SIGNAGE_FG_SCORE_LOST = COLOR_GREY_DARK
 
 X_SET1 = 48
 X_SET2 = 54
 X_SET3 = 60
 
-Y_MARGIN_COURT_T1 = 4
-Y_MARGIN_T1_T2 = 6
-
-ORIENTATION_HORIZONTAL = False
-ORIENTATION_VERTICAL = not ORIENTATION_HORIZONTAL
-
-W = PANEL_WIDTH if ORIENTATION_HORIZONTAL else PANEL_HEIGHT
-H = PANEL_HEIGHT if ORIENTATION_HORIZONTAL else PANEL_WIDTH
-
-W_FLAG = 18
-H_FLAG = 12
-
-W_FLAG_SMALL = W_FLAG / 2  # 9
-H_FLAG_SMALL = H_FLAG / 2  # 6
-
-W_TILE = int(PANEL_WIDTH / 3)  # 64
-H_TILE = int(PANEL_HEIGHT / 2)  # 32
-
-H_FONT_XS = Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(FONT_XS)
-H_FONT_XXS = Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(FONT_XXS)
+IMAGES_SPONSOR_LOGOS = ["images/logos/ITF/ITF_64x32_white_bg.png",
+                        "images/logos/TC BW Vaihingen-Rohr/tc bw vaihingen-rohr 64x32.png",
+                        "images/logos/7C/sevencourts_7c_64x32.png"]
+PERIOD_SPONSOR_FRAME_S = 15  # seconds
 
 
 def panel_info_url(panel_id):
@@ -177,7 +167,7 @@ def player_name(p, noname="Noname"):
     return p["lastname"] or p["firstname"] or noname
 
 
-def thumbnail(image, w=PANEL_WIDTH, h=PANEL_HEIGHT):
+def thumbnail(image, w=W_PANEL, h=H_PANEL):
     # print ("original w: {0}, h: {1}".format(image.width, image.height))
     if image.width > w or image.height > h:
         image.thumbnail((w, h), Image.LANCZOS)
@@ -187,9 +177,10 @@ def thumbnail(image, w=PANEL_WIDTH, h=PANEL_HEIGHT):
 
 def score_color(t1: int, t2: int, finished=True):
     if finished and t1 and t2:
-        return COLOR_FG_SCORE_WON if (t1 > t2) else COLOR_FG_SCORE_LOST
+        return [COLOR_SIGNAGE_FG_SCORE_WON if (t1 > t2) else COLOR_SIGNAGE_FG_SCORE_LOST,
+                COLOR_SIGNAGE_FG_SCORE_WON if (t2 > t1) else COLOR_SIGNAGE_FG_SCORE_LOST]
     else:
-        return COLOR_FG_SCORE
+        return [COLOR_SIGNAGE_FG_SCORE, COLOR_SIGNAGE_FG_SCORE]
 
 
 class SevenCourtsM1(SampleBase):
@@ -212,7 +203,7 @@ class SevenCourtsM1(SampleBase):
                     elif 'idle-info' in panel_info:
                         self.display_idle_mode(panel_info["idle-info"])
                     elif 'tournament-name' in panel_info:
-                        self.display_itftournament(panel_info)
+                        self.display_signage_itftournament(panel_info)
                     elif 'team1' in panel_info:
                         self.display_match(panel_info)
                     self.canvas = self.matrix.SwapOnVSync(self.canvas)
@@ -258,15 +249,16 @@ class SevenCourtsM1(SampleBase):
                 self.canvas = self.matrix.SwapOnVSync(self.canvas)
                 time.sleep(1)
 
-    def display_itftournament(self, tournament):
+    def display_signage_itftournament(self, tournament):
         # XXX the panel must be started in VERTICAL mode (./m1_vertical.sh)
 
         # s.https://suprematic.slack.com/archives/DF1LE3XLY/p1719413956323839
 
         tournament_name = tournament.get("tournament-name") or "Welcome!"
-        self.draw_tournament_title(tournament_name, COLOR_WHITE, COLOR_BW_VAIHINGEN_ROHR_BLUE)
+        self.draw_tournament_title(tournament_name)
 
-        courts = tournament.get("courts")
+        # FIXME
+        courts = []  # tournament.get("courts")
         court_number = 1
         for court in courts:
             court_name = court.get("court-name")
@@ -293,123 +285,130 @@ class SevenCourtsM1(SampleBase):
                 is_doubles = match.get("is-doubles")
                 t1 = match.get("team1")
                 t1_name = t1.get("name").split(",")[0]  # FIXME remove it when data is properly set
-                t1_flag = t1.get("flag")
+                t1_flag = None if is_doubles else t1.get("flag")
                 t2 = match.get("team2")
                 t2_name = t2.get("name").split(",")[0]  # FIXME remove it when data is properly set
-                t2_flag = t2.get("flag")
-                self.draw_match_with_flags(court_number, court_name, t1_name, t2_name, t1_flag, t2_flag,
-                                           t1_set1, t2_set1, t1_set2, t2_set2, t1_set3, t2_set3)
+                t2_flag = None if is_doubles else t2.get("flag")
+                self.draw_signage_match(court_number, court_name, t1_name, t2_name, t1_flag, t2_flag,
+                                        t1_set1, t2_set1, t1_set2, t2_set2, t1_set3, t2_set3)
             else:
-                self.draw_match_with_flags(court_number, court_name, "", "")
+                self.draw_signage_match(court_number, court_name, "", "")
 
             court_number += 1
 
-        # self.draw_match_with_flags(1, "1.Stuttgart", "Clementenko", "Jurikova", "germany", "serbia", 1, 6, 6, 2, 3, 4)
-        # self.draw_match_with_flags(2, "2.Brunold Auto", "Seiboldenko", "Schädel", "germany", "germany", 6, 3, 2, 2)
-        # self.draw_match_with_flags(3, "3.Lapp", "Köläkäiüißenko", "Kling", "japan", "switzerland", 2, 0)
-        # self.draw_match_with_flags(4, "4.Egeler", "Mikulslytenko", "Radovanovic", "lithuania", "croatia")
-        self.draw_tournament_sponsor()
+        self.draw_signage_match(1, "1.Stuttgart", "Clementenko", "Jurikova", "germany", "serbia", 1, 6, 6, 2, 3, 4)
+        self.draw_signage_match(2, "2.Brunold Auto", "Seiboldenko", "Schädel", "germany", "germany", 6, 3, 2, 2)
+        self.draw_signage_match(3, "3.Lapp", "Köläkäiüißenko", "Kling", "japan", "switzerland", 2, 0)
+        self.draw_signage_match(4, "4.Egeler", "Mikulslytenko", "Radovanovic", "lithuania", "croatia")
 
-    def draw_court_name(self, x: int, y: int, court_name):
-        graphics.DrawLine(self.canvas, x, y, PANEL_WIDTH, y, COLOR_SEPARATOR_LINE)
+        self.draw_signage_tournament_sponsors()
+
+    def draw_signage_court_name(self, x: int, y0: int, court_name):
+        y = y0
+        graphics.DrawLine(self.canvas, x, y, W_PANEL, y, COLOR_SIGNAGE_FG_COURT_SEPARATOR_LINE)
         y += 1
-        fill_rect(self.canvas, x, y, 64, 1 + H_FONT_XXS + 1, COLOR_BG_COURT_NAME)
+        fill_rect(self.canvas, x, y, 64, 1 + H_FONT_XXS + 1, COLOR_SIGNAGE_BG_COURT_NAME)
         y += H_FONT_XXS + 1
-        graphics.DrawText(self.canvas, FONT_XXS, x + 1, y, COLOR_FG_COURT_NAME, court_name)
+        graphics.DrawText(self.canvas, FONT_XXS, x + 1, y, COLOR_SIGNAGE_FG_COURT_NAME, court_name or '')
+        y += 1
+        graphics.DrawLine(self.canvas, x, y, W_PANEL, y, COLOR_SIGNAGE_FG_COURT_SEPARATOR_LINE)
+        y += 1
+        return y - y0  # 9
 
-    def draw_flag_small(self, flag, x, y):
-        image = Image.open(flag).convert('RGB')
+    def draw_signage_flag(self, flag_file, x, y):
+        image = Image.open(flag_file).convert('RGB')
         image.thumbnail((W_FLAG_SMALL, H_FLAG_SMALL), Image.LANCZOS)
         self.canvas.SetImage(image, x, y)
 
-    def draw_match_with_flags(self, n: int, court_name, t1_name, t2_name, t1_flag=None, t2_flag=None,
-                              t1_set1=None, t2_set1=None, t1_set2=None, t2_set2=None, t1_set3=None, t2_set3=None):
-
-        y0 = 32 * n if ORIENTATION_VERTICAL else (0 if n % 2 else H_TILE)
-        x0 = 0 if ORIENTATION_VERTICAL else (W_TILE if n < 3 else W_TILE * 2)
-
-        self.draw_court_name(x0, y0, court_name)
-
-        h_court_name = H_FONT_XXS + Y_MARGIN_COURT_T1
-
-        y = y0 + 1 + h_court_name + 1
-
-        x_name = x0
-        w_flag = 0
-        if t1_flag:
+    def draw_signage_match_team(self, x0: int, y0: int, team_name, team_flag,
+                                score_set1, color_set1, score_set2, color_set2, score_set3, color_set3):
+        y = y0
+        if team_flag:
             w_flag = W_FLAG_SMALL
             x_name = x0 + W_FLAG_SMALL + 1
-            t1_flag_file = "images/flags/" + t1_flag + ".png"
-            self.draw_flag_small(t1_flag_file, x0, y)
+            team_flag_file = "images/flags/" + team_flag + ".png"
+            self.draw_signage_flag(team_flag_file, x0, y)
+        else:
+            w_flag = 0
+            x_name = x0
 
         y += H_FONT_XS
         w_name_max = W_TILE - w_flag
+        if score_set3 is not None:
+            w_name_max = X_SET1 - 2 - w_flag
+            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET1, y, color_set1, str(score_set1))
+            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, color_set2, str(score_set2))
+            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, color_set3, str(score_set3))
+        elif score_set2 is not None:
+            w_name_max = X_SET2 - 2 - w_flag
+            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, color_set1, str(score_set1))
+            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, color_set2, str(score_set2))
+        elif score_set1 is not None:
+            w_name_max = X_SET3 - 2 - w_flag
+            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, color_set3, str(score_set1))
+
+        team_name_truncated = truncate_text(FONT_XS, w_name_max, team_name)
+        graphics.DrawText(self.canvas, FONT_XS, x_name, y, COLOR_SIGNAGE_FG_TEAM_NAME, team_name_truncated)
+
+    def draw_signage_match(self, court_index: int, court_name, t1_name, t2_name, t1_flag=None, t2_flag=None,
+                           t1_set1=None, t2_set1=None, t1_set2=None, t2_set2=None, t1_set3=None, t2_set3=None):
+
+        color_set1 = color_set2 = color_set3 = [None, None]
         if t1_set3 is not None:
-            w_name_max = X_SET1 - 2 - w_flag
-            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET1, y, score_color(t1_set1, t2_set1), str(t1_set1))
-            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, score_color(t1_set2, t2_set2), str(t1_set2))
-            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set3, t2_set3, False), str(t1_set3))
+            color_set1 = score_color(t1_set1, t2_set1)
+            color_set2 = score_color(t1_set2, t2_set2)
+            color_set3 = score_color(t1_set3, t2_set3, False)
         elif t1_set2 is not None:
-            w_name_max = X_SET2 - 2 - w_flag
-            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, score_color(t1_set1, t2_set1), str(t1_set1))
-            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set2, t2_set2, False), str(t1_set2))
+            color_set1 = score_color(t1_set1, t2_set1)
+            color_set2 = score_color(t1_set2, t2_set2, False)
         elif t1_set1 is not None:
-            w_name_max = X_SET3 - 2 - w_flag
-            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t1_set1, t2_set1, False), str(t1_set1))
+            color_set1 = score_color(t1_set1, t2_set1, False)
 
-        t1_name_truncated = truncate_text(FONT_XS, w_name_max, t1_name)
-        graphics.DrawText(self.canvas, FONT_XS, x_name, y, COLOR_FG_PLAYER_NAME, t1_name_truncated)
+        y0 = 32 * court_index if ORIENTATION_VERTICAL else (0 if court_index % 2 else H_TILE)
+        x0 = 0 if ORIENTATION_VERTICAL else (W_TILE if court_index < 3 else W_TILE * 2)
 
-        y += Y_MARGIN_T1_T2
+        h_court_name = self.draw_signage_court_name(x0, y0, court_name)
 
-        x_name = x0
-        w_flag = 0
-        if t2_flag:
-            w_flag = W_FLAG_SMALL
-            x_name = x0 + W_FLAG_SMALL + 1
-            t2_flag_file = "images/flags/" + t2_flag + ".png"
-            self.draw_flag_small(t2_flag_file, x0, y)
+        y = y0 + h_court_name + 4
 
-        w_name_max = W_TILE - w_flag
+        self.draw_signage_match_team(x0, y, t1_name, t1_flag,
+                                     t1_set1, color_set1[0],
+                                     t1_set2, color_set2[0],
+                                     t1_set3, color_set3[0])
 
-        y += H_FONT_XS
-        if t2_set3 is not None:
-            w_name_max = X_SET1 - 2 - w_flag
-            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET1, y, score_color(t2_set1, t1_set1), str(t2_set1))
-            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, score_color(t2_set2, t1_set2), str(t2_set2))
-            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set3, t1_set3, False), str(t2_set3))
-        elif t2_set2 is not None:
-            w_name_max = X_SET2 - 2 - w_flag
-            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET2, y, score_color(t2_set1, t1_set1), str(t2_set1))
-            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set2, t1_set2, False), str(t2_set2))
-        elif t2_set1 is not None:
-            w_name_max = X_SET3 - 2 - w_flag
-            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, score_color(t2_set1, t1_set1, False), str(t2_set1))
+        y += 9
 
-        t2_name_truncated = truncate_text(FONT_XS, w_name_max, t2_name)
-        graphics.DrawText(self.canvas, FONT_XS, x_name, y, COLOR_FG_PLAYER_NAME, t2_name_truncated)
+        self.draw_signage_match_team(x0, y, t2_name, t2_flag,
+                                     t1_set1, color_set1[1],
+                                     t1_set2, color_set2[1],
+                                     t1_set3, color_set3[1])
 
-    def draw_tournament_title(self, title, color_fg, color_bg):
-        fill_rect(self.canvas, 0, 0, W_TILE, H_TILE, color_bg)
+    def draw_tournament_title(self, title):
+        fill_rect(self.canvas, 0, 0, W_TILE, H_TILE, COLOR_SIGNAGE_BG_TOURNAMENT_NAME)
         font = FONT_S
         lines = title.split(" ", 1)
         y = y_font_center(font, H_TILE / len(lines))
         for line in lines:
             x = x_font_center(line, W_TILE, font)
-            graphics.DrawText(self.canvas, font, x, y, color_fg, line)
+            graphics.DrawText(self.canvas, font, x, y, COLOR_SIGNAGE_FG_TOURNAMENT_NAME, line)
             y += font.height
 
-    def draw_tournament_sponsor(self):
-        file_image = "images/logos/ITF/ITF_64x32_white_bg.png"
-        # if tick % 2 else "images/logos/TC BW Vaihingen-Rohr/tc bw vaihingen-rohr 64x32.png"
+    def draw_signage_tournament_sponsors(self):
+
+        seconds_now = int(time.time())
+        seconds_passed = seconds_now - SECONDS_START
+        sponsor_index = (seconds_passed // PERIOD_SPONSOR_FRAME_S) % len(IMAGES_SPONSOR_LOGOS)
+
+        log("sponsor # {}".format(sponsor_index))
+        file_image = IMAGES_SPONSOR_LOGOS[sponsor_index]
         x = 0
-        y = H_TILE if ORIENTATION_HORIZONTAL else (H - H_TILE)
+        y = H_PANEL - H_TILE
         self.canvas.SetImage(Image.open(file_image).convert('RGB'), x, y)
 
     def display_logo(self, image, show_clock):
-        w = W_LOGO_WITH_CLOCK if show_clock else PANEL_WIDTH
+        w = W_LOGO_WITH_CLOCK if show_clock else W_PANEL
         x = (w - image.width) / 2
-        y = (PANEL_HEIGHT - image.height) / 2
+        y = (H_PANEL - image.height) / 2
         self.canvas.SetImage(image.convert('RGB'), x, y)
 
     def display_idle_mode(self, idle_info):
@@ -438,7 +437,7 @@ class SevenCourtsM1(SampleBase):
                         image = Image.open(requests.get(image_url, stream=True).raw)
 
                         show_clock = image.width < W_LOGO_WITH_CLOCK
-                        image_max_width = W_LOGO_WITH_CLOCK if show_clock else PANEL_WIDTH
+                        image_max_width = W_LOGO_WITH_CLOCK if show_clock else W_PANEL
 
                         image = thumbnail(image, image_max_width)
                         image.save(path, 'png')
@@ -446,15 +445,15 @@ class SevenCourtsM1(SampleBase):
                     image = Image.open(requests.get(image_url, stream=True).raw)
 
                     show_clock = image.width < W_LOGO_WITH_CLOCK
-                    image_max_width = W_LOGO_WITH_CLOCK if show_clock else PANEL_WIDTH
+                    image_max_width = W_LOGO_WITH_CLOCK if show_clock else W_PANEL
 
                     image = thumbnail(image, image_max_width)
                 self.display_logo(image, show_clock)
             else:
                 message = idle_info["message"] or ''
-                color = COLOR_BLUE_7c
-                h_available = PANEL_HEIGHT - 2 - 20 - 2  # minus clock
-                w_available = PANEL_WIDTH
+                color = COLOR_7C_BLUE
+                h_available = H_PANEL - 2 - 20 - 2  # minus clock
+                w_available = W_PANEL
 
                 lines = message.split('\n')
 
@@ -510,7 +509,7 @@ class SevenCourtsM1(SampleBase):
         if len(t1_set_scores) == 0:
             t1_set1 = t2_set1 = t1_set2 = t2_set2 = t1_set3 = t2_set3 = ""
             c_t1_set1 = c_t2_set1 = c_t1_set2 = c_t2_set2 = c_t1_set3 = c_t2_set3 = COLOR_BLACK
-            x_set1 = x_set2 = x_set3 = PANEL_WIDTH
+            x_set1 = x_set2 = x_set3 = W_PANEL
         elif len(t1_set_scores) == 1:
             t1_set1 = match["team1"]["setScores"][0]
             t2_set1 = match["team2"]["setScores"][0]
@@ -523,7 +522,7 @@ class SevenCourtsM1(SampleBase):
                 c_t1_set1 = c_t2_set1 = COLOR_SCORE_SET
             c_t1_set2 = c_t2_set2 = c_t1_set3 = c_t2_set3 = COLOR_BLACK
             x_set1 = X_MIN_SCOREBOARD + W_SCORE_SET + W_SCORE_SET
-            x_set2 = x_set3 = PANEL_WIDTH
+            x_set2 = x_set3 = W_PANEL
 
         elif len(t1_set_scores) == 2:
             t1_set1 = match["team1"]["setScores"][0]
@@ -542,7 +541,7 @@ class SevenCourtsM1(SampleBase):
             c_t1_set3 = c_t2_set3 = COLOR_BLACK
             x_set1 = X_MIN_SCOREBOARD + W_SCORE_SET
             x_set2 = x_set1 + W_SCORE_SET
-            x_set3 = PANEL_WIDTH
+            x_set3 = W_PANEL
 
         else:  # (len(t1_set_scores)==3) -- 4+ sets are not supported yet
             t1_set1 = match["team1"]["setScores"][0]
@@ -591,12 +590,12 @@ class SevenCourtsM1(SampleBase):
             x_set3 = x_set2 + W_SCORE_SET
 
         # center score digits
-        y_t1 = y_font_center(FONT_SCORE, PANEL_HEIGHT / 2)
-        y_t2 = y_t1 + (PANEL_HEIGHT / 2)
+        y_t1 = y_font_center(FONT_SCORE, H_PANEL / 2)
+        y_t2 = y_t1 + (H_PANEL / 2)
 
         # "cover" the score area so that names do not intersect
         x_score = min(x_set1, X_SCORE_SERVICE) - MARGIN_NAMES_SCOREBOARD
-        fill_rect(self.canvas, x_score, 0, PANEL_WIDTH - x_score, PANEL_HEIGHT, COLOR_SCORE_BACKGROUND)
+        fill_rect(self.canvas, x_score, 0, W_PANEL - x_score, H_PANEL, COLOR_SCORE_BACKGROUND)
 
         x_t1_score_game = X_SCORE_GAME if len(t1_game) != 1 else X_SCORE_GAME + 8
         x_t2_score_game = X_SCORE_GAME if len(t2_game) != 1 else X_SCORE_GAME + 8
@@ -626,8 +625,8 @@ class SevenCourtsM1(SampleBase):
                 [y, y, y, y, y, y, y],
                 [b, y, y, y, y, y, b],
                 [b, b, y, y, y, b, b]]
-            y_service_t1 = int(PANEL_HEIGHT / 2 / 2 - len(ball) / 2)
-            y_service_t2 = y_service_t1 + PANEL_HEIGHT / 2
+            y_service_t1 = int(H_PANEL / 2 / 2 - len(ball) / 2)
+            y_service_t2 = y_service_t1 + H_PANEL / 2
             if t1_on_serve:
                 draw_matrix(self.canvas, ball, X_SCORE_SERVICE, y_service_t1)
             elif t2_on_serve:
@@ -661,7 +660,7 @@ class SevenCourtsM1(SampleBase):
             t1p2_flag = None if not t1p2_flag else load_flag_image(t1p2_flag)
             t2p1_flag = None if not t2p1_flag else load_flag_image(t2p1_flag)
             t2p2_flag = None if not t2p2_flag else load_flag_image(t2p2_flag)
-            flag_width = FLAG_WIDTH
+            flag_width = W_FLAG
         else:
             flag_width = 0
 
@@ -705,10 +704,10 @@ class SevenCourtsM1(SampleBase):
 
         x = flag_width + 2
         if match["isTeamEvent"] or not match["isDoubles"]:
-            name_max_height = int(PANEL_HEIGHT / 2 - 2)  # =>30
+            name_max_height = int(H_PANEL / 2 - 2)  # =>30
             font = pick_font_that_fits(name_max_width, name_max_height, t1p1, t2p1)
-            y_t1 = y_font_center(font, PANEL_HEIGHT / 2)
-            y_t2 = y_t1 + PANEL_HEIGHT / 2
+            y_t1 = y_font_center(font, H_PANEL / 2)
+            y_t2 = y_t1 + H_PANEL / 2
             graphics.DrawText(self.canvas, font, x, y_t1, COLOR_TEAM_NAME, t1p1)
             graphics.DrawText(self.canvas, font, x, y_t2, COLOR_TEAM_NAME, t2p1)
             if display_flags:
@@ -721,7 +720,7 @@ class SevenCourtsM1(SampleBase):
             # (NAME)
             # 1 (14) 1 (14) 2 2 (14) 1 (14) 1
 
-            name_max_height = 1 + FLAG_HEIGHT + 1  # => 14
+            name_max_height = 1 + H_FLAG + 1  # => 14
 
             font = pick_font_that_fits(name_max_width, name_max_height, t1p1, t1p2, t2p1, t2p2)
 
@@ -741,9 +740,9 @@ class SevenCourtsM1(SampleBase):
                 else:
                     # 2 (12) 3 (12) 3 3 (12) 3 (12) 2
                     y_flag_t1p1 = 2
-                    y_flag_t1p2 = y_flag_t1p1 + FLAG_HEIGHT + 3
-                    y_flag_t2p1 = y_flag_t1p2 + FLAG_HEIGHT + 3 + 3
-                    y_flag_t2p2 = y_flag_t2p1 + FLAG_HEIGHT + 3
+                    y_flag_t1p2 = y_flag_t1p1 + H_FLAG + 3
+                    y_flag_t2p1 = y_flag_t1p2 + H_FLAG + 3 + 3
+                    y_flag_t2p2 = y_flag_t2p1 + H_FLAG + 3
 
                     if t1p1_flag is not None:
                         self.canvas.SetImage(t1p1_flag, 0, y_flag_t1p1)
@@ -759,11 +758,11 @@ class SevenCourtsM1(SampleBase):
 
     def display_singles_flags(self, img_t1, img_t2):
         if img_t1 is not None:
-            y_flag_t1 = max(0, PANEL_HEIGHT / 2 / 2 - img_t1.height / 2)
+            y_flag_t1 = max(0, H_PANEL / 2 / 2 - img_t1.height / 2)
             self.canvas.SetImage(img_t1, 0, y_flag_t1)
 
         if img_t2 is not None:
-            y_flag_t2 = max(PANEL_HEIGHT / 2, PANEL_HEIGHT / 2 + PANEL_HEIGHT / 2 / 2 - img_t2.height / 2)
+            y_flag_t2 = max(H_PANEL / 2, H_PANEL / 2 + H_PANEL / 2 / 2 - img_t2.height / 2)
             self.canvas.SetImage(img_t2, 0, y_flag_t2)
 
     def display_winner(self, match):
@@ -788,7 +787,7 @@ class SevenCourtsM1(SampleBase):
         if match_result == "T1_WON":
             draw_matrix(self.canvas, cup, x_medal, medal_delta)
         elif match_result == "T2_WON":
-            draw_matrix(self.canvas, cup, x_medal, PANEL_HEIGHT / 2 + medal_delta)
+            draw_matrix(self.canvas, cup, x_medal, H_PANEL / 2 + medal_delta)
 
     def display_match(self, match):
         # draw_grid(self.canvas, 8, 8, COLOR_GREY_DARKEST)
@@ -797,14 +796,14 @@ class SevenCourtsM1(SampleBase):
         self.display_winner(match)
 
     def draw_error_indicator(self):
-        x = (0, 0, 0)
-        o = (111, 168, 220)  # COLOR_BLUE_7c
+        x = (COLOR_BLACK.red, COLOR_BLACK.green, COLOR_BLACK.blue)
+        o = (COLOR_7C_BLUE.red, COLOR_7C_BLUE.green, COLOR_7C_BLUE.blue)
         dot = [
             [x, o, o, x],
             [o, o, o, o],
             [o, o, o, o],
             [x, o, o, x]]
-        draw_matrix(self.canvas, dot, PANEL_WIDTH - 4, PANEL_HEIGHT - 4)
+        draw_matrix(self.canvas, dot, W_PANEL - 4, H_PANEL - 4)
 
 
 # Main function

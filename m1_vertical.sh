@@ -1,8 +1,7 @@
 #!/bin/bash
-
 set -eu
-
 cd $(dirname $0)
+export ORIENTATION_VERTICAL="True"
 python3 ./m1.py \
   --led-cols=64 \
   --led-rows=32 \

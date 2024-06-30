@@ -9,12 +9,24 @@ else:
 from PIL import Image
 from functools import partial
 
-# Constants for the 7C M1 panel (P5 192 x 64)
-PANEL_WIDTH = 192
-PANEL_HEIGHT = 64
+ORIENTATION_VERTICAL = os.getenv('ORIENTATION_VERTICAL', False)
+ORIENTATION_HORIZONTAL = not ORIENTATION_VERTICAL
 
-FLAG_HEIGHT = 12
-FLAG_WIDTH = 18
+# Constants for the 7C M1 panel (P5 192 x 64)
+__W_PANEL = 192
+__H_PANEL = 64
+W_PANEL = __W_PANEL if ORIENTATION_HORIZONTAL else __H_PANEL
+H_PANEL = __H_PANEL if ORIENTATION_HORIZONTAL else __W_PANEL
+
+W_TILE = int(__W_PANEL / 3)  # 64
+H_TILE = int(__H_PANEL / 2)  # 32
+
+
+
+H_FLAG = 12
+W_FLAG = 18
+W_FLAG_SMALL = W_FLAG / 2  # 9
+H_FLAG_SMALL = H_FLAG / 2  # 6
 
 # Style constants
 COLOR_WHITE = graphics.Color(255, 255, 255)
@@ -27,9 +39,9 @@ COLOR_YELLOW = graphics.Color(255, 255, 0)
 COLOR_GREEN = graphics.Color(0, 255, 0)
 COLOR_BLUE = graphics.Color(0, 0, 255)
 
-COLOR_GREEN_7c = graphics.Color(147, 196, 125)
-COLOR_BLUE_7c = graphics.Color(111, 168, 220)
-COLOR_GOLD_7c = graphics.Color(255, 215, 0)
+COLOR_7C_GREEN = graphics.Color(147, 196, 125)
+COLOR_7C_BLUE = graphics.Color(111, 168, 220)
+COLOR_7C_GOLD = graphics.Color(255, 215, 0)
 
 COLOR_DEFAULT = COLOR_GREY
 
@@ -114,6 +126,9 @@ Y_FONT_SYMBOL_NORMAL_HEIGHTS = {
     FONTS_V2[4]: 6,
     FONTS_V2[5]: 5
 }
+
+H_FONT_XS = Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(FONT_XS)
+H_FONT_XXS = Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(FONT_XXS)
 
 
 def ip_address():
@@ -212,14 +227,14 @@ def draw_text(canvas, x, y, text, font=FONT_DEFAULT, color=COLOR_DEFAULT):
 
 
 def draw_grid(canvas, rows=4, cols=4, color=COLOR_GREY_DARKEST):
-    x_step_size = int(PANEL_WIDTH / cols)
+    x_step_size = int(W_PANEL / cols)
     for i in range(cols):
         x = i * x_step_size
-        graphics.DrawLine(canvas, x, 0, x, PANEL_HEIGHT, color)
-    y_step_size = int(PANEL_HEIGHT / rows)
+        graphics.DrawLine(canvas, x, 0, x, H_PANEL, color)
+    y_step_size = int(H_PANEL / rows)
     for i in range(rows):
         y = i * y_step_size
-        graphics.DrawLine(canvas, 0, y, PANEL_WIDTH, y, color)
+        graphics.DrawLine(canvas, 0, y, W_PANEL, y, color)
 
 
 def draw_matrix(canvas, m, x0, y0):
