@@ -4,7 +4,9 @@
 
 ### OS & dev tools
 
-- Install [Raspberry PI OS Lite 64 bit](https://www.raspberrypi.com/documentation/computers/getting-started.html#installing-the-operating-system)
+- Install [Raspberry PI OS Lite 64 bit] ver. 5.15.84-v8+ 
+  - https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2023-02-22/
+  - (https://www.raspberrypi.com/documentation/computers/getting-started.html#installing-the-operating-system)
 - Insert the SD card to Raspi, connect monitor, keyboard, ethernet
 - On the first boot: set login: "user" and password: "password" 
     - **FIXME** define non-default login/password
@@ -228,6 +230,7 @@ Reboot. The panel should display:
 => ~5 second current time and the blue dot
 => current time only
 
+
 ## Update Firmware
 
 - Login to `7c-vpn.suprematic.team` via SSH using personal LDAP credentials
@@ -254,6 +257,14 @@ Start update script for each panel, e.g.:
 ./7c-update-panel.sh 10.8.0.2
 ```
 
+
+### WiFi settings without admin app
+
+Being logged in via SSH to the device:
+
+```shell
+echo "{\"ssid\":\"<SSID>\",\"psk\":\"<PWD>\"}" > /etc/7c_m1_assoc.json
+```
 
 ## Install development environment
 
