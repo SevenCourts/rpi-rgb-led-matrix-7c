@@ -263,7 +263,7 @@ class SevenCourtsM1(SampleBase):
 
         # s.https://suprematic.slack.com/archives/DF1LE3XLY/p1719413956323839
 
-        tournament_name = tournament.get("tournament-name")
+        tournament_name = tournament.get("tournament-name") or "###"
         # TODO 2-line separator
         self.draw_tournament_title(tournament_name, "###", COLOR_WHITE, COLOR_BW_VAIHINGEN_ROHR_BLUE)
 
