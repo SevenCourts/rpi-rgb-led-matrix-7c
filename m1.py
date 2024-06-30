@@ -401,7 +401,6 @@ class SevenCourtsM1(SampleBase):
         seconds_passed = seconds_now - SECONDS_START
         sponsor_index = (seconds_passed // PERIOD_SPONSOR_FRAME_S) % len(IMAGES_SPONSOR_LOGOS)
 
-        log("sponsor # {}".format(sponsor_index))
         file_image = IMAGES_SPONSOR_LOGOS[sponsor_index]
         x = 0
         y = H_PANEL - H_TILE
@@ -792,7 +791,6 @@ class SevenCourtsM1(SampleBase):
             draw_matrix(self.canvas, cup, x_medal, H_PANEL / 2 + medal_delta)
 
     def display_match(self, match):
-        # draw_grid(self.canvas, 8, 8, COLOR_GREY_DARKEST)
         self.display_names(match)
         self.display_score(match)
         self.display_winner(match)
