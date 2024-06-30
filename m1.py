@@ -259,9 +259,8 @@ class SevenCourtsM1(SampleBase):
         tournament_name = tournament.get("tournament-name") or "Welcome!"
         self.draw_tournament_title(tournament_name)
 
-        # FIXME
-        courts = []  # tournament.get("courts")
-        court_number = 1
+        courts = tournament.get("courts")
+        court_index = 1
         for court in courts:
             court_name = court.get("court-name")
             match = court.get("match")
@@ -283,7 +282,6 @@ class SevenCourtsM1(SampleBase):
                     t2_set2 = set_scores[1][1]
                     t1_set3 = set_scores[2][0]
                     t2_set3 = set_scores[2][1]
-
                 is_doubles = match.get("is-doubles")
                 t1 = match.get("team1")
                 t1_name = t1.get("name").split(",")[0]  # FIXME remove it when data is properly set
@@ -291,17 +289,17 @@ class SevenCourtsM1(SampleBase):
                 t2 = match.get("team2")
                 t2_name = t2.get("name").split(",")[0]  # FIXME remove it when data is properly set
                 t2_flag = None if is_doubles else t2.get("flag")
-                self.draw_signage_match(court_number, court_name, t1_name, t2_name, t1_flag, t2_flag,
+                self.draw_signage_match(court_index, court_name, t1_name, t2_name, t1_flag, t2_flag,
                                         t1_set1, t2_set1, t1_set2, t2_set2, t1_set3, t2_set3)
             else:
-                self.draw_signage_match(court_number, court_name, "", "")
+                self.draw_signage_match(court_index, court_name, "", "")
+            court_index += 1
 
-            court_number += 1
-
-        self.draw_signage_match(1, "1.Stuttgart", "Clementenko", "Jurikova", "germany", "serbia", 1, 6, 6, 2, 3, 4)
-        self.draw_signage_match(2, "2.Brunold Auto", "Seiboldenko", "Schädel", "germany", "germany", 6, 3, 2, 2)
-        self.draw_signage_match(3, "3.Lapp", "Köläkäiüißenko", "Kling", "japan", "switzerland", 2, 0)
-        self.draw_signage_match(4, "4.Egeler", "Mikulslytenko", "Radovanovic", "lithuania", "croatia")
+        # UI test data
+        # self.draw_signage_match(1, "1.Stuttgart", "Clementenko", "Jurikova", "germany", "serbia", 1, 6, 6, 2, 3, 4)
+        # self.draw_signage_match(2, "2.Brunold Auto", "Seiboldenko", "Schädel", "germany", "germany", 6, 3, 2, 2)
+        # self.draw_signage_match(3, "3.Lapp", "Köläkäiüißenko", "Kling", "japan", "switzerland", 2, 0)
+        # self.draw_signage_match(4, "4.Egeler", "Mikulslytenko", "Radovanovic", "lithuania", "croatia")
 
         self.draw_signage_tournament_sponsors()
 
