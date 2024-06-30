@@ -140,6 +140,13 @@ def y_font_center(font, container_height):
     return (container_height - y_offset_font) / 2 + y_offset_font
 
 
+def x_font_center(text, container_width, font):
+    """Returns x position for the given text and font to be placed horizontally centered"""
+    text_width = 0
+    for c in text:
+        text_width += font.CharacterWidth(ord(c))
+    return max(0, (container_width - text_width) / 2)
+
 def width_in_pixels(font, text):
     result = 0
     for c in text:

@@ -263,9 +263,8 @@ class SevenCourtsM1(SampleBase):
 
         # s.https://suprematic.slack.com/archives/DF1LE3XLY/p1719413956323839
 
-        tournament_name = tournament.get("tournament-name") or "###"
-        # TODO 2-line separator
-        self.draw_tournament_title(tournament_name, "###", COLOR_WHITE, COLOR_BW_VAIHINGEN_ROHR_BLUE)
+        tournament_name = tournament.get("tournament-name") or "Welcome!"
+        self.draw_tournament_title(tournament_name, COLOR_WHITE, COLOR_BW_VAIHINGEN_ROHR_BLUE)
 
         courts = tournament.get("courts")
         court_number = 1
@@ -390,10 +389,15 @@ class SevenCourtsM1(SampleBase):
         t2_name_truncated = truncate_text(FONT_XS, w_name_max, t2_name)
         graphics.DrawText(self.canvas, FONT_XS, x_name, y, COLOR_FG_PLAYER_NAME, t2_name_truncated)
 
-    def draw_tournament_title(self, title1, title2, color_fg, color_bg):
+    def draw_tournament_title(self, title, color_fg, color_bg):
         fill_rect(self.canvas, 0, 0, W_TILE, H_TILE, color_bg)
-        graphics.DrawText(self.canvas, FONT_S, 0, 12, color_fg, title1)
-        graphics.DrawText(self.canvas, FONT_S, 2, 24, color_fg, title2)
+        font = FONT_S
+        lines = title.split(" ", 1)
+        y = y_font_center(font, H_TILE / len(lines))
+        for line in lines:
+            x = x_font_center(line, W_TILE, font)
+            graphics.DrawText(self.canvas, font, x, y, color_fg, line)
+            y += font.height
 
     def draw_tournament_sponsor(self):
         file_image = "images/logos/ITF/ITF_64x32_white_bg.png"
