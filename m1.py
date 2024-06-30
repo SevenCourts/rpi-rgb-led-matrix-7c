@@ -292,10 +292,10 @@ class SevenCourtsM1(SampleBase):
 
                 is_doubles = match.get("is-doubles")
                 t1 = match.get("team1")
-                t1_name = t1.get("name")
+                t1_name = t1.get("name").split(",")[0]  # FIXME remove it when data is properly set
                 t1_flag = t1.get("flag")
                 t2 = match.get("team2")
-                t2_name = t2.get("name")
+                t2_name = t2.get("name").split(",")[0]  # FIXME remove it when data is properly set
                 t2_flag = t2.get("flag")
                 self.draw_match_with_flags(court_number, court_name, t1_name, t2_name, t1_flag, t2_flag,
                                            t1_set1, t2_set1, t1_set2, t2_set2, t1_set3, t2_set3)
