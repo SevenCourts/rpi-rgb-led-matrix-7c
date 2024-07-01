@@ -267,21 +267,22 @@ class SevenCourtsM1(SampleBase):
             if match:
                 t1_set1 = t2_set1 = t1_set2 = t2_set2 = t1_set3 = t2_set3 = None
                 set_scores = match["set-scores"]
-                if len(set_scores) == 1:
-                    t1_set1 = set_scores[0][0]
-                    t2_set1 = set_scores[0][1]
-                elif len(set_scores) == 2:
-                    t1_set1 = set_scores[0][0]
-                    t2_set1 = set_scores[0][1]
-                    t1_set2 = set_scores[1][0]
-                    t2_set2 = set_scores[1][1]
-                elif len(set_scores) == 3:
-                    t1_set1 = set_scores[0][0]
-                    t2_set1 = set_scores[0][1]
-                    t1_set2 = set_scores[1][0]
-                    t2_set2 = set_scores[1][1]
-                    t1_set3 = set_scores[2][0]
-                    t2_set3 = set_scores[2][1]
+                if set_scores is not None:
+                    if len(set_scores) == 1:
+                        t1_set1 = set_scores[0][0]
+                        t2_set1 = set_scores[0][1]
+                    elif len(set_scores) == 2:
+                        t1_set1 = set_scores[0][0]
+                        t2_set1 = set_scores[0][1]
+                        t1_set2 = set_scores[1][0]
+                        t2_set2 = set_scores[1][1]
+                    elif len(set_scores) == 3:
+                        t1_set1 = set_scores[0][0]
+                        t2_set1 = set_scores[0][1]
+                        t1_set2 = set_scores[1][0]
+                        t2_set2 = set_scores[1][1]
+                        t1_set3 = set_scores[2][0]
+                        t2_set3 = set_scores[2][1]
                 is_doubles = match.get("is-doubles")
                 t1 = match.get("team1")
                 t1_name = t1.get("name").split(",")[0]  # FIXME remove it when data is properly set
