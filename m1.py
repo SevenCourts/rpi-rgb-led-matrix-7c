@@ -61,7 +61,7 @@ FONT_TEAM_NAME_M = FONT_M
 FONT_TEAM_NAME_S = FONT_S
 
 if os.getenv('USE_RGB_MATRIX_EMULATOR', False):
-    FONT_CLOCK = FONT_L
+    FONT_CLOCK = FONT_L if ORIENTATION_HORIZONTAL else FONT_M
     FONT_SCORE = FONT_L
 else:
     FONT_CLOCK = FONTS_V0[0]
@@ -492,7 +492,7 @@ class SevenCourtsM1(SampleBase):
 
     def display_clock(self):
         text = datetime.now().strftime('%H:%M')
-        x = W_LOGO_WITH_CLOCK + 2 if ORIENTATION_HORIZONTAL else 2
+        x = W_LOGO_WITH_CLOCK + 2 if ORIENTATION_HORIZONTAL else (x_font_center(text, W_PANEL, FONT_CLOCK))
         y = 62 if ORIENTATION_HORIZONTAL else H_PANEL - 2
         draw_text(self.canvas, x, y, text, FONT_CLOCK, COLOR_CLOCK)
 
