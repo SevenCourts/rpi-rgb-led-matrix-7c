@@ -185,6 +185,14 @@ def score_color(t1: int, t2: int, finished=True):
         return [COLOR_SIGNAGE_FG_SCORE, COLOR_SIGNAGE_FG_SCORE]
 
 
+def is_show_clock_with_image(image: Image):
+    return ORIENTATION_VERTICAL or image.width < W_LOGO_WITH_CLOCK
+
+
+def image_max_width(show_clock: bool):
+    return W_PANEL if ORIENTATION_VERTICAL else W_LOGO_WITH_CLOCK if show_clock else W_PANEL
+
+
 class SevenCourtsM1(SampleBase):
     def __init__(self, *args, **kwargs):
         super(SevenCourtsM1, self).__init__(*args, **kwargs)
@@ -405,7 +413,10 @@ class SevenCourtsM1(SampleBase):
         self.canvas.SetImage(Image.open(file_image).convert('RGB'), x, y)
 
     def display_logo(self, image, show_clock):
-        w = W_LOGO_WITH_CLOCK if show_clock else W_PANEL
+        w = W_PANEL
+        if ORIENTATION_HORIZONTAL and show_clock:
+            w = W_LOGO_WITH_CLOCK
+
         x = (w - image.width) / 2
         y = (H_PANEL - image.height) / 2
         self.canvas.SetImage(image.convert('RGB'), x, y)
@@ -418,7 +429,9 @@ class SevenCourtsM1(SampleBase):
             if 'image-preset' in idle_info and idle_info["image-preset"] is not None:
                 path = "images/logos/" + idle_info["image-preset"]
                 image = Image.open(path)
-                show_clock = image.width < W_LOGO_WITH_CLOCK
+                show_clock = is_show_clock_with_image(image)
+                w_max = image_max_width(show_clock)
+                image = thumbnail(image, w_max)
                 self.display_logo(image, show_clock)
             elif 'image-url' in idle_info and idle_info["image-url"] is not None:
                 image_url = BASE_URL + "/" + idle_info["image-url"]
@@ -431,22 +444,18 @@ class SevenCourtsM1(SampleBase):
                     path = IMAGE_CACHE_DIR + "/" + etag
                     if os.path.isfile(path):
                         image = Image.open(path)
-                        show_clock = image.width < W_LOGO_WITH_CLOCK
+                        show_clock = is_show_clock_with_image(image)
                     else:
                         image = Image.open(requests.get(image_url, stream=True).raw)
-
-                        show_clock = image.width < W_LOGO_WITH_CLOCK
-                        image_max_width = W_LOGO_WITH_CLOCK if show_clock else W_PANEL
-
-                        image = thumbnail(image, image_max_width)
+                        show_clock = is_show_clock_with_image(image)
+                        w_max = image_max_width(show_clock)
+                        image = thumbnail(image, w_max)
                         image.save(path, 'png')
                 else:
                     image = Image.open(requests.get(image_url, stream=True).raw)
-
-                    show_clock = image.width < W_LOGO_WITH_CLOCK
-                    image_max_width = W_LOGO_WITH_CLOCK if show_clock else W_PANEL
-
-                    image = thumbnail(image, image_max_width)
+                    show_clock = is_show_clock_with_image(image)
+                    w_max = image_max_width(show_clock)
+                    image = thumbnail(image, w_max)
                 self.display_logo(image, show_clock)
             else:
                 message = idle_info["message"] or ''
@@ -483,7 +492,9 @@ class SevenCourtsM1(SampleBase):
 
     def display_clock(self):
         text = datetime.now().strftime('%H:%M')
-        draw_text(self.canvas, W_LOGO_WITH_CLOCK + 2, 62, text, FONT_CLOCK, COLOR_CLOCK)
+        x = W_LOGO_WITH_CLOCK + 2 if ORIENTATION_HORIZONTAL else 2
+        y = 62 if ORIENTATION_HORIZONTAL else H_PANEL - 2
+        draw_text(self.canvas, x, y, text, FONT_CLOCK, COLOR_CLOCK)
 
     def display_set_digit(self, x, y, font, color, score):
         # FIXME meh
