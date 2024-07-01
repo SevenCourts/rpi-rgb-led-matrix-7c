@@ -266,7 +266,7 @@ class SevenCourtsM1(SampleBase):
             match = court.get("match")
             if match:
                 t1_set1 = t2_set1 = t1_set2 = t2_set2 = t1_set3 = t2_set3 = None
-                set_scores = match["set-scores"]
+                set_scores = match["set-scores"] or []
                 if len(set_scores) == 1:
                     t1_set1 = set_scores[0][0]
                     t2_set1 = set_scores[0][1]
