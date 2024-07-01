@@ -61,7 +61,7 @@ FONT_TEAM_NAME_M = FONT_M
 FONT_TEAM_NAME_S = FONT_S
 
 if os.getenv('USE_RGB_MATRIX_EMULATOR', False):
-    FONT_CLOCK = FONT_L
+    FONT_CLOCK = FONT_L if ORIENTATION_HORIZONTAL else FONT_M
     FONT_SCORE = FONT_L
 else:
     FONT_CLOCK = FONTS_V0[0] if ORIENTATION_HORIZONTAL else FONT_M
@@ -100,7 +100,7 @@ X_SET2 = 54
 X_SET3 = 60
 
 IMAGES_SPONSOR_LOGOS = ["images/logos/ITF/ITF_64x32_white_bg.png",
-                        "images/logos/TC BW Vaihingen-Rohr/tc bw vaihingen-rohr 64x32.png",
+                        "images/logos/TC BW Vaihingen-Rohr/tc-bw-vaihingen-rohr-64x32.png",
                         "images/logos/7C/sevencourts_7c_64x32.png"]
 PERIOD_SPONSOR_FRAME_S = 15  # seconds
 
