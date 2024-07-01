@@ -345,7 +345,7 @@ class SevenCourtsM1(SampleBase):
             graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, color_set2, str(score_set2))
         elif score_set1 is not None:
             w_name_max = X_SET3 - 2 - w_flag
-            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, color_set3, str(score_set1))
+            graphics.DrawText(self.canvas, FONT_XS, x0 + X_SET3, y, color_set1, str(score_set1))
 
         team_name_truncated = truncate_text(FONT_XS, w_name_max, team_name)
         graphics.DrawText(self.canvas, FONT_XS, x_name, y, COLOR_SIGNAGE_FG_TEAM_NAME, team_name_truncated)
@@ -379,9 +379,9 @@ class SevenCourtsM1(SampleBase):
         y += 9
 
         self.draw_signage_match_team(x0, y, t2_name, t2_flag,
-                                     t1_set1, color_set1[1],
-                                     t1_set2, color_set2[1],
-                                     t1_set3, color_set3[1])
+                                     t2_set1, color_set1[1],
+                                     t2_set2, color_set2[1],
+                                     t2_set3, color_set3[1])
 
     def draw_tournament_title(self, title):
         fill_rect(self.canvas, 0, 0, W_TILE, H_TILE, COLOR_SIGNAGE_BG_TOURNAMENT_NAME)
