@@ -507,7 +507,7 @@ class SevenCourtsM1(SampleBase):
     def display_score(self, match):
         t1_on_serve = match["team1"]["serves"]
         t2_on_serve = match["team2"]["serves"]
-        t1_set_scores = match["team1"]["setScores"]
+        t1_set_scores = match["team1"]["setScores"] or []
         is_match_over = match["matchResult"] in ('T1_WON', 'T2_WON', 'DRAW')
         t1_game = match["team1"].get("gameScore", "")
         t2_game = match["team2"].get("gameScore", "")
@@ -673,7 +673,7 @@ class SevenCourtsM1(SampleBase):
             flag_width = 0
 
         # 2. names
-        t1_set_scores = match["team1"]["setScores"]
+        t1_set_scores = match["team1"]["setScores"] or []
         if len(t1_set_scores) == 0:
             x_scoreboard = X_SCORE_SERVICE
         elif len(t1_set_scores) == 1:
