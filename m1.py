@@ -507,22 +507,21 @@ class SevenCourtsM1(SampleBase):
     def display_score(self, match):
         t1_on_serve = match["team1"]["serves"]
         t2_on_serve = match["team2"]["serves"]
-        t1_set_scores = match["team1"]["setScores"] or []
+        number_of_sets = len(match["team1"]["setScores"] or [])
         is_match_over = match["matchResult"] in ('T1_WON', 'T2_WON', 'DRAW')
         t1_game = match["team1"].get("gameScore", "")
         t2_game = match["team2"].get("gameScore", "")
         t1_game = str(t1_game if t1_game is not None else "")
         t2_game = str(t2_game if t2_game is not None else "")
 
-        if len(t1_set_scores) == 0:
+        if number_of_sets == 0:
             t1_set1 = t2_set1 = t1_set2 = t2_set2 = t1_set3 = t2_set3 = ""
             c_t1_set1 = c_t2_set1 = c_t1_set2 = c_t2_set2 = c_t1_set3 = c_t2_set3 = COLOR_BLACK
             x_set1 = x_set2 = x_set3 = W_PANEL
-        elif len(t1_set_scores) == 1:
+        elif number_of_sets == 1:
             t1_set1 = match["team1"]["setScores"][0]
             t2_set1 = match["team2"]["setScores"][0]
             t1_set2 = t2_set2 = t1_set3 = t2_set3 = ""
-
             if is_match_over:
                 c_t1_set1 = COLOR_SCORE_SET_WON if t1_set1 > t2_set1 else COLOR_SCORE_SET_LOST
                 c_t2_set1 = COLOR_SCORE_SET_WON if t2_set1 > t1_set1 else COLOR_SCORE_SET_LOST
@@ -531,14 +530,12 @@ class SevenCourtsM1(SampleBase):
             c_t1_set2 = c_t2_set2 = c_t1_set3 = c_t2_set3 = COLOR_BLACK
             x_set1 = X_MIN_SCOREBOARD + W_SCORE_SET + W_SCORE_SET
             x_set2 = x_set3 = W_PANEL
-
-        elif len(t1_set_scores) == 2:
+        elif number_of_sets == 2:
             t1_set1 = match["team1"]["setScores"][0]
             t2_set1 = match["team2"]["setScores"][0]
             t1_set2 = match["team1"]["setScores"][1]
             t2_set2 = match["team2"]["setScores"][1]
             t1_set3 = t2_set3 = ""
-
             c_t1_set1 = COLOR_SCORE_SET_WON if t1_set1 > t2_set1 else COLOR_SCORE_SET_LOST
             c_t2_set1 = COLOR_SCORE_SET_WON if t2_set1 > t1_set1 else COLOR_SCORE_SET_LOST
             if is_match_over:
@@ -550,8 +547,7 @@ class SevenCourtsM1(SampleBase):
             x_set1 = X_MIN_SCOREBOARD + W_SCORE_SET
             x_set2 = x_set1 + W_SCORE_SET
             x_set3 = W_PANEL
-
-        else:  # (len(t1_set_scores)==3) -- 4+ sets are not supported yet
+        else:  # (number_of_sets ==3) -- 4+ sets are not supported yet
             t1_set1 = match["team1"]["setScores"][0]
             t2_set1 = match["team2"]["setScores"][0]
             t1_set2 = match["team1"]["setScores"][1]
