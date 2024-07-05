@@ -265,7 +265,7 @@ class SevenCourtsM1(SampleBase):
         tournament_name = tournament.get("tournament-name") or "Welcome!"
         self.draw_tournament_title(tournament_name)
 
-        courts = [] # tournament.get("courts")
+        courts = tournament.get("courts")
         court_index = 1
         for court in courts:
             court_name = court.get("court-name")
@@ -288,15 +288,29 @@ class SevenCourtsM1(SampleBase):
                     t2_set2 = set_scores[1][1]
                     t1_set3 = set_scores[2][0]
                     t2_set3 = set_scores[2][1]
-                is_doubles = match.get("is-doubles")
                 t1 = match.get("team1")
-                t1_name = t1.get("name").split(",")[0]  # FIXME remove it when data is properly set
-                t1_flag = None if is_doubles else t1.get("flag")
                 t2 = match.get("team2")
-                t2_name = t2.get("name").split(",")[0]  # FIXME remove it when data is properly set
-                t2_flag = None if is_doubles else t2.get("flag")
-                self.draw_signage_match_singles(court_index, court_name, t1_name, t2_name, t1_flag, t2_flag,
-                                                t1_set1, t2_set1, t1_set2, t2_set2, t1_set3, t2_set3)
+                if match.get("is-doubles"):
+                    t1p1name = t1.get("player1").get("name")
+                    t1p2name = t1.get("player2").get("name")
+                    t2p1name = t2.get("player1").get("name")
+                    t2p2name = t2.get("player2").get("name")
+                    t1p1flag = t1.get("player1").get("flag")
+                    t1p2flag = t1.get("player2").get("flag")
+                    t2p1flag = t2.get("player1").get("flag")
+                    t2p2flag = t2.get("player2").get("flag")
+                    self.draw_signage_match_doubles([court_index, court_name],
+                                        [[t1p1name, t1p1flag], [t1p2name, t1p2flag]],
+                                        [[t2p1name, t2p1flag], [t2p2name, t2p2flag]],
+                                        set_scores)
+                else:
+                    
+                    t1_name = t1.get("name").split(",")[0]  # FIXME remove it when data is properly set
+                    t1_flag = t1.get("flag")
+                    t2_name = t2.get("name").split(",")[0]  # FIXME remove it when data is properly set
+                    t2_flag = t2.get("flag")
+                    self.draw_signage_match_singles(court_index, court_name, t1_name, t2_name, t1_flag, t2_flag,
+                                                    t1_set1, t2_set1, t1_set2, t2_set2, t1_set3, t2_set3)
             else:
                 self.draw_signage_match_singles(court_index, court_name, "", "")
             court_index += 1
@@ -307,10 +321,10 @@ class SevenCourtsM1(SampleBase):
         # self.draw_signage_match_singles(3, "3.Lapp", "Köläkäiüißenko", "Kling", "japan", "switzerland", 2, 0)
         # self.draw_signage_match_singles(4, "4.Egeler", "Mikulslytenko", "Radovanovic", "lithuania", "croatia")
 
-        self.draw_signage_match_doubles([1, "1. Stuttgart"],
-                                        [["Mikulslytenko", "ukraine"], ["Azarenka", "belarus"]],
-                                        [["Radovanovic", "serbia"], ["Dapkunaite", "lithuania"]],
-                                        [[1, 6], [6, 2], [3, 4]])
+        # self.draw_signage_match_doubles([1, "1. Stuttgart"],
+        #                                [["Mikulslytenko", "ukraine"], ["Azarenka", "belarus"]],
+        #                                [["Radovanovic", "serbia"], ["Dapkunaite", "lithuania"]],
+        #                                [[1, 6], [6, 2], [3, 4]])
 
         self.draw_signage_tournament_sponsors()
 
@@ -365,9 +379,9 @@ class SevenCourtsM1(SampleBase):
                                       score_set1, color_set1, score_set2, color_set2, score_set3, color_set3):
         y = y0
         x = x0 + 7
-        self.draw_signage_flag("images/flags/" + p1flag + ".png", x, y)
+        self.draw_signage_flag("images/flags/" + (p1flag or "VOID") + ".png", x, y)
         x += W_FLAG_SMALL + 12
-        self.draw_signage_flag("images/flags/" + p2flag + ".png", x, y)
+        self.draw_signage_flag("images/flags/" + (p2flag or "VOID") + ".png", x, y)
         y += H_FONT_XS
         x = x0 + 7 + W_FLAG_SMALL + 4
         graphics.DrawText(self.canvas, FONT_XS, x, y, COLOR_SIGNAGE_FG_TEAM_NAME, "/")
