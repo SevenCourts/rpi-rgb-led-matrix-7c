@@ -1,0 +1,20 @@
+[Unit]
+Description=SevenCourts p10 test
+
+Requires=local-fs.target 7c-hostname.service
+After=7c-hostname.service
+DefaultDependencies=no
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+
+## Dirs
+ProtectHome=true
+WorkingDirectory=/opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
+
+ExecStart=/bin/sh p10.sh
+
+[Install]
+WantedBy=basic.target
