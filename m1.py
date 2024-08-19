@@ -141,8 +141,8 @@ def thumbnail(image, w=PANEL_WIDTH, h=PANEL_HEIGHT):
 class SevenCourtsM1(SampleBase):
     def __init__(self, *args, **kwargs):
         super(SevenCourtsM1, self).__init__(*args, **kwargs)
-        self.last_club_mode = None
-        self.last_club_mode_arg = None
+        self.last_known_club_mode = None
+        self.last_known_club_mode_arg = None
 
     def run(self):
         self.canvas = self.matrix.CreateFrameCanvas()
@@ -189,17 +189,17 @@ class SevenCourtsM1(SampleBase):
                     panel_id = register(url)
                 except URLError as e:
                     log(e.reason, url, '#register')
-                    self.display_last_club_mode()
+                    self.display_last_known_club_mode()
                     self.draw_error_indicator()
                 except socket.timeout as e:
                     logging.exception(e)
                     log('Socket timeout in #register', e)
-                    self.display_last_club_mode()
+                    self.display_last_known_club_mode()
                     self.draw_error_indicator()
                 except Exception as e:
                     logging.exception(e)
                     log('Unexpected exception in #register', e)
-                    self.display_last_club_mode()
+                    self.display_last_known_club_mode()
                     self.draw_error_indicator()
 
                 if panel_id != None:
@@ -216,8 +216,8 @@ class SevenCourtsM1(SampleBase):
         self.canvas.SetImage(image.convert('RGB'), x, y)
 
     def display_idle_mode_image_preset(self, image_preset):
-        self.last_club_mode = 'image-preset'
-        self.last_club_mode_arg = image_preset
+        self.last_known_club_mode = 'image-preset'
+        self.last_known_club_mode_arg = image_preset
 
         path = "images/logos/" + image_preset
         image = Image.open(path)
@@ -236,8 +236,8 @@ class SevenCourtsM1(SampleBase):
         return (image, show_clock)
 
     def display_idle_mode_image_url(self, p_image_url):
-        self.last_club_mode = 'image-url'
-        self.last_club_mode_arg = p_image_url
+        self.last_known_club_mode = 'image-url'
+        self.last_known_club_mode_arg = p_image_url
 
         image_url = BASE_URL + "/" + p_image_url
         show_clock = True
@@ -269,8 +269,8 @@ class SevenCourtsM1(SampleBase):
         return show_clock
 
     def display_idle_mode_message(self, p_message):
-        self.last_club_mode = 'message'
-        self.last_club_mode_arg = p_message
+        self.last_known_club_mode = 'message'
+        self.last_known_club_mode_arg = p_message
 
         message = p_message or ''
         color = COLOR_BLUE_7c
@@ -300,19 +300,19 @@ class SevenCourtsM1(SampleBase):
 
         return True
 
-    def display_last_club_mode(self):
-        if self.last_club_mode == 'image-preset':
-            self.display_idle_mode_image_preset(self.last_club_mode_arg)
-        elif self.last_club_mode == 'image-url':
+    def display_last_known_club_mode(self):
+        if self.last_known_club_mode == 'image-preset':
+            self.display_idle_mode_image_preset(self.last_known_club_mode_arg)
+        elif self.last_known_club_mode == 'image-url':
             if (os.path.isfile(LATEST_IDLE_MODE_IMAGE_PATH)):
                 image = Image.open(LATEST_IDLE_MODE_IMAGE_PATH)
                 show_clock = image.width < W_LOGO_WITH_CLOCK
                 self.display_logo(image, show_clock)
                 if show_clock:
                     self.display_clock()
-        elif self.last_club_mode == 'message':
-            self.display_idle_mode_message(self.last_club_mode_arg)
-        elif self.last_club_mode == None:
+        elif self.last_known_club_mode == 'message':
+            self.display_idle_mode_message(self.last_known_club_mode_arg)
+        elif self.last_known_club_mode == None:
             self.display_idle_mode(None)
 
     def display_idle_mode(self, idle_info):
@@ -331,7 +331,7 @@ class SevenCourtsM1(SampleBase):
                 self.display_clock()
         else:
             # TODO display something neutral instead of clock
-            if self.last_club_mode == None:
+            if self.last_known_club_mode == None:
                 self.display_clock()
 
     def display_clock(self):
