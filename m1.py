@@ -29,6 +29,8 @@ os.makedirs(IMAGE_CACHE_DIR, exist_ok = True)
 # The default 0o777 does not work, see https://stackoverflow.com/questions/5231901/permission-problems-when-creating-a-dir-with-os-makedirs-in-python
 os.chmod(IMAGE_CACHE_DIR, 0o777)
 
+LATEST_IDLE_MODE_IMAGE_PATH = IMAGE_CACHE_DIR + '/latest_idle_image'
+
 PANEL_NAME = socket.gethostname()
 
 BASE_URL = os.getenv('TABLEAU_SERVER_BASE_URL', 'https://prod.tableau.tennismath.com')
@@ -139,6 +141,8 @@ def thumbnail(image, w=PANEL_WIDTH, h=PANEL_HEIGHT):
 class SevenCourtsM1(SampleBase):
     def __init__(self, *args, **kwargs):
         super(SevenCourtsM1, self).__init__(*args, **kwargs)
+        self.last_club_mode = None
+        self.last_club_mode_arg = None
 
     def run(self):
         self.canvas = self.matrix.CreateFrameCanvas()
@@ -185,14 +189,17 @@ class SevenCourtsM1(SampleBase):
                     panel_id = register(url)
                 except URLError as e:
                     log(e.reason, url, '#register')
+                    self.display_last_club_mode()
                     self.draw_error_indicator()
                 except socket.timeout as e:
                     logging.exception(e)
                     log('Socket timeout in #register', e)
+                    self.display_last_club_mode()
                     self.draw_error_indicator()
                 except Exception as e:
                     logging.exception(e)
                     log('Unexpected exception in #register', e)
+                    self.display_last_club_mode()
                     self.draw_error_indicator()
 
                 if panel_id != None:
@@ -208,76 +215,121 @@ class SevenCourtsM1(SampleBase):
         y = (PANEL_HEIGHT - image.height) / 2
         self.canvas.SetImage(image.convert('RGB'), x, y)
 
+    def display_idle_mode_image_preset(self, image_preset):
+        self.last_club_mode = 'image-preset'
+        self.last_club_mode_arg = image_preset
+
+        path = "images/logos/" + image_preset
+        image = Image.open(path)
+        show_clock = image.width < W_LOGO_WITH_CLOCK
+        self.display_logo(image, show_clock)
+        return show_clock
+    
+    def download_idle_mode_image(self, image_url):
+        return Image.open(requests.get(image_url, stream=True).raw)
+    
+    def save_idle_mode_image(self, image):
+        show_clock = image.width < W_LOGO_WITH_CLOCK
+        image_max_width = W_LOGO_WITH_CLOCK if show_clock else PANEL_WIDTH
+        image = thumbnail(image, image_max_width)
+        image.save(LATEST_IDLE_MODE_IMAGE_PATH, 'png')
+        return (image, show_clock)
+
+    def display_idle_mode_image_url(self, p_image_url):
+        self.last_club_mode = 'image-url'
+        self.last_club_mode_arg = p_image_url
+
+        image_url = BASE_URL + "/" + p_image_url
+
+        request = urllib.request.Request(image_url, method="HEAD")
+        response = urllib.request.urlopen(request)
+        etag = str(response.headers["ETag"])
+
+        show_clock = True
+
+        if etag != None:
+            path = IMAGE_CACHE_DIR + "/" + etag
+            if (os.path.isfile(path)):
+                image = Image.open(path)
+                show_clock = self.save_idle_mode_image(image)[1]
+            else:
+                saved = self.save_idle_mode_image(self.download_idle_mode_image(image_url))
+                image = saved[0]
+                show_clock = saved[1]
+                image.save(path, 'png')
+        else:
+            saved = self.save_idle_mode_image(self.download_idle_mode_image(image_url))
+            image = saved[0]
+            show_clock = saved[1]
+
+        self.display_logo(image, show_clock)
+        return show_clock
+
+    def display_idle_mode_message(self, p_message):
+        self.last_club_mode = 'message'
+        self.last_club_mode_arg = p_message
+
+        message = p_message or ''
+        color = COLOR_BLUE_7c
+        h_available = PANEL_HEIGHT - 2 - 20 - 2 # minus clock
+        w_available = PANEL_WIDTH
+
+        lines = message.split('\n')
+
+        if len(lines) == 1:
+            l0 = lines[0]
+            font = pick_font_that_fits(w_available, h_available, l0)
+            x0 = max(0, (w_available - width_in_pixels(font, l0)) / 2)
+            y0 = y_font_center(font, h_available)
+            graphics.DrawText(self.canvas, font, x0, y0, color, l0)
+        else:
+            l0 = lines[0]
+            l1 = lines[1]
+            font = pick_font_that_fits(w_available, h_available, l0, l1)
+
+            x0 = max(0, (w_available - width_in_pixels(font, l0)) / 2)
+            y0 = y_font_center(font, h_available / 2)
+            graphics.DrawText(self.canvas, font, x0, y0, color, l0)
+
+            x1 = max(0, (w_available - width_in_pixels(font, l1)) / 2)
+            y1 = y0 + y_font_center(font, h_available / 2)
+            graphics.DrawText(self.canvas, font, x1, y1, color, l1)
+
+        return True
+
+    def display_last_club_mode(self):
+        if self.last_club_mode == 'image-preset':
+            self.display_idle_mode_image_preset(self.last_club_mode_arg)
+        elif self.last_club_mode == 'image-url':
+            if (os.path.isfile(LATEST_IDLE_MODE_IMAGE_PATH)):
+                image = Image.open(LATEST_IDLE_MODE_IMAGE_PATH)
+                show_clock = image.width < W_LOGO_WITH_CLOCK
+                self.display_logo(image, show_clock)
+                if show_clock:
+                    self.display_clock()
+        elif self.last_club_mode == 'message':
+            self.display_idle_mode_message(self.last_club_mode_arg)
+        elif self.last_club_mode == None:
+            self.display_idle_mode(None)
+
     def display_idle_mode(self, idle_info):
         if idle_info != None:
 
             show_clock = True
 
             if 'image-preset' in idle_info and idle_info["image-preset"] != None:
-                path = "images/logos/" + idle_info["image-preset"]
-                image = Image.open(path)
-                show_clock = image.width < W_LOGO_WITH_CLOCK
-                self.display_logo(image, show_clock)
+                show_clock = self.display_idle_mode_image_preset(idle_info["image-preset"])
             elif 'image-url' in idle_info and idle_info["image-url"] != None:
-                image_url = BASE_URL + "/" + idle_info["image-url"]
-
-                request = urllib.request.Request(image_url, method="HEAD")
-                response = urllib.request.urlopen(request)
-                etag = str(response.headers["ETag"])
-
-                if etag != None:
-                    path = IMAGE_CACHE_DIR + "/" + etag
-                    if (os.path.isfile(path)):
-                        image = Image.open(path)
-                        show_clock = image.width < W_LOGO_WITH_CLOCK
-                    else:
-                        image = Image.open(requests.get(image_url, stream=True).raw)
-
-                        show_clock = image.width < W_LOGO_WITH_CLOCK
-                        image_max_width = W_LOGO_WITH_CLOCK if show_clock else PANEL_WIDTH
-
-                        image = thumbnail(image, image_max_width)
-                        image.save(path, 'png')
-                else:
-                    image = Image.open(requests.get(image_url, stream=True).raw)
-
-                    show_clock = image.width < W_LOGO_WITH_CLOCK
-                    image_max_width = W_LOGO_WITH_CLOCK if show_clock else PANEL_WIDTH
-
-                    image = thumbnail(image, image_max_width)
-                self.display_logo(image, show_clock)
+                show_clock = self.display_idle_mode_image_url(idle_info["image-url"])
             else:
-                message = idle_info["message"] or ''
-                color = COLOR_BLUE_7c
-                h_available = PANEL_HEIGHT - 2 - 20 - 2 # minus clock
-                w_available = PANEL_WIDTH
-
-                lines = message.split('\n')
-
-                if len(lines) == 1:
-                    l0 = lines[0]
-                    font = pick_font_that_fits(w_available, h_available, l0)
-                    x0 = max(0, (w_available - width_in_pixels(font, l0)) / 2)
-                    y0 = y_font_center(font, h_available)
-                    graphics.DrawText(self.canvas, font, x0, y0, color, l0)
-                else:
-                    l0 = lines[0]
-                    l1 = lines[1]
-                    font = pick_font_that_fits(w_available, h_available, l0, l1)
-
-                    x0 = max(0, (w_available - width_in_pixels(font, l0)) / 2)
-                    y0 = y_font_center(font, h_available / 2)
-                    graphics.DrawText(self.canvas, font, x0, y0, color, l0)
-
-                    x1 = max(0, (w_available - width_in_pixels(font, l1)) / 2)
-                    y1 = y0 + y_font_center(font, h_available / 2)
-                    graphics.DrawText(self.canvas, font, x1, y1, color, l1)
+                show_clock = self.display_idle_mode_message(idle_info["message"])
 
             if show_clock:
                 self.display_clock()
         else:
             # TODO display something neutral instead of clock
-            self.display_clock()
+            if self.last_club_mode == None:
+                self.display_clock()
 
     def display_clock(self):
         text = datetime.now().strftime('%H:%M')
