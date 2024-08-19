@@ -224,10 +224,10 @@ class SevenCourtsM1(SampleBase):
         show_clock = image.width < W_LOGO_WITH_CLOCK
         self.display_logo(image, show_clock)
         return show_clock
-    
+
     def download_idle_mode_image(self, image_url):
         return Image.open(requests.get(image_url, stream=True).raw)
-    
+
     def save_idle_mode_image(self, image):
         show_clock = image.width < W_LOGO_WITH_CLOCK
         image_max_width = W_LOGO_WITH_CLOCK if show_clock else PANEL_WIDTH
@@ -240,29 +240,32 @@ class SevenCourtsM1(SampleBase):
         self.last_club_mode_arg = p_image_url
 
         image_url = BASE_URL + "/" + p_image_url
-
-        request = urllib.request.Request(image_url, method="HEAD")
-        response = urllib.request.urlopen(request)
-        etag = str(response.headers["ETag"])
-
         show_clock = True
 
-        if etag != None:
-            path = IMAGE_CACHE_DIR + "/" + etag
-            if (os.path.isfile(path)):
-                image = Image.open(path)
-                show_clock = self.save_idle_mode_image(image)[1]
+        try:
+            request = urllib.request.Request(image_url, method="HEAD")
+            response = urllib.request.urlopen(request)
+            etag = str(response.headers["ETag"])
+
+            if etag != None:
+                path = IMAGE_CACHE_DIR + "/" + etag
+                if (os.path.isfile(path)):
+                    image = Image.open(path)
+                    show_clock = self.save_idle_mode_image(image)[1]
+                else:
+                    saved = self.save_idle_mode_image(self.download_idle_mode_image(image_url))
+                    image = saved[0]
+                    show_clock = saved[1]
+                    image.save(path, 'png')
             else:
                 saved = self.save_idle_mode_image(self.download_idle_mode_image(image_url))
                 image = saved[0]
                 show_clock = saved[1]
-                image.save(path, 'png')
-        else:
-            saved = self.save_idle_mode_image(self.download_idle_mode_image(image_url))
-            image = saved[0]
-            show_clock = saved[1]
 
-        self.display_logo(image, show_clock)
+            self.display_logo(image, show_clock)
+        except Exception as e:
+            logging.exception(e)
+            log('Error downloading image', e)
         return show_clock
 
     def display_idle_mode_message(self, p_message):
