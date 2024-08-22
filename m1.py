@@ -162,13 +162,19 @@ class SevenCourtsM1(SampleBase):
                     if panel_info is not None:
                         self.is_standby = panel_info.get("standby", False)
 
-                    if panel_info == None:
-                        self.display_idle_mode(None)
-                    elif 'idle-info' in panel_info:
-                        self.display_idle_mode(panel_info["idle-info"])
-                    elif 'team1' in panel_info:
-                        self.display_match(panel_info)
-                    self.canvas = self.matrix.SwapOnVSync(self.canvas)
+                    if self.is_standby:
+                        log("render STANDBY")
+                        self.display_clock()
+                    else:
+                        log("render ACTIVE")
+                        if panel_info == None:
+                            self.display_idle_mode(None)
+                        elif 'idle-info' in panel_info:
+                            self.display_idle_mode(panel_info["idle-info"])
+                        elif 'team1' in panel_info:
+                            self.display_match(panel_info)
+                        self.canvas = self.matrix.SwapOnVSync(self.canvas)
+                    log()
                     time.sleep(1)
             except URLError as e:
                 logging.exception(e)
@@ -342,6 +348,10 @@ class SevenCourtsM1(SampleBase):
     def display_clock(self):
         text = datetime.now().strftime('%H:%M')
         color = COLOR_GREY_DARKEST if self.is_standby else COLOR_CLOCK
+        log("is_standby", self.is_standby, self.is_standby == True)
+        log("COLOR_CLOCK", COLOR_CLOCK.to_hex())
+        log("COLOR_GREY_DARKEST", COLOR_GREY_DARKEST.to_hex())
+        log("color", color.to_hex(), "is COLOR_GREY_DARKEST?", color.to_hex() == COLOR_GREY_DARKEST.to_hex())
         draw_text(self.canvas, W_LOGO_WITH_CLOCK + 2, 62, text, FONT_CLOCK, color)
 
     def display_set_digit(self, x, y, font, color, score):
