@@ -64,6 +64,7 @@ else:
   FONT_SCORE = FONTS_V0[0]
 
 COLOR_CLOCK = COLOR_GREY
+COLOR_CLOCK_STANDBY = COLOR_GREY_DARKEST
 
 UPPER_CASE_NAMES = True
 MARGIN_NAMES_SCOREBOARD = 3
@@ -342,7 +343,7 @@ class SevenCourtsM1(SampleBase):
 
     def display_clock(self):
         text = datetime.now().strftime('%H:%M')
-        color = COLOR_GREY_DARKEST if self.is_standby else COLOR_CLOCK
+        color = COLOR_CLOCK_STANDBY if self.is_standby else COLOR_CLOCK
         draw_text(self.canvas, W_LOGO_WITH_CLOCK + 2, 62, text, FONT_CLOCK, color)
 
     def display_set_digit(self, x, y, font, color, score):
@@ -359,7 +360,7 @@ class SevenCourtsM1(SampleBase):
         t1_on_serve=match["team1"]["serves"]
         t2_on_serve=match["team2"]["serves"]
         t1_set_scores = match["team1"]["setScores"] or []
-        t2_set_scores = match["team2"]["setScores"]
+        t2_set_scores = match["team2"]["setScores"] or []
 
         is_match_over = match["matchResult"] in ('T1_WON', 'T2_WON', 'DRAW')
 
@@ -532,7 +533,7 @@ class SevenCourtsM1(SampleBase):
 
         # 2. names
         t1_set_scores = match["team1"]["setScores"] or []
-        t2_set_scores = match["team2"]["setScores"]
+        t2_set_scores = match["team2"]["setScores"] or []
         if (len(t1_set_scores)==0):
             x_scoreboard = X_SCORE_SERVICE
         elif (len(t1_set_scores)==1):
