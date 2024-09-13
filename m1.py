@@ -63,6 +63,7 @@ else:
   FONT_CLOCK = FONTS_V0[0]
   FONT_SCORE = FONTS_V0[0]
 
+COLOR_BOOKING_GREETING = COLOR_BLUE_7c
 COLOR_CLOCK = COLOR_GREY
 COLOR_CLOCK_STANDBY = COLOR_GREY_DARKEST
 
@@ -283,7 +284,6 @@ class SevenCourtsM1(SampleBase):
         self.last_known_club_mode_arg = p_message
 
         message = p_message or ''
-        color = COLOR_BLUE_7c
         h_available = PANEL_HEIGHT - 2 - 20 - 2 # minus clock
         w_available = PANEL_WIDTH
 
@@ -294,7 +294,7 @@ class SevenCourtsM1(SampleBase):
             font = pick_font_that_fits(w_available, h_available, l0)
             x0 = max(0, (w_available - width_in_pixels(font, l0)) / 2)
             y0 = y_font_center(font, h_available)
-            graphics.DrawText(self.canvas, font, x0, y0, color, l0)
+            graphics.DrawText(self.canvas, font, x0, y0, COLOR_BOOKING_GREETING, l0)
         else:
             l0 = lines[0]
             l1 = lines[1]
@@ -302,11 +302,11 @@ class SevenCourtsM1(SampleBase):
 
             x0 = max(0, (w_available - width_in_pixels(font, l0)) / 2)
             y0 = y_font_center(font, h_available / 2)
-            graphics.DrawText(self.canvas, font, x0, y0, color, l0)
+            graphics.DrawText(self.canvas, font, x0, y0, COLOR_BOOKING_GREETING, l0)
 
             x1 = max(0, (w_available - width_in_pixels(font, l1)) / 2)
             y1 = y0 + y_font_center(font, h_available / 2)
-            graphics.DrawText(self.canvas, font, x1, y1, color, l1)
+            graphics.DrawText(self.canvas, font, x1, y1, COLOR_BOOKING_GREETING, l1)
 
         return True
 
@@ -682,7 +682,6 @@ class SevenCourtsM1(SampleBase):
         lines = text.split('\n')
         lines_count = len(lines)
 
-        color = COLOR_BLUE_7c
         h_available = PANEL_HEIGHT
         w_available = PANEL_WIDTH
 
@@ -691,7 +690,7 @@ class SevenCourtsM1(SampleBase):
             font = pick_font_that_fits(w_available, h_available, line)
             x = max(0, (w_available - width_in_pixels(font, line)) / lines_count)
             prev_y = y = prev_y + y_font_center(font, h_available / lines_count)
-            graphics.DrawText(self.canvas, font, x, y, color, line)
+            graphics.DrawText(self.canvas, font, x, y, COLOR_BOOKING_GREETING, line)
 
 # Main function
 if __name__ == "__main__":
