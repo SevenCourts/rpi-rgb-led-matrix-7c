@@ -170,6 +170,8 @@ class SevenCourtsM1(SampleBase):
                         ebusy = panel_info.get("ebusy")
                         if 'greeting' in ebusy:
                             self.display_ebusy_greeting(ebusy)
+                    elif 'ebusy-ads' in panel_info:
+                        self.display_ebusy_ads(panel_info["ebusy-ads"])
                     elif 'idle-info' in panel_info:
                         self.display_idle_mode(panel_info["idle-info"])
                     elif 'team1' in panel_info:
@@ -245,6 +247,26 @@ class SevenCourtsM1(SampleBase):
         image = thumbnail(image, image_max_width)
         image.save(LATEST_IDLE_MODE_IMAGE_PATH, 'png')
         return (image, show_clock)
+    
+    def display_ebusy_ads(self, ebusy_ads):
+        id = ebusy_ads.get("id")
+        url = ebusy_ads.get("url")
+        path = IMAGE_CACHE_DIR + "/ebusy_" + str(id)
+        
+        try:
+            if (os.path.isfile(path)):
+                image = Image.open(path)
+            else:
+                image = self.download_idle_mode_image(url)
+                image.save(path, 'png')
+
+            x = (PANEL_WIDTH - image.width) / 2
+            y = (PANEL_HEIGHT - image.height) / 2
+            self.canvas.SetImage(image.convert('RGB'), x, y)
+
+        except Exception as e:
+            logging.exception(e)
+            log('Error downloading image', e)
 
     def display_idle_mode_image_url(self, p_image_url):
         self.last_known_club_mode = 'image-url'
