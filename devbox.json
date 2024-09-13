@@ -1,0 +1,21 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.11.1/.schema/devbox.schema.json",
+  "packages": {
+    "python": "3.9.19",
+    "glibcLocales": {
+      "version":   "2.39-31",
+      "platforms": ["x86_64-linux"]
+    },
+    "bashInteractive": "5.2-p15"
+  },
+  "shell": {
+    "init_hook": [
+      ". \"$VENV_DIR\"/bin/activate"
+    ],
+    "scripts": {
+      "test": [
+        "echo \"Error: no test specified\" && exit 1"
+      ]
+    }
+  }
+}
