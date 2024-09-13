@@ -678,7 +678,7 @@ class SevenCourtsM1(SampleBase):
         draw_matrix(self.canvas, dot, PANEL_WIDTH - 4, PANEL_HEIGHT - 4)
 
     def display_ebusy_greeting(self, ebusy):
-        text = ebusy.get("greeting", "Hello!")
+        text = ebusy.get("greeting", "Welcome!")
         lines = text.split('\n')
         lines_count = len(lines)
 
