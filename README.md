@@ -258,13 +258,43 @@ Start update script for each panel, e.g.:
 ```
 
 
-### WiFi settings without admin app
+### WiFi settings 
+
+#### With SevenCourts Admin app
+
+TODO: where to download for Android / iOS
+
+#### With 7c-controller.service config
 
 Being logged in via SSH to the device:
 
 ```shell
-echo "{\"ssid\":\"<SSID>\",\"psk\":\"<PWD>\"}" > /etc/7c_m1_assoc.json
+echo "{\"ssid\":\"<SSID>\",\"psk\":\"<PSK>\"}" > /etc/7c_m1_assoc.json
 ```
+
+#### With raspi-config in non-interactive mode (CLI)
+
+```shell
+raspi-config nonint do_wifi_ssid_passphrase <SSID> <PSK>
+```
+
+#### Misc RaspiOS Lite commands
+
+Rasp-config command line parameters: 
+
+- https://forums.raspberrypi.com/viewtopic.php?t=21632
+- https://loganmarchione.com/2021/07/raspi-configs-mostly-undocumented-non-interactive-mode/
+
+```shell
+wpa_cli
+
+scan
+scan_results
+add_network
+set_network 0 ssid "<SSID>"
+set_network 0 psk "<PSK>"
+```
+
 
 ## Install development environment
 

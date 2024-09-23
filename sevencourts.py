@@ -1,19 +1,32 @@
 import os
 import socket
+
 if os.getenv('USE_RGB_MATRIX_EMULATOR', False):
-  from RGBMatrixEmulator import graphics
+    from RGBMatrixEmulator import graphics
 else:
-  from rgbmatrix import graphics
+    from rgbmatrix import graphics
 
 from PIL import Image
 from functools import partial
 
-# Constants for the 7C M1 panel (P5 192 x 64)
-PANEL_WIDTH = 192
-PANEL_HEIGHT = 64
+ORIENTATION_VERTICAL = os.getenv('ORIENTATION_VERTICAL', False)
+ORIENTATION_HORIZONTAL = not ORIENTATION_VERTICAL
 
-FLAG_HEIGHT = 12
-FLAG_WIDTH = 18
+# Constants for the 7C M1 panel (P5 192 x 64)
+__W_PANEL = 192
+__H_PANEL = 64
+W_PANEL = __W_PANEL if ORIENTATION_HORIZONTAL else __H_PANEL
+H_PANEL = __H_PANEL if ORIENTATION_HORIZONTAL else __W_PANEL
+
+W_TILE = int(__W_PANEL / 3)  # 64
+H_TILE = int(__H_PANEL / 2)  # 32
+
+
+
+H_FLAG = 12
+W_FLAG = 18
+W_FLAG_SMALL = W_FLAG / 2  # 9
+H_FLAG_SMALL = H_FLAG / 2  # 6
 
 # Style constants
 COLOR_WHITE = graphics.Color(255, 255, 255)
@@ -26,16 +39,18 @@ COLOR_YELLOW = graphics.Color(255, 255, 0)
 COLOR_GREEN = graphics.Color(0, 255, 0)
 COLOR_BLUE = graphics.Color(0, 0, 255)
 
-COLOR_GREEN_7c = graphics.Color(147, 196, 125)
-COLOR_BLUE_7c = graphics.Color(111, 168, 220)
-COLOR_GOLD_7c = graphics.Color(255, 215, 0)
+COLOR_7C_GREEN = graphics.Color(147, 196, 125)
+COLOR_7C_BLUE = graphics.Color(111, 168, 220)
+COLOR_7C_GOLD = graphics.Color(255, 215, 0)
 
 COLOR_DEFAULT = COLOR_GREY
+
 
 def load_font(path):
     result = graphics.Font()
     result.LoadFont(path)
     return result
+
 
 # Initial fonts - all from SDK
 FONTS_V0 = [
@@ -48,69 +63,73 @@ FONTS_V0 = [
 
 # Spleen fonts
 FONTS_V1 = [
-    load_font("fonts/spleen-16x32.bdf"),
-    load_font("fonts/spleen-12x24.bdf"),
-    load_font("fonts/spleen-8x16.bdf"),
-    load_font("fonts/spleen-6x12.bdf"),
-    load_font("fonts/spleen-5x8.bdf"),
+    load_font("fonts/spleen-2.1.0/spleen-16x32.bdf"),
+    load_font("fonts/spleen-2.1.0/spleen-12x24.bdf"),
+    load_font("fonts/spleen-2.1.0/spleen-8x16.bdf"),
+    load_font("fonts/spleen-2.1.0/spleen-6x12.bdf"),
+    load_font("fonts/spleen-5x8-german-characters/spleen-5x8.bdf"),
     load_font("fonts/tom-thumb.bdf")]
 
 # Spleen with a compromise L font
 FONTS_V2 = [
-    load_font("fonts/spleen-16x32.bdf"),
+    load_font("fonts/spleen-2.1.0/spleen-16x32.bdf"),
     load_font("fonts/10x20.bdf"),
-    load_font("fonts/spleen-8x16.bdf"),
-    load_font("fonts/spleen-6x12.bdf"),
-    load_font("fonts/spleen-5x8.bdf"),
+    load_font("fonts/spleen-2.1.0/spleen-8x16.bdf"),
+    load_font("fonts/spleen-2.1.0/spleen-6x12.bdf"),
+    load_font("fonts/spleen-5x8-german-characters/spleen-5x8.bdf"),
     load_font("fonts/tom-thumb.bdf")]
 
 FONTS = FONTS_V1
 
-FONT_XL=FONTS[0]
-FONT_L=FONTS[1]
-FONT_M=FONTS[2]
-FONT_S=FONTS[3]
-FONT_XS=FONTS[4]
-FONT_XXS=FONTS[5]
+FONT_XL = FONTS[0]
+FONT_L = FONTS[1]
+FONT_M = FONTS[2]
+FONT_S = FONTS[3]
+FONT_XS = FONTS[4]
+FONT_XXS = FONTS[5]
 
 FONT_DEFAULT = FONT_S
 
 Y_FONT_EXTRA_OFFSETS = {
-    '-misc-spleen-medium-r-normal--32-320-72-72-C-160-ISO10646-1' : 0,
-    '-misc-spleen-medium-r-normal--24-240-72-72-C-120-ISO10646-1' : 1,
-    '-misc-spleen-medium-r-normal--16-160-72-72-C-80-ISO10646-1' : 2,
-    '-misc-spleen-medium-r-normal--12-120-72-72-C-60-ISO10646-1' : 2,
-    '-misc-spleen-medium-r-normal--8-80-72-72-C-50-ISO10646-1' : 0,
-    '-Raccoon-Fixed4x6-Medium-R-Normal--6-60-75-75-P-40-ISO10646-1' : 1,
-    '-Misc-Fixed-Medium-R-Normal--8-80-75-75-C-50-ISO10646-1' : 0,
-    '-Misc-Fixed-Medium-R-Normal--13-120-75-75-C-70-ISO10646-1' : 0,
-    '-Misc-Fixed-Medium-R-Normal--15-140-75-75-C-90-ISO10646-1' : 1,
-    '-Misc-Fixed-Medium-R-Normal--20-200-75-75-C-100-ISO10646-1' : 1,
-    '-FreeType-TeX Gyre Adventor-Medium-R-Normal--27-270-72-72-P-151-ISO10646-1' : 1
+    '-misc-spleen-medium-r-normal--32-320-72-72-C-160-ISO10646-1': 0,
+    '-misc-spleen-medium-r-normal--24-240-72-72-C-120-ISO10646-1': 1,
+    '-misc-spleen-medium-r-normal--16-160-72-72-C-80-ISO10646-1': 2,
+    '-misc-spleen-medium-r-normal--12-120-72-72-C-60-ISO10646-1': 2,
+    '-misc-spleen-medium-r-normal--8-80-72-72-C-50-ISO10646-1': 0,
+    '-Raccoon-Fixed4x6-Medium-R-Normal--6-60-75-75-P-40-ISO10646-1': 1,
+    '-Misc-Fixed-Medium-R-Normal--8-80-75-75-C-50-ISO10646-1': 0,
+    '-Misc-Fixed-Medium-R-Normal--13-120-75-75-C-70-ISO10646-1': 0,
+    '-Misc-Fixed-Medium-R-Normal--15-140-75-75-C-90-ISO10646-1': 1,
+    '-Misc-Fixed-Medium-R-Normal--20-200-75-75-C-100-ISO10646-1': 1,
+    '-FreeType-TeX Gyre Adventor-Medium-R-Normal--27-270-72-72-P-151-ISO10646-1': 1
 }
 
 Y_FONT_SYMBOL_NORMAL_HEIGHTS = {
-    FONTS_V0[0] : 20,
-    FONTS_V0[1] : 13,
-    FONTS_V0[2] : 10,
-    FONTS_V0[3] : 9,
-    FONTS_V0[4] : 6,
-    FONTS_V0[5] : 5,
+    FONTS_V0[0]: 20,
+    FONTS_V0[1]: 13,
+    FONTS_V0[2]: 10,
+    FONTS_V0[3]: 9,
+    FONTS_V0[4]: 6,
+    FONTS_V0[5]: 5,
 
-    FONTS_V1[0] : 20,
-    FONTS_V1[1] : 15,
-    FONTS_V1[2] : 10,
-    FONTS_V1[3] : 8,
-    FONTS_V1[4] : 6,
-    FONTS_V1[5] : 5,
+    FONTS_V1[0]: 20,
+    FONTS_V1[1]: 15,
+    FONTS_V1[2]: 10,
+    FONTS_V1[3]: 8,
+    FONTS_V1[4]: 6,
+    FONTS_V1[5]: 5,
 
-    FONTS_V2[0] : 20,
-    FONTS_V2[1] : 13,
-    FONTS_V2[2] : 10,
-    FONTS_V2[3] : 8,
-    FONTS_V2[4] : 6,
-    FONTS_V2[5] : 5
+    FONTS_V2[0]: 20,
+    FONTS_V2[1]: 13,
+    FONTS_V2[2]: 10,
+    FONTS_V2[3]: 8,
+    FONTS_V2[4]: 6,
+    FONTS_V2[5]: 5
 }
+
+H_FONT_XS = Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(FONT_XS)
+H_FONT_XXS = Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(FONT_XXS)
+
 
 def ip_address():
     try:
@@ -123,32 +142,54 @@ def ip_address():
         result = "###"
     return result
 
+
 def y_font_offset(font):
-    ## This works only on emulator
+    # This works only on emulator
     # return Y_FONT_EXTRA_OFFSETS.get(font.headers['fontname'], 0) + font.baseline + font.headers['fbbyoff']
     return Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(font)
+
 
 def y_font_center(font, container_height):
     """Returns y position for the font to be placed vertically centered"""
     y_offset_font = y_font_offset(font)
-    return (container_height - y_offset_font ) / 2 + y_offset_font
+    return (container_height - y_offset_font) / 2 + y_offset_font
+
+
+def x_font_center(text, container_width, font):
+    """Returns x position for the given text and font to be placed horizontally centered"""
+    text_width = 0
+    for c in text:
+        text_width += font.CharacterWidth(ord(c))
+    return max(0, (container_width - text_width) / 2)
 
 def width_in_pixels(font, text):
-    result = 0;
+    result = 0
     for c in text:
-        result+=font.CharacterWidth(ord(c))
-    #print('<{}> => {}'.format(text,result))
+        result += font.CharacterWidth(ord(c))
+    # print('<{}> => {}'.format(text,result))
     return result
 
+
+def truncate_text(font, max_width, text):
+    result = ""
+    total_width = 0
+    for c in text:
+        total_width += font.CharacterWidth(ord(c))
+        if total_width <= max_width:
+            result += c
+        else:
+            break
+    return result
+
+
 def font_fits(font, width, height, *texts):
-    
     font_symbol_height = y_font_offset(font)
     max_width_with_this_font = max(map(partial(width_in_pixels, font), *texts))
-    #print('{}>={} {}>={} {}'.format(
-    #    height, font_symbol_height, width, max_width_with_this_font, *texts))
+    # print('{}>={} {}>={} {}'.format(height, font_symbol_height, width, max_width_with_this_font, *texts))
 
     result = (height >= font_symbol_height) & (width >= max_width_with_this_font)
     return result
+
 
 def pick_font_that_fits(width, height, *texts):
     if font_fits(FONT_L, width, height, texts):
@@ -157,13 +198,14 @@ def pick_font_that_fits(width, height, *texts):
         result = FONT_M
     else:
         result = FONT_S
-    
+
     return result
+
 
 def debug_font_info(font, name=''):
     print('Font {} h={} bl={} y_off={}'.format(
         name,
-        font.height, 
+        font.height,
         font.baseline,
         y_font_offset(font)))
 
@@ -175,6 +217,7 @@ def load_flag_image(flag):
         log(e)
         return Image.open("images/flags/VOID.png").convert('RGB')
 
+
 def log(*args):
     print(*args, flush=True)
 
@@ -182,15 +225,17 @@ def log(*args):
 def draw_text(canvas, x, y, text, font=FONT_DEFAULT, color=COLOR_DEFAULT):
     return graphics.DrawText(canvas, font, x, y, color, text)
 
+
 def draw_grid(canvas, rows=4, cols=4, color=COLOR_GREY_DARKEST):
-    x_step_size = int (PANEL_WIDTH / cols)
+    x_step_size = int(W_PANEL / cols)
     for i in range(cols):
         x = i * x_step_size
-        graphics.DrawLine(canvas, x, 0, x, PANEL_HEIGHT, color)
-    y_step_size = int (PANEL_HEIGHT / rows)
+        graphics.DrawLine(canvas, x, 0, x, H_PANEL, color)
+    y_step_size = int(H_PANEL / rows)
     for i in range(rows):
         y = i * y_step_size
-        graphics.DrawLine(canvas, 0, y, PANEL_WIDTH, y, color)
+        graphics.DrawLine(canvas, 0, y, W_PANEL, y, color)
+
 
 def draw_matrix(canvas, m, x0, y0):
     y = y0
@@ -202,6 +247,7 @@ def draw_matrix(canvas, m, x0, y0):
             x = x + 1
         y = y + 1
 
+
 def fill_rect(canvas, x0: int, y0: int, w: int, h: int, color):
-    for x in range (x0, x0+w):
-        graphics.DrawLine(canvas, x, y0, x, y0+h-1, color)
+    for x in range(x0, x0 + w):
+        graphics.DrawLine(canvas, x, y0, x, y0 + h - 1, color)

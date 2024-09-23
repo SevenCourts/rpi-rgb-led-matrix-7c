@@ -1,10 +1,10 @@
 [Unit]
-Description=SevenCourts scoreboard
+Description=SevenCourts scoreboard vertical mode
 
 Requires=local-fs.target 7c-hostname.service
 After=7c-hostname.service
-Conflicts=7c-vertical.service
 DefaultDependencies=no
+Conflicts=7c.service
 
 [Service]
 Type=simple
@@ -15,7 +15,7 @@ RestartSec=5
 ProtectHome=true
 WorkingDirectory=/opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
 
-ExecStart=/bin/sh m1.sh
+ExecStart=/bin/sh m1_vertical.sh
 
 [Install]
 WantedBy=basic.target
