@@ -155,7 +155,7 @@
     },
     "python@3.9.19": {
       "last_modified": "2024-06-11T07:07:27Z",
-      "plugin_version": "0.0.3",
+      "plugin_version": "0.0.4",
       "resolved": "github:NixOS/nixpkgs/f7207adcc68d9cafa29e3cd252a18743ae512c6a#python39",
       "source": "devbox-search",
       "version": "3.9.19",
