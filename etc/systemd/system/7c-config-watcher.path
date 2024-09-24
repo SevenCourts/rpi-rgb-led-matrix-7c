@@ -1,0 +1,5 @@
+[Path]
+PathModified=/opt/7c/panel.conf
+
+[Install]
+WantedBy=multi-user.target

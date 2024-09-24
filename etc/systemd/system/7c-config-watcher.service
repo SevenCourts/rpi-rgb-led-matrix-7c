@@ -1,0 +1,10 @@
+[Unit]
+Description=Restarts 7c service
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl restart 7c.service
+
+[Install]
+WantedBy=multi-user.target

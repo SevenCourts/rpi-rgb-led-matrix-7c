@@ -34,6 +34,8 @@ os.makedirs(IMAGE_CACHE_DIR, exist_ok=True)
 # see https://stackoverflow.com/questions/5231901/permission-problems-when-creating-a-dir-with-os-makedirs-in-python
 os.chmod(IMAGE_CACHE_DIR, 0o777)
 
+PANEL_CONFIG = os.getenv('PANEL_CONFIG')
+
 LATEST_IDLE_MODE_IMAGE_PATH = IMAGE_CACHE_DIR + '/latest_idle_image'
 
 PANEL_NAME = socket.gethostname()
@@ -201,6 +203,39 @@ class SevenCourtsM1(SampleBase):
         self.last_known_club_mode = None
         self.last_known_club_mode_arg = None
         self.is_standby = False
+        self.read_startup_config()
+
+    def read_startup_config(self):
+        if PANEL_ID is None and PANEL_CONFIG is not None:
+            startup_config = {}
+            lines = []
+
+            with open(PANEL_CONFIG, 'r') as file:
+                lines = list(filter(lambda x: len(x.strip()) > 0, file.read().splitlines()))
+
+            if lines:
+                startup_config = {k: v for k, v in map(lambda x: x.split('=', 1), lines)}
+
+            k = 'ORIENTATION_VERTICAL'
+            if k in startup_config:
+                startup_config[k] = True
+
+            self.startup_config = startup_config
+
+    def write_startup_config(self, panel_info):
+        if PANEL_ID is None and PANEL_CONFIG is not None:
+            startup_config = {}
+
+            orientation = panel_info.get('orientation')
+            if orientation == 'vertical':
+                startup_config['ORIENTATION_VERTICAL'] = True
+
+            if self.startup_config != startup_config:
+                self.startup_config = startup_config
+                conf = []
+                for k, v in startup_config.items(): conf.append(k + '=' + str(v))
+                with open(PANEL_CONFIG, 'w') as file:
+                    file.write('\n'.join(conf))
 
     def run(self):
         self.canvas = self.matrix.CreateFrameCanvas()
@@ -216,6 +251,7 @@ class SevenCourtsM1(SampleBase):
 
                     if panel_info is not None:
                         self.is_standby = panel_info.get("standby", False)
+                        self.write_startup_config(panel_info)
 
                     if self.is_standby or panel_info is None:
                         self.display_idle_mode(None)
@@ -324,7 +360,7 @@ class SevenCourtsM1(SampleBase):
                                         [[t2p1name, t2p1flag], [t2p2name, t2p2flag]],
                                         set_scores)
                 else:
-                    
+
                     t1_name = t1.get("name").split(",")[0]  # FIXME remove it when data is properly set
                     t1_flag = t1.get("flag")
                     t2_name = t2.get("name").split(",")[0]  # FIXME remove it when data is properly set
@@ -582,12 +618,12 @@ class SevenCourtsM1(SampleBase):
         image = thumbnail(image, image_max_width)
         image.save(LATEST_IDLE_MODE_IMAGE_PATH, 'png')
         return (image, show_clock)
-    
+
     def display_ebusy_ads(self, ebusy_ads):
         id = ebusy_ads.get("id")
         url = ebusy_ads.get("url")
         path = IMAGE_CACHE_DIR + "/ebusy_" + str(id)
-        
+
         try:
             if (os.path.isfile(path)):
                 image = Image.open(path)
