@@ -20,17 +20,18 @@ is_vertical="${ORIENTATION_VERTICAL-}"
 readonly is_vertical
 
 declare -a cmd_args
-cmd_args=(
-  --led-chain=3
-  --led-cols=64
-  --led-multiplexing=1
-  --led-parallel=2
-  --led-pwm-lsb-nanoseconds=50
-  --led-row-addr-type=0
-  --led-rows=32
-  --led-slowdown-gpio=5
-)
-if [[ -n $is_vertical ]]; then
+if [[ -z $is_vertical ]]; then
+  cmd_args=(
+    --led-chain=3
+    --led-cols=64
+    --led-multiplexing=1
+    --led-parallel=2
+    --led-pwm-lsb-nanoseconds=50
+    --led-row-addr-type=0
+    --led-rows=32
+    --led-slowdown-gpio=5
+  )
+else
   if [[ -z $is_emulator ]]; then
     cmd_args=(
       --led-chain=3
