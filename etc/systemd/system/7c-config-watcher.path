@@ -1,3 +1,4 @@
+# See the `7c-config-watcher.service` file for notes on the role of this file.
 [Path]
 PathModified=/opt/7c/panel.conf
 
