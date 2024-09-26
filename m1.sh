@@ -1,4 +1,14 @@
 #! /bin/bash
+#
+# Calls `./m1.py` with arguments selected using process' env vars and env vars
+# loaded from panel configuration file.
+#
+# Env vars:
+#
+# - PANEL_CONFIG -- path to panel configuration, which is a shell env file.
+#  Don't put anything here, it's for `m1.py` only and will be overriden.
+# - USE_RGB_MATRIX_EMULATOR -- when set, arguments for emulator used.
+# - ORIENTATION_VERTICAL -- when set, arguments for vertical orientation used.
 
 set -eu
 
