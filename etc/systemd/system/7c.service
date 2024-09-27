@@ -3,19 +3,19 @@ Description=SevenCourts scoreboard
 
 Requires=local-fs.target 7c-hostname.service
 After=7c-hostname.service
-Conflicts=7c-vertical.service
 DefaultDependencies=no
 
 [Service]
 Type=simple
 Restart=always
 RestartSec=5
+Environment=PANEL_CONFIG=/opt/7c/panel.conf
 
 ## Dirs
 ProtectHome=true
 WorkingDirectory=/opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
 
-ExecStart=/bin/sh m1.sh
+ExecStart=/bin/bash m1.sh
 
 [Install]
 WantedBy=basic.target

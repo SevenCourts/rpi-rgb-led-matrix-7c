@@ -1,0 +1,15 @@
+# We want to have the ability to change panel orientation without resort to
+# manually connect to the panel, then disable the `7c` service and enable the
+# `7c-vertical` service. The current solution uses this service unit, and
+# accompanying path unit, to restart the `7c` service when panel configuration
+# (see `7c-config-watcher.path` file) changes.
+[Unit]
+Description=Restarts 7c service
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl restart 7c.service
+
+[Install]
+WantedBy=multi-user.target
