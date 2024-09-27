@@ -1021,8 +1021,13 @@ class SevenCourtsM1(SampleBase):
         self.display_winner(self.panel_info)
 
     def draw_error_indicator(self):
+        standby = self.panel_info.get('standby')
         x = (COLOR_BLACK.red, COLOR_BLACK.green, COLOR_BLACK.blue)
-        o = (COLOR_7C_BLUE.red, COLOR_7C_BLUE.green, COLOR_7C_BLUE.blue)
+        o = (
+            COLOR_7C_BLUE_STANDBY.red if standby else COLOR_7C_BLUE.red,
+            COLOR_7C_BLUE_STANDBY.green if standby else COLOR_7C_BLUE.green,
+            COLOR_7C_BLUE_STANDBY.blue if standby else COLOR_7C_BLUE.blue
+        )
         dot = [
             [x, o, o, x],
             [o, o, o, o],
