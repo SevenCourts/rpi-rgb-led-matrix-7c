@@ -24,10 +24,16 @@ fi
 declare is_emulator
 is_emulator="${USE_RGB_MATRIX_EMULATOR-}"
 readonly is_emulator
+if [[ -n $is_emulator ]]; then
+  export USE_RGB_MATRIX_EMULATOR
+fi
 
 declare is_vertical
 is_vertical="${ORIENTATION_VERTICAL-}"
 readonly is_vertical
+if [[ -n $is_vertical ]]; then
+  export ORIENTATION_VERTICAL
+fi
 
 declare -a cmd_args
 if [[ -z $is_vertical ]]; then
