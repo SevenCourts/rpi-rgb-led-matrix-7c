@@ -202,7 +202,9 @@ class SevenCourtsM1(SampleBase):
         super(SevenCourtsM1, self).__init__(*args, **kwargs)
         self.last_known_club_mode = None
         self.last_known_club_mode_arg = None
-        self.is_standby = False
+        self.panel_info = {}
+        self.panel_info_failed = False
+        self.registration_failed = False
         self.read_startup_config()
 
     def read_startup_config(self):
@@ -222,11 +224,11 @@ class SevenCourtsM1(SampleBase):
 
             self.startup_config = startup_config
 
-    def write_startup_config(self, panel_info):
+    def write_startup_config(self):
         if PANEL_ID is None and PANEL_CONFIG is not None:
             startup_config = {}
 
-            orientation = panel_info.get('orientation')
+            orientation = self.panel_info.get('orientation')
             if orientation == 'vertical':
                 startup_config['ORIENTATION_VERTICAL'] = True
 
@@ -239,45 +241,24 @@ class SevenCourtsM1(SampleBase):
 
     def run(self):
         self.canvas = self.matrix.CreateFrameCanvas()
-        self.display_idle_mode(None)
-        self.canvas = self.matrix.SwapOnVSync(self.canvas)
-
         while True:
             panel_id = self.register()
             try:
                 while True:
-                    self.canvas.Clear()
                     panel_info = fetch_panel_info(panel_id)
+                    if panel_info:
+                        self.panel_info = panel_info
 
-                    if panel_info is not None:
-                        self.is_standby = panel_info.get("standby", False)
-                        self.write_startup_config(panel_info)
-
-                    if self.is_standby or panel_info is None:
-                        self.display_idle_mode(None)
-                    elif 'ebusy' in panel_info:
-                        ebusy = panel_info.get("ebusy")
-                        if 'greeting' in ebusy:
-                            self.display_ebusy_greeting(ebusy)
-                    elif 'ebusy-ads' in panel_info:
-                        self.display_ebusy_ads(panel_info["ebusy-ads"])
-                    elif 'idle-info' in panel_info:
-                        self.display_idle_mode(panel_info["idle-info"])
-                    elif 'tournament-name' in panel_info:
-                        self.display_signage_itftournament(panel_info)
-                    elif 'team1' in panel_info:
-                        self.display_match(panel_info)
-                    self.canvas = self.matrix.SwapOnVSync(self.canvas)
+                    self.panel_info_failed = False
+                    self.write_startup_config()
+                    self.display_panel_info()
                     time.sleep(1)
-            except URLError as ex:
-                logging.exception(ex)
-                log('URLError in #run', ex)
-            except socket.timeout as ex:
-                logging.exception(ex)
-                log('Socket timeout in #run', ex)
             except Exception as ex:
+                self.panel_info_failed = True
                 logging.exception(ex)
-                log('Unexpected exception in #run', ex)
+
+            time.sleep(1)
+
 
     def register(self):
         if PANEL_ID:
@@ -285,43 +266,29 @@ class SevenCourtsM1(SampleBase):
         else:
             panel_id = None
             while True:
-                self.canvas.Clear()
-
-                url = REGISTRATION_URL
                 try:
-                    log('Registering panel at: ' + url)
-                    panel_id = register(url)
-                except URLError as ex:
-                    log(ex.reason, url, '#register')
-                    self.display_last_known_club_mode()
-                    self.draw_error_indicator()
-                except socket.timeout as ex:
-                    logging.exception(ex)
-                    log('Socket timeout in #register', ex)
-                    self.display_last_known_club_mode()
-                    self.draw_error_indicator()
+                    log('Registering panel at: ' + REGISTRATION_URL)
+                    panel_id = register(REGISTRATION_URL)
                 except Exception as ex:
                     logging.exception(ex)
-                    log('Unexpected exception in #register', ex)
-                    self.display_last_known_club_mode()
-                    self.draw_error_indicator()
+                    self.registration_failed = False
 
-                if panel_id is not None:
-                    return panel_id
+                if panel_id is None:
+                    self.display_panel_info()
+                    time.sleep(1)
                 else:
-                    self.display_idle_mode(None)
-                self.canvas = self.matrix.SwapOnVSync(self.canvas)
-                time.sleep(1)
+                    self.registration_failed = False
+                    return panel_id
 
-    def display_signage_itftournament(self, tournament):
+    def display_signage_itftournament(self):
         # XXX the panel must be started in VERTICAL mode (./m1_vertical.sh)
 
         # s.https://suprematic.slack.com/archives/DF1LE3XLY/p1719413956323839
 
-        tournament_name = tournament.get("tournament-name") or "Welcome!"
+        tournament_name = self.panel_info.get("tournament-name") or "Welcome!"
         self.draw_tournament_title(tournament_name)
 
-        courts = tournament.get("courts")
+        courts = self.panel_info.get("courts")
         court_index = 1
         for court in courts:
             court_name = court.get("court-name")
@@ -599,15 +566,15 @@ class SevenCourtsM1(SampleBase):
         y = (H_PANEL - image.height) / 2
         self.canvas.SetImage(image.convert('RGB'), x, y)
 
-    def display_idle_mode_image_preset(self, image_preset):
-        self.last_known_club_mode = 'image-preset'
-        self.last_known_club_mode_arg = image_preset
-
+    def display_idle_mode_image_preset(self):
+        idle_info = self.panel_info.get('idle-info')
+        image_preset = idle_info.get('image-preset')
         path = "images/logos/" + image_preset
         image = Image.open(path)
         show_clock = image.width < W_LOGO_WITH_CLOCK
         self.display_logo(image, show_clock)
-        return show_clock
+        if show_clock and idle_info.get('clock'):
+            self.display_clock()
 
     def download_idle_mode_image(self, image_url):
         return Image.open(requests.get(image_url, stream=True).raw)
@@ -619,7 +586,8 @@ class SevenCourtsM1(SampleBase):
         image.save(LATEST_IDLE_MODE_IMAGE_PATH, 'png')
         return (image, show_clock)
 
-    def display_ebusy_ads(self, ebusy_ads):
+    def display_ebusy_ads(self):
+        ebusy_ads = self.panel_info.get('ebusy-ads')
         id = ebusy_ads.get("id")
         url = ebusy_ads.get("url")
         path = IMAGE_CACHE_DIR + "/ebusy_" + str(id)
@@ -639,11 +607,10 @@ class SevenCourtsM1(SampleBase):
             logging.exception(e)
             log('Error downloading image', e)
 
-    def display_idle_mode_image_url(self, p_image_url):
-        self.last_known_club_mode = 'image-url'
-        self.last_known_club_mode_arg = p_image_url
-
-        image_url = BASE_URL + "/" + p_image_url
+    def display_idle_mode_image_url(self):
+        idle_info = self.panel_info.get('idle-info')
+        image_url = idle_info.get('image-url')
+        image_url = BASE_URL + "/" + image_url
         show_clock = True
 
         try:
@@ -667,16 +634,16 @@ class SevenCourtsM1(SampleBase):
                 show_clock = saved[1]
 
             self.display_logo(image, show_clock)
+            if show_clock and idle_info.get('clock'):
+                self.display_clock()
         except Exception as e:
             logging.exception(e)
             log('Error downloading image', e)
-        return show_clock
 
-    def display_idle_mode_message(self, p_message):
-        self.last_known_club_mode = 'message'
-        self.last_known_club_mode_arg = p_message
+    def display_idle_mode_message(self):
+        idle_info = self.panel_info.get('idle-info')
 
-        message = p_message or ''
+        message = idle_info.get('message', '')
         h_available = H_PANEL - 2 - 20 - 2 # minus clock
         w_available = W_PANEL
 
@@ -701,46 +668,49 @@ class SevenCourtsM1(SampleBase):
             y1 = y0 + y_font_center(font, h_available / 2)
             graphics.DrawText(self.canvas, font, x1, y1, COLOR_BOOKING_GREETING, l1)
 
-        return True
-
-    def display_last_known_club_mode(self):
-        if self.last_known_club_mode == 'image-preset':
-            self.display_idle_mode_image_preset(self.last_known_club_mode_arg)
-        elif self.last_known_club_mode == 'image-url':
-            if (os.path.isfile(LATEST_IDLE_MODE_IMAGE_PATH)):
-                image = Image.open(LATEST_IDLE_MODE_IMAGE_PATH)
-                show_clock = image.width < W_LOGO_WITH_CLOCK
-                self.display_logo(image, show_clock)
-                if show_clock:
-                    self.display_clock()
-        elif self.last_known_club_mode == 'message':
-            self.display_idle_mode_message(self.last_known_club_mode_arg)
-        elif self.last_known_club_mode == None:
-            self.display_idle_mode(None)
-
-    def display_idle_mode(self, idle_info):
-        if self.is_standby:
+        if idle_info.get('clock'):
             self.display_clock()
-        elif idle_info != None:
-            show_clock = True
 
-            if 'image-preset' in idle_info and idle_info["image-preset"] != None:
-                show_clock = self.display_idle_mode_image_preset(idle_info["image-preset"])
-            elif 'image-url' in idle_info and idle_info["image-url"] != None:
-                show_clock = self.display_idle_mode_image_url(idle_info["image-url"])
-            else:
-                show_clock = self.display_idle_mode_message(idle_info["message"])
+    def display_panel_info(self):
+        self.canvas.Clear()
 
-            if show_clock:
+        if self.registration_failed or self.panel_info_failed:
+            self.draw_error_indicator()
+
+        if self.panel_info.get('standby'):
+            idle_info = self.panel_info.get('idle-info', {})
+            if idle_info.get('clock') and \
+                not idle_info.get('image-preset') and \
+                not idle_info.get('image-url') and \
+                not idle_info.get('message'):
                 self.display_clock()
-        else:
-            # TODO display something neutral instead of clock
-            if self.last_known_club_mode == None:
-                self.display_clock()
+        elif 'ebusy' in self.panel_info:
+            self.display_ebusy_greeting()
+        elif 'ebusy-ads' in self.panel_info:
+            self.display_ebusy_ads()
+        elif 'idle-info' in self.panel_info:
+            self.display_idle_mode()
+        elif 'tournament-name' in self.panel_info:
+            self.display_signage_itftournament()
+        elif 'team1' in self.panel_info:
+            self.display_match()
+
+        self.canvas = self.matrix.SwapOnVSync(self.canvas)
+
+    def display_idle_mode(self):
+        idle_info = self.panel_info.get('idle-info')
+        if idle_info.get('image-preset'):
+            self.display_idle_mode_image_preset()
+        elif idle_info.get('image-url'):
+            self.display_idle_mode_image_url()
+        elif idle_info.get('message'):
+            self.display_idle_mode_message()
+        elif idle_info.get('clock'):
+            self.display_clock()
 
     def display_clock(self):
         text = datetime.now().strftime('%H:%M')
-        color = COLOR_CLOCK_STANDBY if self.is_standby else COLOR_CLOCK
+        color = COLOR_CLOCK_STANDBY if self.panel_info.get('standby') else COLOR_CLOCK
         x = W_LOGO_WITH_CLOCK + 2 if ORIENTATION_HORIZONTAL else (x_font_center(text, W_PANEL, FONT_CLOCK))
         y = 62 if ORIENTATION_HORIZONTAL else H_PANEL - 2
         draw_text(self.canvas, x, y, text, FONT_CLOCK, color)
@@ -1045,10 +1015,10 @@ class SevenCourtsM1(SampleBase):
         elif match_result == "T2_WON":
             draw_matrix(self.canvas, cup, x_medal, H_PANEL / 2 + medal_delta)
 
-    def display_match(self, match):
-        self.display_names(match)
-        self.display_score(match)
-        self.display_winner(match)
+    def display_match(self):
+        self.display_names(self.panel_info)
+        self.display_score(self.panel_info)
+        self.display_winner(self.panel_info)
 
     def draw_error_indicator(self):
         x = (COLOR_BLACK.red, COLOR_BLACK.green, COLOR_BLACK.blue)
@@ -1060,8 +1030,8 @@ class SevenCourtsM1(SampleBase):
             [x, o, o, x]]
         draw_matrix(self.canvas, dot, W_PANEL - 4, H_PANEL - 4)
 
-    def display_ebusy_greeting(self, ebusy):
-        text = ebusy.get("greeting", "Welcome!")
+    def display_ebusy_greeting(self):
+        text = self.panel_info.get('ebusy').get("greeting", "Welcome!")
         lines = text.split('\n')
         lines_count = len(lines)
 
