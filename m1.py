@@ -210,8 +210,11 @@ class SevenCourtsM1(SampleBase):
             startup_config = {}
             lines = []
 
-            with open(PANEL_CONFIG, 'r') as file:
-                lines = list(filter(lambda x: len(x.strip()) > 0, file.read().splitlines()))
+            try:
+                with open(PANEL_CONFIG, 'r') as file:
+                    lines = list(filter(lambda x: len(x.strip()) > 0, file.read().splitlines()))
+            except:
+                pass
 
             if lines:
                 startup_config = {k: v for k, v in map(lambda x: x.split('=', 1), lines)}
@@ -234,8 +237,12 @@ class SevenCourtsM1(SampleBase):
                 self.startup_config = startup_config
                 conf = []
                 for k, v in startup_config.items(): conf.append(k + '=' + str(v))
-                with open(PANEL_CONFIG, 'w') as file:
-                    file.write('\n'.join(conf))
+
+                try:
+                    with open(PANEL_CONFIG, 'w') as file:
+                        file.write('\n'.join(conf))
+                except:
+                    pass
 
     def run(self):
         self.canvas = self.matrix.CreateFrameCanvas()
