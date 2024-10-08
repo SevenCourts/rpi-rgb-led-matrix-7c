@@ -294,6 +294,37 @@ set_network 0 ssid "<SSID>"
 set_network 0 psk "<PSK>"
 ```
 
+## Clone bootable SD card
+
+### Create an SD card image
+
+After the installation is done, SD card can be cloned:
+
+```shell
+diskutil list
+```
+
+Assumed, the SD-card is displayed as `/dev/disk4`
+
+```shell
+diskutil unmount /dev/disk4
+sudo dd if=/dev/disk4 of=7c.img
+docker run --privileged=true --rm \
+    --volume $(pwd):/workdir \
+    mgomesborges/pishrink \
+    pishrink -pZv 7c.img 7c_shrinked.img
+```
+
+Eject the SD card.
+
+### Copy the SD card image
+
+Insert a new SD card.
+
+```shell
+sudo dd if=7c_shrinked.img of=/dev/disk4
+```
+
 
 ## Install development environment
 
