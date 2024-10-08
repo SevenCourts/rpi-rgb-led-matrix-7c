@@ -311,8 +311,8 @@ diskutil unmount /dev/disk4
 sudo dd if=/dev/disk4 of=7c.img
 docker run --privileged=true --rm \
     --volume $(pwd):/workdir \
-    mgomesborges/pishrink \
-    pishrink -pZv 7c.img 7c_shrinked.img
+    monsieurborges/pishrink \
+    pishrink -aZv 7c.img 7c_shrinked.img
 ```
 
 Eject the SD card.
