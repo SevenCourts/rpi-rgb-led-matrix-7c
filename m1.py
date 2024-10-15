@@ -726,7 +726,7 @@ class SevenCourtsM1(SampleBase):
         if not clock:
             return
 
-        panel_tz = idle_info.get('timezone', 'UTC')
+        panel_tz = idle_info.get('timezone', 'Europe/Berlin')
         dt = datetime.now(tz.gettz(panel_tz))
         color = COLOR_CLOCK_STANDBY if self.panel_info.get('standby') else COLOR_CLOCK
 
