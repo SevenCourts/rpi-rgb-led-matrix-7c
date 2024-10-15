@@ -4,11 +4,11 @@
 
 ### OS & dev tools
 
-- Install [Raspberry PI OS Lite 64 bit] ver. 5.15.84-v8+ 
+- Install [Raspberry PI OS Lite 64 bit] ver. 5.15.84-v8+
   - https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2023-02-22/
   - (https://www.raspberrypi.com/documentation/computers/getting-started.html#installing-the-operating-system)
 - Insert the SD card to Raspi, connect monitor, keyboard, ethernet
-- On the first boot: set login: "user" and password: "password" 
+- On the first boot: set login: "user" and password: "password"
     - **FIXME** define non-default login/password
 - Turn on ssh:
     - Enter `sudo raspi-config` in a terminal window
@@ -17,7 +17,7 @@
     - Choose "Yes"
 
 The rest can be done via SSH:
-    
+
 - Find out the IP address of the Raspi
     - e.g. with SUPREMATIC Mikrotik router: http://192.168.114.1/webfig/#IP:DHCP_Server.Leases
     - or use any IP scanner software
@@ -70,6 +70,13 @@ git clone https://github.com/suprematic/rpi-rgb-led-matrix.git
 cd rpi-rgb-led-matrix/
 git checkout 7c/m1/dev
 make
+```
+
+### Create config file
+
+```sh
+touch /opt/7c/panel.conf
+chmod 666 /opt/7c/panel.conf
 ```
 
 ### Install and make python3 bindings
@@ -258,7 +265,7 @@ Start update script for each panel, e.g.:
 ```
 
 
-### WiFi settings 
+### WiFi settings
 
 #### With SevenCourts Admin app
 
@@ -280,7 +287,7 @@ raspi-config nonint do_wifi_ssid_passphrase <SSID> <PSK>
 
 #### Misc RaspiOS Lite commands
 
-Rasp-config command line parameters: 
+Rasp-config command line parameters:
 
 - https://forums.raspberrypi.com/viewtopic.php?t=21632
 - https://loganmarchione.com/2021/07/raspi-configs-mostly-undocumented-non-interactive-mode/
