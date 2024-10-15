@@ -73,6 +73,8 @@ else:
     FONT_CLOCK = FONTS_V0[0] if ORIENTATION_HORIZONTAL else FONT_M
     FONT_SCORE = FONTS_V0[0]
 
+FONT_CLOCK_BIG = FONT_26_42
+
 COLOR_BOOKING_GREETING = COLOR_7C_BLUE
 COLOR_CLOCK = COLOR_GREY
 COLOR_CLOCK_STANDBY = COLOR_GREY_DARKEST
@@ -575,7 +577,7 @@ class SevenCourtsM1(SampleBase):
         image = Image.open(path)
         show_clock = image.width < W_LOGO_WITH_CLOCK
         self.display_logo(image, show_clock)
-        if show_clock and idle_info.get('clock'):
+        if show_clock and idle_info.get('clock') == True:
             self.display_clock()
 
     def download_idle_mode_image(self, image_url):
@@ -636,7 +638,7 @@ class SevenCourtsM1(SampleBase):
                 show_clock = saved[1]
 
             self.display_logo(image, show_clock)
-            if show_clock and idle_info.get('clock'):
+            if show_clock and idle_info.get('clock') == True:
                 self.display_clock()
         except Exception as e:
             logging.exception(e)
@@ -670,7 +672,7 @@ class SevenCourtsM1(SampleBase):
             y1 = y0 + y_font_center(font, h_available / 2)
             graphics.DrawText(self.canvas, font, x1, y1, COLOR_BOOKING_GREETING, l1)
 
-        if idle_info.get('clock'):
+        if idle_info.get('clock') == True:
             self.display_clock()
 
     def display_panel_info(self):
@@ -681,7 +683,7 @@ class SevenCourtsM1(SampleBase):
 
         if self.panel_info.get('standby'):
             idle_info = self.panel_info.get('idle-info', {})
-            if idle_info.get('clock') and \
+            if idle_info.get('clock') == True and \
                 not idle_info.get('image-preset') and \
                 not idle_info.get('image-url') and \
                 not idle_info.get('message'):
@@ -711,13 +713,30 @@ class SevenCourtsM1(SampleBase):
             self.display_clock()
 
     def display_clock(self):
-        panel_tz  = self.panel_info.get('idle-info', {}).get('timezone', 'UTC')
+        idle_info = self.panel_info.get('idle-info', {})
+
+        clock = idle_info.get('clock', False)
+        if not clock:
+            return
+
+        panel_tz = idle_info.get('timezone', 'UTC')
         dt = datetime.now(tz.gettz(panel_tz))
-        text = dt.strftime('%H:%M')
         color = COLOR_CLOCK_STANDBY if self.panel_info.get('standby') else COLOR_CLOCK
-        x = W_LOGO_WITH_CLOCK + 2 if ORIENTATION_HORIZONTAL else (x_font_center(text, W_PANEL, FONT_CLOCK))
-        y = 62 if ORIENTATION_HORIZONTAL else H_PANEL - 2
-        draw_text(self.canvas, x, y, text, FONT_CLOCK, color)
+
+        if clock == True or clock == 'small':
+            text = dt.strftime('%H:%M')
+            font = FONT_CLOCK
+            x = W_LOGO_WITH_CLOCK + 2 if ORIENTATION_HORIZONTAL else (x_font_center(text, W_PANEL, FONT_CLOCK))
+            y = 62 if ORIENTATION_HORIZONTAL else H_PANEL - 2
+            draw_text(self.canvas, x, y, text, font, color)
+        else:
+            font = FONT_CLOCK_BIG
+            if ORIENTATION_HORIZONTAL:
+                draw_text(self.canvas, 16, 52, dt.strftime('%H:%M'), font, color)
+            else:
+                draw_text(self.canvas, 3, 80, dt.strftime('%H'), font, color)
+                draw_text(self.canvas, 24, 120, ':', font, color)
+                draw_text(self.canvas, 3, 158, dt.strftime('%M'), font, color)
 
     def display_set_digit(self, x, y, font, color, score):
         # FIXME meh
