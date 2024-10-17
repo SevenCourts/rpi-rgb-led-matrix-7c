@@ -280,12 +280,17 @@ class SevenCourtsM1(SampleBase):
                 try:
                     log('Registering panel at: ' + REGISTRATION_URL)
                     panel_id = register(REGISTRATION_URL)
+                    self.registration_failed = False
                 except Exception as ex:
                     logging.exception(ex)
-                    self.registration_failed = False
+                    self.registration_failed = True
 
-                if panel_id is None:
-                    self.display_panel_info()
+                if self.registration_failed:
+                    if self.panel_info and not panel_id:
+                        self.display_panel_info()
+                    else:
+                        self.display_init_screen()
+
                     time.sleep(1)
                 else:
                     self.registration_failed = False
@@ -686,7 +691,7 @@ class SevenCourtsM1(SampleBase):
         self.canvas.Clear()
 
         if self.registration_failed or self.panel_info_failed:
-            self.draw_error_indicator()
+            self.draw_error_indicator(self.panel_info.get('standby'))
 
         if self.panel_info.get('standby'):
             idle_info = self.panel_info.get('idle-info', {})
@@ -718,6 +723,16 @@ class SevenCourtsM1(SampleBase):
             self.display_idle_mode_message()
         elif idle_info.get('clock'):
             self.display_clock()
+
+    def display_init_screen(self):
+        self.canvas.Clear()
+        dt = datetime.now()
+        text = dt.strftime('%H:%M')
+        x = W_LOGO_WITH_CLOCK + 2 if ORIENTATION_HORIZONTAL else (x_font_center(text, W_PANEL, FONT_CLOCK))
+        y = 62 if ORIENTATION_HORIZONTAL else H_PANEL - 2
+        draw_text(self.canvas, x, y, text, FONT_CLOCK, COLOR_CLOCK)
+        self.draw_error_indicator()
+        self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
     def display_clock(self):
         idle_info = self.panel_info.get('idle-info', {})
@@ -1050,8 +1065,7 @@ class SevenCourtsM1(SampleBase):
         self.display_score(self.panel_info)
         self.display_winner(self.panel_info)
 
-    def draw_error_indicator(self):
-        standby = self.panel_info.get('standby')
+    def draw_error_indicator(self, standby=False):
         x = (COLOR_BLACK.red, COLOR_BLACK.green, COLOR_BLACK.blue)
         o = (
             COLOR_7C_BLUE_STANDBY.red if standby else COLOR_7C_BLUE.red,
