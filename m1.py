@@ -700,8 +700,8 @@ class SevenCourtsM1(SampleBase):
                 not idle_info.get('image-url') and \
                 not idle_info.get('message'):
                 self.display_clock()
-        elif 'ebusy' in self.panel_info:
-            self.display_ebusy_greeting()
+        elif 'booking' in self.panel_info:
+            self.display_booking()
         elif 'ebusy-ads' in self.panel_info:
             self.display_ebusy_ads()
         elif 'idle-info' in self.panel_info:
@@ -1079,20 +1079,18 @@ class SevenCourtsM1(SampleBase):
             [x, o, o, x]]
         draw_matrix(self.canvas, dot, W_PANEL - 4, H_PANEL - 4)
 
-    def display_ebusy_greeting(self):
-        text = self.panel_info.get('ebusy').get("greeting", "Welcome!")
-        lines = text.split('\n')
-        lines_count = len(lines)
+    def display_booking(self):
+        booking = self.panel_info.get('booking')
+        cur_booking = booking.get('current')
+        next_booking = booking.get('next')
 
+        text = (cur_booking or next_booking)['p1']['firstname']
         h_available = H_PANEL
         w_available = W_PANEL
-
-        prev_y = 0
-        for line in lines:
-            font = pick_font_that_fits(w_available, h_available, line)
-            x = max(0, (w_available - width_in_pixels(font, line)) / lines_count)
-            prev_y = y = prev_y + y_font_center(font, h_available / lines_count)
-            graphics.DrawText(self.canvas, font, x, y, COLOR_BOOKING_GREETING, line)
+        font = pick_font_that_fits(w_available, h_available, text)
+        x = x_font_center(text, w_available, font)
+        y = y_font_center(font, h_available)
+        graphics.DrawText(self.canvas, font, x, y, COLOR_BOOKING_GREETING, text)
 
 # Main function
 if __name__ == "__main__":
