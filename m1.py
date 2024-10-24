@@ -23,6 +23,7 @@ import logging
 import requests
 import subprocess
 from datetime import datetime
+from dateutil import parser
 from dateutil import tz
 
 SECONDS_START = int(time.time())
@@ -74,6 +75,7 @@ else:
     FONT_SCORE = FONTS_V0[0]
 
 FONT_CLOCK_BIG = FONT_26_42
+FONT_BOOKING = FONT_S
 
 COLOR_BOOKING_GREETING = COLOR_7C_BLUE
 COLOR_CLOCK = COLOR_GREY
@@ -1079,18 +1081,69 @@ class SevenCourtsM1(SampleBase):
             [x, o, o, x]]
         draw_matrix(self.canvas, dot, W_PANEL - 4, H_PANEL - 4)
 
+    def panel_tz(self):
+        return self.panel_info.get('idle-info', {}).get('timezone', 'Europe/Berlin')
+
     def display_booking(self):
         booking = self.panel_info.get('booking')
+
+        self.display_booking_header(booking.get('court'))
+
         cur_booking = booking.get('current')
         next_booking = booking.get('next')
 
-        text = (cur_booking or next_booking)['p1']['firstname']
-        h_available = H_PANEL
-        w_available = W_PANEL
-        font = pick_font_that_fits(w_available, h_available, text)
-        x = x_font_center(text, w_available, font)
-        y = y_font_center(font, h_available)
-        graphics.DrawText(self.canvas, font, x, y, COLOR_BOOKING_GREETING, text)
+        if next_booking and not cur_booking:
+            self.display_booking_times(next_booking)
+            self.display_booking_teams(next_booking)
+            draw_text(self.canvas, 135, 25, 'Nachste', FONT_BOOKING, COLOR_BOOKING_GREETING)
+
+    def display_booking_header(self, court):
+        draw_text(self.canvas, 2, 10, court['name'], FONT_BOOKING, COLOR_BOOKING_GREETING)
+        clock_str = datetime.now(tz.gettz(self.panel_tz())).strftime('%H:%M')
+        draw_text(self.canvas, 160, 10, clock_str, FONT_BOOKING, COLOR_BOOKING_GREETING)
+
+    def display_booking_times(self, booking):
+        start_time = parser.parse(booking['start-date']).strftime('%H:%M')
+        end_time = parser.parse(booking['end-date']).strftime('%H:%M')
+        draw_text(self.canvas, 2, 25, start_time + ' - ' + end_time, FONT_BOOKING, COLOR_BOOKING_GREETING)
+
+    def booking_player(self, player):
+        txt = None
+
+        firstname = player.get('firstname')
+        if firstname:
+            txt = firstname
+
+        lastname = player.get('lastname')
+        if lastname:
+            if txt:
+                txt += ' '
+            txt += lastname
+
+        return txt
+
+    def booking_team(self, booking, isTeam1=True):
+        txt = None
+
+        tp1 =  booking['p1'] if isTeam1 else booking.get('p3')
+        if tp1:
+            txt = self.booking_player(tp1)
+        tp2 =  booking['p2'] if isTeam1 else booking.get('p4')
+
+        if tp2:
+            if txt:
+                txt += ' und '
+            txt = (txt or '') + self.booking_player(tp2)
+
+        return txt
+
+    def display_booking_teams(self, booking):
+        t1 = self.booking_team(booking)
+        draw_text(self.canvas, 2, 40, t1, FONT_BOOKING, COLOR_BOOKING_GREETING)
+
+        t2 = self.booking_team(booking, False)
+        if t2:
+            draw_text(self.canvas, 2, 55, t2, FONT_BOOKING, COLOR_BOOKING_GREETING)
 
 # Main function
 if __name__ == "__main__":
