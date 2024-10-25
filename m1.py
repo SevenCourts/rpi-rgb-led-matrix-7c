@@ -22,7 +22,7 @@ import socket
 import logging
 import requests
 import subprocess
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil import parser
 from dateutil import tz
 
@@ -114,6 +114,7 @@ IMAGES_SPONSOR_LOGOS = ["images/logos/ITF/ITF_64x32_white_bg.png",
                         "images/logos/7C/sevencourts_7c_64x32.png"]
 PERIOD_SPONSOR_FRAME_S = 15  # seconds
 
+BOOKIN_OVERLAP_MINUTES = 10
 
 def panel_info_url(panel_id):
     return BASE_URL + "/panels/" + panel_id + "/match"
@@ -1085,65 +1086,109 @@ class SevenCourtsM1(SampleBase):
         return self.panel_info.get('idle-info', {}).get('timezone', 'Europe/Berlin')
 
     def display_booking(self):
+        overlap_minutes_td = timedelta(minutes=BOOKIN_OVERLAP_MINUTES)
         booking = self.panel_info.get('booking')
-
-        self.display_booking_header(booking.get('court'))
-
+        court = booking.get('court')
         cur_booking = booking.get('current')
         next_booking = booking.get('next')
+        panel_tz = self.panel_tz()
 
-        if next_booking and not cur_booking:
-            self.display_booking_times(next_booking)
-            self.display_booking_teams(next_booking)
-            draw_text(self.canvas, 135, 25, 'Nachste', FONT_BOOKING, COLOR_BOOKING_GREETING)
+        # Use datetime set in admin panel UI for easier testing/debugging.
+        _dev_timestamp = booking.get('_dev_timestamp')
+        if _dev_timestamp and len(_dev_timestamp):
+            t_now = parser.parse(_dev_timestamp)
+        else:
+            t_now = datetime.now(tz.gettz(panel_tz))
 
-    def display_booking_header(self, court):
-        draw_text(self.canvas, 2, 10, court['name'], FONT_BOOKING, COLOR_BOOKING_GREETING)
-        clock_str = datetime.now(tz.gettz(self.panel_tz())).strftime('%H:%M')
-        draw_text(self.canvas, 160, 10, clock_str, FONT_BOOKING, COLOR_BOOKING_GREETING)
+        if cur_booking:
+            t_end_right = parser.parse(cur_booking['end-date'])
+            t_end_left = t_end_right - overlap_minutes_td
 
-    def display_booking_times(self, booking):
+            if t_now >= t_end_left:
+                minutes_left = (t_end_right - t_now).seconds // 60 % 60
+                if next_booking:
+                    #  0 - 14 upcoming
+                    # 15 - 29 timeleft
+                    # 30 - 44 upcoming
+                    # 45 - 59 timeleft
+                    if (t_now.second >= 15 and t_now.second <= 29) or (t_now.second >= 45 and t_now.second <= 59):
+                        self.display_booking_timeleft_match(cur_booking, court, t_now, minutes_left)
+                    else:
+                        self.display_booking_upcoming_match(next_booking, court, t_now)
+                else:
+                    self.display_booking_timeleft_match(cur_booking, court, t_now, minutes_left)
+            else:
+                self.display_booking_greeting(cur_booking, court, t_now)
+        elif next_booking and t_now >= (parser.parse(next_booking['start-date']) - overlap_minutes_td):
+            self.display_booking_upcoming_match(next_booking, court, t_now)
+
+    def display_booking_header(self, court, dt):
+        def display_text(x, y, text):
+            draw_text(self.canvas, x, y, text, FONT_BOOKING, COLOR_BOOKING_GREETING)
+
+        display_text(2, 10, court['name'])
+
+        clock_str = dt.strftime('%H:%M')
+        display_text(160, 10, clock_str)
+
+    def display_booking_greeting(self, booking, court, dt):
+        def display_text(x, y, text):
+            draw_text(self.canvas, x, y, text, FONT_BOOKING, COLOR_BOOKING_GREETING)
+
+        self.display_booking_header(court, dt)
+        players = [p for p in [booking.get(k) for k in ['p1', 'p2', 'p3', 'p4']] if p]
+        player_firstnames = [ p.get('firstname') for p in players]
+        display_text(2, 25, 'Willkommen im MatchCenter')
+        display_text(2, 40, ','.join(player_firstnames))
+
+    def display_booking_timeleft_match(self, booking, court, dt, minutes_left):
+        minutes_left_txt = '< 1' if minutes_left == 0 else str(minutes_left)
+        self.display_booking_match(booking, court, dt, 'Noch: ' + minutes_left_txt + ' min.')
+
+    def display_booking_upcoming_match(self, booking, court, dt):
+        self.display_booking_match(booking, court, dt, 'Nachste')
+
+    def display_booking_match(self, booking, court, dt, notification=''):
+        def booking_team(isTeam1=True):
+            def booking_player(player):
+                txt = None
+                firstname = player.get('firstname')
+                if firstname:
+                    txt = firstname
+                lastname = player.get('lastname')
+                if lastname:
+                    if txt:
+                        txt += ' '
+                    txt += lastname
+                return txt
+
+            txt = None
+            tp1 =  booking['p1'] if isTeam1 else booking.get('p3')
+            if tp1:
+                txt = booking_player(tp1)
+            tp2 =  booking['p2'] if isTeam1 else booking.get('p4')
+            if tp2:
+                if txt:
+                    txt += ' und '
+                txt = (txt or '') + booking_player(tp2)
+            return txt
+
+        def display_text(x, y, text):
+            draw_text(self.canvas, x, y, text, FONT_BOOKING, COLOR_BOOKING_GREETING)
+
+        self.display_booking_header(court, dt)
         start_time = parser.parse(booking['start-date']).strftime('%H:%M')
         end_time = parser.parse(booking['end-date']).strftime('%H:%M')
-        draw_text(self.canvas, 2, 25, start_time + ' - ' + end_time, FONT_BOOKING, COLOR_BOOKING_GREETING)
+        display_text(2, 25, start_time + ' - ' + end_time)
 
-    def booking_player(self, player):
-        txt = None
-
-        firstname = player.get('firstname')
-        if firstname:
-            txt = firstname
-
-        lastname = player.get('lastname')
-        if lastname:
-            if txt:
-                txt += ' '
-            txt += lastname
-
-        return txt
-
-    def booking_team(self, booking, isTeam1=True):
-        txt = None
-
-        tp1 =  booking['p1'] if isTeam1 else booking.get('p3')
-        if tp1:
-            txt = self.booking_player(tp1)
-        tp2 =  booking['p2'] if isTeam1 else booking.get('p4')
-
-        if tp2:
-            if txt:
-                txt += ' und '
-            txt = (txt or '') + self.booking_player(tp2)
-
-        return txt
-
-    def display_booking_teams(self, booking):
-        t1 = self.booking_team(booking)
-        draw_text(self.canvas, 2, 40, t1, FONT_BOOKING, COLOR_BOOKING_GREETING)
-
-        t2 = self.booking_team(booking, False)
+        t1 = booking_team()
+        display_text(2, 40, t1)
+        t2 = booking_team(False)
         if t2:
-            draw_text(self.canvas, 2, 55, t2, FONT_BOOKING, COLOR_BOOKING_GREETING)
+            display_text(2, 55, t2)
+
+        if notification:
+            display_text(105, 25, notification)
 
 # Main function
 if __name__ == "__main__":
