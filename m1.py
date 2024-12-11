@@ -74,6 +74,12 @@ else:
     FONT_CLOCK = FONTS_V0[0] if ORIENTATION_HORIZONTAL else FONT_M
     FONT_SCORE = FONTS_V0[0]
 
+CLOCK_MODE_FONT_1_SM=FONTS_V0[4]
+CLOCK_MODE_FONT_1_MD=FONTS_V0[2]
+CLOCK_MODE_FONT_1_LG=FONTS_V0[1]
+CLOCK_MODE_FONT_2_SM=FONTS_V1[3]
+CLOCK_MODE_FONT_2_MD=FONTS_V1[2]
+CLOCK_MODE_FONT_2_LG=FONTS_V1[1]
 FONT_CLOCK_BIG = FONT_26_42
 FONT_BOOKING = FONT_S
 
@@ -698,11 +704,15 @@ class SevenCourtsM1(SampleBase):
 
         if self.panel_info.get('standby'):
             idle_info = self.panel_info.get('idle-info', {})
-            if idle_info.get('clock') == True and \
-                not idle_info.get('image-preset') and \
+            if not idle_info.get('image-preset') and \
                 not idle_info.get('image-url') and \
                 not idle_info.get('message'):
-                self.display_clock()
+
+                clock = idle_info.get('clock')
+                if clock == True:
+                    self.display_clock()
+                elif clock is not None:
+                    self.display_clock_mode()
         elif 'booking' in self.panel_info:
             self.display_booking()
         elif 'ebusy-ads' in self.panel_info:
@@ -725,7 +735,7 @@ class SevenCourtsM1(SampleBase):
         elif idle_info.get('message'):
             self.display_idle_mode_message()
         elif idle_info.get('clock'):
-            self.display_clock()
+            self.display_clock_mode()
 
     def display_init_screen(self):
         self.canvas.Clear()
@@ -737,11 +747,134 @@ class SevenCourtsM1(SampleBase):
         self.draw_error_indicator()
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
+    def display_clock_mode(self):
+        if ORIENTATION_VERTICAL:
+            self.display_big_clock()
+        else:
+            idle_info = self.panel_info.get('idle-info')
+
+            clock = idle_info.get('clock')
+            clock_size = clock.get('size')
+            clock_font = clock.get('font')
+            clock_h_align = clock.get('h-align')
+            clock_v_align = clock.get('v-align')
+
+            panel_tz = self.panel_tz()
+            dt = datetime.now(tz.gettz(panel_tz))
+            text = dt.strftime('%H:%M')
+            color = COLOR_CLOCK_STANDBY if self.panel_info.get('standby') else COLOR_CLOCK
+
+            if clock_font == "font-2":
+                if clock_size == "small":
+                    font = CLOCK_MODE_FONT_2_SM
+
+                    if clock_h_align == "left":
+                        x = 0
+                    elif clock_h_align == "center":
+                        x = 82
+                    else:
+                        x = 162
+
+                    if clock_v_align == "top":
+                        y = 9
+                    elif clock_v_align == "center":
+                        y = 34
+                    else:
+                        y = 63
+
+                elif clock_size == "medium":
+                    font = CLOCK_MODE_FONT_2_MD
+
+                    if clock_h_align == "left":
+                        x = 0
+                    elif clock_h_align == "center":
+                        x = 76
+                    else:
+                        x = 152
+
+                    if clock_v_align == "top":
+                        y = 11
+                    elif clock_v_align == "center":
+                        y = 36
+                    else:
+                        y = 63
+
+                else:
+                    font = CLOCK_MODE_FONT_2_LG
+
+                    if clock_h_align == "left":
+                        x = 0
+                    elif clock_h_align == "center":
+                        x = 66
+                    else:
+                        x = 132
+
+                    if clock_v_align == "top":
+                        y = 16
+                    elif clock_v_align == "center":
+                        y = 38
+                    else:
+                        y = 63
+
+            else:
+                if clock_size == "small":
+                    font = CLOCK_MODE_FONT_1_SM
+
+                    if clock_h_align == "left":
+                        x = 0
+                    elif clock_h_align == "center":
+                        x = 84
+                    else:
+                        x = 167
+
+                    if clock_v_align == "top":
+                        y = 7
+                    elif clock_v_align == "center":
+                        y = 32
+                    else:
+                        y = 63
+
+                elif clock_size == "medium":
+                    font = CLOCK_MODE_FONT_1_MD
+
+                    if clock_h_align == "left":
+                        x = 0
+                    elif clock_h_align == "center":
+                        x = 74
+                    else:
+                        x = 147
+
+                    if clock_v_align == "top":
+                        y = 11
+                    elif clock_v_align == "center":
+                        y = 36
+                    else:
+                        y = 63
+
+                else:
+                    font = CLOCK_MODE_FONT_1_LG
+
+                    if clock_h_align == "left":
+                        x = 0
+                    elif clock_h_align == "center":
+                        x = 71
+                    else:
+                        x = 142
+
+                    if clock_v_align == "top":
+                        y = 14
+                    elif clock_v_align == "center":
+                        y = 39
+                    else:
+                        y = 63
+
+            draw_text(self.canvas, x, y, text, font, color)
+
     def display_clock(self):
         idle_info = self.panel_info.get('idle-info', {})
 
-        clock = idle_info.get('clock', False)
-        if not clock:
+        clock = idle_info.get('clock')
+        if not clock == True:
             return
 
         panel_tz = idle_info.get('timezone', 'Europe/Berlin')
@@ -755,13 +888,20 @@ class SevenCourtsM1(SampleBase):
             y = 62 if ORIENTATION_HORIZONTAL else H_PANEL - 2
             draw_text(self.canvas, x, y, text, font, color)
         else:
-            font = FONT_CLOCK_BIG
-            if ORIENTATION_HORIZONTAL:
-                draw_text(self.canvas, 16, 52, dt.strftime('%H:%M'), font, color)
-            else:
-                draw_text(self.canvas, 3, 80, dt.strftime('%H'), font, color)
-                draw_text(self.canvas, 24, 120, ':', font, color)
-                draw_text(self.canvas, 3, 158, dt.strftime('%M'), font, color)
+            self.display_big_clock()
+
+    def display_big_clock(self):
+        font = FONT_CLOCK_BIG
+        color = COLOR_CLOCK_STANDBY if self.panel_info.get('standby') else COLOR_CLOCK
+        panel_tz = self.panel_tz()
+        dt = datetime.now(tz.gettz(panel_tz))
+
+        if ORIENTATION_HORIZONTAL:
+            draw_text(self.canvas, 16, 52, dt.strftime('%H:%M'), font, color)
+        else:
+            draw_text(self.canvas, 3, 80, dt.strftime('%H'), font, color)
+            draw_text(self.canvas, 24, 120, ':', font, color)
+            draw_text(self.canvas, 3, 158, dt.strftime('%M'), font, color)
 
     def display_set_digit(self, x, y, font, color, score):
         # FIXME meh
