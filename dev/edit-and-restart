@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+vim m1.py && systemctl restart 7c && journalctl -u 7c -f
