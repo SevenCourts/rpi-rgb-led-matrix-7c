@@ -256,6 +256,29 @@ Start update script for each panel, e.g.:
 ./7c-update-panel.sh 10.8.0.2
 ```
 
+## Switch from PROD to STAGING
+
+Stop the 7c service:
+```shell
+systemctl stop 7c
+EDITOR=vim systemctl edit 7c
+```
+
+Configure the `TABLEAU_SERVER_BASE_URL` environment variable with server URL:
+```
+[Service]
+Environment=PANEL_CONFIG=/opt/7c/panel.conf TABLEAU_SERVER_BASE_URL=https://staging.tableau.tennismath.com
+```
+
+If needed, switch the firmware branch, and start the 7c service:
+```shell
+cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c/
+git fetch
+git switch <branch>
+systemctl start 7c
+```
+
+
 
 ### WiFi settings 
 
