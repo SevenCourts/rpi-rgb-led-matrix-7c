@@ -16,6 +16,9 @@ import time
 from datetime import datetime
 from PIL import Image
 
+from os import listdir
+from os.path import isfile, join
+
 # Style constants
 COLOR_CUSTOM = graphics.Color(0, 177, 64)
 COLOR_CUSTOM_DARK = graphics.Color(0, 110, 40)
@@ -450,10 +453,10 @@ class M1Demo(SampleBase):
         self.show_score_doubles_with_flags_mixto(canvas, True, duration)
 
     def run_itk_demo_sequence(self, canvas, duration):
-        images = ['TSR_192x64.png', 'bownce_192x64.png', 'mgc_192x64.png', 'sevencourts_192x64.png', 'vereinity-itk-192x64.png', 'bemer_192x64.png', 'duol_192x64.png', 'padelbee_192x64.png', 'tennis-is-us-ITK-192x64.png']
-        for image in images:
-            self.show_image_centered(canvas, "images/itk/" + image, duration)
-
+        path = 'images/itk'
+        images = [f for f in listdir(path) if isfile(join(path, f))]
+        for image in sorted(images):
+            self.show_image_centered(canvas, path + '/' + image, duration)
 
 
     def run_slide_show(self, duration, title_duration):
