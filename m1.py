@@ -26,6 +26,9 @@ from datetime import datetime, timedelta
 from dateutil import parser
 from dateutil import tz
 
+from os import listdir
+from os.path import isfile, join
+
 SECONDS_START = int(time.time())
 
 GIT_COMMIT_ID = subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode()
