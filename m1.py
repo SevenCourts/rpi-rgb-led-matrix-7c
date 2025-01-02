@@ -234,8 +234,9 @@ def start_demo_thread():
 
 def stop_demo_thread():
     stop_threads = True
-    t1.join()
-    log('thread killed')
+    if t1.is_alive():
+        t1.join()
+        log('thread killed')
 
 class SevenCourtsM1(SampleBase):
     def __init__(self, *args, **kwargs):
