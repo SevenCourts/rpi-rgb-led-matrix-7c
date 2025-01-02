@@ -497,9 +497,9 @@ class M1Demo(SampleBase):
 
         duration_logo = min(3, duration)
         self.show_image_centered(canvas, "images/logos/tec-waldau_64x64.png", duration_logo)
-        self.show_image_centered(canvas, "images/logos/wtb_grey_light_192x49.png", duration_logo)
-        self.show_image_centered(canvas, "images/logos/a-rete_160x43.png", duration_logo)
-        self.show_image_centered(canvas, "images/logos/tennis-point_bw_192x48.png", duration_logo)
+        self.show_image_centered(canvas, "images/logos/dat_logo_claim_192x64.png", duration_logo)
+        self.show_image_centered(canvas, "images/logos/a-rete_192x51.png", duration_logo)
+        self.show_image_centered(canvas, "images/logos/tom-schilke_192x55.png", duration_logo)
 
         # 1.2. Idle mode: Clock + Weather + etc.
         self.show_title_text(canvas, "Uhrzeit, Wetter,\nAnkündigungen, u.s.w.", COLOR_7C_GREEN, title_duration, FONT_M)
