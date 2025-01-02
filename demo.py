@@ -30,6 +30,7 @@ Y_SHIFT_T1_CUSTOM = 8
 Y_SHIFT_T2_CUSTOM = 2
 
 # Timing defaults
+LOGO_SLIDE_DURATION = 30
 TITLE_DURATION = 3
 FRAME_DURATION = 8
 
@@ -488,7 +489,7 @@ class M1Demo(SampleBase):
     def run_demo_sequence_german(self, canvas, duration, title_duration):
 
         # 0. NUTZEN - Title slide: SevenCourts logo + slogan
-        self.show_title_slide(canvas, "Anzeigetafeln, die niemals schlafen", duration, FONT_S)
+        self.show_title_slide(canvas, "Anzeigetafeln, die niemals schlafen", LOGO_SLIDE_DURATION, FONT_S)
     
         # 1.1. Match mode: point-by-point
         self.show_title_text(canvas, "Grand-Slam-Moment\nfür dein Turnier!", COLOR_7C_GREEN, title_duration, FONT_M)
