@@ -497,7 +497,7 @@ class M1Demo(SampleBase):
         self.show_score_doubles_with_flags_long(canvas, True, duration)
 
         # 1.2. Match mode: game-by-game
-        self.show_title_text(canvas, "Spielstand 'Game-by-game'\n(easy mode)", COLOR_GREEN_7c, title_duration)
+        self.show_title_text(canvas, "Spielstand 'Game-by-game'\n(easy mode)", COLOR_7C_GREEN, title_duration)
         self.show_score_doubles_with_flags_short(canvas, False, duration)
 
 
