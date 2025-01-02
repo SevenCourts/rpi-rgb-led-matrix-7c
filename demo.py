@@ -489,7 +489,13 @@ class M1Demo(SampleBase):
     def run_demo_sequence_german(self, canvas, duration, title_duration):
 
         # 0. NUTZEN - Title slide: SevenCourts logo + slogan
-        self.show_image_centered(canvas, "images/itk/05_sevencourts_192x64.png", LOGO_SLIDE_DURATION)
+        self.show_image_centered(canvas, "images/demo_7c_progress/7c_1.png", LOGO_SLIDE_DURATION/6)
+        self.show_image_centered(canvas, "images/demo_7c_progress/7c_2.png", LOGO_SLIDE_DURATION/6)
+        self.show_image_centered(canvas, "images/demo_7c_progress/7c_3.png", LOGO_SLIDE_DURATION/6)
+        self.show_image_centered(canvas, "images/demo_7c_progress/7c_4.png", LOGO_SLIDE_DURATION/6)
+        self.show_image_centered(canvas, "images/demo_7c_progress/7c_5.png", LOGO_SLIDE_DURATION/6)
+        self.show_image_centered(canvas, "images/demo_7c_progress/7c_6.png", LOGO_SLIDE_DURATION/6)
+
         #self.show_title_slide(canvas, "Anzeigetafeln, die niemals schlafen", LOGO_SLIDE_DURATION, FONT_S)
     
         # 1.1. Match mode: point-by-point
