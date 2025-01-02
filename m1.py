@@ -210,6 +210,32 @@ def image_max_width(show_clock: bool):
     return W_PANEL if ORIENTATION_VERTICAL else W_LOGO_WITH_CLOCK if show_clock else W_PANEL
 
 
+
+import threading
+import time
+
+
+stop_threads = True
+
+def run():
+    while True:
+        log('thread running...')
+        time.sleep(1)
+        global stop_threads
+        if stop_threads:
+            break
+
+def start_demo_thread(self):
+    stop_threads = False
+    t1 = threading.Thread(target = run)
+    t1.start()
+    
+
+def stop_demo_thread(self):
+    stop_threads = True
+    t1.join()
+    log('thread killed')
+
 class SevenCourtsM1(SampleBase):
     def __init__(self, *args, **kwargs):
         super(SevenCourtsM1, self).__init__(*args, **kwargs)
@@ -696,6 +722,7 @@ class SevenCourtsM1(SampleBase):
         if idle_info.get('clock') == True:
             self.display_clock()
 
+
     def display_panel_info(self):
         self.canvas.Clear()
 
@@ -705,27 +732,30 @@ class SevenCourtsM1(SampleBase):
         demo = self.panel_info.get('demo')
         if demo:
             log('Demo mode: ', demo)
-        elif self.panel_info.get('standby'):
-            idle_info = self.panel_info.get('idle-info', {})
-            if not idle_info.get('image-preset') and \
-                not idle_info.get('image-url') and \
-                not idle_info.get('message'):
+            start_demo_thread()
+        else
+            stop_demo_thread()
+            if self.panel_info.get('standby'):
+                idle_info = self.panel_info.get('idle-info', {})
+                if not idle_info.get('image-preset') and \
+                    not idle_info.get('image-url') and \
+                    not idle_info.get('message'):
 
-                clock = idle_info.get('clock')
-                if clock == True:
-                    self.display_clock()
-                elif clock is not None:
-                    self.display_clock_mode()
-        elif 'booking' in self.panel_info:
-            self.display_booking()
-        elif 'ebusy-ads' in self.panel_info:
-            self.display_ebusy_ads()
-        elif 'idle-info' in self.panel_info:
-            self.display_idle_mode()
-        elif 'tournament-name' in self.panel_info:
-            self.display_signage_itftournament()
-        elif 'team1' in self.panel_info:
-            self.display_match()
+                    clock = idle_info.get('clock')
+                    if clock == True:
+                        self.display_clock()
+                    elif clock is not None:
+                        self.display_clock_mode()
+            elif 'booking' in self.panel_info:
+                self.display_booking()
+            elif 'ebusy-ads' in self.panel_info:
+                self.display_ebusy_ads()
+            elif 'idle-info' in self.panel_info:
+                self.display_idle_mode()
+            elif 'tournament-name' in self.panel_info:
+                self.display_signage_itftournament()
+            elif 'team1' in self.panel_info:
+                self.display_match()
 
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
