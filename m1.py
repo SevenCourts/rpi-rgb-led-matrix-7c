@@ -726,13 +726,29 @@ class SevenCourtsM1(SampleBase):
         if idle_info.get('clock') == True:
             self.display_clock()
 
+
+
+    def show_image_centered(self, path_to_image, duration):
+        self.canvas.Clear()
+        image = Image.open(path_to_image).convert('RGB')
+
+        # center image
+        x = max(0, (W_PANEL - image.width) / 2)
+        y = max(0, (H_PANEL - image.height) / 2)
+
+        self.canvas.SetImage(image, x, y)
+        self.matrix.SwapOnVSync(canvas)
+        time.sleep(duration)
+
     def display_demo_sequence_itk(self):
         while True:
-            log('thread running...')
-            time.sleep(1)
-            global stop_thread
-            if stop_thread:
-                break
+            path = 'images/itk'
+            images = [f for f in listdir(path) if isfile(join(path, f))]
+            for image in sorted(images):
+                self.show_image_centered(path + '/' + image, duration)
+                global stop_thread
+                if stop_thread:
+                    break
 
     def display_panel_info(self):
         self.canvas.Clear()
