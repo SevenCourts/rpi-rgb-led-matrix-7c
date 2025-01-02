@@ -744,6 +744,7 @@ class SevenCourtsM1(SampleBase):
         time.sleep(duration)
 
     def display_demo_sequence_itk(self):
+        duration = 8
         while True:
             path = 'images/itk'
             images = [f for f in listdir(path) if isfile(join(path, f))]
