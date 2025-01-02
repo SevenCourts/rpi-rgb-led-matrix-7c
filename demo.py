@@ -493,18 +493,13 @@ class M1Demo(SampleBase):
         #self.show_title_slide(canvas, "Anzeigetafeln, die niemals schlafen", LOGO_SLIDE_DURATION, FONT_S)
     
         # 1.1. Match mode: point-by-point
-        self.show_title_text(canvas, "Matchmodus:\nGrand-Slam-Moment!", COLOR_7C_GREEN, title_duration, FONT_M)
+        self.show_title_text(canvas, "MATCH MODUS:\nIhr Grand-Slam-Moment!", COLOR_7C_GREEN, title_duration, FONT_M)
         self.show_score_singles_with_flags(canvas, True, duration)
         self.show_score_doubles_with_flags_short(canvas, True, duration)
         self.show_score_doubles_with_flags_long(canvas, True, duration)
 
-        # 1.2. Match mode: game-by-game
-        self.show_title_text(canvas, "Einfachmodus:\nSpielstand 'Game-by-game'", COLOR_7C_GREEN, title_duration)
-        self.show_score_doubles_with_flags_short(canvas, False, duration)
-
-
         # 2.1. Club mode: sequence of logos of our references
-        self.show_title_text(canvas, "Klubmodus:\nSponsor- oder Vereinlogo",
+        self.show_title_text(canvas, "CLUB MODUS:\nSponsor- oder Vereinlogo",
                              COLOR_7C_GREEN, title_duration, FONT_M)
 
         duration_logo = min(3, duration)
@@ -514,7 +509,7 @@ class M1Demo(SampleBase):
         self.show_image_centered(canvas, "images/logos/tom-schilke_192x55.png", duration_logo)
 
         # 2.2. Club mode: Clock + Weather + etc.
-        self.show_title_text(canvas, "Klubmodus:\nUhrzeit, Wetter, u.s.w.", COLOR_7C_GREEN, title_duration, FONT_M)
+        self.show_title_text(canvas, "CLUB MODUS:\nUhrzeit, Wetter, u.s.w.", COLOR_7C_GREEN, title_duration, FONT_M)
         self.show_clock_with_weather_and_announcement(canvas, "  Alles Gute!\nAnne und Stefan", duration)
 
         # 3.3. Contact us
