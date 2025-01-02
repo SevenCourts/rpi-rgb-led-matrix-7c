@@ -702,7 +702,10 @@ class SevenCourtsM1(SampleBase):
         if self.registration_failed or self.panel_info_failed:
             self.draw_error_indicator(self.panel_info.get('standby'))
 
-        if self.panel_info.get('standby'):
+        demo = self.panel_info.get('demo')
+        if demo:
+            log('Demo mode: ', demo)
+        elif self.panel_info.get('standby'):
             idle_info = self.panel_info.get('idle-info', {})
             if not idle_info.get('image-preset') and \
                 not idle_info.get('image-url') and \
