@@ -733,7 +733,7 @@ class SevenCourtsM1(SampleBase):
         if demo:
             log('Demo mode: ', demo)
             start_demo_thread()
-        else
+        else:
             stop_demo_thread()
             if self.panel_info.get('standby'):
                 idle_info = self.panel_info.get('idle-info', {})
