@@ -220,12 +220,12 @@ thread_started = False
 
 t1 = threading.Thread(None)
 
-def start_demo_thread(target):
+def start_demo_thread(target_function):
     global thread_started
     global stop_thread
     global t1
     if not(thread_started):
-        t1 = threading.Thread(target)
+        t1 = threading.Thread(target = target_function)
         t1.start()
         log('thread started')
     thread_started = True
