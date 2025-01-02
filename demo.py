@@ -489,21 +489,22 @@ class M1Demo(SampleBase):
     def run_demo_sequence_german(self, canvas, duration, title_duration):
 
         # 0. NUTZEN - Title slide: SevenCourts logo + slogan
-        self.show_title_slide(canvas, "Anzeigetafeln, die niemals schlafen", LOGO_SLIDE_DURATION, FONT_S)
+        self.show_image_centered(canvas, "images/itk/05_sevencourts_192x64.png", LOGO_SLIDE_DURATION)
+        #self.show_title_slide(canvas, "Anzeigetafeln, die niemals schlafen", LOGO_SLIDE_DURATION, FONT_S)
     
         # 1.1. Match mode: point-by-point
-        self.show_title_text(canvas, "Grand-Slam-Moment\nfür dein Turnier!", COLOR_7C_GREEN, title_duration, FONT_M)
+        self.show_title_text(canvas, "Matchmodus:\nGrand-Slam-Moment!", COLOR_7C_GREEN, title_duration, FONT_M)
         self.show_score_singles_with_flags(canvas, True, duration)
         self.show_score_doubles_with_flags_short(canvas, True, duration)
         self.show_score_doubles_with_flags_long(canvas, True, duration)
 
         # 1.2. Match mode: game-by-game
-        self.show_title_text(canvas, "Spielstand 'Game-by-game'\n(easy mode)", COLOR_7C_GREEN, title_duration)
+        self.show_title_text(canvas, "Einfachmodus:\nSpielstand 'Game-by-game'", COLOR_7C_GREEN, title_duration)
         self.show_score_doubles_with_flags_short(canvas, False, duration)
 
 
         # 2.1. Club mode: sequence of logos of our references
-        self.show_title_text(canvas, "Sponsoren-, Verein-,\noder Turnierlogo",
+        self.show_title_text(canvas, "Klubmodus:\nSponsor- oder Vereinlogo",
                              COLOR_7C_GREEN, title_duration, FONT_M)
 
         duration_logo = min(3, duration)
@@ -513,11 +514,11 @@ class M1Demo(SampleBase):
         self.show_image_centered(canvas, "images/logos/tom-schilke_192x55.png", duration_logo)
 
         # 2.2. Club mode: Clock + Weather + etc.
-        self.show_title_text(canvas, "Uhrzeit, Wetter,\nAnkündigungen, u.s.w.", COLOR_7C_GREEN, title_duration, FONT_M)
+        self.show_title_text(canvas, "Klubmodus:\nUhrzeit, Wetter, u.s.w.", COLOR_7C_GREEN, title_duration, FONT_M)
         self.show_clock_with_weather_and_announcement(canvas, "  Alles Gute!\nAnne und Stefan", duration)
 
         # 3.3. Contact us
-        self.show_title_text(canvas, "www.sevencourts.com/de", COLOR_7C_GREEN, duration, FONT_M)
+        self.show_title_text(canvas, "ANGEBOT ANFORDERN:\nwww.sevencourts.com/de", COLOR_7C_GREEN, duration, FONT_M)
 
     def run_demo_sequence_court_1(self, canvas, duration):
         self.show_image_centered(canvas, "images/logos/padel_trend_expo_119x64.png", duration)
