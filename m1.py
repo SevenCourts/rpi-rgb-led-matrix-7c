@@ -229,12 +229,16 @@ def run():
 t1 = threading.Thread(target = run)
 
 def start_demo_thread():
+    global thread_started
+    global stop_thread
     if not(thread_started):
         t1.start()
     thread_started = True
     stop_thread = False
 
 def stop_demo_thread():
+    global thread_started
+    global stop_thread
     stop_thread = True
     if t1.is_alive():
         t1.join()
