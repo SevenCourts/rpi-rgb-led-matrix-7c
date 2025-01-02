@@ -755,8 +755,6 @@ class SevenCourtsM1(SampleBase):
                     break
 
     def display_panel_info(self):
-        self.canvas.Clear()
-
         if self.registration_failed or self.panel_info_failed:
             self.draw_error_indicator(self.panel_info.get('standby'))
 
@@ -766,6 +764,7 @@ class SevenCourtsM1(SampleBase):
             start_demo_thread(self.display_demo_sequence_itk)
         else:
             stop_demo_thread()
+            self.canvas.Clear()
             if self.panel_info.get('standby'):
                 idle_info = self.panel_info.get('idle-info', {})
                 if not idle_info.get('image-preset') and \
