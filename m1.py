@@ -225,9 +225,10 @@ def run():
         if stop_threads:
             break
 
+t1 = threading.Thread(target = run)
+
 def start_demo_thread():
     stop_threads = False
-    t1 = threading.Thread(target = run)
     t1.start()
     
 
