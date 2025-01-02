@@ -740,7 +740,7 @@ class SevenCourtsM1(SampleBase):
         y = max(0, (H_PANEL - image.height) / 2)
 
         self.canvas.SetImage(image, x, y)
-        self.matrix.SwapOnVSync(canvas)
+        self.matrix.SwapOnVSync(self.canvas)
         time.sleep(duration)
 
     def display_demo_sequence_itk(self):
