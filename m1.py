@@ -215,30 +215,31 @@ import threading
 import time
 
 
-stop_threads = True
+stop_thread = True
+thread_started = False
 
 def run():
     while True:
         log('thread running...')
         time.sleep(1)
-        global stop_threads
-        if stop_threads:
+        global stop_thread
+        if stop_thread:
             break
 
 t1 = threading.Thread(target = run)
 
 def start_demo_thread():
-    stop_threads = False
-    if not(t1.is_alive()):
+    if not(thread_started):
         t1.start()
-        time.sleep(1)
-    
+    thread_started = True
+    stop_thread = False
 
 def stop_demo_thread():
-    stop_threads = True
+    stop_thread = True
     if t1.is_alive():
         t1.join()
         log('thread killed')
+        thread_started = False
 
 class SevenCourtsM1(SampleBase):
     def __init__(self, *args, **kwargs):
