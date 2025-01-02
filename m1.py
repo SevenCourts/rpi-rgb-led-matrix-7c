@@ -229,7 +229,8 @@ t1 = threading.Thread(target = run)
 
 def start_demo_thread():
     stop_threads = False
-    t1.start()
+    if not(t1.is_alive()):
+        t1.start()
     
 
 def stop_demo_thread():
