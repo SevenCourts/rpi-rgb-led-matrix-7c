@@ -231,7 +231,9 @@ t1 = threading.Thread(target = run)
 def start_demo_thread():
     global thread_started
     global stop_thread
+    global t1
     if not(thread_started):
+        t1 = threading.Thread(target = run)
         t1.start()
     thread_started = True
     stop_thread = False
