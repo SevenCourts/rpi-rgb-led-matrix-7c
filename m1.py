@@ -225,13 +225,13 @@ def run():
         if stop_threads:
             break
 
-def start_demo_thread(self):
+def start_demo_thread():
     stop_threads = False
     t1 = threading.Thread(target = run)
     t1.start()
     
 
-def stop_demo_thread(self):
+def stop_demo_thread():
     stop_threads = True
     t1.join()
     log('thread killed')
