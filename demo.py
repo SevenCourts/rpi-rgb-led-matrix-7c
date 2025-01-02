@@ -487,11 +487,21 @@ class M1Demo(SampleBase):
 
     def run_demo_sequence_german(self, canvas, duration, title_duration):
 
-        # 0. Title slide: SevenCourts logo + slogan
-        self.show_title_slide(canvas, "Anzeigetafeln für JEDEN Verein", duration, FONT_S)
-        self.show_title_text(canvas, "www.sevencourts.com/de", COLOR_7C_GREEN, duration, FONT_M)
+        # 0. NUTZEN - Title slide: SevenCourts logo + slogan
+        self.show_title_slide(canvas, "Anzeigetafeln, die niemals schlafen", duration, FONT_S)
+    
+        # 1.1. Match mode: point-by-point
+        self.show_title_text(canvas, "Grand-Slam-Moment\nfür dein Turnier!", COLOR_7C_GREEN, title_duration, FONT_M)
+        self.show_score_singles_with_flags(canvas, True, duration)
+        self.show_score_doubles_with_flags_short(canvas, True, duration)
+        self.show_score_doubles_with_flags_long(canvas, True, duration)
 
-        # 1.1. Idle mode: sequence of logos of our references
+        # 1.2. Match mode: game-by-game
+        self.show_title_text(canvas, "Spielstand 'Game-by-game'\n(easy mode)", COLOR_GREEN_7c, title_duration)
+        self.show_score_doubles_with_flags_short(canvas, False, duration)
+
+
+        # 2.1. Club mode: sequence of logos of our references
         self.show_title_text(canvas, "Sponsoren-, Verein-,\noder Turnierlogo",
                              COLOR_7C_GREEN, title_duration, FONT_M)
 
@@ -501,28 +511,12 @@ class M1Demo(SampleBase):
         self.show_image_centered(canvas, "images/logos/a-rete_192x51.png", duration_logo)
         self.show_image_centered(canvas, "images/logos/tom-schilke_192x55.png", duration_logo)
 
-        # 1.2. Idle mode: Clock + Weather + etc.
+        # 2.2. Club mode: Clock + Weather + etc.
         self.show_title_text(canvas, "Uhrzeit, Wetter,\nAnkündigungen, u.s.w.", COLOR_7C_GREEN, title_duration, FONT_M)
         self.show_clock_with_weather_and_announcement(canvas, "  Alles Gute!\nAnne und Stefan", duration)
 
-        # 2.1. Match mode: point-by-point
-        self.show_title_text(canvas, "Grand-Slam-Moment\nfür deinen Verein!", COLOR_7C_GREEN, title_duration, FONT_M)
-        self.show_score_singles_with_flags(canvas, True, duration)
-        self.show_score_doubles_with_flags_short(canvas, True, duration)
-        self.show_score_doubles_with_flags_long(canvas, True, duration)
-
-        # 2.2. Match mode: game-by-game
-        # self.show_title_text(canvas, "Punteggio Game-by-game\n(modalità 'Easy')", COLOR_GREEN_7c, title_duration)
-        # self.show_score_doubles_with_flags_short(canvas, False, duration)
-
-        # 3. Some texts
-        # self.show_title_text(canvas, "Vieni a trovarci\na padiglione 4 stand 2", COLOR_BLUE_7c, duration)
-        # self.show_title_text(canvas, "API per l'integrazione\ncon qualsiasi sistema\ndi punteggio,
-        # torneo,\no back-office", COLOR_GREEN_7c, title_duration)
-        # self.show_title_text(canvas, "Web e video in diretta", COLOR_BLUE_7c, title_duration)
-        # self.show_title_text(canvas, "Viene gestito tramite un'app\no un pulsante Bluetooth",
-        # COLOR_BLUE_7c, title_duration)
-        self.show_title_text(canvas, "SPEZIALPREIS\n\n999 EUR / 499 EUR", COLOR_7C_GOLD, duration, FONT_M)
+        # 3.3. Contact us
+        self.show_title_text(canvas, "www.sevencourts.com/de", COLOR_7C_GREEN, duration, FONT_M)
 
     def run_demo_sequence_court_1(self, canvas, duration):
         self.show_image_centered(canvas, "images/logos/padel_trend_expo_119x64.png", duration)
