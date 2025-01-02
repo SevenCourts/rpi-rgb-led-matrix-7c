@@ -218,23 +218,16 @@ import time
 stop_thread = True
 thread_started = False
 
-def run():
-    while True:
-        log('thread running...')
-        time.sleep(1)
-        global stop_thread
-        if stop_thread:
-            break
+t1 = threading.Thread(None)
 
-t1 = threading.Thread(target = run)
-
-def start_demo_thread():
+def start_demo_thread(target):
     global thread_started
     global stop_thread
     global t1
     if not(thread_started):
-        t1 = threading.Thread(target = run)
+        t1 = threading.Thread(target)
         t1.start()
+        log('thread started')
     thread_started = True
     stop_thread = False
 
@@ -733,6 +726,13 @@ class SevenCourtsM1(SampleBase):
         if idle_info.get('clock') == True:
             self.display_clock()
 
+    def display_demo_sequence_itk(self):
+        while True:
+            log('thread running...')
+            time.sleep(1)
+            global stop_thread
+            if stop_thread:
+                break
 
     def display_panel_info(self):
         self.canvas.Clear()
@@ -743,7 +743,7 @@ class SevenCourtsM1(SampleBase):
         demo = self.panel_info.get('demo')
         if demo:
             log('Demo mode: ', demo)
-            start_demo_thread()
+            start_demo_thread(self.display_demo_sequence_itk)
         else:
             stop_demo_thread()
             if self.panel_info.get('standby'):
