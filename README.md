@@ -256,6 +256,80 @@ Start update script for each panel, e.g.:
 ./7c-update-panel.sh 10.8.0.2
 ```
 
+## Setup RTC
+
+### Configure HW
+
+### Configure OS
+
+Below is the short version of the [article](https://pimylifeup.com/raspberry-pi-rtc/)
+on setting up RTC on Raspberry Pi.
+
+1. Enable I2C
+    1. Start configuration utility with `sudo raspi-config`.
+    1. Go to `3 Interface Options`.
+    1. Go to `I5 I2C`.
+    1. Choose `Yes` to enable ARM I2C Interface.
+    1. Reboot with `sudo reboot`.
+1. Install required packages with `sudo apt install python3-smbus i2c-tools`.
+1. Check RTC is detected with `sudo i2cdetect -y 1` -- the output table will
+have `68` on cross of `60` row and `8` column.
+
+    ```txt
+        0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+    00:                         -- -- -- -- -- -- -- --
+    10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    60: -- -- -- -- -- -- -- -- 68 -- -- -- -- -- -- --
+    70: -- -- -- -- -- -- -- --
+    ```
+
+1. Enable kernel module:
+    1. Add `dtoverlay=i2c-rtc,ds1307` line to `/boot/confit.txt` file.
+    1. Reboot with `sudo reboot`.
+1. Check kernel module is loaded with `sudo i2cdetect -y 1` -- the ouput table
+will have `UU` on cross of `60` row and `8` column.
+
+    ```txt
+        0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+    00:                         -- -- -- -- -- -- -- --
+    10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    60: -- -- -- -- -- -- -- -- UU -- -- -- -- -- -- --
+    70: -- -- -- -- -- -- -- --
+    ```
+
+1. Deactivate the RTC subbing in OS
+    1. Remove the `fake-hwclock` RTC-stub package with
+    `sudo apt -y remove fake-hwclock`.
+    1. Remove stuff, related to RTC stubbing, from startup scripts with
+    `sudo update-rc.d -f fake-hwclock remove`.
+1. Allow OS to read time from RTC on startup
+    1. Comment out an `if` statement that skips reading time from RTC, the
+    result will be
+
+    ```sh
+    #if [ -e /run/systemd/system ] ; then
+    #    exit 0
+    #fi
+    ```
+
+1. Check RTC time is correct
+    1. Get current time in RTC with `sudo hwclock -D -r`.
+    1. If RTC time differ from actual time, wait until OS time synced, and
+    actualize RTC clock time with `sudo hwclock -w`.
+1. Check the setup was done correctly
+    1. Remember the current time (hh:mm) and turn off the panel with
+    `sudo shutdown`.
+    1. Wait three minutes, turn on the panel, and after around 18 seconds panel
+    displays the actual (hh:mm + 3 minutes) time.
+
 ## Switch from PROD to STAGING
 
 Stop the 7c service:
