@@ -6,17 +6,28 @@
 
 - Install [Raspberry PI OS Lite 64 bit](https://www.raspberrypi.com/documentation/computers/getting-started.html#installing-the-operating-system) ver. 5.15.84-v8+ 
     - Use exactly this version of RaspiOS: https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2023-02-22/    
-- Insert the SD card to Raspi, connect monitor, keyboard, ethernet
-- On the first boot: set login: "user" and password: "password" 
-    - **FIXME** define non-default login/password
-- Turn on ssh:
-    - Enter `sudo raspi-config` in a terminal window
-    - Select "Interface Options"
-    - Navigate to and select "SSH"
-    - Choose "Yes"
 
-The rest can be done via SSH:
-    
+- Create a default user and enable SSH:
+    - v1
+        - In the Raspberry PI Imager, after selecting the image file, choose "Use OS Customization / EDIT SETTINGS"
+        - "GENERAL / Set username and password": set login: `user` and password: `password`
+            - **FIXME** define non-default login/password
+        - "GENERAL / Set locale settings": set "Europe/Berlin" and Keyboard layout: `de`
+        - "SERVICES / Enable SSH": check and select "Use password authentication"
+            - **FIXME** use "Allow public-key authentication only" instead
+    - v2 (requires connecting a keyboard and monitor to a Raspi)
+        - Insert the SD card to Raspi, connect monitor, keyboard
+            - On the first boot: set login: `user` and password: `password`
+                - **FIXME** define non-default login/password
+        - Turn on ssh:
+            - Enter `sudo raspi-config` in a terminal window
+            - Select "Interface Options"
+            - Navigate to and select "SSH"
+            - Choose "Yes"
+
+The rest is done via SSH:
+
+- Connect to a LAN via Ethernet
 - Find out the IP address of the Raspi
     - e.g. with SUPREMATIC Mikrotik router: http://192.168.114.1/webfig/#IP:DHCP_Server.Leases
     - or use any IP scanner software
