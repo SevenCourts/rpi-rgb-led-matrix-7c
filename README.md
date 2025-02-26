@@ -2,6 +2,8 @@
 
 ## Install firmware
 
+Use this SD card: [Samsung PRO Endurance microSD, 32 GB](https://www.amazon.de/dp/B0B1J64G4K).
+
 ### OS & dev tools
 
 - Install [Raspberry PI OS Lite 64 bit](https://www.raspberrypi.com/documentation/computers/getting-started.html#installing-the-operating-system) ver. 5.15.84-v8+ 
@@ -10,12 +12,19 @@
 
 - Create a default user and enable SSH:
     - v1
-        - In the Raspberry PI Imager, after selecting the image file, choose "Use OS Customization / EDIT SETTINGS"
+        - In the Raspberry PI Imager:
+            - "Raspberry PI Device": select "Raspberry PI 4"
+            - "Operating System": select "Use custom" and browse for the image file
+            - Storage": select the drive with the SD card
+            
+            
+            , choose "Use OS Customization / EDIT SETTINGS"
         - "GENERAL / Set username and password": set login: `user` and password: `password`
             - **FIXME** define non-default login/password
         - "GENERAL / Set locale settings": set "Europe/Berlin" and Keyboard layout: `de`
         - "SERVICES / Enable SSH": check and select "Use password authentication"
             - **FIXME** use "Allow public-key authentication only" instead
+        - 
     - v2 (requires connecting a keyboard and monitor to a Raspi)
         - Insert the SD card to Raspi, connect monitor, keyboard
             - On the first boot: set login: `user` and password: `password`
