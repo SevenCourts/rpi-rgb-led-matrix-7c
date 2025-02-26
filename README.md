@@ -5,6 +5,7 @@
 ### OS & dev tools
 
 - Install [Raspberry PI OS Lite 64 bit](https://www.raspberrypi.com/documentation/computers/getting-started.html#installing-the-operating-system) ver. 5.15.84-v8+ 
+    - Download and install the [Raspberry PI Imager](https://www.raspberrypi.com/documentation/computers/getting-started.html#raspberry-pi-imager)
     - Use exactly this version of RaspiOS: https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2023-02-22/    
 
 - Create a default user and enable SSH:
