@@ -6,36 +6,29 @@ Use this SD card: [Samsung PRO Endurance microSD, 32 GB](https://www.amazon.de/d
 
 ### OS & dev tools
 
-- Install [Raspberry PI OS Lite 64 bit](https://www.raspberrypi.com/documentation/computers/getting-started.html#installing-the-operating-system) ver. 5.15.84-v8+ 
-    - Download and install the [Raspberry PI Imager](https://www.raspberrypi.com/documentation/computers/getting-started.html#raspberry-pi-imager)
-    - Use exactly this version of RaspiOS: https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2023-02-22/    
+Install [Raspberry PI OS Lite 64 bit](https://www.raspberrypi.com/documentation/computers/getting-started.html#installing-the-operating-system) ver. 5.15.84-v8+ 
 
-- Create a default user and enable SSH:
-    - v1
-        - In the Raspberry PI Imager:
-            - "Raspberry PI Device": select "Raspberry PI 4"
-            - "Operating System": select "Use custom" and browse for the image file
-            - Storage": select the drive with the SD card
-            
-            
-            , choose "Use OS Customization / EDIT SETTINGS"
-        - "GENERAL / Set username and password": set login: `user` and password: `password`
-            - **FIXME** define non-default login/password
-        - "GENERAL / Set locale settings": set "Europe/Berlin" and Keyboard layout: `de`
-        - "SERVICES / Enable SSH": check and select "Use password authentication"
-            - **FIXME** use "Allow public-key authentication only" instead
-        - 
-    - v2 (requires connecting a keyboard and monitor to a Raspi)
-        - Insert the SD card to Raspi, connect monitor, keyboard
-            - On the first boot: set login: `user` and password: `password`
-                - **FIXME** define non-default login/password
-        - Turn on ssh:
-            - Enter `sudo raspi-config` in a terminal window
-            - Select "Interface Options"
-            - Navigate to and select "SSH"
-            - Choose "Yes"
+- Download and install the [Raspberry PI Imager](https://www.raspberrypi.com/documentation/computers/getting-started.html#raspberry-pi-imager)
+- Use exactly this version of RaspiOS: https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2023-02-22/    
 
-The rest is done via SSH:
+Create a default user and enable SSH. 
+
+In the Raspberry PI Imager:
+
+- "Raspberry PI Device": select "Raspberry PI 4"
+- "Operating System": select "Use custom" and browse for the image file
+- "Storage": select the drive with the SD card
+- Press "NEXT"
+- In the dialog "Use OS Customization?" dialog, choose "EDIT SETTINGS":
+    - "GENERAL / Set username and password": set login: `user` and password: `password`
+        - **FIXME** define non-default login/password
+    - "GENERAL / Set locale settings": set "Europe/Berlin" and Keyboard layout: `de`
+    - "SERVICES / Enable SSH": check and select "Use password authentication"
+        - **FIXME** use "Allow public-key authentication only" instead
+    - Press "WRITE"
+    - In about 4 minutes, the SD card should be ready.
+
+The rest is done via SSH.
 
 - Connect to a LAN via Ethernet
 - Find out the IP address of the Raspi
