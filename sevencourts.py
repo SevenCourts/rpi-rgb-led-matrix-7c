@@ -80,6 +80,9 @@ FONTS_V2 = [
     load_font("fonts/spleen-5x8-german-characters/spleen-5x8.bdf"),
     load_font("fonts/tom-thumb.bdf")]
 
+# FIXME: Need review.
+FONT_26_42 = load_font("fonts/7Segments_26x42.bdf")
+
 FONTS = FONTS_V1
 
 FONT_XL = FONTS[0]
