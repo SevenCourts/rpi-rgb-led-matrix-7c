@@ -22,6 +22,8 @@ import socket
 import logging
 import requests
 import subprocess
+from datetime import datetime
+from dateutil import tz
 
 SECONDS_START = int(time.time())
 
@@ -709,7 +711,9 @@ class SevenCourtsM1(SampleBase):
             self.display_clock()
 
     def display_clock(self):
-        text = datetime.now().strftime('%H:%M')
+        panel_tz  = self.panel_info.get('idle-info', {}).get('timezone', 'UTC')
+        dt = datetime.now(tz.gettz(panel_tz))
+        text = dt.strftime('%H:%M')
         color = COLOR_CLOCK_STANDBY if self.panel_info.get('standby') else COLOR_CLOCK
         x = W_LOGO_WITH_CLOCK + 2 if ORIENTATION_HORIZONTAL else (x_font_center(text, W_PANEL, FONT_CLOCK))
         y = 62 if ORIENTATION_HORIZONTAL else H_PANEL - 2
