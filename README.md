@@ -260,9 +260,16 @@ Start update script for each panel, e.g.:
 
 ### Configure HW
 
+1. Insert a new CR1220 battery into the slot on the HUB75-GPIO driver
+1. Make sure the jumper on the HUB75-GPIO driver is switched to "IIC-RTC" setting. In this position, the 3rd line of LEDs is inactive.
+
 ### Configure OS
 
-Below is the short version of the [article](https://pimylifeup.com/raspberry-pi-rtc/)
+**TODO** - change to headless (CLI) set-up
+**TODO** - check if reboot is needed at each step
+**TODO** - test how it works if the SD-card is cloned and the system time is random. Will the timesycnd update the hwclock?
+
+Below is the short version of the [article](https://pimylifeup.com/raspberry-pi-rtc/) 
 on setting up RTC on Raspberry Pi.
 
 1. Enable I2C
@@ -288,7 +295,7 @@ have `68` on cross of `60` row and `8` column.
     ```
 
 1. Enable kernel module:
-    1. Add `dtoverlay=i2c-rtc,ds1307` line to `/boot/confit.txt` file.
+    1. Add `dtoverlay=i2c-rtc,ds1307` line to `/boot/config.txt` file.
     1. Reboot with `sudo reboot`.
 1. Check kernel module is loaded with `sudo i2cdetect -y 1` -- the ouput table
 will have `UU` on cross of `60` row and `8` column.
@@ -305,13 +312,13 @@ will have `UU` on cross of `60` row and `8` column.
     70: -- -- -- -- -- -- -- --
     ```
 
-1. Deactivate the RTC subbing in OS
+1. Deactivate the RTC stubbing in OS
     1. Remove the `fake-hwclock` RTC-stub package with
     `sudo apt -y remove fake-hwclock`.
     1. Remove stuff, related to RTC stubbing, from startup scripts with
     `sudo update-rc.d -f fake-hwclock remove`.
 1. Allow OS to read time from RTC on startup
-    1. Comment out an `if` statement that skips reading time from RTC, the
+    1. In `/lib/udev/hwclock-set` file, comment out the `if` statement that skips reading time from RTC, the
     result will be
 
     ```sh
@@ -321,9 +328,9 @@ will have `UU` on cross of `60` row and `8` column.
     ```
 
 1. Check RTC time is correct
-    1. Get current time in RTC with `sudo hwclock -D -r`.
-    1. If RTC time differ from actual time, wait until OS time synced, and
-    actualize RTC clock time with `sudo hwclock -w`.
+    1. Show the current time from RTC with `sudo hwclock --show --verbose`.
+    1. If RTC time differs from the actual time, wait until OS time is synced, and
+    actualize RTC clock time with `sudo hwclock --systohc`.
 1. Check the setup was done correctly
     1. Remember the current time (hh:mm) and turn off the panel with
     `sudo shutdown`.
