@@ -82,6 +82,7 @@ FONTS_V2 = [
 
 # FIXME: Need review.
 FONT_26_42 = load_font("fonts/7Segments_26x42.bdf")
+FONT_SPLEEN_32x64 = load_font("fonts/spleen-2.1.0/spleen-32x64.bdf")
 
 FONTS = FONTS_V1
 
