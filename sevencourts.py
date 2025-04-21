@@ -85,7 +85,7 @@ FONT_26_42 = load_font("fonts/7Segments_26x42.bdf")
 FONT_SPLEEN_32x64 = load_font("fonts/spleen-2.1.0/spleen-32x64.bdf")
 FONT_7SEGMENT_48 = load_font("fonts/7segment/7segment_48.bdf")
 FONT_7SEGMENT_64 = load_font("fonts/7segment/7segment_64.bdf")
-FONT_7SEGMENT_80 = load_font("fonts/7segment/7segment_80.bdf")
+FONT_7SEGMENT_66 = load_font("fonts/7segment/7segment_66.bdf")
 
 FONTS = FONTS_V1
 
