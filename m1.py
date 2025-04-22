@@ -664,6 +664,7 @@ class SevenCourtsM1(SampleBase):
             if show_clock and idle_info.get('clock') == True:
                 self.display_clock_mode()
         except Exception as e:
+            # TODO show an image stub (?)
             logging.exception(e)
             log('Error downloading image', e)
 
@@ -790,9 +791,9 @@ class SevenCourtsM1(SampleBase):
                 if clock_h_align == "left":
                     x = 0
                 elif clock_h_align == "center":
-                    x = (W_PANEL - width_in_pixels(font, text)) / 2
+                    x = max(0, (W_PANEL - width_in_pixels(font, text)) / 2)
                 else:
-                    x = W_PANEL - width_in_pixels(font, text)
+                    x = max(0, W_PANEL - width_in_pixels(font, text))
 
                 if clock_v_align == "top":
                     y = y_font_offset(font)
