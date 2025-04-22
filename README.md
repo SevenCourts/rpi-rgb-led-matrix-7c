@@ -119,9 +119,9 @@ echo "blacklist snd_bcm2835" >> /etc/modprobe.d/alsa-blacklist.conf
 
 ```
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
-cp opt/7c/7c-set-hostname.sh /opt/7c/7c-set-hostname.sh
+cp 7c-os/opt/7c/7c-set-hostname.sh /opt/7c/7c-set-hostname.sh
 chmod u+x /opt/7c/7c-set-hostname.sh
-cp etc/systemd/system/7c-hostname.service /etc/systemd/system/7c-hostname.service
+cp 7c-os/etc/systemd/system/7c-hostname.service /etc/systemd/system/7c-hostname.service
 systemctl enable 7c-hostname
 ```
 
@@ -129,8 +129,8 @@ systemctl enable 7c-hostname
 ## Set up 7c systemd services
 
 ```shell
-cp etc/systemd/system/7c.service /etc/systemd/system/7c.service
-cp etc/systemd/system/7c-demo.service /etc/systemd/system/7c-demo.service
+cp 7c-os/etc/systemd/system/7c.service /etc/systemd/system/7c.service
+cp 7c-os/etc/systemd/system/7c-demo.service /etc/systemd/system/7c-demo.service
 ```
 
 Enable service and start now:
@@ -148,7 +148,7 @@ unzip 7c_m1_controller.zip
 chmod u+x 7c_m1_controller
 
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
-cp etc/systemd/system/7c-controller.service /etc/systemd/system/7c-controller.service
+cp 7c-os/etc/systemd/system/7c-controller.service /etc/systemd/system/7c-controller.service
 systemctl enable 7c-controller
 ```
 
@@ -168,8 +168,29 @@ systemctl daemon-reload
 systemctl enable --now openvpn-client@callhome
 ```
 
+## Setup RTC
 
+### Configure HW
 
+1. Insert a new CR1220 battery into the slot on the HUB75-GPIO driver
+1. Make sure the jumper on the HUB75-GPIO driver is switched to "IIC-RTC" setting. In this position, the 3rd line of LEDs is inactive.
+
+### Configure OS
+
+**TODO** - test how it works if the SD-card is cloned and the system time is random. Will the timesycnd update the hwclock?
+
+Below is the short version of the [article](https://pimylifeup.com/raspberry-pi-rtc/) 
+on setting up RTC on Raspberry Pi.
+
+```shell
+raspi-config nonint do_i2c 0
+apt -y install python3-smbus i2c-tools
+echo "dtoverlay=i2c-rtc,ds1307" >> /boot/config.txt
+apt -y remove fake-hwclock
+update-rc.d -f fake-hwclock remove
+cp 7c-os/lib/udev/hwclock-set lib/udev/hwclock-set
+```
+    
 ## Tests
 
 The board is connected to Ethernet.
@@ -179,7 +200,7 @@ The board is connected to Ethernet.
 reboot
 ```
 
-=> The panel should display some time (may be different from current) and the blue dot.
+=> The panel should display the current time and the blue dot.
 
 
 ```shell
@@ -230,6 +251,33 @@ Connect to the chosen scoreboard via SSH from `7c-vpn.suprematic.team`:
 ssh 10.8.0.4
 ```
 
+### Test RTC-relevant values
+
+Check kernel module is loaded with `sudo i2cdetect -y 1` -- the ouput table
+will have `UU` on cross of `60` row and `8` column.
+
+    ```txt
+        0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
+    00:                         -- -- -- -- -- -- -- --
+    10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    60: -- -- -- -- -- -- -- -- UU -- -- -- -- -- -- --
+    70: -- -- -- -- -- -- -- --
+    ```
+
+1. Check RTC time is correct
+    1. Show the current time from RTC with `hwclock --show`.
+    1. If the time differs from the actual time, wait until OS time is synced, and
+    actualize RTC clock time with `hwclock --systohc`.
+	
+1. Test that the setup was done correctly
+    1. Remember the current time (hh:mm) and turn off the panel with `sudo shutdown`.
+    1. Wait 3 minutes, turn on the panel, and after around 18 seconds panel
+    displays the actual (hh:mm + 3 minutes) time.
+
 ### Final test
 
 Disconnect from Ethernet, reboot.
@@ -277,86 +325,7 @@ Start update script for each panel, e.g.:
 ./7c-update-panel.sh 10.8.0.2
 ```
 
-## Setup RTC
 
-### Configure HW
-
-1. Insert a new CR1220 battery into the slot on the HUB75-GPIO driver
-1. Make sure the jumper on the HUB75-GPIO driver is switched to "IIC-RTC" setting. In this position, the 3rd line of LEDs is inactive.
-
-### Configure OS
-
-**TODO** - change to headless (CLI) set-up
-**TODO** - check if reboot is needed at each step
-**TODO** - test how it works if the SD-card is cloned and the system time is random. Will the timesycnd update the hwclock?
-
-Below is the short version of the [article](https://pimylifeup.com/raspberry-pi-rtc/) 
-on setting up RTC on Raspberry Pi.
-
-1. Enable I2C
-    1. Start configuration utility with `sudo raspi-config`.
-    1. Go to `3 Interface Options`.
-    1. Go to `I5 I2C`.
-    1. Choose `Yes` to enable ARM I2C Interface.
-    1. Reboot with `sudo reboot`.
-1. Install required packages with `sudo apt install python3-smbus i2c-tools`.
-1. Check RTC is detected with `sudo i2cdetect -y 1` -- the output table will
-have `68` on cross of `60` row and `8` column.
-
-    ```txt
-        0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
-    00:                         -- -- -- -- -- -- -- --
-    10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    60: -- -- -- -- -- -- -- -- 68 -- -- -- -- -- -- --
-    70: -- -- -- -- -- -- -- --
-    ```
-
-1. Enable kernel module:
-    1. Add `dtoverlay=i2c-rtc,ds1307` line to `/boot/config.txt` file.
-    1. Reboot with `sudo reboot`.
-1. Check kernel module is loaded with `sudo i2cdetect -y 1` -- the ouput table
-will have `UU` on cross of `60` row and `8` column.
-
-    ```txt
-        0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
-    00:                         -- -- -- -- -- -- -- --
-    10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    40: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-    60: -- -- -- -- -- -- -- -- UU -- -- -- -- -- -- --
-    70: -- -- -- -- -- -- -- --
-    ```
-
-1. Deactivate the RTC stubbing in OS
-    1. Remove the `fake-hwclock` RTC-stub package with
-    `sudo apt -y remove fake-hwclock`.
-    1. Remove stuff, related to RTC stubbing, from startup scripts with
-    `sudo update-rc.d -f fake-hwclock remove`.
-1. Allow OS to read time from RTC on startup
-    1. In `/lib/udev/hwclock-set` file, comment out the `if` statement that skips reading time from RTC, the
-    result will be
-
-    ```sh
-    #if [ -e /run/systemd/system ] ; then
-    #    exit 0
-    #fi
-    ```
-
-1. Check RTC time is correct
-    1. Show the current time from RTC with `sudo hwclock --show --verbose`.
-    1. If RTC time differs from the actual time, wait until OS time is synced, and
-    actualize RTC clock time with `sudo hwclock --systohc`.
-1. Check the setup was done correctly
-    1. Remember the current time (hh:mm) and turn off the panel with
-    `sudo shutdown`.
-    1. Wait three minutes, turn on the panel, and after around 18 seconds panel
-    displays the actual (hh:mm + 3 minutes) time.
 
 ## Switch from PROD to STAGING
 
