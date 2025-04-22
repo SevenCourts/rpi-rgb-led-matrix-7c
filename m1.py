@@ -793,12 +793,12 @@ class SevenCourtsM1(SampleBase):
                 elif clock_h_align == "center":
                     x = (W_PANEL - width_in_pixels(font, text)) / 2
                 else:
-                    x = W_LOGO_WITH_CLOCK
+                    x = W_LOGO_WITH_CLOCK - 1
 
                 if clock_v_align == "top":
-                    y = height_in_pixels(font, text)
+                    y = y_font_offset(font)
                 elif clock_v_align == "center":
-                    y = (H_PANEL - height_in_pixels(font, text)) / 2
+                    y = (H_PANEL - y_font_offset(font)) / 2
                 else:
                     y = H_PANEL
         else:

@@ -53,7 +53,12 @@ def load_font(path):
     return result
 
 
-FONT_XXS = load_font("fonts/tom-thumb.bdf")
+FONT_XXS_SDK = load_font("fonts/tom-thumb.bdf")
+FONT_XS_SDK = load_font("fonts/5x8.bdf")
+FONT_S_SDK = load_font("fonts/7x13.bdf")
+FONT_M_SDK = load_font("fonts/9x15.bdf")
+FONT_L_SDK = load_font("fonts/10x20.bdf")
+FONT_XL_SDK = load_font("fonts/texgyre-27-modified.bdf")
 
 FONT_XS_SPLEEN = load_font("fonts/spleen-5x8-german-characters/spleen-5x8.bdf")
 FONT_S_SPLEEN = load_font("fonts/spleen-2.1.0/spleen-6x12.bdf")
@@ -68,12 +73,12 @@ FONT_XXL_7SEGMENT = load_font("fonts/7segment/7segment_66_monospace_digits.bdf")
 
 # Initial fonts - all from the SDK
 FONTS_V0 = [
-    load_font("fonts/texgyre-27-modified.bdf"),
-    load_font("fonts/10x20.bdf"),
-    load_font("fonts/9x15.bdf"),
-    load_font("fonts/7x13.bdf"),
-    load_font("fonts/5x8.bdf"),
-    FONT_XXS]
+    FONT_XL_SDK,
+    FONT_L_SDK,
+    FONT_M_SDK,
+    FONT_S_SDK,
+    FONT_XS_SDK,
+    FONT_XXS_SDK]
 
 # Spleen fonts
 FONTS_V1 = [
@@ -82,16 +87,16 @@ FONTS_V1 = [
     FONT_M_SPLEEN,
     FONT_S_SPLEEN,
     FONT_XS_SPLEEN,
-    FONT_XXS]
+    FONT_XXS_SDK]
 
 # Spleen with a compromise L font
 FONTS_V2 = [
     FONT_XL_SPLEEN,
-    load_font("fonts/10x20.bdf"),
+    FONT_L_SDK,
     FONT_M_SPLEEN,
     FONT_S_SPLEEN,
     FONT_XS_SPLEEN,
-    FONT_XXS]
+    FONT_XXS_SDK]
 
 FONTS = FONTS_V1
 
@@ -119,26 +124,22 @@ Y_FONT_EXTRA_OFFSETS = {
 }
 
 Y_FONT_SYMBOL_NORMAL_HEIGHTS = {
-    FONTS_V0[0]: 20,
-    FONTS_V0[1]: 13,
-    FONTS_V0[2]: 10,
-    FONTS_V0[3]: 9,
-    FONTS_V0[4]: 6,
-    FONTS_V0[5]: 5,
+    FONT_XL_SDK: 20,
+    FONT_L_SDK: 13,
+    FONT_M_SDK: 10,
+    FONT_S_SDK: 9,
+    FONT_XS_SDK: 6,
+    FONT_XXS_SDK: 5,
 
-    FONTS_V1[0]: 20,
-    FONTS_V1[1]: 15,
-    FONTS_V1[2]: 10,
-    FONTS_V1[3]: 8,
-    FONTS_V1[4]: 6,
-    FONTS_V1[5]: 5,
+    FONT_XL_SPLEEN: 20,
+    FONT_L_SPLEEN: 15,
+    FONT_M_SPLEEN: 10,
+    FONT_S_SPLEEN: 8,
+    FONT_XS_SPLEEN: 6,
 
-    FONTS_V2[0]: 20,
-    FONTS_V2[1]: 13,
-    FONTS_V2[2]: 10,
-    FONTS_V2[3]: 8,
-    FONTS_V2[4]: 6,
-    FONTS_V2[5]: 5
+    FONT_XXL_7SEGMENT: 64,
+    FONT_XL_7SEGMENT: 44,
+    FONT_L_7SEGMENT: 25
 }
 
 H_FONT_XS = Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(FONT_XS)
@@ -182,14 +183,6 @@ def width_in_pixels(font, text):
         result += font.CharacterWidth(ord(c))
     # print('<{}> => {}'.format(text,result))
     return result
-
-def height_in_pixels(font, text):
-    result = 0
-    for c in text:
-        result = max(result, font.CharacterHeight(ord(c)))
-    print('<{}> => {}'.format(text,result))
-    return result
-
 
 def truncate_text(font, max_width, text):
     result = ""
