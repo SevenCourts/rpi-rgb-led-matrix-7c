@@ -55,7 +55,7 @@ def load_font(path):
 
 FONT_XXS = load_font("fonts/tom-thumb.bdf")
 
-FONT_XS_SPLEEN = load_font("fonts/spleen-2.1.0/spleen-5x8.bdf")
+FONT_XS_SPLEEN = load_font("fonts/spleen-5x8-german-characters/spleen-5x8.bdf")
 FONT_S_SPLEEN = load_font("fonts/spleen-2.1.0/spleen-6x12.bdf")
 FONT_M_SPLEEN = load_font("fonts/spleen-2.1.0/spleen-8x16.bdf")
 FONT_L_SPLEEN = load_font("fonts/spleen-2.1.0/spleen-12x24.bdf")
