@@ -84,7 +84,7 @@ FONTS_V2 = [
 FONT_26_42 = load_font("fonts/7Segments_26x42.bdf")
 FONT_SPLEEN_32x64 = load_font("fonts/spleen-2.1.0/spleen-32x64.bdf")
 FONT_7SEGMENT_S = load_font("fonts/7segment/7segment_26_monospace_digits.bdf")
-FONT_7SEGMENT_M = load_font("fonts/7segment/7segment_48_monospace_digits.bdf")
+FONT_7SEGMENT_M = load_font("fonts/7segment/7segment_45_monospace_digits.bdf")
 FONT_7SEGMENT_L = load_font("fonts/7segment/7segment_66_monospace_digits.bdf")
 
 FONTS = FONTS_V1

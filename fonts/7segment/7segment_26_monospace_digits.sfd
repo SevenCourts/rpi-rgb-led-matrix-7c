@@ -20,7 +20,7 @@ OS2Version: 0
 OS2_WeightWidthSlopeOnly: 0
 OS2_UseTypoMetrics: 1
 CreationTime: 1745323152
-ModificationTime: 1745323186
+ModificationTime: 1745323314
 OS2TypoAscent: 0
 OS2TypoAOffset: 1
 OS2TypoDescent: 0
@@ -188,56 +188,56 @@ EndChar
 
 StartChar: $0032
 Encoding: 50 50 20
-Width: 498
+Width: 472
 Flags: W
 LayerCount: 2
 EndChar
 
 StartChar: $0033
 Encoding: 51 51 21
-Width: 443
+Width: 472
 Flags: W
 LayerCount: 2
 EndChar
 
 StartChar: $0034
 Encoding: 52 52 22
-Width: 498
+Width: 472
 Flags: W
 LayerCount: 2
 EndChar
 
 StartChar: $0035
 Encoding: 53 53 23
-Width: 498
+Width: 472
 Flags: W
 LayerCount: 2
 EndChar
 
 StartChar: $0036
 Encoding: 54 54 24
-Width: 498
+Width: 472
 Flags: W
 LayerCount: 2
 EndChar
 
 StartChar: $0037
 Encoding: 55 55 25
-Width: 443
+Width: 472
 Flags: W
 LayerCount: 2
 EndChar
 
 StartChar: $0038
 Encoding: 56 56 26
-Width: 498
+Width: 472
 Flags: W
 LayerCount: 2
 EndChar
 
 StartChar: $0039
 Encoding: 57 57 27
-Width: 498
+Width: 472
 Flags: W
 LayerCount: 2
 EndChar
@@ -1268,21 +1268,21 @@ BDFChar: 18 48 17 2 15 0 24
 5O^o,^^S!e^^S!e^^S!e^^S!e^^NI6!!#7i^^S!e^^S!e^^S!e^^S!e^^NHs5O\XQ
 BDFChar: 19 49 17 2 14 0 24
 !!iQA!#P\Q!#P\Q!#P\Q!#P\Q!#P\A!!!!)!#P\Q!#P\Q!#P\Q!#P\QJ/A8'!!iQ)
-BDFChar: 20 50 18 2 15 0 24
+BDFChar: 20 50 17 2 15 0 24
 5O^o,!"8i9!"8i9!"8i9!"8i9!";*]5OcGg^];.M^];.M^];.M^];.M^]6Ug5O\XQ
-BDFChar: 21 51 16 3 13 0 24
-s+(-"!+5e7!+5e7!+5e7!+5e7!+>hWs*t)W!+5e7!+5e7!+5e7!+5e7!+>hWs*t(L
-BDFChar: 22 52 18 2 15 0 24
+BDFChar: 21 51 17 2 15 0 24
++7LBA!"8i9!"8i9!"8i9!"8i9!"9t=+7K7=!"8i9!"8i9!"8i9!"8i9J.*Oh+7K71
+BDFChar: 22 52 17 2 15 0 24
 5R>.6^^S!e^^S!e^^S!e^^S!e^^NHs5O\X]!"8i9!"8i9!"8i9!"8i9!"8i9!!iQ)
-BDFChar: 23 53 18 2 15 0 24
+BDFChar: 23 53 17 2 15 0 24
 5O^o,^];.M^];.M^];.M^];.M^]6Ug5O\X]!"8i9!"8i9!"8i9!"8i9!";*]5O\XQ
-BDFChar: 24 54 18 2 15 0 24
+BDFChar: 24 54 17 2 15 0 24
 5O^o,^];.M^];.M^];.M^];.M^]6Ug5OcGs^^S!e^^S!e^^S!e^^S!e^^NHs5O\XQ
-BDFChar: 25 55 16 3 13 0 24
-s+(-"!+5e7!+5e7!+5e7!+5e7!+5d,!!!",!+5e7!+5e7!+5e7!+5e7!+5e7!$D7A
-BDFChar: 26 56 18 2 15 0 24
+BDFChar: 25 55 17 2 15 0 24
++7LBA!"8i9!"8i9!"8i9!"8i9!"8i-!!!!-!"8i9!"8i9!"8i9!"8i9J.)Dd!!E9%
+BDFChar: 26 56 17 2 15 0 24
 5O^o,^^S!e^^S!e^^S!e^^S!e^^NHs5OcGs^^S!e^^S!e^^S!e^^S!e^^NHs5O\XQ
-BDFChar: 27 57 18 2 15 0 24
+BDFChar: 27 57 17 2 15 0 24
 5O^o,^^S!e^^S!e^^S!e^^S!e^^NHs5O\X]!"8i9!"8i9!"8i9!"8i9!";*]5O\XQ
 BDFChar: 28 58 7 2 3 0 9
 5et/8!!!#7^d%l"
