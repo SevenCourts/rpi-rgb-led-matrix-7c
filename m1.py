@@ -755,12 +755,12 @@ class SevenCourtsM1(SampleBase):
         clock = self.panel_info.get('idle-info', {}).get('clock')
         if clock == True: # Compiler warning is WRONG!
             # display a clock along with some other elements, using the default Spleen font
-            font = FONT_CLOCK_S_1
+            font = FONT_CLOCK_M_2
             if ORIENTATION_VERTICAL:
                 x = x_font_center(text, W_PANEL, FONT_CLOCK)
                 y = H_PANEL - 2
             else:
-                x = W_LOGO_WITH_CLOCK - 2
+                x = W_LOGO_WITH_CLOCK # - 2
                 y = 62
         elif clock:
             if ORIENTATION_VERTICAL:
