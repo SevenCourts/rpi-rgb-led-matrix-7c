@@ -861,18 +861,18 @@ class SevenCourtsM1(SampleBase):
                     font = CLOCK_MODE_FONT_1_LG
 
                     if clock_h_align == "left":
-                        x = 0
+                        x = 1
                     elif clock_h_align == "center":
-                        x = 71
+                        x = 1
                     else:
-                        x = 142
+                        x = 1
 
                     if clock_v_align == "top":
-                        y = 14
+                        y = 64
                     elif clock_v_align == "center":
-                        y = 39
+                        y = 64
                     else:
-                        y = 63
+                        y = 64
 
             draw_text(self.canvas, x, y, text, font, color)
 
