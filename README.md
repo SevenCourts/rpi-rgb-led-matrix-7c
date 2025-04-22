@@ -85,10 +85,17 @@ git checkout 7c/m1/dev
 make
 ```
 
+### Create config file
+
+```sh
+touch /opt/7c/panel.conf
+chmod 666 /opt/7c/panel.conf
+```
+
 ### Install and make python3 bindings
 
 ```shell
-sudo apt-get update --allow-releaseinfo-change && sudo apt-get install python3-dev python3-pillow python3-requests python3-gpiozero -y
+sudo apt-get update --allow-releaseinfo-change && sudo apt-get install python3-dev python3-pillow python3-requests python3-gpiozero python3-dateutil -y
 make build-python PYTHON=$(command -v python3)
 sudo make install-python PYTHON=$(command -v python3)
 ```
@@ -294,7 +301,7 @@ systemctl start 7c
 
 
 
-### WiFi settings 
+### WiFi settings
 
 #### With SevenCourts Admin app
 
@@ -316,7 +323,7 @@ raspi-config nonint do_wifi_ssid_passphrase <SSID> <PSK>
 
 #### Misc RaspiOS Lite commands
 
-Rasp-config command line parameters: 
+Rasp-config command line parameters:
 
 - https://forums.raspberrypi.com/viewtopic.php?t=21632
 - https://loganmarchione.com/2021/07/raspi-configs-mostly-undocumented-non-interactive-mode/
@@ -374,6 +381,7 @@ sudo dd if=7c_shrinked.img of=/dev/disk4
     - Install python extensions:
         - `pip install Pillow`
         - `pip install requests`
+        - `pip install python-dateutil`
 
 ### RGBMatrixEmulator
 
