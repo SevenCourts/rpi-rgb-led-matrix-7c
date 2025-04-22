@@ -760,7 +760,7 @@ class SevenCourtsM1(SampleBase):
                 x = x_font_center(text, W_PANEL, FONT_CLOCK)
                 y = H_PANEL - 2
             else:
-                x = W_LOGO_WITH_CLOCK + 2
+                x = W_LOGO_WITH_CLOCK
                 y = 62
         elif clock:
             if ORIENTATION_VERTICAL:
