@@ -32,7 +32,7 @@ The rest is done via SSH.
 
 - Connect to a LAN via Ethernet
 - Find out the IP address of the Raspi
-    - e.g. with SUPREMATIC Mikrotik router: http://192.168.114.1/webfig/#IP:DHCP_Server.Leases
+    - e.g. with a Mikrotik router: http://192.168.114.1/webfig/#IP:DHCP_Server.Leases
     - or use any IP scanner software
 
 - Log in with `ssh user@<ip-address>` (password: `password`)
@@ -79,7 +79,7 @@ apt install git vim build-essential -y
 ```shell
 mkdir /opt/7c
 cd /opt/7c
-git clone https://github.com/suprematic/rpi-rgb-led-matrix.git
+git clone https://github.com/sevencourts/rpi-rgb-led-matrix.git
 cd rpi-rgb-led-matrix/
 git checkout 7c/m1/dev
 make
@@ -106,7 +106,7 @@ TODO: check if we need to keep the directory structure?
 
 ```shell
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python
-git clone https://bitbucket.org/suprematic/rpi-rgb-led-matrix-7c.git
+git clone https://github.com/SevenCourts/rpi-rgb-led-matrix-7c.git
 ```
 
 ### Turn off sound card
@@ -141,6 +141,9 @@ systemctl enable --now 7c.service
 
 ## Install 7c-controller
 
+***FIXME suprematic***
+***TODO migrate source code and build for the 7c-controller***
+
 ```
 cd /opt/7c
 curl -o 7c_m1_controller.zip https://dl.suprematic.net/index.php/s/YHWrGCaJ42XTpdx/download
@@ -154,6 +157,8 @@ systemctl enable 7c-controller
 
 
 ## Install 'Call Home' VPN
+
+***FIXME suprematic***
 
 Full documentation: see the [Wiki page](https://wiki.suprematic.team/books/tennis-cast-scoreboard/page/call-home-vpn-for-7c-scoreboard).
 
@@ -227,6 +232,8 @@ journalctl -f -u openvpn-client@callhome
 
 ### Connect to the panel via "Call home VPN" server
 
+***FIXME suprematic***
+
 - Login to `7c-vpn.suprematic.team` via SSH using personal LDAP credentials
 
 ```shell
@@ -244,6 +251,8 @@ Should display the list of scoreboards: hostnames together with their respective
 7C-M1-R3
 ---
 ```
+
+***FIXME suprematic***
 
 Connect to the chosen scoreboard via SSH from `7c-vpn.suprematic.team`:
 
@@ -288,7 +297,7 @@ Disconnect from Ethernet, reboot.
 ### Test WiFi setting
 
 - Open "SevenCourts Admin" iOS app
-- Connect the panel to a WiFi network (e.g. SUPREMATIC_INTERNAL)
+- Connect the panel to a WiFi network
 
 => The panel should display current time and no blue dot.
 
@@ -300,6 +309,8 @@ Reboot. The panel should display:
 
 
 ## Update Firmware
+
+***FIXME suprematic***
 
 - Login to `7c-vpn.suprematic.team` via SSH using personal LDAP credentials
 
@@ -445,3 +456,20 @@ python runtext.py
 ```
 
 Open `http://localhost:8888` in browser, "Hello world!" is to be displayed.
+
+
+
+
+
+## Update panels to the latest version (SUPREMATIC => SevenCourts)
+
+- TODO call-home VPN settings
+
+```shell
+cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
+git remote set-url origin https://github.com/SevenCourts/rpi-rgb-led-matrix-7c.git
+git pull
+apt -y install python3-dateutil
+
+
+```
