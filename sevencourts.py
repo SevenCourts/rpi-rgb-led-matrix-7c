@@ -53,39 +53,45 @@ def load_font(path):
     return result
 
 
-# Initial fonts - all from SDK
+FONT_XXS = load_font("fonts/tom-thumb.bdf")
+
+FONT_XS_SPLEEN = load_font("fonts/spleen-2.1.0/spleen-5x8.bdf")
+FONT_S_SPLEEN = load_font("fonts/spleen-2.1.0/spleen-6x12.bdf")
+FONT_M_SPLEEN = load_font("fonts/spleen-2.1.0/spleen-8x16.bdf")
+FONT_L_SPLEEN = load_font("fonts/spleen-2.1.0/spleen-12x24.bdf")
+FONT_XL_SPLEEN = load_font("fonts/spleen-2.1.0/spleen-16x32.bdf")
+FONT_XXL_SPLEEN = load_font("fonts/spleen-2.1.0/spleen-32x64.bdf")
+
+FONT_L_7SEGMENT = load_font("fonts/7segment/7segment_26_monospace_digits.bdf")
+FONT_XL_7SEGMENT = load_font("fonts/7segment/7segment_45_monospace_digits.bdf")
+FONT_XXL_7SEGMENT = load_font("fonts/7segment/7segment_66_monospace_digits.bdf")
+
+# Initial fonts - all from the SDK
 FONTS_V0 = [
     load_font("fonts/texgyre-27-modified.bdf"),
     load_font("fonts/10x20.bdf"),
     load_font("fonts/9x15.bdf"),
     load_font("fonts/7x13.bdf"),
     load_font("fonts/5x8.bdf"),
-    load_font("fonts/tom-thumb.bdf")]
+    FONT_XXS]
 
 # Spleen fonts
 FONTS_V1 = [
-    load_font("fonts/spleen-2.1.0/spleen-16x32.bdf"),
-    load_font("fonts/spleen-2.1.0/spleen-12x24.bdf"),
-    load_font("fonts/spleen-2.1.0/spleen-8x16.bdf"),
-    load_font("fonts/spleen-2.1.0/spleen-6x12.bdf"),
-    load_font("fonts/spleen-5x8-german-characters/spleen-5x8.bdf"),
-    load_font("fonts/tom-thumb.bdf")]
+    FONT_XL_SPLEEN,
+    FONT_L_SPLEEN,
+    FONT_M_SPLEEN,
+    FONT_S_SPLEEN,
+    FONT_XS_SPLEEN,
+    FONT_XXS]
 
 # Spleen with a compromise L font
 FONTS_V2 = [
-    load_font("fonts/spleen-2.1.0/spleen-16x32.bdf"),
+    FONT_XL_SPLEEN,
     load_font("fonts/10x20.bdf"),
-    load_font("fonts/spleen-2.1.0/spleen-8x16.bdf"),
-    load_font("fonts/spleen-2.1.0/spleen-6x12.bdf"),
-    load_font("fonts/spleen-5x8-german-characters/spleen-5x8.bdf"),
-    load_font("fonts/tom-thumb.bdf")]
-
-# FIXME: Need review.
-FONT_26_42 = load_font("fonts/7Segments_26x42.bdf")
-FONT_SPLEEN_32x64 = load_font("fonts/spleen-2.1.0/spleen-32x64.bdf")
-FONT_7SEGMENT_S = load_font("fonts/7segment/7segment_26_monospace_digits.bdf")
-FONT_7SEGMENT_M = load_font("fonts/7segment/7segment_45_monospace_digits.bdf")
-FONT_7SEGMENT_L = load_font("fonts/7segment/7segment_66_monospace_digits.bdf")
+    FONT_M_SPLEEN,
+    FONT_S_SPLEEN,
+    FONT_XS_SPLEEN,
+    FONT_XXS]
 
 FONTS = FONTS_V1
 
@@ -175,6 +181,13 @@ def width_in_pixels(font, text):
     for c in text:
         result += font.CharacterWidth(ord(c))
     # print('<{}> => {}'.format(text,result))
+    return result
+
+def height_in_pixels(font, text):
+    result = 0
+    for c in text:
+        result = max(result, font.CharacterHeight(ord(c)))
+    print('<{}> => {}'.format(text,result))
     return result
 
 
