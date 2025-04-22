@@ -798,7 +798,7 @@ class SevenCourtsM1(SampleBase):
                 if clock_v_align == "top":
                     y = y_font_offset(font)
                 elif clock_v_align == "center":
-                    y = (H_PANEL - y_font_offset(font)) / 2
+                    y = H_PANEL - y_font_offset(font)/2
                 else:
                     y = H_PANEL
         else:
