@@ -98,8 +98,7 @@ W_SCORE_SET = 20
 X_SCORE_GAME = 163
 X_SCORE_SERVICE = 155
 
-W_CLOCK_OVERLAY = 74 # right from logo
-W_LOGO_WITH_CLOCK = 122 # left from clock
+W_LOGO_WITH_CLOCK = 120 # left from clock
 
 __COLOR_BW_VAIHINGEN_ROHR_BLUE = graphics.Color(0x09, 0x65, 0xA6)  # #0965A6
 
@@ -739,7 +738,7 @@ class SevenCourtsM1(SampleBase):
         self.canvas.Clear()
         dt = datetime.now()
         text = dt.strftime('%H:%M')
-        x = W_LOGO_WITH_CLOCK + 2 if ORIENTATION_HORIZONTAL else (x_font_center(text, W_PANEL, FONT_CLOCK))
+        x = W_LOGO_WITH_CLOCK if ORIENTATION_HORIZONTAL else (x_font_center(text, W_PANEL, FONT_CLOCK))
         y = 62 if ORIENTATION_HORIZONTAL else H_PANEL - 2
         draw_text(self.canvas, x, y, text, FONT_CLOCK, COLOR_CLOCK)
         self.draw_error_indicator()
@@ -755,12 +754,12 @@ class SevenCourtsM1(SampleBase):
         clock = self.panel_info.get('idle-info', {}).get('clock')
         if clock == True: # Compiler warning is WRONG!
             # display a clock along with some other elements, using the default Spleen font
-            font = FONT_CLOCK_S_2
+            font = FONT_CLOCK_S_1
             if ORIENTATION_VERTICAL:
                 x = x_font_center(text, W_PANEL, FONT_CLOCK)
                 y = H_PANEL - 2
             else:
-                x = W_LOGO_WITH_CLOCK # - 2
+                x = W_LOGO_WITH_CLOCK
                 y = 62
         elif clock:
             if ORIENTATION_VERTICAL:
