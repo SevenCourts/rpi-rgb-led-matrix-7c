@@ -21,7 +21,8 @@ import socket
 import logging
 import requests
 import subprocess
-from datetime import datetime, timedelta, parser, tz
+from datetime import datetime, timedelta
+from dateutil import parser, tz
 
 SECONDS_START = int(time.time())
 
