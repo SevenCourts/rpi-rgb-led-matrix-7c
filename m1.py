@@ -2,8 +2,6 @@
 
 import os
 
-from sevencourts import W_PANEL
-
 # Set the environment variable USE_RGB_MATRIX_EMULATOR to use with
 # emulator https://github.com/ty-porter/RGBMatrixEmulator
 # Do not set to use with real SDK https://github.com/hzeller/rpi-rgb-led-matrix
@@ -17,16 +15,13 @@ from sevencourts import *
 import time
 import urllib.request
 from urllib.error import URLError
-from datetime import datetime
 from PIL import Image
 import json
 import socket
 import logging
 import requests
 import subprocess
-from datetime import datetime, timedelta
-from dateutil import parser
-from dateutil import tz
+from datetime import datetime, timedelta, parser, tz
 
 SECONDS_START = int(time.time())
 
@@ -73,8 +68,8 @@ if os.getenv('USE_RGB_MATRIX_EMULATOR', False):
     FONT_CLOCK = FONT_L if ORIENTATION_HORIZONTAL else FONT_M
     FONT_SCORE = FONT_L
 else:
-    FONT_CLOCK = FONTS_V0[0] if ORIENTATION_HORIZONTAL else FONT_M
-    FONT_SCORE = FONTS_V0[0]
+    FONT_CLOCK = FONT_XL_SDK if ORIENTATION_HORIZONTAL else FONT_M
+    FONT_SCORE = FONT_XL_SDK
 
 FONT_CLOCK_S_1=FONT_L_7SEGMENT
 FONT_CLOCK_M_1=FONT_XL_7SEGMENT
@@ -755,17 +750,17 @@ class SevenCourtsM1(SampleBase):
         clock = self.panel_info.get('idle-info', {}).get('clock')
         if clock == True: # Compiler warning is WRONG!
             # display a clock along with some other elements, using the default Spleen font
-            font = FONT_CLOCK_S_1
+            font = FONT_CLOCK
             if ORIENTATION_VERTICAL:
-                x = x_font_center(text, W_PANEL, FONT_CLOCK)
+                x = x_font_center(text, W_PANEL, font)
                 y = H_PANEL - 2
             else:
                 x = W_LOGO_WITH_CLOCK
                 y = 62
         elif clock:
             if ORIENTATION_VERTICAL:
-                font = FONT_CLOCK_S_2
-                x = x_font_center(text, W_PANEL, FONT_CLOCK)
+                font = FONT_CLOCK
+                x = x_font_center(text, W_PANEL, font)
                 y = H_PANEL - 2
             else:
                 clock_size = clock.get('size')
@@ -791,14 +786,14 @@ class SevenCourtsM1(SampleBase):
                 if clock_h_align == "left":
                     x = 0
                 elif clock_h_align == "center":
-                    x = max(0, (W_PANEL - width_in_pixels(font, text)) / 2)
+                    x = max(1, (W_PANEL - width_in_pixels(font, text)) / 2)
                 else:
                     x = max(0, W_PANEL - width_in_pixels(font, text))
 
                 if clock_v_align == "top":
                     y = y_font_offset(font)
                 elif clock_v_align == "center":
-                    y = (H_PANEL + y_font_offset(font))/2
+                    y = (H_PANEL + y_font_offset(font)) / 2
                 else:
                     y = H_PANEL
         else:
