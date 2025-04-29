@@ -158,6 +158,7 @@ systemctl enable 7c-controller
 
 ## Install 'Call Home' VPN
 
+### SUPREMATIC **FIXME**
 ***FIXME suprematic***
 
 Full documentation: see the [Wiki page](https://wiki.suprematic.team/books/tennis-cast-scoreboard/page/call-home-vpn-for-7c-scoreboard).
@@ -232,9 +233,7 @@ journalctl -f -u openvpn-client@callhome
 
 ### Connect to the panel via "Call home VPN" server
 
-***FIXME suprematic***
-
-- Login to `7c-vpn.suprematic.team` via SSH using personal LDAP credentials
+- Login to `7c-vpn.sevencourts.com` via SSH using personal LDAP credentials
 
 ```shell
 sudo -i
@@ -252,9 +251,7 @@ Should display the list of scoreboards: hostnames together with their respective
 ---
 ```
 
-***FIXME suprematic***
-
-Connect to the chosen scoreboard via SSH from `7c-vpn.suprematic.team`:
+Connect to the chosen scoreboard via SSH from `7c-vpn.sevencourts.com`:
 
 ```shell
 ssh 10.8.0.4
