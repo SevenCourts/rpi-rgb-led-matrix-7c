@@ -335,7 +335,7 @@ Start update script for each panel, e.g.:
 
 
 
-## Switch from PROD to STAGING
+## Switch stage [PROD|STAGING|DEV]
 
 Stop the 7c service:
 ```shell
@@ -343,20 +343,33 @@ systemctl stop 7c
 EDITOR=vim systemctl edit 7c
 ```
 
-Configure the `TABLEAU_SERVER_BASE_URL` environment variable with server URL:
+Before the `### Lines below this comment will be discarded`, 
+configure the `TABLEAU_SERVER_BASE_URL` environment variable with the server URL:
+
 ```
 [Service]
-Environment=PANEL_CONFIG=/opt/7c/panel.conf TABLEAU_SERVER_BASE_URL=https://staging.tableau.tennismath.com
+Environment=PANEL_CONFIG=/opt/7c/panel.conf TABLEAU_SERVER_BASE_URL=<URL>
 ```
 
-If needed, switch the firmware branch, and start the 7c service:
+URLs:
+
+- DEV: https://dev.server.sevencourts.com
+- STAGING: https://staging.server.sevencourts.com
+- PROD: https://prod.server.sevencourts.com
+
+For PROD, this section can be removed, since the PROD URL is default.
+
+If needed, switch the firmware branch:
 ```shell
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c/
 git fetch
 git switch <branch>
-systemctl start 7c
 ```
 
+Start the 7c service:
+```shell
+systemctl start 7c
+```
 
 
 ### WiFi settings
