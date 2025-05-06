@@ -107,6 +107,7 @@ TODO: check if we need to keep the directory structure?
 ```shell
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python
 git clone https://github.com/SevenCourts/rpi-rgb-led-matrix-7c.git
+git switch firmware/stable
 ```
 
 ### Turn off sound card
@@ -154,7 +155,6 @@ cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
 cp 7c-os/etc/systemd/system/7c-controller.service /etc/systemd/system/7c-controller.service
 systemctl enable 7c-controller
 ```
-
 
 ## Install 'Call Home' VPN
 
@@ -339,7 +339,6 @@ Start update script for each panel, e.g.:
 
 Stop the 7c service:
 ```shell
-systemctl stop 7c
 EDITOR=vim systemctl edit 7c
 ```
 
@@ -366,9 +365,10 @@ git fetch
 git switch <branch>
 ```
 
-Start the 7c service:
+Restart the 7c service:
 ```shell
-systemctl start 7c
+systemctl daemon-reload
+systemctl restart 7c
 ```
 
 
@@ -466,20 +466,3 @@ python runtext.py
 ```
 
 Open `http://localhost:8888` in browser, "Hello world!" is to be displayed.
-
-
-
-
-
-## Update panels to the latest version (SUPREMATIC => SevenCourts)
-
-- TODO call-home VPN settings
-
-```shell
-cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
-git remote set-url origin https://github.com/SevenCourts/rpi-rgb-led-matrix-7c.git
-git pull
-apt -y install python3-dateutil
-
-
-```
