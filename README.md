@@ -6,12 +6,12 @@ Use this SD card: [Samsung PRO Endurance microSD, 32 GB](https://www.amazon.de/d
 
 ### OS & dev tools
 
-Install [Raspberry PI OS Lite 64 bit](https://www.raspberrypi.com/documentation/computers/getting-started.html#installing-the-operating-system) ver. 5.15.84-v8+ 
+Install [Raspberry PI OS Lite 64 bit](https://www.raspberrypi.com/documentation/computers/getting-started.html#installing-the-operating-system) ver. 5.15.84-v8+
 
 - Download and install the [Raspberry PI Imager](https://www.raspberrypi.com/documentation/computers/getting-started.html#raspberry-pi-imager)
-- Use exactly this version of RaspiOS: https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2023-02-22/    
+- Use exactly this version of RaspiOS: <https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2023-02-22/>
 
-Create a default user and enable SSH. 
+Create a default user and enable SSH.
 
 In the Raspberry PI Imager:
 
@@ -20,56 +20,55 @@ In the Raspberry PI Imager:
 - "Storage": select the drive with the SD card
 - Press "NEXT"
 - In the dialog "Use OS Customization?" dialog, choose "EDIT SETTINGS":
-    - "GENERAL / Set username and password": set login: `user` and password: `password`
-        - **FIXME** define non-default login/password
-    - "GENERAL / Set locale settings": set "Europe/Berlin" and Keyboard layout: `de`
-    - "SERVICES / Enable SSH": check and select "Use password authentication"
-        - **FIXME** use "Allow public-key authentication only" instead
-    - Press "WRITE"
-    - In about 4 minutes, the SD card should be ready.
+  - "GENERAL / Set username and password": set login: `user` and password: `password`
+    - **FIXME** define non-default login/password
+  - "GENERAL / Set locale settings": set "Europe/Berlin" and Keyboard layout: `de`
+  - "SERVICES / Enable SSH": check and select "Use password authentication"
+    - **FIXME** use "Allow public-key authentication only" instead
+  - Press "WRITE"
+  - In about 4 minutes, the SD card should be ready.
 
 The rest is done via SSH.
 
 - Connect to a LAN via Ethernet
 - Find out the IP address of the Raspi
-    - e.g. with a Mikrotik router: http://192.168.114.1/webfig/#IP:DHCP_Server.Leases
-    - or use any IP scanner software
+  - e.g. with a Mikrotik router: <http://192.168.114.1/webfig/#IP:DHCP_Server.Leases>
+  - or use any IP scanner software
 
 - Log in with `ssh user@<ip-address>` (password: `password`)
 
 - Open sudo session with `sudo -i`
 
-
 ### Set the country code (must do to enable WiFi)
 
-Find your country's code here: https://en.wikipedia.org/wiki/ISO_3166-1
+Find your country's code here: <https://en.wikipedia.org/wiki/ISO_3166-1>
 
-```
+```shell
 raspi-config nonint do_wifi_country DE
 ```
 
 or (Derek)
 
-```
+```shell
 raspi-config nonint do_wifi_country US
 ```
 
-
 ### Change timezone
 
-```
+```shell
 timedatectl set-timezone Europe/Berlin
 ```
 
-or (Derek)
+or:
 
-```
+```shell
 timedatectl set-timezone US/Eastern
+timedatectl set-timezone Europe/Lisbon
 ```
 
 ### Install dependencies
 
-```
+```shell
 apt update
 apt install git vim build-essential -y
 ```
@@ -112,20 +111,19 @@ git switch firmware/stable
 
 ### Turn off sound card
 
-```
+```shell
 echo "blacklist snd_bcm2835" >> /etc/modprobe.d/alsa-blacklist.conf
 ```
 
 ### Set up 7c hostname systemd service
 
-```
+```shell
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
 cp 7c-os/opt/7c/7c-set-hostname.sh /opt/7c/7c-set-hostname.sh
 chmod u+x /opt/7c/7c-set-hostname.sh
 cp 7c-os/etc/systemd/system/7c-hostname.service /etc/systemd/system/7c-hostname.service
 systemctl enable 7c-hostname
 ```
-
 
 ## Set up 7c systemd services
 
@@ -145,7 +143,7 @@ systemctl enable --now 7c.service
 ***FIXME suprematic***
 ***TODO migrate source code and build for the 7c-controller***
 
-```
+```shell
 cd /opt/7c
 curl -o 7c_m1_controller.zip https://dl.suprematic.net/index.php/s/YHWrGCaJ42XTpdx/download
 unzip 7c_m1_controller.zip
@@ -159,11 +157,12 @@ systemctl enable 7c-controller
 ## Install 'Call Home' VPN
 
 ### SUPREMATIC **FIXME**
+
 ***FIXME suprematic***
 
 Full documentation: see the [Wiki page](https://wiki.suprematic.team/books/tennis-cast-scoreboard/page/call-home-vpn-for-7c-scoreboard).
 
-```
+```shell
 apt-get install openvpn -y
 mkdir -p /root/.ssh/
 cp 7c-vpn/ssh/authorized_keys /root/.ssh/authorized_keys
@@ -185,8 +184,7 @@ systemctl enable --now openvpn-client@callhome
 
 **TODO** - test how it works if the SD-card is cloned and the system time is random. Will the timesycnd update the hwclock?
 
-Below is the short version of the [article](https://pimylifeup.com/raspberry-pi-rtc/) 
-on setting up RTC on Raspberry Pi.
+Below is the short version of the [article](https://pimylifeup.com/raspberry-pi-rtc/) on setting up RTC on Raspberry Pi.
 
 ```shell
 raspi-config nonint do_i2c 0
@@ -196,11 +194,10 @@ apt -y remove fake-hwclock
 update-rc.d -f fake-hwclock remove
 cp 7c-os/lib/udev/hwclock-set lib/udev/hwclock-set
 ```
-    
+
 ## Tests
 
 The board is connected to Ethernet.
-
 
 ```shell
 reboot
@@ -208,23 +205,22 @@ reboot
 
 => The panel should display the current time and the blue dot.
 
-
 ```shell
 ssh user@<ip-address>
 sudo -i
 ```
 
-### Validate and register the hostname:
+### Validate and register the hostname
 
 ```shell
 hostname
 ```
+
 Should output the last 8 bytes of `/sys/firmware/devicetree/base/serial-number` file contents.
 
-Insert the hostname into the "Hostname" column of https://docs.google.com/spreadsheets/d/1ewMfZ9fwiHdyakF1-PI1sjMTP-t4OwbRadxDGT6VGtM/edit#gid=696316085 spreadsheet.
+Insert the hostname into the "Hostname" column of <https://docs.google.com/spreadsheets/d/1ewMfZ9fwiHdyakF1-PI1sjMTP-t4OwbRadxDGT6VGtM/edit#gid=696316085> spreadsheet.
 
-
-### Check the 'Call home VPN' log:
+### Check the 'Call home VPN' log
 
 ```shell
 journalctl -e -u openvpn-client@callhome
@@ -262,7 +258,7 @@ ssh 10.8.0.4
 Check kernel module is loaded with `sudo i2cdetect -y 1` -- the ouput table
 will have `UU` on cross of `60` row and `8` column.
 
-    ```txt
+```txt
         0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
     00:                         -- -- -- -- -- -- -- --
     10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -272,13 +268,12 @@ will have `UU` on cross of `60` row and `8` column.
     50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
     60: -- -- -- -- -- -- -- -- UU -- -- -- -- -- -- --
     70: -- -- -- -- -- -- -- --
-    ```
+```
 
 1. Check RTC time is correct
     1. Show the current time from RTC with `hwclock --show`.
     1. If the time differs from the actual time, wait until OS time is synced, and
     actualize RTC clock time with `hwclock --systohc`.
-	
 1. Test that the setup was done correctly
     1. Remember the current time (hh:mm) and turn off the panel with `sudo shutdown`.
     1. Wait 3 minutes, turn on the panel, and after around 18 seconds panel
@@ -289,7 +284,6 @@ will have `UU` on cross of `60` row and `8` column.
 Disconnect from Ethernet, reboot.
 
 => The panel should display current time and the blue dot.
-
 
 ### Test WiFi setting
 
@@ -303,7 +297,6 @@ Reboot. The panel should display:
 => ~15 seconds of black screen
 => ~5 second current time and the blue dot
 => current time only
-
 
 ## Update Firmware
 
@@ -333,32 +326,31 @@ Start update script for each panel, e.g.:
 ./7c-update-panel.sh 10.8.0.2
 ```
 
-
-
 ## Switch stage [PROD|STAGING|DEV]
 
 Stop the 7c service:
+
 ```shell
 EDITOR=vim systemctl edit 7c
 ```
 
-Before the `### Lines below this comment will be discarded`, 
-configure the `TABLEAU_SERVER_BASE_URL` environment variable with the server URL:
+Before the `### Lines below this comment will be discarded`, configure the `TABLEAU_SERVER_BASE_URL` environment variable with the server URL:
 
-```
+```shell
 [Service]
 Environment=PANEL_CONFIG=/opt/7c/panel.conf TABLEAU_SERVER_BASE_URL=<URL>
 ```
 
 URLs:
 
-- DEV: https://dev.server.sevencourts.com
-- STAGING: https://staging.server.sevencourts.com
-- PROD: https://prod.server.sevencourts.com
+- DEV: <https://dev.server.sevencourts.com>
+- STAGING: <https://staging.server.sevencourts.com>
+- PROD: <https://prod.server.sevencourts.com>
 
 For PROD, this section can be removed, since the PROD URL is default.
 
 If needed, switch the firmware branch:
+
 ```shell
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c/
 git fetch
@@ -366,11 +358,11 @@ git switch <branch>
 ```
 
 Restart the 7c service:
+
 ```shell
 systemctl daemon-reload
 systemctl restart 7c
 ```
-
 
 ### WiFi settings
 
@@ -396,8 +388,8 @@ raspi-config nonint do_wifi_ssid_passphrase <SSID> <PSK>
 
 Rasp-config command line parameters:
 
-- https://forums.raspberrypi.com/viewtopic.php?t=21632
-- https://loganmarchione.com/2021/07/raspi-configs-mostly-undocumented-non-interactive-mode/
+- <https://forums.raspberrypi.com/viewtopic.php?t=21632>
+- <https://loganmarchione.com/2021/07/raspi-configs-mostly-undocumented-non-interactive-mode/>
 
 ```shell
 wpa_cli
@@ -440,19 +432,18 @@ Insert a new SD card.
 sudo dd if=7c_shrinked.img of=/dev/disk4
 ```
 
-
 ## Install development environment
 
 ### Python
 
 - Install Python 3.9
-    - [Download](https://www.python.org/downloads/release/python-3916/)
-    - [Mac: Homebrew](https://formulae.brew.sh/formula/python@3.9)
-        - `brew install python@3.9`
-    - Install python extensions:
-        - `pip install Pillow`
-        - `pip install requests`
-        - `pip install python-dateutil`
+  - [Download](https://www.python.org/downloads/release/python-3916/)
+  - [Mac: Homebrew](https://formulae.brew.sh/formula/python@3.9)
+    - `brew install python@3.9`
+  - Install python extensions:
+    - `pip install Pillow`
+    - `pip install requests`
+    - `pip install python-dateutil`
 
 ### RGBMatrixEmulator
 
@@ -460,7 +451,8 @@ sudo dd if=7c_shrinked.img of=/dev/disk4
 - Clone [RGBMatrixEmulator](https://github.com/ty-porter/RGBMatrixEmulator)
 
 Smoke-test with:
-```
+
+```shell
 cd RGBMatrixEmulator/samples
 python runtext.py
 ```
