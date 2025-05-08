@@ -1,48 +1,109 @@
-# 7C-M1 set-up
+#!/bin/sh
 
-## Setup RTC Hardware
+# SevenCourts M1 installation script
 
-1. Insert a new CR1220 battery into the slot on the HUB75-GPIO driver
-1. Make sure the jumper on the HUB75-GPIO driver is switched to "IIC-RTC" setting. In this position, the 3rd line of LEDs is inactive.
+if [ $(id -u) -ne 0 ]
+  then echo Please run this script as root or using sudo!
+  exit
+fi
 
-## Install firmware
+# Set the country code (must do to enable WiFi)
+## Find your country's code here: <https://en.wikipedia.org/wiki/ISO_3166-1>
 
-Use this SD card: [Samsung PRO Endurance microSD, 32 GB](https://www.amazon.de/dp/B0B1J64G4K).
+raspi-config nonint do_wifi_country DE
 
-Install [Raspberry PI OS Lite 64 bit](https://www.raspberrypi.com/documentation/computers/getting-started.html#installing-the-operating-system) ver. 5.15.84-v8+
+# Change timezone
 
-- Download and install the [Raspberry PI Imager](https://www.raspberrypi.com/documentation/computers/getting-started.html#raspberry-pi-imager)
-- Use exactly this version of RaspiOS: <https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2023-02-22/>
+timedatectl set-timezone Europe/Berlin
 
-Create a default user and enable SSH.
+# Install dependencies
 
-In the Raspberry PI Imager:
+apt update
+apt install git vim build-essential -y
 
-- "Raspberry PI Device": select "Raspberry PI 4"
-- "Operating System": select "Use custom" and browse for the image file
-- "Storage": select the drive with the SD card
-- Press "NEXT"
-- In the dialog "Use OS Customization?" dialog, choose "EDIT SETTINGS":
-  - "GENERAL / Set username and password": set login: `user` and password: `password`
-    - **FIXME** define non-default login/password
-  - "GENERAL / Set locale settings": set "Europe/Berlin" and Keyboard layout: `de`
-  - "SERVICES / Enable SSH": check and select "Use password authentication"
-    - **FIXME** use "Allow public-key authentication only" instead
-  - Press "WRITE"
-  - In about 4 minutes, the SD card should be ready.
+# Install and make rpi-rgb-led-matrix SDK
 
-The rest is done via SSH.
+mkdir /opt/7c
+cd /opt/7c
+git clone https://github.com/sevencourts/rpi-rgb-led-matrix.git
+cd rpi-rgb-led-matrix/
+git checkout 7c/m1/dev
+make
 
-- Connect to a LAN via Ethernet
-- Find out the `<ip-address>` of the Raspi
-  - e.g. with a Mikrotik router: <http://192.168.114.1/webfig/#IP:DHCP_Server.Leases>
-  - or use any IP scanner software
+# Create 7c config file
 
-- Run the `m1-install.sh` script via SSH:
+touch /opt/7c/panel.conf
+chmod 666 /opt/7c/panel.conf
 
-```shell
-m1-install-executor.sh <ip-address>
-```
+# Install and make python3 bindings
+
+sudo apt-get update --allow-releaseinfo-change && sudo apt-get install python3-dev python3-pillow python3-requests python3-gpiozero python3-dateutil -y
+make build-python PYTHON=$(command -v python3)
+sudo make install-python PYTHON=$(command -v python3)
+
+# Install rpi-rgb-led-matrix-7c
+## TODO: check if we need to keep the directory structure?
+
+cd /opt/7c/rpi-rgb-led-matrix/bindings/python
+git clone https://github.com/SevenCourts/rpi-rgb-led-matrix-7c.git
+git switch firmware/stable
+
+# Turn off sound card
+
+echo "blacklist snd_bcm2835" >> /etc/modprobe.d/alsa-blacklist.conf
+
+# Set up 7c hostname systemd service
+
+cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
+cp 7c-os/opt/7c/7c-set-hostname.sh /opt/7c/7c-set-hostname.sh
+chmod u+x /opt/7c/7c-set-hostname.sh
+cp 7c-os/etc/systemd/system/7c-hostname.service /etc/systemd/system/7c-hostname.service
+systemctl enable 7c-hostname
+
+# Set up 7c systemd services
+
+cp 7c-os/etc/systemd/system/7c.service /etc/systemd/system/7c.service
+cp 7c-os/etc/systemd/system/7c-demo.service /etc/systemd/system/7c-demo.service
+
+# Enable service and start now:
+
+systemctl enable --now 7c.service
+
+# Install 7c-controller
+
+## ***TODO migrate source code and build for the 7c-controller***
+
+cd /opt/7c
+## ***FIXME suprematic***
+curl -o 7c_m1_controller.zip https://dl.suprematic.net/index.php/s/YHWrGCaJ42XTpdx/download
+unzip 7c_m1_controller.zip
+chmod u+x 7c_m1_controller
+
+cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
+cp 7c-os/etc/systemd/system/7c-controller.service /etc/systemd/system/7c-controller.service
+systemctl enable 7c-controller
+
+# Install 'Call Home' VPN
+##  ***FIXME suprematic***
+## Full documentation: see the [Wiki page](https://wiki.suprematic.team/books/tennis-cast-scoreboard/page/call-home-vpn-for-7c-scoreboard).
+
+apt-get install openvpn -y
+mkdir -p /root/.ssh/
+cp 7c-vpn/ssh/authorized_keys /root/.ssh/authorized_keys
+cp 7c-vpn/etc/openvpn/client/callhome.conf /etc/openvpn/client/callhome.conf
+mkdir -p /etc/systemd/system/openvpn-client@callhome.service.d/
+cp 7c-vpn/etc/systemd/system/openvpn-client@callhome.service.d/override.conf /etc/systemd/system/openvpn-client@callhome.service.d/override.conf
+systemctl daemon-reload
+systemctl enable --now openvpn-client@callhome
+
+# Setup RTC
+## Below is the short version of the [article](https://pimylifeup.com/raspberry-pi-rtc/) on setting up RTC on Raspberry Pi.
+raspi-config nonint do_i2c 0
+apt -y install python3-smbus i2c-tools
+echo "dtoverlay=i2c-rtc,ds1307" >> /boot/config.txt
+apt -y remove fake-hwclock
+update-rc.d -f fake-hwclock remove
+cp 7c-os/lib/udev/hwclock-set lib/udev/hwclock-set
 
 ## Tests
 
