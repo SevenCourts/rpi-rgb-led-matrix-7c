@@ -149,9 +149,7 @@ Reboot. The panel should display:
 
 ## Update Firmware
 
-***FIXME suprematic***
-
-- Login to `7c-vpn.suprematic.team` via SSH using personal LDAP credentials
+- Login to `7c-vpn.sevencourts.com` via SSH using personal LDAP credentials
 
 ```shell
 sudo -i
