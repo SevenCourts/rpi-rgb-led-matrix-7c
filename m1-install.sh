@@ -103,4 +103,4 @@ apt -y install python3-smbus i2c-tools
 echo "dtoverlay=i2c-rtc,ds1307" >> /boot/config.txt
 apt -y remove fake-hwclock
 update-rc.d -f fake-hwclock remove
-cp 7c-os/lib/udev/hwclock-set lib/udev/hwclock-set
+cp 7c-os/lib/udev/hwclock-set /lib/udev/hwclock-set
