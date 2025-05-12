@@ -90,7 +90,6 @@ FONT_BOOKING = FONT_S
 
 COLOR_BOOKING_GREETING = COLOR_7C_BLUE
 COLOR_CLOCK = COLOR_GREY
-COLOR_CLOCK_STANDBY = COLOR_GREY_DARKEST
 
 UPPER_CASE_NAMES = True
 MARGIN_NAMES_SCOREBOARD = 3
@@ -708,11 +707,7 @@ class SevenCourtsM1(SampleBase):
             self.draw_error_indicator(self.panel_info.get('standby'))
 
         if self.panel_info.get('standby'):
-            idle_info = self.panel_info.get('idle-info', {})
-            if not idle_info.get('image-preset') and \
-                not idle_info.get('image-url') and \
-                not idle_info.get('message'):
-                self.display_clock_mode()
+            self.display_standby_mode()
         elif 'booking' in self.panel_info:
             self.display_booking()
         elif 'ebusy-ads' in self.panel_info:
@@ -736,6 +731,8 @@ class SevenCourtsM1(SampleBase):
             self.display_idle_mode_message()
         elif idle_info.get('clock'):
             self.display_clock_mode()
+        else:
+            self.display_standby_mode()
 
     def display_init_screen(self):
         self.canvas.Clear()
@@ -747,12 +744,18 @@ class SevenCourtsM1(SampleBase):
         self.draw_error_indicator()
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
+    def display_standby_mode(self):
+        g = (COLOR_7C_GREEN_DARK.red, COLOR_7C_GREEN_DARK.green, COLOR_7C_GREEN_DARK.blue)
+        dot = [
+            [g, g],
+            [g, g]]
+        draw_matrix(self.canvas, dot, W_PANEL - 3, H_PANEL - 3)
+
     def display_clock_mode(self):
 
         panel_tz = self.panel_tz()
         dt = datetime.now(tz.gettz(panel_tz))
-        text = dt.strftime('%H:%M')
-        color = COLOR_CLOCK_STANDBY if self.panel_info.get('standby') else COLOR_CLOCK
+        text = dt.strftime('%H:%M')        
 
         clock = self.panel_info.get('idle-info', {}).get('clock')
         if clock == True: # Compiler warning is WRONG!
@@ -805,7 +808,7 @@ class SevenCourtsM1(SampleBase):
                     y = H_PANEL
         else:
             return
-        draw_text(self.canvas, x, y, text, font, color)
+        draw_text(self.canvas, x, y, text, font, COLOR_CLOCK)
 
     def display_set_digit(self, x, y, font, color, score):
         # FIXME meh
@@ -1115,9 +1118,9 @@ class SevenCourtsM1(SampleBase):
     def draw_error_indicator(self, standby=False):
         x = (COLOR_BLACK.red, COLOR_BLACK.green, COLOR_BLACK.blue)
         o = (
-            COLOR_7C_BLUE_STANDBY.red if standby else COLOR_7C_BLUE.red,
-            COLOR_7C_BLUE_STANDBY.green if standby else COLOR_7C_BLUE.green,
-            COLOR_7C_BLUE_STANDBY.blue if standby else COLOR_7C_BLUE.blue
+            COLOR_7C_BLUE_DARK.red if standby else COLOR_7C_BLUE.red,
+            COLOR_7C_BLUE_DARK.green if standby else COLOR_7C_BLUE.green,
+            COLOR_7C_BLUE_DARK.blue if standby else COLOR_7C_BLUE.blue
         )
         dot = [
             [x, o, o, x],

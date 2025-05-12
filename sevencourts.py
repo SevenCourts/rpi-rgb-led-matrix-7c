@@ -41,7 +41,8 @@ COLOR_BLUE = graphics.Color(0, 0, 255)
 
 COLOR_7C_GREEN = graphics.Color(147, 196, 125)
 COLOR_7C_BLUE = graphics.Color(111, 168, 220)
-COLOR_7C_BLUE_STANDBY = graphics.Color(37, 56, 73)
+COLOR_7C_BLUE_DARK = graphics.Color(37, 56, 73)
+COLOR_7C_GREEN_DARK = graphics.Color(58, 77, 49)
 COLOR_7C_GOLD = graphics.Color(255, 215, 0)
 
 COLOR_DEFAULT = COLOR_GREY
