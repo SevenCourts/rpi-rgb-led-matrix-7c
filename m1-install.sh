@@ -83,6 +83,16 @@ cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
 cp 7c-os/etc/systemd/system/7c-controller.service /etc/systemd/system/7c-controller.service
 systemctl enable 7c-controller
 
+# Setup RTC
+## Below is the short version of the [article](https://pimylifeup.com/raspberry-pi-rtc/) on setting up RTC on Raspberry Pi.
+raspi-config nonint do_i2c 0
+apt -y install python3-smbus i2c-tools
+echo "dtoverlay=i2c-rtc,ds1307" >> /boot/config.txt
+apt -y remove fake-hwclock
+update-rc.d -f fake-hwclock remove
+cp 7c-os/lib/udev/hwclock-set /lib/udev/hwclock-set
+
+
 # Install 'Call Home' VPN
 ##  ***FIXME suprematic => gDocs ***
 ## Full documentation: see the [Wiki page](https://wiki.suprematic.team/books/tennis-cast-scoreboard/page/call-home-vpn-for-7c-scoreboard).
@@ -95,12 +105,3 @@ mkdir -p /etc/systemd/system/openvpn-client@callhome.service.d/
 cp 7c-vpn/etc/systemd/system/openvpn-client@callhome.service.d/override.conf /etc/systemd/system/openvpn-client@callhome.service.d/override.conf
 systemctl daemon-reload
 systemctl enable --now openvpn-client@callhome
-
-# Setup RTC
-## Below is the short version of the [article](https://pimylifeup.com/raspberry-pi-rtc/) on setting up RTC on Raspberry Pi.
-raspi-config nonint do_i2c 0
-apt -y install python3-smbus i2c-tools
-echo "dtoverlay=i2c-rtc,ds1307" >> /boot/config.txt
-apt -y remove fake-hwclock
-update-rc.d -f fake-hwclock remove
-cp 7c-os/lib/udev/hwclock-set /lib/udev/hwclock-set
