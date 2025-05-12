@@ -26,7 +26,13 @@ from dateutil import parser, tz
 
 SECONDS_START = int(time.time())
 
-GIT_COMMIT_ID = subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode()
+# In container there is no git binary and history -- read from file.
+# In local environment we don't want generate this file manually -- ask git.
+try:
+    with open('commit-id', 'r') as file:
+        GIT_COMMIT_ID = file.read().strip()
+except:
+    GIT_COMMIT_ID = subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode()
 
 # FIXME use not hardcoded directory (TBD)
 IMAGE_CACHE_DIR = "/opt/7c/cache-images"

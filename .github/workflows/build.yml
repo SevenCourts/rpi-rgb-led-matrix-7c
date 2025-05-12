@@ -1,0 +1,57 @@
+name: Build
+
+on:
+  push:
+
+env:
+  TM_BUILD_GHCR_PROJECT: sevencourts
+  TM_BUILD_GHCR_REPO: rpi-rgb-led-matrix-7c
+  TM_BUILD_IMAGE_ALREADY_PUBLISHED: no
+  TM_BUILD_IMAGE_NAME: ''
+  TM_BUILD_VERSION: ''
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Get version
+      run: |
+        version="$(git rev-parse --short HEAD)"
+        echo TM_BUILD_VERSION="$version" >> $GITHUB_ENV
+
+    - name: Create file with commit ID
+      run: git rev-parse HEAD > commit-id
+
+    - name: Log in to the container registry
+      if: ${{ env.TM_BUILD_IMAGE_ALREADY_PUBLISHED != 'yes' }}
+      uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      with:
+        registry: ${{ format('ghcr.io/{0}', env.TM_BUILD_GHCR_PROJECT) }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata (tags, labels) for container image
+      if: ${{ env.TM_BUILD_IMAGE_ALREADY_PUBLISHED != 'yes' }}
+      uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+      with:
+        images: ${{ format('ghcr.io/{0}/{1}', env.TM_BUILD_GHCR_PROJECT, env.TM_BUILD_GHCR_REPO) }}
+
+    - name: Calculate container image name
+      if: ${{ env.TM_BUILD_IMAGE_ALREADY_PUBLISHED != 'yes' }}
+      run: echo "TM_BUILD_IMAGE_NAME=ghcr.io/$TM_BUILD_GHCR_PROJECT/$TM_BUILD_GHCR_REPO:$TM_BUILD_VERSION" >> $GITHUB_ENV
+
+    - name: Build and push container image
+      if: ${{ env.TM_BUILD_IMAGE_ALREADY_PUBLISHED != 'yes' }}
+      uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+      with:
+        context: .
+        push: true
+        tags: ${{ env.TM_BUILD_IMAGE_NAME }}
