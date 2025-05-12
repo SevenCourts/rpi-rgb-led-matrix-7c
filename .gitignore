@@ -48,4 +48,12 @@ Thumbs.db
 *.mov
 *.wmv
 
+# Local development files
+.devbox
+.direnv
+.envrc
 .local
+.vscode
+
+# Generated files
+commit-id

@@ -305,3 +305,8 @@ python runtext.py
 ```
 
 Open `http://localhost:8888` in browser, "Hello world!" is to be displayed.
+
+## Start in container
+
+Use `docker container run -it --rm tennismath.tableau.emulator` command. By default it is registered on DEV SevenCourts
+server, but this can be overriden by providing server URL as `TABLEAU_SERVER_BASE_URL` env var.
