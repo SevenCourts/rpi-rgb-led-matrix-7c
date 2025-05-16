@@ -147,7 +147,7 @@ Reboot. The panel should display:
 => ~5 second current time and the blue dot
 => current time only
 
-## Update Firmware
+## Update Firmware to the latest `firmware/stable` state
 
 - Login to `7c-vpn.sevencourts.com` via SSH using personal LDAP credentials
 
@@ -211,9 +211,11 @@ systemctl daemon-reload
 systemctl restart 7c
 ```
 
-### WiFi settings
+## WiFi
 
-#### With SevenCourts Admin app
+### WiFi setting
+
+#### With SevenCourts Admin app (regular)
 
 TODO: where to download for Android / iOS
 
@@ -227,11 +229,15 @@ echo "{\"ssid\":\"<SSID>\",\"psk\":\"<PSK>\"}" > /etc/7c_m1_assoc.json
 
 #### With raspi-config in non-interactive mode (CLI)
 
+***CAVEAT*** this is **NOT** the recommended way, since raspi-config somehow collides with 7c-controller wpa_supplicant agent.
+
 ```shell
 raspi-config nonint do_wifi_ssid_passphrase <SSID> <PSK>
 ```
 
-#### Misc RaspiOS Lite commands
+### WiFi diagnostics
+
+#### Misc useful RaspiOS Lite commands
 
 Rasp-config command line parameters:
 
@@ -247,6 +253,28 @@ add_network
 set_network 0 ssid "<SSID>"
 set_network 0 psk "<PSK>"
 ```
+
+See the WLAN setting currently configured by 7c-controller:
+```shell
+more /etc/7c_m1_assoc.json
+```
+
+See the WLAN setting currently configured by wpa_supplicant:
+```shell
+more /etc/wpa_supplicant/wpa_supplicant.conf
+```
+
+Check the status and log of 7c-controller:
+```shell
+systemctl status 7c-controller.service
+journalctl -u 7c-controller.service -f
+```
+
+Check the current status of `wlan0`:
+```shell
+iwconfig wlan0
+```
+
 
 ## Clone bootable SD card
 
@@ -279,7 +307,7 @@ Insert a new SD card.
 sudo dd if=7c_shrinked.img of=/dev/disk4
 ```
 
-## Install development environment
+## Development environment
 
 ### Python
 
