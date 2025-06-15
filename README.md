@@ -275,6 +275,10 @@ Check the current status of `wlan0`:
 iwconfig wlan0
 ```
 
+## Tethering with Mac via Enthernet/USB adapter
+
+- Activate Internet sharing on Mac
+- Connect to M1 with `ssh user@192.168.4.2`
 
 ## Clone bootable SD card
 
