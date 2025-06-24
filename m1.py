@@ -167,7 +167,7 @@ class SevenCourtsM1(SampleBase):
             m1_signage.display_match(self.canvas, 1, "Court #2", [["Seles", "usa"], ["Graf", "germany"]], [["Sánchez Vicario", "spain"], ["Sabatini", "argentina"]],
                                                         [[1, 2], [2, 6], [6, 6]], ["40", "Ad"], False)
             m1_signage.display_match(self.canvas, 2, "Court #3", None, None, None, None, None)
-            m1_signage.display_match_upcoming(self.canvas, 3, "Cupra", [["Nadal", "spain"]], [["Roddick", "usa"]],
+            m1_signage.display_match_upcoming(self.canvas, 3, "Cupra", [["Nadalesekopupenkovsij", "spain"]], [["Roddick", "usa"]],
                                                          "14:00")
             
             self.canvas = self.matrix.SwapOnVSync(self.canvas)

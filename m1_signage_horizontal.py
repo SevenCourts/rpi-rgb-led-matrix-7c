@@ -21,12 +21,15 @@ COLOR_SIGNAGE_SCORE = COLOR_WHITE
 
 VOID_TEAM = ["", None]
 
-MAX_LENGTH_NAME_SINGLES = 7
+MAX_LENGTH_NAME_SINGLES = 14
 MAX_LENGTH_NAME_DOUBLES = 3
 
+W_MATCH = int(W_PANEL / 2)
+H_MATCH = int(H_PANEL / 2)
+
 def _match_coordinates (court_pos: int):
-    x = 0 if (court_pos % 2) == 0 else int(W_PANEL / 2)
-    y = 0 if (court_pos < 2) else int(H_PANEL / 2)
+    x = 0 if (court_pos % 2) == 0 else W_MATCH
+    y = 0 if (court_pos < 2) else H_MATCH
     return [x, y]
 
 def _display_player(canvas, x0: int, y0: int, player_index: int, name :str, flag_code :str):
@@ -43,7 +46,7 @@ def _display_player(canvas, x0: int, y0: int, player_index: int, name :str, flag
     x_name = x0 + x_shift + W_FLAG_SMALL + 1
     draw_text(canvas, x_name, y_name, name, font, COLOR_SIGNAGE_TEAM_NAME)
 
-def _display_score(canvas, x0: int, y0: int, score_sets: List[int], score_game: str, is_serving: bool):
+def _display_team_score(canvas, x0: int, y0: int, score_sets: List[int], score_game: str, is_serving: bool):
     font = FONT_SIGNAGE_SCORE
     x_shift = (W_FLAG_SMALL + 1 + width_in_pixels(FONT_SIGNAGE_TEAM_NAME, " " * MAX_LENGTH_NAME_SINGLES))
     y = y0 + Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(font)
@@ -77,6 +80,7 @@ def _display_team(canvas, x0: int, y_team: int, team, score_sets, is_serving: bo
 
     is_doubles = (team is not None and len(team) == 2)
 
+    # TODO check idiomatic way to handle this
     if team is not None:
         p1_name, p1_flag = team[0]        
         p2_name, p2_flag = team[1] if is_doubles else VOID_TEAM
@@ -94,11 +98,11 @@ def _display_team(canvas, x0: int, y_team: int, team, score_sets, is_serving: bo
     else:
         p1_name = p1_name[:MAX_LENGTH_NAME_SINGLES]
         _display_player(canvas, x0, y_team, 0, p1_name, p1_flag)
-    return _display_score(canvas, x0, y_team, score_sets, score_game, is_serving)
+    return _display_team_score(canvas, x0, y_team, score_sets, score_game, is_serving)
 
 def _display_court_name(canvas, x: int , y: int, court_name: str, starting_time=None):
     font = FONT_SIGNAGE_COURT_NAME
-    w_bg = int(W_PANEL / 2) - 1
+    w_bg = W_MATCH - 1
     h_bg = h_font_court_name + 2
     fill_rect(canvas, x, y, w_bg, h_bg, COLOR_SIGNAGE_COURT_NAME_BG)
     
@@ -108,7 +112,7 @@ def _display_court_name(canvas, x: int , y: int, court_name: str, starting_time=
 
     if starting_time is not None:
         # Display starting time
-        x_time = x + (int(W_PANEL/2) - width_in_pixels(font, starting_time)) - 1
+        x_time = x + (W_MATCH - width_in_pixels(font, starting_time)) - 1
         y_time = y_court_name
         draw_text(canvas, x_time, y_time, starting_time, font, COLOR_SIGNAGE_COURT_NAME)
 
