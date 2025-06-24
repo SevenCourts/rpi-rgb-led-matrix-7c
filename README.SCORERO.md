@@ -3,7 +3,7 @@
 1. Install Docker, on Windows start Docker Desktop
 
 2. In shell login to GitHub Docker Image Registry with the GitHub Personal Access Token `[PAT]`.
-The `[PAT]` is created with <https://github.com/settings/tokens>.
+The `[PAT]` is created with <https://github.com/settings/tokens>. Grant "read packages" permission.
 
 ```shell
 echo '[PAT]' | docker login ghcr.io -u shinych --password-stdin
