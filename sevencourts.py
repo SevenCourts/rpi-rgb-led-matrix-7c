@@ -1,5 +1,12 @@
+## SevenCourts common module
+
 import os
 import socket
+import time
+
+SECONDS_START = int(time.time())
+
+BASE_URL = os.getenv('TABLEAU_SERVER_BASE_URL', 'https://prod.tableau.tennismath.com')
 
 if os.getenv('USE_RGB_MATRIX_EMULATOR', False):
     from RGBMatrixEmulator import graphics
@@ -8,6 +15,9 @@ else:
 
 from PIL import Image
 from functools import partial
+
+# FIXME use not hardcoded directory (TBD)
+IMAGE_CACHE_DIR = "/opt/7c/cache-images"
 
 ORIENTATION_VERTICAL = os.getenv('ORIENTATION_VERTICAL', False)
 ORIENTATION_HORIZONTAL = not ORIENTATION_VERTICAL
@@ -21,12 +31,10 @@ H_PANEL = __H_PANEL if ORIENTATION_HORIZONTAL else __W_PANEL
 W_TILE = int(__W_PANEL / 3)  # 64
 H_TILE = int(__H_PANEL / 2)  # 32
 
-
-
 H_FLAG = 12
 W_FLAG = 18
-W_FLAG_SMALL = W_FLAG / 2  # 9
-H_FLAG_SMALL = H_FLAG / 2  # 6
+W_FLAG_SMALL = int(W_FLAG / 2)  # 9
+H_FLAG_SMALL = int(H_FLAG / 2)  # 6
 
 # Style constants
 COLOR_WHITE = graphics.Color(255, 255, 255)
@@ -179,12 +187,14 @@ def x_font_center(text, container_width, font):
         text_width += font.CharacterWidth(ord(c))
     return max(0, (container_width - text_width) / 2)
 
+
 def width_in_pixels(font, text):
     result = 0
     for c in text:
         result += font.CharacterWidth(ord(c))
     # print('<{}> => {}'.format(text,result))
     return result
+
 
 def truncate_text(font, max_width, text):
     result = ""
@@ -198,7 +208,7 @@ def truncate_text(font, max_width, text):
     return result
 
 
-def font_fits(font, width, height, *texts):
+def _is_font_fits(font, width, height, *texts):
     font_symbol_height = y_font_offset(font)
     max_width_with_this_font = max(map(partial(width_in_pixels, font), *texts))
     # print('{}>={} {}>={} {}'.format(height, font_symbol_height, width, max_width_with_this_font, *texts))
@@ -208,9 +218,9 @@ def font_fits(font, width, height, *texts):
 
 
 def pick_font_that_fits(width, height, *texts):
-    if font_fits(FONT_L, width, height, texts):
+    if _is_font_fits(FONT_L, width, height, texts):
         result = FONT_L
-    elif font_fits(FONT_M, width, height, texts):
+    elif _is_font_fits(FONT_M, width, height, texts):
         result = FONT_M
     else:
         result = FONT_S
@@ -218,7 +228,7 @@ def pick_font_that_fits(width, height, *texts):
     return result
 
 
-def debug_font_info(font, name=''):
+def _debug_font_info(font, name=''):
     print('Font {} h={} bl={} y_off={}'.format(
         name,
         font.height,
@@ -226,19 +236,26 @@ def debug_font_info(font, name=''):
         y_font_offset(font)))
 
 
-def load_flag_image(flag):
-    try:
-        return Image.open("images/flags/" + flag + ".png").convert('RGB')
+def _load_flag_image(flag_code):
+    try:       
+        return Image.open("images/flags/" + (flag_code or "VOID") + ".png").convert('RGB')
     except Exception as e:
         log(e)
         return Image.open("images/flags/VOID.png").convert('RGB')
+
+
+def draw_flag(canvas, x, y, flag_code=None, small=False):
+    image = _load_flag_image(flag_code)
+    if small:
+        image.thumbnail((W_FLAG_SMALL, H_FLAG_SMALL), Image.LANCZOS)
+    canvas.SetImage(image, x, y)
 
 
 def log(*args):
     print(*args, flush=True)
 
 
-def draw_text(canvas, x, y, text, font=FONT_DEFAULT, color=COLOR_DEFAULT):
+def draw_text(canvas, x: int, y: int, text: str, font=FONT_DEFAULT, color=COLOR_DEFAULT):
     return graphics.DrawText(canvas, font, x, y, color, text)
 
 
