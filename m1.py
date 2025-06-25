@@ -163,7 +163,7 @@ class SevenCourtsM1(SampleBase):
     def run(self):
         self.canvas = self.matrix.CreateFrameCanvas()
         while True:
-            '''
+            
             m1_signage.display_match(self.canvas, 0, "Court #1", 
                                      [["Shevchenko", "ukraine"]], [["Monfils", "france"]],
                                      [[3, 1]], ["15", "40"], True)
@@ -178,9 +178,9 @@ class SevenCourtsM1(SampleBase):
                                      [["Nadal", "spain"]], [["Roddick", "usa"]],
                                      None, None, None,
                                      "14:00")
-            '''
+            
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
-
+            '''
             panel_id = self._register()
             try:
                 while True:
@@ -195,6 +195,7 @@ class SevenCourtsM1(SampleBase):
             except Exception as ex:
                 self.panel_info_failed = True
                 logging.exception(ex)
+            '''
             
             time.sleep(1)
 

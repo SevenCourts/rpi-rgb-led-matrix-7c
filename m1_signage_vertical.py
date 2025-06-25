@@ -6,6 +6,13 @@ from m1_signage import *
 import time
 import m1_scoreboard
 
+COLOR_TOURNAMENT_NAME = COLOR_WHITE
+COLOR_TOURNAMENT_NAME_BG = COLOR_BW_VAIHINGEN_ROHR_BLUE
+COLOR_COURT_SEPARATOR_LINE = COLOR_GREY_DARK
+COLOR_COURT_NAME = COLOR_BLACK
+COLOR_COURT_NAME_BG = COLOR_GREY
+COLOR_TEAM_NAME = COLOR_WHITE
+
 IMAGES_SPONSOR_LOGOS = ["images/logos/ITF/ITF_64x32_white_bg.png",
                         "images/logos/TC BW Vaihingen-Rohr/tc-bw-vaihingen-rohr-64x32.png",
                         "images/logos/7C/sevencourts_7c_64x32.png"]
@@ -85,13 +92,13 @@ def display_signage_itftournament(canvas, courts, tournament_name = "Welcome!"):
 
 def draw_signage_court_name(canvas, x: int, y0: int, court_name):
     y = y0
-    graphics.DrawLine(canvas, x, y, W_PANEL, y, COLOR_SIGNAGE_FG_COURT_SEPARATOR_LINE)
+    graphics.DrawLine(canvas, x, y, W_PANEL, y, COLOR_COURT_SEPARATOR_LINE)
     y += 1
-    fill_rect(canvas, x, y, 64, 1 + H_FONT_XXS + 1, COLOR_SIGNAGE_BG_COURT_NAME)
+    fill_rect(canvas, x, y, 64, 1 + H_FONT_XXS + 1, COLOR_COURT_NAME_BG)
     y += H_FONT_XXS + 1
-    graphics.DrawText(canvas, FONT_XXS, x + 1, y, COLOR_SIGNAGE_FG_COURT_NAME, court_name or '')
+    graphics.DrawText(canvas, FONT_XXS, x + 1, y, COLOR_COURT_NAME, court_name or '')
     y += 1
-    graphics.DrawLine(canvas, x, y, W_PANEL, y, COLOR_SIGNAGE_FG_COURT_SEPARATOR_LINE)
+    graphics.DrawLine(canvas, x, y, W_PANEL, y, COLOR_COURT_SEPARATOR_LINE)
     y += 1
     return y - y0  # 9
 
@@ -122,7 +129,7 @@ def draw_signage_match_team(canvas, x0: int, y0: int, team_name, team_flag,
         graphics.DrawText(canvas, FONT_XS, x0 + X_SET3, y, color_set1, str(score_set1))
 
     team_name_truncated = truncate_text(FONT_XS, w_name_max, team_name)
-    graphics.DrawText(canvas, FONT_XS, x_name, y, COLOR_SIGNAGE_FG_TEAM_NAME, team_name_truncated)
+    graphics.DrawText(canvas, FONT_XS, x_name, y, COLOR_TEAM_NAME, team_name_truncated)
 
 def draw_signage_match_team_flags(canvas, x0: int, y0: int, p1flag, p2flag,
                                     score_set1, color_set1, score_set2, color_set2, score_set3, color_set3):
@@ -133,7 +140,7 @@ def draw_signage_match_team_flags(canvas, x0: int, y0: int, p1flag, p2flag,
     draw_flag(canvas, p2flag, x, y)
     y += H_FONT_XS
     x = x0 + 7 + W_FLAG_SMALL + 4
-    graphics.DrawText(canvas, FONT_XS, x, y, COLOR_SIGNAGE_FG_TEAM_NAME, "/")
+    graphics.DrawText(canvas, FONT_XS, x, y, COLOR_TEAM_NAME, "/")
     if score_set3 is not None:
         graphics.DrawText(canvas, FONT_XS, x0 + X_SET1, y, color_set1, str(score_set1))
         graphics.DrawText(canvas, FONT_XS, x0 + X_SET2, y, color_set2, str(score_set2))
@@ -149,14 +156,14 @@ def draw_signage_match_singles(canvas, court_index: int, court_name, t1_name, t2
 
     color_set1 = color_set2 = color_set3 = [None, None]
     if t1_set3 is not None:
-        color_set1 = score_color(t1_set1, t2_set1)
-        color_set2 = score_color(t1_set2, t2_set2)
-        color_set3 = score_color(t1_set3, t2_set3, False)
+        color_set1 = score_colors(t1_set1, t2_set1)
+        color_set2 = score_colors(t1_set2, t2_set2)
+        color_set3 = score_colors(t1_set3, t2_set3, False)
     elif t1_set2 is not None:
-        color_set1 = score_color(t1_set1, t2_set1)
-        color_set2 = score_color(t1_set2, t2_set2, False)
+        color_set1 = score_colors(t1_set1, t2_set1)
+        color_set2 = score_colors(t1_set2, t2_set2, False)
     elif t1_set1 is not None:
-        color_set1 = score_color(t1_set1, t2_set1, False)
+        color_set1 = score_colors(t1_set1, t2_set1, False)
 
     y0 = 32 * court_index if ORIENTATION_VERTICAL else (0 if court_index % 2 else H_TILE)
     x0 = 0 if ORIENTATION_VERTICAL else (W_TILE if court_index < 3 else W_TILE * 2)
@@ -211,14 +218,14 @@ def draw_signage_match_doubles(canvas, court, t1, t2, score):
 
     color_set1 = color_set2 = color_set3 = [None, None]
     if t1_set3 is not None:
-        color_set1 = score_color(t1_set1, t2_set1)
-        color_set2 = score_color(t1_set2, t2_set2)
-        color_set3 = score_color(t1_set3, t2_set3, False)
+        color_set1 = score_colors(t1_set1, t2_set1)
+        color_set2 = score_colors(t1_set2, t2_set2)
+        color_set3 = score_colors(t1_set3, t2_set3, False)
     elif t1_set2 is not None:
-        color_set1 = score_color(t1_set1, t2_set1)
-        color_set2 = score_color(t1_set2, t2_set2, False)
+        color_set1 = score_colors(t1_set1, t2_set1)
+        color_set2 = score_colors(t1_set2, t2_set2, False)
     elif t1_set1 is not None:
-        color_set1 = score_color(t1_set1, t2_set1, False)
+        color_set1 = score_colors(t1_set1, t2_set1, False)
 
     y0 = 32 * court_index if ORIENTATION_VERTICAL else (0 if court_index % 2 else H_TILE)
     x0 = 0 if ORIENTATION_VERTICAL else (W_TILE if court_index < 3 else W_TILE * 2)
@@ -263,13 +270,13 @@ def draw_signage_match_doubles(canvas, court, t1, t2, score):
                                             t1_set3, color_set3[0])
 
 def draw_tournament_title(canvas, title):
-    fill_rect(canvas, 0, 0, W_TILE, H_TILE, COLOR_SIGNAGE_BG_TOURNAMENT_NAME)
+    fill_rect(canvas, 0, 0, W_TILE, H_TILE, COLOR_TOURNAMENT_NAME_BG)
     font = FONT_S
     lines = title.split(" ", 1)
     y = y_font_center(font, H_TILE / len(lines))
     for line in lines:
         x = x_font_center(line, W_TILE, font)
-        graphics.DrawText(canvas, font, x, y, COLOR_SIGNAGE_FG_TOURNAMENT_NAME, line)
+        graphics.DrawText(canvas, font, x, y, COLOR_TOURNAMENT_NAME, line)
         y += font.height
 
 def draw_signage_tournament_sponsors(canvas):

@@ -20,10 +20,9 @@ COLOR_MATCH_BG = COLOR_BLACK
 COLOR_COURT_NAME = COLOR_GREY
 COLOR_COURT_NAME_BG = COLOR_BW_VAIHINGEN_ROHR_BLUE
 COLOR_TEAM_NAME = COLOR_GREY
-COLOR_SETSCORE = COLOR_WHITE
-COLOR_SETSCORE_COMPLETED_BG = COLOR_7C_GREEN_DARK
 COLOR_SETSCORE_BG = COLOR_MATCH_BG
-COLOR_SRV = COLOR_7C_GOLD
+COLOR_SETSCORE_COMPLETED_BG = COLOR_7C_GREEN_DARK
+COLOR_SRV = COLOR_GREY
 COLOR_SRV_BG = COLOR_MATCH_BG
 COLOR_GAMESCORE = COLOR_WHITE
 COLOR_GAMESCORE_BG = COLOR_MATCH_BG
@@ -56,7 +55,7 @@ def _display_team_player(canvas, x0: int, y0: int, player_index: int, name :str,
     x_name = x0 + x_shift + W_FLAG_SMALL + 1
     draw_text(canvas, x_name, y_name, name, font, COLOR_TEAM_NAME)
 
-def _display_team_score(canvas, x0: int, y0: int, score_sets: List[int], score_game: str, is_serving: bool):
+def _display_team_score(canvas, x0: int, y0: int, score_sets_with_color: List, score_game: str, is_serving: bool):
     font = FONT_SIGNAGE_SCORE
     y = y0 + Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(font)
 
@@ -66,7 +65,7 @@ def _display_team_score(canvas, x0: int, y0: int, score_sets: List[int], score_g
     w_score_game_max = width_in_pixels(font, "Ad")
     x_score_game = x0 + W_MATCH - int((w_score_game_max + w_score_game) / 2)
 
-    is_some_score_present = (score_game is not None and len(score_game) > 0) or (score_sets is not None and len(score_sets) > 0) or (is_serving is not None)
+    is_some_score_present = (score_game is not None and len(score_game) > 0) or (score_sets_with_color is not None and len(score_sets_with_color) > 0) or (is_serving is not None)
     if is_some_score_present: 
         fill_rect(canvas, x0 + W_MATCH - w_score_game_max, y,
                   w_score_game_max - 1, -h_font_team_name, COLOR_MATCH_BG)
@@ -96,7 +95,8 @@ def _display_team_score(canvas, x0: int, y0: int, score_sets: List[int], score_g
     # sets scores
     x_score_set = x_indicator + 1 # initial x position
     is_last_set = True
-    for score_set in score_sets[::-1]:
+    for ss in score_sets_with_color[::-1]:
+        score_set, color = ss
         # FIXME bug when match is completed
         c = COLOR_SETSCORE_BG if is_last_set else COLOR_SETSCORE_COMPLETED_BG
         score = str(score_set)
@@ -109,7 +109,8 @@ def _display_team_score(canvas, x0: int, y0: int, score_sets: List[int], score_g
         fill_rect(canvas, x_score_set - 1, y, w_score + 1, -h_font_team_name, c)
         
         # draw the score
-        draw_text(canvas, x_score_set, y, score, font, COLOR_SETSCORE)
+        
+        draw_text(canvas, x_score_set, y, score, font, color)
         is_last_set = False
     
     return h_font_team_name + 3
@@ -169,14 +170,25 @@ def display_match(canvas, court_pos: int , court_name: str,
     y_court_name = y0
     y_shift = _display_court_name(canvas, x_court_name, y_court_name, court_name, match_status)
     
-    # 2. Team 1
-    score_sets_t1 = [ss[0] for ss in score_sets] if score_sets else []
+    
+    
+    # 2. Teams
+    
+    score_sets_t1 = []
+    score_sets_t2 = []
+    for ss in score_sets or []:
+        is_finished = True # TODO handle match finished state        
+        colors = score_colors(ss[0], ss[1], is_finished)
+
+        score_sets_t1.append((ss[0], colors[0]))        
+        score_sets_t2.append((ss[1], colors[1]))
+
+    ## 2.1 Team 1    
     score_game_t1 = str(score_game[0]) if score_game else ""
     y_t1 = y0 + y_shift + 2
     y_shift = _display_team(canvas, x0, y_t1, team1, score_sets_t1, is_serving_t1, score_game_t1)
 
-    # 3. Team 2
-    score_sets_t2 = [ss[1] for ss in score_sets] if score_sets else []
+    ## 2.2 Team 2
     score_game_t2 = str(score_game[1]) if score_game else ""
     y_t2 = y_t1 + y_shift
     is_serving_t2 = None if is_serving_t1 is None else not(is_serving_t1)
