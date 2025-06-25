@@ -1,0 +1,53 @@
+{ 
+    "courts": [
+    {
+        "name": "Court #1",          
+        "team1": {
+        "p1": { "name": "Shevchenko", "flag": "kazakhstan" }
+        },
+        "team2": {
+        "p1": { "name": "Monfils", "flag": "france" }
+        },
+        "score-sets": [[6, 2], [1, 4]],
+        "score-game": ["40", "Ad"],
+        "is-serving-t1": true
+    },
+    {
+        "name": "Court #2",
+        "match-status": "Suspended",
+        "team1": {
+        "p1": { "name": "Seles", "flag": "usa" },
+        "p2": { "name": "Graf", "flag": "germany" }
+        },
+        "team2": {
+        "p1": { "name": "Sánchez Vicario", "flag": "spain" },
+        "p2": { "name": "Sabatini", "flag": "argentina" }
+        },
+        "score-sets": [[6, 2]],
+        "score-game": ["0", "15"],
+        "is-serving-t1": false
+    },
+    {
+        "name": "Court #3",          
+        "team1": {
+        "p1": { "name": "Zverev", "flag": "germany" }
+        },
+        "team2": {
+        "p1": { "name": "Federer", "flag": "switzerland" }
+        },
+        "score-sets": [[6, 4], [2, 6], [6, 6]],
+        "score-game": ["9", "7"],
+        "is-serving-t1": true
+    },
+    {
+        "name": "LAPP",
+        "match-status": "14:00",
+        "team1": {
+        "p1": { "name": "Nadal", "flag": "spain" }
+        },
+        "team2": {
+        "p1": { "name": "Roddick", "flag": "usa" }
+        }
+    }
+    ] 
+}

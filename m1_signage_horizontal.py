@@ -28,7 +28,8 @@ COLOR_GAMESCORE = COLOR_WHITE
 COLOR_GAMESCORE_BG = COLOR_MATCH_BG
 COLOR_MATCH_STATUS = COLOR_7C_GOLD
 
-VOID_TEAM = ["", None]
+VOID_TEAM = {"name": None, "country": None}
+
 
 MAX_LENGTH_NAME_SINGLES = 14
 MAX_LENGTH_NAME_DOUBLES = 3
@@ -117,20 +118,22 @@ def _display_team_score(canvas, x0: int, y0: int, score_sets_with_color: List, s
 
 def _display_team(canvas, x0: int, y_team: int, team, score_sets, is_serving: bool, score_game: str):
 
-    is_doubles = (team is not None and len(team) == 2)
+    if (team is None):
+        return 0
 
-    # TODO check idiomatic way to handle this
-    if team is not None:
-        p1_name, p1_flag = team[0]        
-        p2_name, p2_flag = team[1] if is_doubles else VOID_TEAM
-    else:
-        p1_name, p1_flag = p2_name, p2_flag = VOID_TEAM        
+    is_doubles = (team.get('p2') is not None)
+
+    p1_name = team['p1']['name']
+    p1_flag = team['p1']['flag']
 
     if (is_doubles):
         # P1
         p1_name = p1_name[:MAX_LENGTH_NAME_DOUBLES].upper()
         _display_team_player(canvas, x0, y_team, 0, p1_name, p1_flag)
+
         # P2
+        p2_name = team['p2']['name']
+        p2_flag = team['p2']['flag']    
         p2_name = p2_name[:MAX_LENGTH_NAME_DOUBLES].upper()
         _display_team_player(canvas, x0, y_team, 1, p2_name, p2_flag)                
 
@@ -157,8 +160,24 @@ def _display_court_name(canvas, x: int , y: int, court_name: str, match_status=N
 
     return h_bg
 
-def display_match(canvas, court_pos: int , court_name: str, 
-                          team1: List[List[str]], team2: List[List[str]],
+def display_tournament(canvas, signage_info):
+    #clear canvas
+    fill_rect(canvas, 0, 0, W_PANEL, H_PANEL, COLOR_MATCH_BG)
+
+    for court_pos, court in enumerate(signage_info.get('courts', [])):
+        court_name = court.get('name', 'Court ' + str(court_pos + 1))
+        team1 = court.get('team1')
+        team2 = court.get('team2')
+        score_sets = court.get('score-sets')
+        score_game = court.get('score-game')
+        is_serving_t1 = court.get('is-serving-t1')
+        match_status = court.get('match-status')
+
+        _display_match(canvas, court_pos, court_name, team1, team2, score_sets, score_game, is_serving_t1, match_status)
+
+
+def _display_match(canvas, court_pos: int , court_name: str, 
+                          team1, team2,
                           score_sets: List[int], score_game: List[str], is_serving_t1:bool, 
                           match_status=None):
     x0, y0 = _match_coordinates(court_pos)

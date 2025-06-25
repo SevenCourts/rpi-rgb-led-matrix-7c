@@ -164,20 +164,11 @@ class SevenCourtsM1(SampleBase):
         self.canvas = self.matrix.CreateFrameCanvas()
         while True:
             
-            m1_signage.display_match(self.canvas, 0, "Court #1", 
-                                     [["Shevchenko", "ukraine"]], [["Monfils", "france"]],
-                                     [[3, 1]], ["15", "40"], True)
-            m1_signage.display_match(self.canvas, 1, "Court #2", 
-                                     [["Seles", "usa"], ["Graf", "germany"]], [["Sánchez Vicario", "spain"], ["Sabatini", "argentina"]],
-                                     [[6, 2], [2, 4]], ["40", "Ad"], False,
-                                     "Suspended")
-            m1_signage.display_match(self.canvas, 2, "Court #3", 
-                                     [["Zverev", "germany"]], [["Federer", "switzerland"]],
-                                     [[6, 4], [2, 6], [6, 6]], ["9", "7"], True)
-            m1_signage.display_match(self.canvas, 3, "LAPP",
-                                     [["Nadal", "spain"]], [["Roddick", "usa"]],
-                                     None, None, None,
-                                     "14:00")
+            def _read_mock_signage_data():
+                import json
+                with open("signage-mock-data.json", "r", encoding="utf-8") as f:
+                    return json.load(f)    
+            m1_signage.display_tournament(self.canvas, _read_mock_signage_data())
             
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
             '''
@@ -199,7 +190,7 @@ class SevenCourtsM1(SampleBase):
             
             time.sleep(1)
 
-
+    
     def _register(self):
         if PANEL_ID:
             return PANEL_ID
@@ -244,6 +235,8 @@ class SevenCourtsM1(SampleBase):
             m1_booking_ebusy.display_ebusy_ads(self.canvas, self.panel_info.get('ebusy-ads'))
         elif 'idle-info' in self.panel_info:
             self._display_idle_mode()
+        elif 'signage-info' in self.panel_info:
+            m1_signage.display_tournament(self.canvas, self.panel_info.get('signage-info'))
         elif 'tournament-name' in self.panel_info:
             m1_signage_vertical.display_signage_itftournament(self.canvas, self.panel_info.get("courts"), 
                                                               self.panel_info.get("tournament-name"))
