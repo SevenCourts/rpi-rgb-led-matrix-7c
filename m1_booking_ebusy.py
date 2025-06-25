@@ -51,18 +51,18 @@ def _display_text(canvas, x, y, text):
 
 def _display_booking_header(canvas, court, dt):
     
-    _display_text(2, 10, court['name'])
+    _display_text(canvas, 2, 10, court['name'])
 
     clock_str = dt.strftime('%H:%M')
-    _display_text(160, 10, clock_str)
+    _display_text(canvas, 160, 10, clock_str)
 
 def _display_booking_greeting(canvas, booking, court, dt):    
 
     _display_booking_header(canvas, court, dt)
     players = [p for p in [booking.get(k) for k in ['p1', 'p2', 'p3', 'p4']] if p]
     player_firstnames = [ p.get('firstname') for p in players]
-    _display_text(2, 25, 'Willkommen im MatchCenter')
-    _display_text(2, 40, ','.join(player_firstnames))
+    _display_text(canvas, 2, 25, 'Willkommen im MatchCenter')
+    _display_text(canvas, 2, 40, ','.join(player_firstnames))
 
 def _display_booking_timeleft_match(canvas, booking, court, dt, minutes_left):
     minutes_left_txt = '< 1' if minutes_left == 0 else str(minutes_left)
@@ -96,19 +96,19 @@ def _display_booking_match(canvas, booking, court, dt, notification=''):
             txt = (txt or '') + booking_player(tp2)
         return txt
 
-    _display_booking_header(court, dt)
+    _display_booking_header(canvas, court, dt)
     start_time = parser.parse(booking['start-date']).strftime('%H:%M')
     end_time = parser.parse(booking['end-date']).strftime('%H:%M')
-    _display_text(2, 25, start_time + ' - ' + end_time)
+    _display_text(canvas, 2, 25, start_time + ' - ' + end_time)
 
     t1 = booking_team()
-    _display_text(2, 40, t1)
+    _display_text(canvas, 2, 40, t1)
     t2 = booking_team(False)
     if t2:
-        _display_text(2, 55, t2)
+        _display_text(canvas, 2, 55, t2)
 
     if notification:
-        _display_text(105, 25, notification)
+        _display_text(canvas, 105, 25, notification)
 
 def display_ebusy_ads(canvas, ebusy_ads):
     id = ebusy_ads.get("id")

@@ -236,7 +236,7 @@ def _debug_font_info(font, name=''):
         y_font_offset(font)))
 
 
-def _load_flag_image(flag_code):
+def load_flag_image(flag_code):
     try:       
         return Image.open("images/flags/" + (flag_code or "VOID") + ".png").convert('RGB')
     except Exception as e:
@@ -245,7 +245,7 @@ def _load_flag_image(flag_code):
 
 
 def draw_flag(canvas, x, y, flag_code=None, small=False):
-    image = _load_flag_image(flag_code)
+    image = load_flag_image(flag_code)
     if small:
         image.thumbnail((W_FLAG_SMALL, H_FLAG_SMALL), Image.LANCZOS)
     canvas.SetImage(image, x, y)

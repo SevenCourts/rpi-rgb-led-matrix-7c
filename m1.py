@@ -18,6 +18,7 @@ import m1_signage_vertical
 import m1_clock
 import m1_message
 import m1_image
+import m1_scoreboard
 
 import time
 import urllib.request
@@ -162,6 +163,7 @@ class SevenCourtsM1(SampleBase):
     def run(self):
         self.canvas = self.matrix.CreateFrameCanvas()
         while True:
+            '''
             m1_signage.display_match(self.canvas, 0, "Court #1", 
                                      [["Shevchenko", "ukraine"]], [["Monfils", "france"]],
                                      [[3, 1]], ["15", "40"], True)
@@ -176,11 +178,10 @@ class SevenCourtsM1(SampleBase):
                                      [["Nadal", "spain"]], [["Roddick", "usa"]],
                                      None, None, None,
                                      "14:00")
-            
+            '''
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
-            """
-            panel_id = self.register()
+            panel_id = self._register()
             try:
                 while True:
                     panel_info = fetch_panel_info(panel_id)
@@ -188,13 +189,13 @@ class SevenCourtsM1(SampleBase):
                         self.panel_info = panel_info
 
                     self.panel_info_failed = False
-                    self.write_startup_config()
-                    self.display_panel_info()
+                    self._write_startup_config()
+                    self._display_panel_info()
                     time.sleep(1)
             except Exception as ex:
                 self.panel_info_failed = True
                 logging.exception(ex)
-            """
+            
             time.sleep(1)
 
 
@@ -209,16 +210,20 @@ class SevenCourtsM1(SampleBase):
                     panel_id = register(REGISTRATION_URL)
                     self.registration_failed = False
                 except Exception as ex:
-                    logging.exception(ex)
+                    # logging.exception(ex)
+                    log('Panel registration failed: ', str(ex))
                     self.registration_failed = True
 
                 if self.registration_failed:
                     if self.panel_info and not panel_id:
+                        log('Displaying saved panel info')
                         self._display_panel_info()
                     else:
+                        log('Displaying init screen')
                         self._display_init_screen()
-
-                    time.sleep(1)
+                    
+                    log('Retry registration shortly...')
+                    time.sleep(1)                    
                 else:
                     self.registration_failed = False
                     return panel_id
@@ -242,7 +247,7 @@ class SevenCourtsM1(SampleBase):
             m1_signage_vertical.display_signage_itftournament(self.canvas, self.panel_info.get("courts"), 
                                                               self.panel_info.get("tournament-name"))
         elif 'team1' in self.panel_info:
-            self.display_match()
+            m1_scoreboard.display_match(self.canvas, self.panel_info)
 
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
 

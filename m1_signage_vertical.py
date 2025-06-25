@@ -4,6 +4,7 @@
 from sevencourts import *
 from m1_signage import *
 import time
+import m1_scoreboard
 
 IMAGES_SPONSOR_LOGOS = ["images/logos/ITF/ITF_64x32_white_bg.png",
                         "images/logos/TC BW Vaihingen-Rohr/tc-bw-vaihingen-rohr-64x32.png",

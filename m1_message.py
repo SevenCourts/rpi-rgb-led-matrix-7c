@@ -31,4 +31,4 @@ def display_idle_mode_message(canvas, idle_info, panel_tz):
 
     clock = idle_info.get('clock')
     if clock == True:
-        m1_clock.display_clock_mode(canvas, clock, panel_tz)
+        m1_clock.display_clock(canvas, clock, panel_tz)

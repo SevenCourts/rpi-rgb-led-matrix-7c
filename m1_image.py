@@ -13,7 +13,7 @@ def display_idle_mode_image_preset(canvas, idle_info, tz):
     is_enough_space_for_clock = image.width < m1_clock.W_LOGO_WITH_CLOCK
     _display_logo(canvas, image, is_enough_space_for_clock)
     if is_enough_space_for_clock and idle_info.get('clock') == True:
-        m1_clock.display_clock_mode(canvas, idle_info.get('clock'))            
+        m1_clock.display_clock(canvas, idle_info.get('clock'), tz)            
 
 def _display_logo(canvas, image, show_clock):
     w = W_PANEL
@@ -61,7 +61,7 @@ def display_idle_mode_image_url(canvas, idle_info, panel_tz):
 
         _display_logo(canvas, image, show_clock)
         if show_clock and idle_info.get('clock') == True:
-            m1_clock.display_clock_mode(canvas, idle_info.get('clock'), panel_tz)
+            m1_clock.display_clock(canvas, idle_info.get('clock'), panel_tz)
             
     except Exception as e:
         # TODO show an image stub (?)

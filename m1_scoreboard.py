@@ -196,10 +196,10 @@ def _display_names(canvas, match):
     display_flags = max(t1p1_flag_len, t1p2_flag_len, t2p1_flag_len, t2p2_flag_len) > 0
     same_flags_in_teams = (t1p1_flag == t1p2_flag) & (t2p1_flag == t2p2_flag)
     if display_flags:
-        t1p1_flag = None if not t1p1_flag else _load_flag_image(t1p1_flag)
-        t1p2_flag = None if not t1p2_flag else _load_flag_image(t1p2_flag)
-        t2p1_flag = None if not t2p1_flag else _load_flag_image(t2p1_flag)
-        t2p2_flag = None if not t2p2_flag else _load_flag_image(t2p2_flag)
+        t1p1_flag = None if not t1p1_flag else load_flag_image(t1p1_flag)
+        t1p2_flag = None if not t1p2_flag else load_flag_image(t1p2_flag)
+        t2p1_flag = None if not t2p1_flag else load_flag_image(t2p1_flag)
+        t2p2_flag = None if not t2p2_flag else load_flag_image(t2p2_flag)
         flag_width = W_FLAG
     else:
         flag_width = 0
