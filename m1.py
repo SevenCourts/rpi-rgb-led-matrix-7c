@@ -162,13 +162,20 @@ class SevenCourtsM1(SampleBase):
     def run(self):
         self.canvas = self.matrix.CreateFrameCanvas()
         while True:
-            m1_signage.display_match(self.canvas, 0, "Court #1", [["Shapovalov", "ukraine"]], [["Federer", "switzerland"]],
-                                                        [[6, 4], [2, 6], [6, 6]], [9, 7], True)
-            m1_signage.display_match(self.canvas, 1, "Court #2", [["Seles", "usa"], ["Graf", "germany"]], [["Sánchez Vicario", "spain"], ["Sabatini", "argentina"]],
-                                                        [[1, 2], [2, 6], [6, 6]], ["40", "Ad"], False)
-            m1_signage.display_match(self.canvas, 2, "Court #3", None, None, None, None, None)
-            m1_signage.display_match_upcoming(self.canvas, 3, "Cupra", [["Nadalesekopupenkovsij", "spain"]], [["Roddick", "usa"]],
-                                                         "14:00")
+            m1_signage.display_match(self.canvas, 0, "Court #1", 
+                                     [["Shevchenko", "ukraine"]], [["Monfils", "france"]],
+                                     [[3, 1]], ["15", "40"], True)
+            m1_signage.display_match(self.canvas, 1, "Court #2", 
+                                     [["Seles", "usa"], ["Graf", "germany"]], [["Sánchez Vicario", "spain"], ["Sabatini", "argentina"]],
+                                     [[6, 2], [2, 4]], ["40", "Ad"], False,
+                                     "Suspended")
+            m1_signage.display_match(self.canvas, 2, "Court #3", 
+                                     [["Zverev", "germany"]], [["Federer", "switzerland"]],
+                                     [[6, 4], [2, 6], [6, 6]], ["9", "7"], True)
+            m1_signage.display_match(self.canvas, 3, "LAPP",
+                                     [["Nadal", "spain"]], [["Roddick", "usa"]],
+                                     None, None, None,
+                                     "14:00")
             
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
 

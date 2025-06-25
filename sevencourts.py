@@ -284,3 +284,13 @@ def draw_matrix(canvas, m, x0, y0):
 def fill_rect(canvas, x0: int, y0: int, w: int, h: int, color):
     for x in range(x0, x0 + w):
         graphics.DrawLine(canvas, x, y0, x, y0 + h - 1, color)
+
+
+def rgb_list(color):
+    """Returns color as a list of RGB values"""
+    if isinstance(color, graphics.Color):
+        return [color.red, color.green, color.blue]
+    elif isinstance(color, (list, tuple)):
+        return list(color)
+    else:
+        raise ValueError("Unsupported color type: {}".format(type(color)))
