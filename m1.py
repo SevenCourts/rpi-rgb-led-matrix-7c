@@ -281,6 +281,7 @@ class SevenCourtsM1(SampleBase):
             [g, g],
             [g, g]]
         draw_matrix(self.canvas, dot, W_PANEL - 3, H_PANEL - 3)
+        m1_clock.display_clock(self.canvas, True, self._panel_tz(), COLOR_GREY_DARKEST)
 
 
     def _display_error_indicator(self, standby=False):

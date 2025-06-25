@@ -21,7 +21,7 @@ COLOR_CLOCK = COLOR_WHITE
 W_LOGO_WITH_CLOCK = 120 # left from clock
 
 
-def display_clock(canvas, clock, panel_tz):
+def display_clock(canvas, clock, panel_tz, color=COLOR_CLOCK):
 
     dt = datetime.now(tz.gettz(panel_tz))
     text = dt.strftime('%H:%M')        
@@ -76,4 +76,4 @@ def display_clock(canvas, clock, panel_tz):
                 y = H_PANEL
     else:
         return
-    draw_text(canvas, x, y, text, font, COLOR_CLOCK)
+    draw_text(canvas, x, y, text, font, color)
