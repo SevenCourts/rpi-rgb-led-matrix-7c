@@ -162,16 +162,9 @@ class SevenCourtsM1(SampleBase):
 
     def run(self):
         self.canvas = self.matrix.CreateFrameCanvas()
-        while True:
-            
-            def _read_mock_signage_data():
-                import json
-                with open("signage-mock-data.json", "r", encoding="utf-8") as f:
-                    return json.load(f)    
-            m1_signage.display_tournament(self.canvas, _read_mock_signage_data())
-            
+        while True:            
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
-            '''
+            
             panel_id = self._register()
             try:
                 while True:
@@ -186,7 +179,6 @@ class SevenCourtsM1(SampleBase):
             except Exception as ex:
                 self.panel_info_failed = True
                 logging.exception(ex)
-            '''
             
             time.sleep(1)
 
