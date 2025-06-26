@@ -88,7 +88,7 @@ def display_signage_itftournament(canvas, courts, tournament_name = "Welcome!"):
     #                                [["Radovanovic", "serbia"], ["Dapkunaite", "lithuania"]],
     #                                [[1, 6], [6, 2], [3, 4]])
 
-    draw_signage_tournament_sponsors()
+    draw_signage_tournament_sponsors(canvas)
 
 def draw_signage_court_name(canvas, x: int, y0: int, court_name):
     y = y0
