@@ -52,7 +52,7 @@ def display_signage_itftournament(canvas, courts, tournament_name = "Welcome!"):
                 t2_set3 = set_scores[2][1]
             t1 = match.get("team1")
             t2 = match.get("team2")
-            if match.get("is-doubles"):
+            if match.get("isDoubles"):
                 t1p1name = t1.get("player1").get("name")
                 t1p2name = t1.get("player2").get("name")
                 t2p1name = t2.get("player1").get("name")
