@@ -21,7 +21,7 @@ COLOR_COURT_NAME = COLOR_GREY
 COLOR_COURT_NAME_BG = COLOR_BW_VAIHINGEN_ROHR_BLUE
 COLOR_TEAM_NAME = COLOR_GREY
 COLOR_SETSCORE_BG = COLOR_MATCH_BG
-COLOR_SETSCORE_COMPLETED_BG = COLOR_7C_GREEN_DARK
+COLOR_SETSCORE_COMPLETED_WON_BG = COLOR_7C_GREEN_DARK
 COLOR_SRV = COLOR_GREY
 COLOR_SRV_BG = COLOR_MATCH_BG
 COLOR_GAMESCORE = COLOR_WHITE
@@ -99,7 +99,8 @@ def _display_team_score(canvas, x0: int, y0: int, score_sets_with_color: List, s
     for ss in score_sets_with_color[::-1]:
         score_set, color = ss
         # FIXME bug when match is completed
-        c = COLOR_SETSCORE_BG if is_last_set else COLOR_SETSCORE_COMPLETED_BG
+        # TODO no background if the set is lost
+        c = COLOR_SETSCORE_BG # if is_last_set else COLOR_SETSCORE_COMPLETED_BG
         score = str(score_set)
         w_score = width_in_pixels(font, score)
         # FIXME potential ui bug when score is more than 2 digits
