@@ -123,7 +123,7 @@ def _display_team(canvas, x0: int, y_team: int, team, score_sets, is_serving: bo
 
     is_doubles = (team.get('p2') is not None)
 
-    if team['p1'] is not None:
+    if team['p1']['name'] is not None:
         p1_name = team['p1']['name']
         p1_flag = team['p1']['flag']
 
