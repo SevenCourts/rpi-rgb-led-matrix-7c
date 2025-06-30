@@ -123,24 +123,28 @@ def _display_team(canvas, x0: int, y_team: int, team, score_sets, is_serving: bo
 
     is_doubles = (team.get('p2') is not None)
 
-    p1_name = team['p1']['name']
-    p1_flag = team['p1']['flag']
+    if team['p1'] is not None:
+        p1_name = team['p1']['name']
+        p1_flag = team['p1']['flag']
 
-    if (is_doubles):
-        # P1
-        p1_name = p1_name[:MAX_LENGTH_NAME_DOUBLES].upper()
-        _display_team_player(canvas, x0, y_team, 0, p1_name, p1_flag)
+        if (is_doubles):
+            # P1
+            p1_name = p1_name[:MAX_LENGTH_NAME_DOUBLES].upper()
+            _display_team_player(canvas, x0, y_team, 0, p1_name, p1_flag)
 
-        # P2
-        p2_name = team['p2']['name']
-        p2_flag = team['p2']['flag']    
-        p2_name = p2_name[:MAX_LENGTH_NAME_DOUBLES].upper()
-        _display_team_player(canvas, x0, y_team, 1, p2_name, p2_flag)                
+            # P2
+            p2_name = team['p2']['name']
+            p2_flag = team['p2']['flag']    
+            p2_name = p2_name[:MAX_LENGTH_NAME_DOUBLES].upper()
+            _display_team_player(canvas, x0, y_team, 1, p2_name, p2_flag)                
 
+        else:
+            p1_name = p1_name[:MAX_LENGTH_NAME_SINGLES]
+            _display_team_player(canvas, x0, y_team, 0, p1_name, p1_flag)
+        return _display_team_score(canvas, x0, y_team, score_sets, score_game, is_serving)
     else:
-        p1_name = p1_name[:MAX_LENGTH_NAME_SINGLES]
-        _display_team_player(canvas, x0, y_team, 0, p1_name, p1_flag)
-    return _display_team_score(canvas, x0, y_team, score_sets, score_game, is_serving)
+        return 0
+    
 
 def _display_court_name(canvas, x: int , y: int, court_name: str, match_status=None):
     font = FONT_SIGNAGE_COURT_NAME
