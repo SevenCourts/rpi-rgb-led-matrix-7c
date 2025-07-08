@@ -206,9 +206,7 @@ class SevenCourtsM1(SampleBase):
                         log('Displaying init screen')
                         self._display_init_screen()
                     
-                    log('Retry registration shortly...')
-                    self._display_error_indicator()
-                    self.canvas = self.matrix.SwapOnVSync(self.canvas)                    
+                    log('Retry registration shortly...')                    
                     time.sleep(1)                    
                 else:
                     self.registration_failed = False
