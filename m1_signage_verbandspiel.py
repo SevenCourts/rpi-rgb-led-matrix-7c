@@ -1,0 +1,15 @@
+# Signage for "Verbandsspiele" - a teams match of 6 or 4 players (Bundesliga, etc.)
+# Displays up to 3 matches / courts simultaneously
+
+from sevencourts import *
+
+FONT_SIGNAGE_COURT_NAME = FONT_XS_SPLEEN # 5x8
+FONT_SIGNAGE_CLUB_NAME = FONT_S_SPLEEN   # 6x12
+FONT_SIGNAGE_PLAYER_NAME = FONT_S_SPLEEN # 6x12
+FONT_SIGNAGE_SCORE = FONT_M_SPLEEN       # 6x16
+
+COLOR_SIGNAGE_COURT_NAME = COLOR_YELLOW
+COLOR_SIGNAGE_CLUB_NAME = COLOR_GREEN
+COLOR_SIGNAGE_PLAYER_NAME = COLOR_WHITE
+COLOR_SIGNAGE_SCORE = COLOR_WHITE
+
