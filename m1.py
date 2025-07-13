@@ -177,6 +177,7 @@ class SevenCourtsM1(SampleBase):
                     self._display_panel_info()
                     time.sleep(1)
             except Exception as ex:
+                self._display_error_indicator()
                 self.panel_info_failed = True
                 logging.exception(ex)
             
@@ -216,9 +217,6 @@ class SevenCourtsM1(SampleBase):
     def _display_panel_info(self):
         self.canvas.Clear()
 
-        if self.registration_failed or self.panel_info_failed:
-            self._display_error_indicator(self.panel_info.get('standby'))
-
         if self.panel_info.get('standby'):
             self._display_standby_mode_indicator()
         elif 'booking' in self.panel_info:
@@ -234,6 +232,11 @@ class SevenCourtsM1(SampleBase):
                                                               self.panel_info.get("tournament-name"))
         elif 'team1' in self.panel_info:
             m1_scoreboard.display_match(self.canvas, self.panel_info)
+
+
+        # The error indicator must be shown as last
+        if self.registration_failed or self.panel_info_failed:
+            self._display_error_indicator()
 
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
