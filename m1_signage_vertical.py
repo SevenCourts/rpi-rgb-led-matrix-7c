@@ -22,7 +22,7 @@ X_SET1 = 48
 X_SET2 = 54
 X_SET3 = 60
 
-def display_signage_itftournament(canvas, courts, tournament_name = "Welcome!"):
+def draw_signage_itftournament(canvas, courts, tournament_name = "Welcome!"):
     # XXX the panel must be started in VERTICAL mode (./m1_vertical.sh)
     # s.https://suprematic.slack.com/archives/DF1LE3XLY/p1719413956323839
     

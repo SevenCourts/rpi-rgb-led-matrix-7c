@@ -162,22 +162,24 @@ class SevenCourtsM1(SampleBase):
 
     def run(self):
         self.canvas = self.matrix.CreateFrameCanvas()
-        while True:            
-            self.canvas = self.matrix.SwapOnVSync(self.canvas)
-            
+        
+        # initial state of loading indicator
+        self._draw_error_indicator(True)
+        self.canvas = self.matrix.SwapOnVSync(self.canvas)
+
+        while True:
             panel_id = self._register()
             try:
                 while True:
                     panel_info = fetch_panel_info(panel_id)
                     if panel_info:
                         self.panel_info = panel_info
-
                     self.panel_info_failed = False
                     self._write_startup_config()
                     self._display_panel_info()
                     time.sleep(1)
             except Exception as ex:
-                self._display_error_indicator()
+                self._draw_error_indicator()
                 self.panel_info_failed = True
                 logging.exception(ex)
             
@@ -218,40 +220,40 @@ class SevenCourtsM1(SampleBase):
         self.canvas.Clear()
 
         if self.panel_info.get('standby'):
-            self._display_standby_mode_indicator()
+            self._draw_standby_mode_indicator()
         elif 'booking' in self.panel_info:
-            m1_booking_ebusy.display_booking(self.canvas, self.panel_info.get('booking'), self._panel_tz())
+            m1_booking_ebusy.draw_booking(self.canvas, self.panel_info.get('booking'), self._panel_tz())
         elif 'ebusy-ads' in self.panel_info:
-            m1_booking_ebusy.display_ebusy_ads(self.canvas, self.panel_info.get('ebusy-ads'))
+            m1_booking_ebusy.draw_ebusy_ads(self.canvas, self.panel_info.get('ebusy-ads'))
         elif 'idle-info' in self.panel_info:
-            self._display_idle_mode()
+            self._draw_idle_mode()
         elif 'signage-info' in self.panel_info:
-            m1_signage.display_tournament(self.canvas, self.panel_info.get('signage-info'))
+            m1_signage.draw_tournament(self.canvas, self.panel_info.get('signage-info'))
         elif 'tournament-name' in self.panel_info:
-            m1_signage_vertical.display_signage_itftournament(self.canvas, self.panel_info.get("courts"), 
+            m1_signage_vertical.draw_signage_itftournament(self.canvas, self.panel_info.get("courts"), 
                                                               self.panel_info.get("tournament-name"))
         elif 'team1' in self.panel_info:
-            m1_scoreboard.display_match(self.canvas, self.panel_info)
+            m1_scoreboard.draw_match(self.canvas, self.panel_info)
 
 
         # The error indicator must be shown as last
         if self.registration_failed or self.panel_info_failed:
-            self._display_error_indicator()
+            self._draw_error_indicator()
 
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
-    def _display_idle_mode(self):
+    def _draw_idle_mode(self):
         idle_info = self.panel_info.get('idle-info')
         if idle_info.get('image-preset'):
-            m1_image.display_idle_mode_image_preset(self.canvas, idle_info, self._panel_tz())
+            m1_image.draw_idle_mode_image_preset(self.canvas, idle_info, self._panel_tz())
         elif idle_info.get('image-url'):
-            m1_image.display_idle_mode_image_url(self.canvas, idle_info, self._panel_tz())
+            m1_image.draw_idle_mode_image_url(self.canvas, idle_info, self._panel_tz())
         elif idle_info.get('message'):
-            m1_message.display_idle_mode_message(self.canvas, idle_info, self._panel_tz())
+            m1_message.draw_idle_mode_message(self.canvas, idle_info, self._panel_tz())
         elif idle_info.get('clock'):
-            m1_clock.display_clock(self.canvas, idle_info.get('clock'), self._panel_tz())            
+            m1_clock.draw_clock(self.canvas, idle_info.get('clock'), self._panel_tz())            
         else:
-            self._display_standby_mode_indicator()
+            self._draw_standby_mode_indicator()
 
     def _display_init_screen(self):
         self.canvas.Clear()
@@ -261,19 +263,19 @@ class SevenCourtsM1(SampleBase):
         x = m1_clock.W_LOGO_WITH_CLOCK if ORIENTATION_HORIZONTAL else (x_font_center(text, W_PANEL, m1_clock.FONT_CLOCK))
         y = 62 if ORIENTATION_HORIZONTAL else H_PANEL - 2
         draw_text(self.canvas, x, y, text, m1_clock.FONT_CLOCK, m1_clock.COLOR_CLOCK)
-        self._display_error_indicator()
+        self._draw_error_indicator()
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
-    def _display_standby_mode_indicator(self):
+    def _draw_standby_mode_indicator(self):
         g = (COLOR_7C_GREEN_DARK.red, COLOR_7C_GREEN_DARK.green, COLOR_7C_GREEN_DARK.blue)
         dot = [
             [g, g],
             [g, g]]
         draw_matrix(self.canvas, dot, W_PANEL - 3, H_PANEL - 3)
-        m1_clock.display_clock(self.canvas, True, self._panel_tz(), COLOR_GREY_DARKEST)
+        m1_clock.draw_clock(self.canvas, True, self._panel_tz(), COLOR_GREY_DARKEST)
 
 
-    def _display_error_indicator(self, standby=False):
+    def _draw_error_indicator(self, standby=False):
         x = (COLOR_BLACK.red, COLOR_BLACK.green, COLOR_BLACK.blue)
         o = (
             COLOR_7C_BLUE_DARK.red if standby else COLOR_7C_BLUE.red,

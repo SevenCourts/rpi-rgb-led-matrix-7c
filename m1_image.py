@@ -6,14 +6,14 @@ import logging
 
 LATEST_IDLE_MODE_IMAGE_PATH = IMAGE_CACHE_DIR + '/latest_idle_image'
 
-def display_idle_mode_image_preset(canvas, idle_info, tz):
+def draw_idle_mode_image_preset(canvas, idle_info, tz):
     image_preset = idle_info.get('image-preset')
     path = "images/logos/" + image_preset
     image = Image.open(path)
     is_enough_space_for_clock = image.width < m1_clock.W_LOGO_WITH_CLOCK
     _display_logo(canvas, image, is_enough_space_for_clock)
     if is_enough_space_for_clock and idle_info.get('clock') == True:
-        m1_clock.display_clock(canvas, idle_info.get('clock'), tz)            
+        m1_clock.draw_clock(canvas, idle_info.get('clock'), tz)            
 
 def _display_logo(canvas, image, show_clock):
     w = W_PANEL
@@ -35,7 +35,7 @@ def _save_idle_mode_image(image):
     image.save(LATEST_IDLE_MODE_IMAGE_PATH, 'png')
     return (image, show_clock)
 
-def display_idle_mode_image_url(canvas, idle_info, panel_tz):
+def draw_idle_mode_image_url(canvas, idle_info, panel_tz):
     image_url = idle_info.get('image-url')
     image_url = BASE_URL + "/" + image_url
 
@@ -61,7 +61,7 @@ def display_idle_mode_image_url(canvas, idle_info, panel_tz):
 
         _display_logo(canvas, image, show_clock)
         if show_clock and idle_info.get('clock') == True:
-            m1_clock.display_clock(canvas, idle_info.get('clock'), panel_tz)
+            m1_clock.draw_clock(canvas, idle_info.get('clock'), panel_tz)
             
     except Exception as e:
         # TODO show an image stub (?)

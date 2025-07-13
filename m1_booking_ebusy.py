@@ -11,7 +11,7 @@ COLOR_BOOKING_GREETING = COLOR_7C_BLUE
 
 BOOKIN_OVERLAP_MINUTES = 10
 
-def display_booking(canvas, booking, panel_tz):
+def draw_booking(canvas, booking, panel_tz):
     overlap_minutes_td = timedelta(minutes=BOOKIN_OVERLAP_MINUTES)
     court = booking.get('court')
     cur_booking = booking.get('current')
@@ -110,7 +110,7 @@ def _display_booking_match(canvas, booking, court, dt, notification=''):
     if notification:
         _display_text(canvas, 105, 25, notification)
 
-def display_ebusy_ads(canvas, ebusy_ads):
+def draw_ebusy_ads(canvas, ebusy_ads):
     id = ebusy_ads.get("id")
     url = ebusy_ads.get("url")
     path = IMAGE_CACHE_DIR + "/ebusy_" + str(id)

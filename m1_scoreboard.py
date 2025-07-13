@@ -332,7 +332,7 @@ def _display_winner(canvas, match):
     elif match_result == "T2_WON":
         draw_matrix(canvas, cup, x_medal, H_PANEL / 2 + medal_delta)
 
-def display_match(canvas, panel_info):
+def draw_match(canvas, panel_info):
     _display_names(canvas, panel_info)
     _display_score(canvas, panel_info)
     _display_winner(canvas, panel_info)

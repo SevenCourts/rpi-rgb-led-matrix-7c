@@ -165,7 +165,7 @@ def _display_court_name(canvas, x: int , y: int, court_name: str, match_status=N
 
     return h_bg
 
-def display_tournament(canvas, signage_info):
+def draw_tournament(canvas, signage_info):
     #clear canvas
     fill_rect(canvas, 0, 0, W_PANEL, H_PANEL, COLOR_MATCH_BG)
 

@@ -3,7 +3,7 @@ import m1_clock
 
 COLOR_MESSAGE = COLOR_7C_BLUE
 
-def display_idle_mode_message(canvas, idle_info, panel_tz):
+def draw_idle_mode_message(canvas, idle_info, panel_tz):
     message = idle_info.get('message', '')
     h_available = H_PANEL - 2 - 20 - 2 # minus clock
     w_available = W_PANEL
@@ -31,4 +31,4 @@ def display_idle_mode_message(canvas, idle_info, panel_tz):
 
     clock = idle_info.get('clock')
     if clock == True:
-        m1_clock.display_clock(canvas, clock, panel_tz)
+        m1_clock.draw_clock(canvas, clock, panel_tz)
