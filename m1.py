@@ -45,12 +45,7 @@ PANEL_CONFIG = os.getenv('PANEL_CONFIG')
 
 PANEL_NAME = socket.gethostname()
 
-
-
 REGISTRATION_URL = BASE_URL + "/panels/"
-
-PANEL_ID = os.getenv('TABLEAU_PANEL_ID')
-
 
 def panel_info_url(panel_id):
     return BASE_URL + "/panels/" + panel_id + "/match"
@@ -95,7 +90,7 @@ def register(url):
 def fetch_panel_info(panel_id):
     url = panel_info_url(panel_id)
     req = urllib.request.Request(url)
-    req.add_header('7C-Is-Panel-Preview', 'false' if PANEL_ID is None else 'true')
+    req.add_header('7C-Is-Panel-Preview', 'false') # FIXME is to be set to 'true' when started as emulator within panel admin web UI
     req.add_header('7C-Uptime', str(uptime()))
     req.add_header('7C-CPU-Temperature', str(cpu_temperature()))
     with urllib.request.urlopen(req, timeout=10) as response:
@@ -122,9 +117,8 @@ class SevenCourtsM1(SampleBase):
         self._read_startup_config()
 
     def _read_startup_config(self):
-        print(PANEL_ID)
         print(PANEL_CONFIG)
-        if PANEL_ID is None and PANEL_CONFIG is not None:
+        if PANEL_CONFIG is not None:
             startup_config = {}
             lines = []
 
@@ -140,7 +134,7 @@ class SevenCourtsM1(SampleBase):
             self.startup_config = startup_config
 
     def _write_startup_config(self):
-        if PANEL_ID is None and PANEL_CONFIG is not None:
+        if PANEL_CONFIG is not None:
             startup_config = {}
 
             if self.startup_config != startup_config:
@@ -181,33 +175,30 @@ class SevenCourtsM1(SampleBase):
 
     
     def _register(self):
-        if PANEL_ID:
-            return PANEL_ID
-        else:
-            panel_id = None
-            while True:
-                try:
-                    log('Registering panel at: ' + REGISTRATION_URL)
-                    panel_id = register(REGISTRATION_URL)
-                    self.registration_failed = False
-                except Exception as ex:
-                    # logging.exception(ex)
-                    log('Panel registration failed: ', str(ex))
-                    self.registration_failed = True
+        panel_id = None
+        while True:
+            try:
+                log('Registering panel at: ' + REGISTRATION_URL)
+                panel_id = register(REGISTRATION_URL)
+                self.registration_failed = False
+            except Exception as ex:
+                # logging.exception(ex)
+                log('Panel registration failed: ', str(ex))
+                self.registration_failed = True
 
-                if self.registration_failed:
-                    if self.panel_info and not panel_id:
-                        log('Displaying saved panel info')
-                        self._display_panel_info()
-                    else:
-                        log('Displaying init screen')
-                        self._display_init_screen()
-                    
-                    log('Retry registration shortly...')
-                    time.sleep(1)                    
+            if self.registration_failed:
+                if self.panel_info and not panel_id:
+                    log('Displaying saved panel info')
+                    self._display_panel_info()
                 else:
-                    self.registration_failed = False
-                    return panel_id
+                    log('Displaying init screen')
+                    self._display_init_screen()
+                
+                log('Retry registration shortly...')
+                time.sleep(1)                    
+            else:
+                self.registration_failed = False
+                return panel_id
 
     def _display_init_screen(self):
         self.canvas.Clear()
