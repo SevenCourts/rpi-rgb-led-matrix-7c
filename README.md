@@ -124,9 +124,9 @@ will have `UU` on cross of `60` row and `8` column.
     1. If the time differs from the actual time, wait until OS time is synced, and
     actualize RTC clock time with `hwclock --systohc`.
 1. Test that the setup was done correctly
-    1. Remember the current time (hh:mm) and turn off the panel with `shutdown`.
+    1. Remember the current time `[hh:mm]` and turn off the panel with `shutdown`.
     1. Wait 3 minutes, turn on the panel, and after around 18 seconds panel
-    displays the actual (hh:mm + 3 minutes) time.
+    displays the actual time (`[hh:mm]` + 3 minutes).
 
 ### Final test
 
