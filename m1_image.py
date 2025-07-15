@@ -17,7 +17,7 @@ def draw_idle_mode_image_preset(canvas, idle_info, tz):
 
 def _display_logo(canvas, image, show_clock):
     w = W_PANEL
-    if ORIENTATION_HORIZONTAL and show_clock:
+    if show_clock:
         w = m1_clock.W_LOGO_WITH_CLOCK
 
     x = (w - image.width) / 2

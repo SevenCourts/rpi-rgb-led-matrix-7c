@@ -14,7 +14,6 @@ from samplebase import SampleBase
 from sevencourts import *
 import m1_booking_ebusy
 import m1_signage_horizontal as m1_signage
-import m1_signage_vertical
 import m1_clock
 import m1_message
 import m1_image
@@ -27,6 +26,7 @@ import socket
 import logging
 import subprocess
 from datetime import datetime
+from dateutil import tz
 
 # In container there is no git binary and history -- read from file.
 # In local environment we don't want generate this file manually -- ask git.
@@ -122,6 +122,8 @@ class SevenCourtsM1(SampleBase):
         self._read_startup_config()
 
     def _read_startup_config(self):
+        print(PANEL_ID)
+        print(PANEL_CONFIG)
         if PANEL_ID is None and PANEL_CONFIG is not None:
             startup_config = {}
             lines = []
@@ -135,19 +137,11 @@ class SevenCourtsM1(SampleBase):
             if lines:
                 startup_config = {k: v for k, v in map(lambda x: x.split('=', 1), lines)}
 
-            k = 'ORIENTATION_VERTICAL'
-            if k in startup_config:
-                startup_config[k] = True
-
             self.startup_config = startup_config
 
     def _write_startup_config(self):
         if PANEL_ID is None and PANEL_CONFIG is not None:
             startup_config = {}
-
-            orientation = self.panel_info.get('orientation')
-            if orientation == 'vertical':
-                startup_config['ORIENTATION_VERTICAL'] = True
 
             if self.startup_config != startup_config:
                 self.startup_config = startup_config
@@ -215,6 +209,18 @@ class SevenCourtsM1(SampleBase):
                     self.registration_failed = False
                     return panel_id
 
+    def _display_init_screen(self):
+        self.canvas.Clear()
+
+        panel_tz = "" # FIXME get TZ from the file
+        dt = datetime.now(tz.gettz(panel_tz))
+        text = dt.strftime('%H:%M')
+        x = m1_clock.W_LOGO_WITH_CLOCK
+        y = 62
+        # FIXME strange dependency on m1_clock
+        draw_text(self.canvas, x, y, text, m1_clock.FONT_CLOCK, m1_clock.COLOR_CLOCK)
+        self._draw_error_indicator()
+        self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
     def _display_panel_info(self):
         self.canvas.Clear()
@@ -229,9 +235,6 @@ class SevenCourtsM1(SampleBase):
             self._draw_idle_mode()
         elif 'signage-info' in self.panel_info:
             m1_signage.draw_tournament(self.canvas, self.panel_info.get('signage-info'))
-        elif 'tournament-name' in self.panel_info:
-            m1_signage_vertical.draw_signage_itftournament(self.canvas, self.panel_info.get("courts"), 
-                                                              self.panel_info.get("tournament-name"))
         elif 'team1' in self.panel_info:
             m1_scoreboard.draw_match(self.canvas, self.panel_info)
 
@@ -254,17 +257,6 @@ class SevenCourtsM1(SampleBase):
             m1_clock.draw_clock(self.canvas, idle_info.get('clock'), self._panel_tz())            
         else:
             self._draw_standby_mode_indicator()
-
-    def _display_init_screen(self):
-        self.canvas.Clear()
-        dt = datetime.now()
-        text = dt.strftime('%H:%M')
-        # FIXME strange dependency on m1_clock
-        x = m1_clock.W_LOGO_WITH_CLOCK if ORIENTATION_HORIZONTAL else (x_font_center(text, W_PANEL, m1_clock.FONT_CLOCK))
-        y = 62 if ORIENTATION_HORIZONTAL else H_PANEL - 2
-        draw_text(self.canvas, x, y, text, m1_clock.FONT_CLOCK, m1_clock.COLOR_CLOCK)
-        self._draw_error_indicator()
-        self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
     def _draw_standby_mode_indicator(self):
         g = (COLOR_7C_GREEN_DARK.red, COLOR_7C_GREEN_DARK.green, COLOR_7C_GREEN_DARK.blue)

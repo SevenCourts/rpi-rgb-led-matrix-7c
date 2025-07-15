@@ -19,17 +19,12 @@ from functools import partial
 # FIXME use not hardcoded directory (TBD)
 IMAGE_CACHE_DIR = "/opt/7c/cache-images"
 
-ORIENTATION_VERTICAL = os.getenv('ORIENTATION_VERTICAL', False)
-ORIENTATION_HORIZONTAL = not ORIENTATION_VERTICAL
-
 # Constants for the 7C M1 panel (P5 192 x 64)
-__W_PANEL = 192
-__H_PANEL = 64
-W_PANEL = __W_PANEL if ORIENTATION_HORIZONTAL else __H_PANEL
-H_PANEL = __H_PANEL if ORIENTATION_HORIZONTAL else __W_PANEL
+W_PANEL = 192
+H_PANEL = 64
 
-W_TILE = int(__W_PANEL / 3)  # 64
-H_TILE = int(__H_PANEL / 2)  # 32
+W_TILE = int(W_PANEL / 3)  # 64
+H_TILE = int(H_PANEL / 2)  # 32
 
 H_FLAG = 12
 W_FLAG = 18

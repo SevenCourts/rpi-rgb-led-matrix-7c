@@ -8,7 +8,6 @@
 # - PANEL_CONFIG -- path to panel configuration, which is a shell env file.
 #  Don't put anything here, it's for `m1.py` only and will be overriden.
 # - USE_RGB_MATRIX_EMULATOR -- when set, arguments for emulator used.
-# - ORIENTATION_VERTICAL -- when set, arguments for vertical orientation used.
 
 set -eu
 
@@ -28,46 +27,26 @@ if [[ -n $is_emulator ]]; then
   export USE_RGB_MATRIX_EMULATOR
 fi
 
-declare is_vertical
-is_vertical="${ORIENTATION_VERTICAL-}"
-readonly is_vertical
-if [[ -n $is_vertical ]]; then
-  export ORIENTATION_VERTICAL
-fi
-
 declare -a cmd_args
-if [[ -z $is_vertical ]]; then
+if [[ -z $is_emulator ]]; then
   cmd_args=(
     --led-chain=3
     --led-cols=64
     --led-multiplexing=1
     --led-parallel=2
+    --led-pixel-mapper=Rotate:270
     --led-pwm-lsb-nanoseconds=50
     --led-row-addr-type=0
     --led-rows=32
     --led-slowdown-gpio=5
   )
 else
-  if [[ -z $is_emulator ]]; then
-    cmd_args=(
-      --led-chain=3
-      --led-cols=64
-      --led-multiplexing=1
-      --led-parallel=2
-      --led-pixel-mapper=Rotate:270
-      --led-pwm-lsb-nanoseconds=50
-      --led-row-addr-type=0
-      --led-rows=32
-      --led-slowdown-gpio=5
-    )
-  else
-    cmd_args=(
-      --led-chain=1
-      --led-cols=64
-      --led-parallel=1
-      --led-rows=192
-    )
-  fi
+  cmd_args=(
+    --led-chain=1
+    --led-cols=64
+    --led-parallel=1
+    --led-rows=192
+  )
 fi
 readonly cmd_args
 
