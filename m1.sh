@@ -34,7 +34,6 @@ if [[ -z $is_emulator ]]; then
     --led-cols=64
     --led-multiplexing=1
     --led-parallel=2
-    --led-pixel-mapper=Rotate:270
     --led-pwm-lsb-nanoseconds=50
     --led-row-addr-type=0
     --led-rows=32
