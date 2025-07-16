@@ -2,8 +2,9 @@ from sevencourts import *
 
 from dateutil import parser, tz
 from datetime import datetime, timedelta
-import logging
 import requests
+
+logger = m1_logging.logger("eBusy")
 
 # Style sheet
 FONT_BOOKING = FONT_S
@@ -127,5 +128,5 @@ def draw_ebusy_ads(canvas, ebusy_ads):
         canvas.SetImage(image.convert('RGB'), x, y)
 
     except Exception as e:
-        logging.exception(e)
-        logging.debug(f"Error downloading image {url}", e)
+        logger.exception(e)
+        logger.debug(f"Error downloading image {url}", e)

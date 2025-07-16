@@ -6,10 +6,9 @@ import os
 # emulator https://github.com/ty-porter/RGBMatrixEmulator
 # Do not set to use with real SDK https://github.com/hzeller/rpi-rgb-led-matrix
 if os.getenv('USE_RGB_MATRIX_EMULATOR', False):
-    from RGBMatrixEmulator import graphics
+    from RGBMatrixEmulator import graphics # type: ignore
 else:
-    from rgbmatrix import graphics
-
+    from rgbmatrix import graphics # type: ignore
 from samplebase import SampleBase
 from sevencourts import *
 import m1_booking_ebusy
@@ -18,7 +17,6 @@ import m1_clock
 import m1_message
 import m1_image
 import m1_scoreboard
-
 import time
 import urllib.request
 import json
@@ -27,6 +25,8 @@ import logging
 import subprocess
 from datetime import datetime
 from dateutil import tz
+
+logger = m1_logging.logger()
 
 # In container there is no git binary and history -- read from file.
 # In local environment we don't want generate this file manually -- ask git.
@@ -56,25 +56,24 @@ def uptime():
         with open('/proc/uptime', 'r') as f:
             return float(f.readline().split()[0])
     except Exception as ex:
-        logging.debug('Cannot get uptime')
+        logger.debug('Cannot get uptime')
         return -1
 
 
 # FIXME wtf?! without this call, getting CPU temperature fails when is called from within class instance
 try:
-    from gpiozero import CPUTemperature
-
+    from gpiozero import CPUTemperature # type: ignore
     print(CPUTemperature().temperature)
 except Exception as ex:
-    logging.debug('Cannot get initial CPU temperature')
+    logger.debug('Cannot get initial CPU temperature')
 
 
 def _cpu_temperature():
     try:
-        from gpiozero import CPUTemperature
+        from gpiozero import CPUTemperature # type: ignore
         return CPUTemperature().temperature
     except Exception as ex:
-        logging.debug('Cannot get CPU temperature')
+        logger.debug('Cannot get CPU temperature')
         return -1
 
 
@@ -83,7 +82,7 @@ def _register(url):
     request = urllib.request.Request(url, data=data, method='POST')
     with urllib.request.urlopen(request, timeout=10) as response:
         _json = json.loads(response.read().decode('utf-8'))
-        logging.debug(f"Registered: {url} - '{_json}'")
+        logger.debug(f"Registered: {url} - '{_json}'")
         return _json["id"]
 
 
@@ -94,19 +93,19 @@ def _fetch_panel_info(panel_id):
     req.add_header('7C-Uptime', str(uptime()))
     req.add_header('7C-CPU-Temperature', str(_cpu_temperature()))
     with urllib.request.urlopen(req, timeout=10) as response:
-        logging.debug(f"url='{url}', status={str(response.status)}")
+        logger.debug(f"url='{url}', status={str(response.status)}")
         if response.status == 200:
             match = json.loads(response.read().decode('utf-8'))
-            logging.debug(f"match: {match}")
+            logger.debug(f"match: {match}")
             return match or None  # FIX: the server can return False if match is over, this leads to error then
         elif response.status == 205:
             idle_info = json.loads(response.read().decode('utf-8') or 'null')
-            logging.debug(f"idle-info: {idle_info}")
+            logger.debug(f"idle-info: {idle_info}")
             return idle_info
     return None
 
 def _read_startup_config():
-    print(PANEL_CONFIG_FILE)
+    logger.debug(f"Reading config from '{PANEL_CONFIG_FILE}'")
     result = {}
     if PANEL_CONFIG_FILE:
         lines = []
@@ -120,6 +119,7 @@ def _read_startup_config():
     return result
 
 def _write_startup_config(startup_config):
+    logger.debug(f"Writing config to '{PANEL_CONFIG_FILE}'")
     if PANEL_CONFIG_FILE:
         conf = []
         for k, v in startup_config.items(): conf.append(k + '=' + str(v))
@@ -138,6 +138,8 @@ class SevenCourtsM1(SampleBase):
         self.startup_config = _read_startup_config()
         
     def run(self):
+        logger.info("Starting M1 instance")
+        
         self.canvas = self.matrix.CreateFrameCanvas()
 
         self._display_init_screen()
@@ -159,7 +161,7 @@ class SevenCourtsM1(SampleBase):
             except Exception as ex:
                 self._draw_status_indicator(COLOR_7C_STATUS_ERROR)
                 self.panel_info_failed = True
-                logging.error(f"Cannot fetch panel info: {str(ex)}")
+                logger.error(f"Cannot fetch panel info: {str(ex)}")
             time.sleep(1)
 
     
@@ -168,15 +170,15 @@ class SevenCourtsM1(SampleBase):
         result = None
         while result is None:
             try:
-                logging.debug(f"Registering panel at: {REGISTRATION_URL}")
+                logger.debug(f"Registering panel at: {REGISTRATION_URL}")
                 result = _register(REGISTRATION_URL)
             except Exception as ex:
-                logging.error(f"Panel registration call to '{REGISTRATION_URL}' failed: {str(ex)}")
+                logger.error(f"Panel registration call to '{REGISTRATION_URL}' failed: {str(ex)}")
                 if self.panel_info:
-                    logging.debug("Displaying the panel info from the last known successful state")
+                    logger.debug("Displaying the panel info from the last known successful state")
                     self._display_panel_info(True)
                 else:
-                    logging.debug("Displaying init screen")
+                    logger.debug("Displaying init screen")
                     self._display_init_screen(True)
 
                 time.sleep(1)

@@ -1,20 +1,16 @@
 ## SevenCourts common module
-
 import os
 import socket
-import time
-import logging
+import m1_logging
 
-logging.basicConfig(level=logging.INFO)
-
-SECONDS_START = int(time.time())
+logger = m1_logging.logger("7c")
 
 BASE_URL = os.getenv('TABLEAU_SERVER_BASE_URL', 'https://prod.tableau.tennismath.com')
 
 if os.getenv('USE_RGB_MATRIX_EMULATOR', False):
-    from RGBMatrixEmulator import graphics
+    from RGBMatrixEmulator import graphics # type: ignore
 else:
-    from rgbmatrix import graphics
+    from rgbmatrix import graphics # type: ignore
 
 from PIL import Image
 from functools import partial
@@ -161,7 +157,6 @@ Y_FONT_SYMBOL_NORMAL_HEIGHTS = {
 H_FONT_XS = Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(FONT_XS)
 H_FONT_XXS = Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(FONT_XXS)
 
-
 def ip_address():
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -169,7 +164,7 @@ def ip_address():
         result = s.getsockname()[0]
         s.close()
     except Exception as e:
-        logging.exception(e)
+        logger.exception(e)
         result = "###"
     return result
 
@@ -246,7 +241,7 @@ def load_flag_image(flag_code):
     try:       
         return Image.open("images/flags/" + (flag_code or "VOID") + ".png").convert('RGB')
     except Exception as e:
-        logging.exception(e)
+        logger.exception(e)
         return Image.open("images/flags/VOID.png").convert('RGB')
 
 

@@ -2,7 +2,8 @@ from sevencourts import *
 import m1_clock
 import requests
 import urllib.request
-import logging
+
+logger = m1_logging.logger("image")
 
 LATEST_IDLE_MODE_IMAGE_PATH = IMAGE_CACHE_DIR + '/latest_idle_image'
 
@@ -65,8 +66,8 @@ def draw_idle_mode_image_url(canvas, idle_info, panel_tz):
             
     except Exception as ex:
         # TODO show an image stub (?)
-        logging.exception(ex)
-        logging.error(f"Error downloading image {image_url}", ex)
+        logger.exception(ex)
+        logger.error(f"Error downloading image {image_url}", ex)
 
 def _thumbnail(image, w=W_PANEL, h=H_PANEL):
     # print ("original w: {0}, h: {1}".format(image.width, image.height))
