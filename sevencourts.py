@@ -47,6 +47,10 @@ COLOR_7C_BLUE_DARK = graphics.Color(37, 56, 73)
 COLOR_7C_GREEN_DARK = graphics.Color(58, 77, 49)
 COLOR_7C_GOLD = graphics.Color(255, 215, 0)
 
+COLOR_SV1845_1 = graphics.Color( int('0xC9', 0), int('0x42', 0), int('0x40', 0))
+COLOR_SV1845_2 = graphics.Color( int('0x29', 0), int('0x49', 0), int('0x75', 0))
+#COLOR_SV1845_2 = graphics.Color( '#294975')
+
 COLOR_7C_STATUS_ERROR = COLOR_7C_BLUE
 COLOR_7C_STATUS_INIT = COLOR_7C_GREEN_DARK
 
