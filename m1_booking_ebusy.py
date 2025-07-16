@@ -128,4 +128,4 @@ def draw_ebusy_ads(canvas, ebusy_ads):
 
     except Exception as e:
         logging.exception(e)
-        log('Error downloading image', e)
+        logging.debug(f"Error downloading image {url}", e)

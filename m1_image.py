@@ -63,10 +63,10 @@ def draw_idle_mode_image_url(canvas, idle_info, panel_tz):
         if show_clock and idle_info.get('clock') == True:
             m1_clock.draw_clock(canvas, idle_info.get('clock'), panel_tz)
             
-    except Exception as e:
+    except Exception as ex:
         # TODO show an image stub (?)
-        logging.exception(e)
-        log('Error downloading image', e)
+        logging.exception(ex)
+        logging.error(f"Error downloading image {image_url}", ex)
 
 def _thumbnail(image, w=W_PANEL, h=H_PANEL):
     # print ("original w: {0}, h: {1}".format(image.width, image.height))

@@ -3,6 +3,9 @@
 import os
 import socket
 import time
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 SECONDS_START = int(time.time())
 
@@ -48,8 +51,11 @@ COLOR_7C_BLUE_DARK = graphics.Color(37, 56, 73)
 COLOR_7C_GREEN_DARK = graphics.Color(58, 77, 49)
 COLOR_7C_GOLD = graphics.Color(255, 215, 0)
 
-COLOR_DEFAULT = COLOR_GREY
+COLOR_7C_STATUS_ERROR = COLOR_7C_BLUE
+COLOR_7C_STATUS_INIT = COLOR_7C_GREEN_DARK
 
+COLOR_DEFAULT = COLOR_GREY
+COLOR_CLOCK_DEFAULT = COLOR_WHITE
 
 def load_font(path):
     result = graphics.Font()
@@ -113,6 +119,11 @@ FONT_XXS = FONTS[5]
 
 FONT_DEFAULT = FONT_S
 
+if os.getenv('USE_RGB_MATRIX_EMULATOR', False):
+    FONT_CLOCK_DEFAULT = FONT_L
+else:
+    FONT_CLOCK_DEFAULT = FONT_XL_SDK
+
 Y_FONT_EXTRA_OFFSETS = {
     '-misc-spleen-medium-r-normal--32-320-72-72-C-160-ISO10646-1': 0,
     '-misc-spleen-medium-r-normal--24-240-72-72-C-120-ISO10646-1': 1,
@@ -158,7 +169,7 @@ def ip_address():
         result = s.getsockname()[0]
         s.close()
     except Exception as e:
-        log(e)
+        logging.exception(e)
         result = "###"
     return result
 
@@ -235,7 +246,7 @@ def load_flag_image(flag_code):
     try:       
         return Image.open("images/flags/" + (flag_code or "VOID") + ".png").convert('RGB')
     except Exception as e:
-        log(e)
+        logging.exception(e)
         return Image.open("images/flags/VOID.png").convert('RGB')
 
 
@@ -244,10 +255,6 @@ def draw_flag(canvas, x, y, flag_code=None, small=False):
     if small:
         image.thumbnail((W_FLAG_SMALL, H_FLAG_SMALL), Image.LANCZOS)
     canvas.SetImage(image, x, y)
-
-
-def log(*args):
-    print(*args, flush=True)
 
 
 def draw_text(canvas, x: int, y: int, text: str, font=FONT_DEFAULT, color=COLOR_DEFAULT):
