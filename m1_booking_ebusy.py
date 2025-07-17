@@ -13,13 +13,16 @@ FONT_TIME_BOX = FONT_M
 FONT_BOOKING = FONT_S
 FONT_MESSAGE = FONT_M
 
+COLOR_BG = COLOR_BLACK
+
 COLOR_HEADER_BG = COLOR_GREY_DARKEST
 
 COLOR_COURT_NAME = COLOR_WHITE
 COLOR_CURRENT_TIME = COLOR_WHITE
 
 COLOR_TIME_BOX = COLOR_WHITE
-COLOR_TIME_BOX_BG = COLOR_SV1845_2
+COLOR_TIME_BOX_BG_INFO = COLOR_SV1845_2
+COLOR_TIME_BOX_BG_WARN = COLOR_SV1845_1
 
 COLOR_BOOKING = COLOR_WHITE
 COLOR_MESSAGE = COLOR_YELLOW
@@ -57,16 +60,22 @@ def draw_booking(cnv, booking, panel_tz):
 
         if t_now < t_1_welcome_end:
             logger.debug("1 - welcome")
-            w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG, t_start.strftime('%H:%M'), "-", t_end.strftime('%H:%M'))
+            w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG_INFO, t_start.strftime('%H:%M'), "-", t_end.strftime('%H:%M'))
             
             #_draw_1_welcome(cnv, cur_booking)
         elif t_now >= t_3_countdown_start:
             logger.debug("3 - countdown")
             minutes_left = (t_end - t_now).seconds // 60 % 60
-            _draw_3_timeleft(cnv, cur_booking, court, t_now, minutes_left)
+
+            minutes_left_txt = '< 1' if minutes_left == 0 else str(minutes_left)
+            w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG_WARN, 'Noch', f"{minutes_left_txt} min")
+
+            x0 = w_timebox + MARGIN * 2
+            _draw_booking_match(cnv, x0, h_header, cur_booking, 'COUNTDOWN')
+            
         else:
             logger.debug("2 - default")
-            w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG, t_start.strftime('%H:%M'), 'bis', t_end.strftime('%H:%M'))
+            w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG_INFO, t_start.strftime('%H:%M'), 'bis', t_end.strftime('%H:%M'))
             #w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG, 'Time','left','3 min')
             #w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG, 'Game', 'over')
             #w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG, 'Come', 'again')
@@ -111,7 +120,7 @@ def _draw_header(cnv, court, dt):
     draw_text(cnv, x_clock, y_clock, clock_str, FONT_CURRENT_TIME, COLOR_CURRENT_TIME)
     graphics.DrawLine(cnv, 0, y_separator, W_PANEL, y_separator, COLOR_SEPARATOR_LINE)
 
-    return y_separator
+    return y_separator + 1
 
 def _draw_time_box(cnv, y0, color_bg, txt_1:str, txt_2:str=None, txt_3:str=None):
     '''Return the width of the timebox component'''
@@ -119,10 +128,16 @@ def _draw_time_box(cnv, y0, color_bg, txt_1:str, txt_2:str=None, txt_3:str=None)
     y = y0 + MARGIN
     h = H_PANEL - y0 - MARGIN - MARGIN
     w = h
-    fill_rect(cnv, x,  y, w, h, color_bg)
+    fill_rect(cnv, x, y, w, h, color_bg)
+
+    fill_rect(cnv, x, y, 1, 1, COLOR_BG)
+    fill_rect(cnv, x + w - 1, y, 1, 1, COLOR_BG)
+    fill_rect(cnv, x, y + h - 1, 1, 1, COLOR_BG)
+    fill_rect(cnv, x + w - 1, y + h - 1, 1, 1, COLOR_BG)
+    
 
     padding = MARGIN
-    w_ = w - padding - padding
+    w_ = w
     h_ = h - padding - padding
 
     if txt_3:
@@ -180,25 +195,21 @@ def _draw_1_welcome(cnv, x0, y0, booking):
     draw_text(cnv, x, y_1, 'Willkommen zum SV1845!', FONT_BOOKING, COLOR_BOOKING)
     draw_text(cnv, x, y_2, ', '.join(player_firstnames), FONT_BOOKING, COLOR_BOOKING)
 
-def _draw_3_timeleft(cnv, booking, court, dt, minutes_left):
-    minutes_left_txt = '< 1' if minutes_left == 0 else str(minutes_left)
-    _draw_booking_match(cnv, booking, court, dt, 'Noch: ' + minutes_left_txt + ' min.')
-
-def _draw_0_upcoming(cnv, booking, court, dt):
-    _draw_booking_match(cnv, booking, court, dt, 'Nachste')
-
-def _draw_booking_match(cnv, booking, court, dt, notification=''):
+def _draw_booking_match(cnv, x0:int, y0:int, booking, notification=''):
     def booking_team(isTeam1=True):
         def booking_player(player):
             txt = None
             firstname = player.get('firstname')
             if firstname:
                 txt = firstname
-            lastname = player.get('lastname')
-            if lastname:
-                if txt:
-                    txt += ' '
-                txt += lastname
+            else:
+                lastname = player.get('lastname')
+                if lastname:
+                    if txt:
+                        txt += ' '
+                    txt += lastname
+                else:
+                    txt = "n.A."
             return txt
 
         txt = None
@@ -208,23 +219,28 @@ def _draw_booking_match(cnv, booking, court, dt, notification=''):
         tp2 =  booking['p2'] if isTeam1 else booking.get('p4')
         if tp2:
             if txt:
-                txt += ' und '
+                txt += ', '
             txt = (txt or '') + booking_player(tp2)
         return txt
 
-    _draw_header(cnv, court, dt)
-    start_time = parser.parse(booking['start-date']).strftime('%H:%M')
-    end_time = parser.parse(booking['end-date']).strftime('%H:%M')
-    draw_text(cnv, 2, 25, start_time + ' - ' + end_time, FONT_TIME_BOX, COLOR_TIME_BOX)
-
-    t1 = booking_team()
-    draw_text(cnv, 2, 40, t1, FONT_BOOKING, COLOR_BOOKING)
-    t2 = booking_team(False)
-    if t2:
-        draw_text(cnv, 2, 55, t2, FONT_BOOKING, COLOR_BOOKING)
+    x = x0 + MARGIN
+    y = y0 + MARGIN
 
     if notification:
-        draw_text(cnv, 105, 25, notification, FONT_BOOKING, COLOR_BOOKING)
+        y += y_font_offset(FONT_BOOKING)
+        draw_text(cnv, x, y, notification, FONT_BOOKING, COLOR_BOOKING)
+        y += MARGIN
+    
+    t1 = booking_team()
+    y += y_font_offset(FONT_BOOKING)
+    draw_text(cnv, x, y, t1, FONT_BOOKING, COLOR_BOOKING)
+    y += MARGIN
+
+    t2 = booking_team(False)
+    if t2:
+        y += y_font_offset(FONT_BOOKING)
+        draw_text(cnv, x, y, t2, FONT_BOOKING, COLOR_BOOKING)
+
 
 def draw_ebusy_ads(cnv, ebusy_ads):
     id = ebusy_ads.get("id")
