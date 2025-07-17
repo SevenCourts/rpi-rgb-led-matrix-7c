@@ -126,6 +126,7 @@ def draw_booking(cnv, booking, panel_tz):
         round_rect_corners(cnv, x, y, image.width, image.height)
 
         text = t.strftime('%H:%M')
+        text = "22:22"
         fnt = m1_clock.FONT_CLOCK_M_1
         x = image.width + MARGIN + MARGIN
         x = x + x_font_center(text, W_PANEL - x, fnt)
