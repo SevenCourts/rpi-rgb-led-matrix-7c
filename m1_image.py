@@ -12,11 +12,11 @@ def draw_idle_mode_image_preset(canvas, idle_info, tz):
     path = "images/logos/" + image_preset
     image = Image.open(path)
     is_enough_space_for_clock = image.width < m1_clock.W_LOGO_WITH_CLOCK
-    _display_logo(canvas, image, is_enough_space_for_clock)
+    _draw_logo(canvas, image, is_enough_space_for_clock)
     if is_enough_space_for_clock and idle_info.get('clock') == True:
         m1_clock.draw_clock(canvas, idle_info.get('clock'), tz)            
 
-def _display_logo(canvas, image, show_clock):
+def _draw_logo(canvas, image, show_clock):
     w = W_PANEL
     if show_clock:
         w = m1_clock.W_LOGO_WITH_CLOCK
@@ -32,7 +32,7 @@ def _download_idle_mode_image(image_url):
 def _save_idle_mode_image(image):
     show_clock = image.width < m1_clock.W_LOGO_WITH_CLOCK
     image_max_width = m1_clock.W_LOGO_WITH_CLOCK if show_clock else W_PANEL
-    image = _thumbnail(image, image_max_width)
+    image = thumbnail(image, image_max_width)
     image.save(LATEST_IDLE_MODE_IMAGE_PATH, 'png')
     return (image, show_clock)
 
@@ -60,7 +60,7 @@ def draw_idle_mode_image_url(canvas, idle_info, panel_tz):
             image = saved[0]
             show_clock = saved[1]
 
-        _display_logo(canvas, image, show_clock)
+        _draw_logo(canvas, image, show_clock)
         if show_clock and idle_info.get('clock') == True:
             m1_clock.draw_clock(canvas, idle_info.get('clock'), panel_tz)
             
@@ -69,7 +69,7 @@ def draw_idle_mode_image_url(canvas, idle_info, panel_tz):
         logger.exception(ex)
         logger.error(f"Error downloading image {image_url}", ex)
 
-def _thumbnail(image, w=W_PANEL, h=H_PANEL):
+def thumbnail(image, w=W_PANEL, h=H_PANEL):
     # print ("original w: {0}, h: {1}".format(image.width, image.height))
     if image.width > w or image.height > h:
         image.thumbnail((w, h), Image.LANCZOS)
