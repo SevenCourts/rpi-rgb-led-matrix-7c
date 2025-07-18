@@ -110,23 +110,18 @@ def draw_booking(cnv, booking, panel_tz):
     '''
     else:
         h_header = _draw_header(cnv, court)
-
-        h_logo = H_PANEL - h_header - MARGIN - MARGIN
-
-
-
+        
         # no current booking - show a default
         image = Image.open('images/logos/SV1845/sv1845_76x64_eBusy_demo_logo.png')
-        m1_image.thumbnail(image, h = h_logo)
-
+        MAX_IMAGE_WIDTH = 76 # so that 22:22 time fits
+        h_logo = H_PANEL - h_header - MARGIN - MARGIN
+        m1_image.thumbnail(image, MAX_IMAGE_WIDTH, h_logo)
         x = MARGIN
         y = h_header + MARGIN
         cnv.SetImage(image.convert('RGB'), x, y)
-
         round_rect_corners(cnv, x, y, image.width, image.height)
 
         text = t.strftime('%H:%M')
-        text = "22:22"
         fnt = m1_clock.FONT_CLOCK_M_1
         x = image.width + MARGIN + MARGIN
         x = x + x_font_center(text, W_PANEL - x, fnt)
