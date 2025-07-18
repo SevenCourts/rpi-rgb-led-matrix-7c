@@ -3,6 +3,7 @@ from sevencourts import *
 from dateutil import parser, tz
 from datetime import datetime, timedelta
 import requests
+import gettext
 import m1_clock
 import m1_image
 
@@ -12,7 +13,8 @@ logger = m1_logging.logger("eBusy")
 FONT_COURT_NAME = FONT_S
 FONT_CURRENT_TIME = FONT_S
 FONT_TIME_BOX = FONT_M
-FONT_BOOKING = FONT_S
+FONT_BOOKING_CAPTION = FONT_S
+FONT_BOOKING_NAME = FONT_M
 FONT_MESSAGE = FONT_M
 
 COLOR_HEADER_BG = COLOR_GREY_DARKEST
@@ -35,83 +37,86 @@ H_HEADER = 12
 TD_0_UPCOMING = timedelta(minutes = -5)
 TD_1_WELCOME = timedelta(minutes = 2)
 TD_3_COUNTDOWN = timedelta(minutes = -5)
+TD_4_GAMEOVER = timedelta(minutes = 2)
 
-def draw_booking(cnv, booking, panel_tz):
-    court = booking.get('court')
-    cur_booking = booking.get('current')
-    next_booking = booking.get('next')
+def draw_booking(cnv, booking_info, panel_tz):
+    setup_i18n('de') # FIXME configuration
+
+    court = booking_info.get('court')
+    b_0_past = booking_info.get('past')
+    b_1_current = booking_info.get('current')
+    b_2_next = booking_info.get('next')
+    
     
     # Use datetime set in the Panel Admin UI for easier testing/debugging:
-    _dev_timestamp = booking.get('_dev_timestamp')
+    _dev_timestamp = booking_info.get('_dev_timestamp')
     if _dev_timestamp and len(_dev_timestamp):
         t = parser.parse(_dev_timestamp)
     else:
         t = datetime.now(tz.gettz(panel_tz))
-    
-    if cur_booking:
-        h_header = _draw_header(cnv, court, t)
 
-        t_start = parser.parse(cur_booking['start-date'])
-        t_end = parser.parse(cur_booking['end-date'])
+    # do not show time if no booking to show (time will be displayed in the main area)
+    show_time_in_header = b_0_past or b_1_current or b_2_next
+    h_header = _draw_header(cnv, court, t if show_time_in_header else None)
+
+    if b_0_past and not b_1_current:
+        # Show "Game over" for 2 minutes only if there is no current booking
+        t_0_4_gameover_end = (parser.parse(b_0_past['end-date']) + TD_4_GAMEOVER)
+        if t < t_0_4_gameover_end:
+            w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG_INFO, 'Game', 'over')
+            x0 = w_timebox + MARGIN * 2
+            _draw_booking_match(cnv, x0, h_header, b_0_past, 'Danke fürs Spielen!')
+
+    elif b_1_current:
+        
+        t_start = parser.parse(b_1_current['start-date'])
+        t_end = parser.parse(b_1_current['end-date'])
 
         t_0_upcoming_start = (t_start + TD_0_UPCOMING)        
         t_1_welcome_end = (t_start + TD_1_WELCOME)
         t_3_countdown_start = (t_end + TD_3_COUNTDOWN)
         
         if t > t_0_upcoming_start:
-
-
             # 1. time box
             if t < t_3_countdown_start:
-                w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG_INFO, t_start.strftime('%H:%M'), "-", t_end.strftime('%H:%M'))                
+                w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG_INFO, t_start.strftime('%H:%M'), "-", t_end.strftime('%H:%M'))
             elif t < t_end:
                 minutes_left = (t_end - t).seconds // 60 % 60
-                minutes_left_txt = '< 1' if minutes_left == 0 else str(minutes_left)
-                w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG_WARN, 'Noch', f"{minutes_left_txt} min")
+                if minutes_left == 0:
+                    w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG_WARN, 'Letzte', 'Minute')
+                else:
+                    w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG_WARN, f"{minutes_left} min")
             else:
-                # should never happen with eBusy data
-                w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG_INFO, 'Hi :)')
-
+                raise ValueError('should never happen with eBusy data')
 
             # 2. message area
             x0 = w_timebox + MARGIN * 2
-            if t < t_start:
-                logger.debug("0 - upcoming")
-                _draw_booking_match(cnv, x0, h_header, cur_booking, 'UPCOMING')
-            elif t < t_1_welcome_end:                
-                logger.debug("1 - welcome")
-                _draw_booking_match(cnv, x0, h_header, cur_booking, 'WELCOME')
+            if t < t_1_welcome_end:                
+                _draw_booking_match(cnv, x0, h_header, b_1_current, 'Viel Spaß!')
             elif t < t_3_countdown_start:
-                logger.debug("2 - default")
-                _draw_booking_match(cnv, x0, h_header, cur_booking)
+                _draw_booking_match(cnv, x0, h_header, b_1_current)
             elif t < t_end:
-                logger.debug("3 - countdown")
-                _draw_booking_match(cnv, x0, h_header, cur_booking, 'COUNTDOWN')
-            
-        # Adjacent bookings handling (old code)
-        '''
-        if t_now >= (t_end - TD_1_WELCOME):
-            minutes_left = (t_end - t_now).seconds // 60 % 60
-            if next_booking:
-                #  0 - 14 upcoming
-                # 15 - 29 timeleft
-                # 30 - 44 upcoming
-                # 45 - 59 timeleft
-                if (t_now.second >= 15 and t_now.second <= 29) or (t_now.second >= 45 and t_now.second <= 59):
-                    _draw_3_timeleft(cnv, cur_booking, court, t_now, minutes_left)
+                # Adjacent bookings handling
+                    #  0 - 14 show current
+                    # 15 - 29 show next
+                    # 30 - 44 show current
+                    # 45 - 59 show next
+                if b_2_next and (t.second >= 15 and t.second <= 29) or (t.second >= 45 and t.second <= 59):
+                    _draw_booking_match(cnv, x0, h_header, b_2_next, 'Nächste Buchung:')                    
                 else:
-                    _draw_0_upcoming(cnv, next_booking, court, t_now)
+                    _draw_booking_match(cnv, x0, h_header, b_1_current)
             else:
-                _draw_3_timeleft(cnv, cur_booking, court, t_now, minutes_left)
-        else:
-            _draw_1_welcome(cnv, cur_booking)
-    elif next_booking and t_now >= (parser.parse(next_booking['start-date']) - TD_1_WELCOME):
-        _draw_0_upcoming(cnv, next_booking, court, t_now)
-    '''
+                raise ValueError('should never happen with eBusy data')
+
+    elif b_2_next:
+        t_start = parser.parse(b_2_next['start-date'])
+        t_end = parser.parse(b_2_next['end-date'])
+        w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG_INFO, t_start.strftime('%H:%M'), "-", t_end.strftime('%H:%M'))
+        x0 = w_timebox + MARGIN * 2
+        _draw_booking_match(cnv, x0, h_header, b_2_next, 'Nächste Buchung:')
+
     else:
-        h_header = _draw_header(cnv, court)
-        
-        # no current booking - show a default
+        # no bookings - show a default
         image = Image.open('images/logos/SV1845/sv1845_76x64_eBusy_demo_logo.png')
         MAX_IMAGE_WIDTH = 76 # so that 22:22 time fits
         h_logo = H_PANEL - h_header - MARGIN - MARGIN
@@ -151,23 +156,27 @@ def _draw_header(cnv, court, dt=None):
 
 def _draw_time_box(cnv, y0, color_bg, txt_1:str, txt_2:str=None, txt_3:str=None):
     '''Return the width of the timebox component'''
+    font = FONT_TIME_BOX
+    padding = 1
     x = MARGIN
     y = y0 + MARGIN
     h = H_PANEL - y0 - MARGIN - MARGIN
-    w = h
+    w = max(h, width_in_pixels(font, txt_1), width_in_pixels(font, txt_2), width_in_pixels(font, txt_3)) + padding
     fill_rect(cnv, x, y, w, h, color_bg)
     round_rect_corners(cnv, x, y, w, h)
 
-    padding = MARGIN
+    
+
+    
     w_ = w
     h_ = h - padding - padding
 
     if txt_3:
         h_txt = int(h_ / 3)
-        y_delta_txt = y_font_center(FONT_TIME_BOX, h_txt)
-        x_txt_1 = x + x_font_center(txt_1, w_, FONT_TIME_BOX)
-        x_txt_2 = x + x_font_center(txt_2, w_, FONT_TIME_BOX)
-        x_txt_3 = x + x_font_center(txt_3, w_, FONT_TIME_BOX)
+        y_delta_txt = y_font_center(font, h_txt)
+        x_txt_1 = x + padding + x_font_center(txt_1, w_, font)
+        x_txt_2 = x + padding + x_font_center(txt_2, w_, font)
+        x_txt_3 = x + padding + x_font_center(txt_3, w_, font)
         
         y_txt_1 = y + padding + y_delta_txt
         y_txt_2 = y + padding + y_delta_txt + h_txt
@@ -175,49 +184,29 @@ def _draw_time_box(cnv, y0, color_bg, txt_1:str, txt_2:str=None, txt_3:str=None)
 
         #fill_rect(cnv, 0, y_txt_1, W_PANEL, 1, COLOR_RED)
 
-        draw_text(cnv, x_txt_1, y_txt_1, txt_1, FONT_TIME_BOX, COLOR_TIME_BOX)
-        draw_text(cnv, x_txt_2, y_txt_2, txt_2, FONT_TIME_BOX, COLOR_TIME_BOX)
-        draw_text(cnv, x_txt_3, y_txt_3, txt_3, FONT_TIME_BOX, COLOR_TIME_BOX)
+        draw_text(cnv, x_txt_1, y_txt_1, txt_1, font, COLOR_TIME_BOX)
+        draw_text(cnv, x_txt_2, y_txt_2, txt_2, font, COLOR_TIME_BOX)
+        draw_text(cnv, x_txt_3, y_txt_3, txt_3, font, COLOR_TIME_BOX)
     
     elif txt_2:
         h_txt = int(h_ / 2)
-        y_delta_txt = y_font_center(FONT_TIME_BOX, h_txt)
-        x_txt_1 = x + x_font_center(txt_1, w_, FONT_TIME_BOX)
-        x_txt_2 = x + x_font_center(txt_2, w_, FONT_TIME_BOX)
+        y_delta_txt = y_font_center(font, h_txt)
+        x_txt_1 = x + padding + x_font_center(txt_1, w_, font)
+        x_txt_2 = x + padding + x_font_center(txt_2, w_, font)
         y_txt_1 = y + padding * 2 + y_delta_txt
         y_txt_2 = y - padding * 2 + y_delta_txt + h_txt
-        draw_text(cnv, x_txt_1, y_txt_1, txt_1, FONT_TIME_BOX, COLOR_TIME_BOX)
-        draw_text(cnv, x_txt_2, y_txt_2, txt_2, FONT_TIME_BOX, COLOR_TIME_BOX)    
+        draw_text(cnv, x_txt_1, y_txt_1, txt_1, font, COLOR_TIME_BOX)
+        draw_text(cnv, x_txt_2, y_txt_2, txt_2, font, COLOR_TIME_BOX)    
     elif txt_1:
         h_txt = int(h_ / 1)
-        y_delta_txt = y_font_center(FONT_TIME_BOX, h_txt)
-        x_txt_1 = x + x_font_center(txt_1, w_, FONT_TIME_BOX)
+        y_delta_txt = y_font_center(font, h_txt)
+        x_txt_1 = x + padding + x_font_center(txt_1, w_, font)
         y_txt_1 = y + padding + y_delta_txt
-        draw_text(cnv, x_txt_1, y_txt_1, txt_1, FONT_TIME_BOX, COLOR_TIME_BOX)
-
+        draw_text(cnv, x_txt_1, y_txt_1, txt_1, font, COLOR_TIME_BOX)
 
     return w
-        
 
-def _draw_2_default(cnv, x0, y0, booking):
-    _draw_1_welcome(cnv, x0, y0, booking)
-
-def _draw_1_welcome(cnv, x0, y0, booking):
-
-    x = x0 + MARGIN
-    y = y0 + MARGIN * 2
-    
-    players = [p for p in [booking.get(k) for k in ['p1', 'p2', 'p3', 'p4']] if p]
-
-    player_firstnames = [ p.get('firstname') for p in players]
-
-    y_1 = y + y_font_offset(FONT_BOOKING)
-    y_2 = y_1 + y_font_offset(FONT_BOOKING) * 3
-
-    draw_text(cnv, x, y_1, 'Willkommen zum SV1845!', FONT_BOOKING, COLOR_BOOKING)
-    draw_text(cnv, x, y_2, ', '.join(player_firstnames), FONT_BOOKING, COLOR_BOOKING)
-
-def _draw_booking_match(cnv, x0:int, y0:int, booking, notification=''):
+def _draw_booking_match(cnv, x0:int, y0:int, booking, caption=''):
     def booking_team(isTeam1=True):
         def booking_player(player):
             txt = None
@@ -231,7 +220,7 @@ def _draw_booking_match(cnv, x0:int, y0:int, booking, notification=''):
                         txt += ' '
                     txt += lastname
                 else:
-                    txt = "n.A."
+                    txt = _('booking.guest')
             return txt
 
         txt = None
@@ -248,20 +237,19 @@ def _draw_booking_match(cnv, x0:int, y0:int, booking, notification=''):
     x = x0 + MARGIN
     y = y0 + MARGIN
 
-    if notification:
-        y += y_font_offset(FONT_BOOKING)
-        draw_text(cnv, x, y, notification, FONT_BOOKING, COLOR_BOOKING)
-        y += MARGIN
+    y += y_font_offset(FONT_BOOKING_CAPTION) + 1
+    draw_text(cnv, x, y, caption, FONT_BOOKING_CAPTION, COLOR_BOOKING)
+    y += 10
     
     t1 = booking_team()
-    y += y_font_offset(FONT_BOOKING)
-    draw_text(cnv, x, y, t1, FONT_BOOKING, COLOR_BOOKING)
-    y += MARGIN
+    y += y_font_offset(FONT_BOOKING_NAME)
+    draw_text(cnv, x, y, t1, FONT_BOOKING_NAME, COLOR_BOOKING)
+    y += MARGIN * 2
 
     t2 = booking_team(False)
     if t2:
-        y += y_font_offset(FONT_BOOKING)
-        draw_text(cnv, x, y, t2, FONT_BOOKING, COLOR_BOOKING)
+        y += y_font_offset(FONT_BOOKING_NAME)
+        draw_text(cnv, x, y, t2, FONT_BOOKING_NAME, COLOR_BOOKING)
 
 
 def draw_ebusy_ads(cnv, ebusy_ads):

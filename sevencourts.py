@@ -1,9 +1,29 @@
 ## SevenCourts common module
 import os
 import socket
+import gettext
 import m1_logging
 
 logger = m1_logging.logger("7c")
+
+LOCALE_DIR = os.path.join(os.path.dirname(__file__), 'locale')
+# Set up gettext
+def setup_i18n(lang='en'):
+    try:
+        logger.debug(f"Locale dir: {LOCALE_DIR}")
+        # Bind the domain to the locale directory for the specified language
+        translator = gettext.translation('messages', LOCALE_DIR, languages=[lang], fallback=True)
+        # Install the translation, making the '_' function available globally
+        translator.install()
+        logger.debug(f"Translation for '{lang}' installed")
+        return translator
+    except FileNotFoundError:
+        logger.warn(f"Translation for '{lang}' not found in '{LOCALE_DIR}', using defaults.")
+        # If translation files are not found, provide a dummy _ function returning the key
+        import builtins
+        builtins._ = lambda x: x
+        return None
+
 
 BASE_URL = os.getenv('TABLEAU_SERVER_BASE_URL', 'https://prod.tableau.tennismath.com')
 
@@ -195,8 +215,9 @@ def x_font_center(text, container_width, font):
 
 def width_in_pixels(font, text):
     result = 0
-    for c in text:
-        result += font.CharacterWidth(ord(c))
+    if text:
+        for c in text:
+            result += font.CharacterWidth(ord(c))
     # print('<{}> => {}'.format(text,result))
     return result
 
