@@ -222,7 +222,6 @@ def _draw_booking_match(cnv, x0:int, y0:int, booking, caption=''):
                 else:
                     txt = _('booking.guest')
             return txt
-
         txt = None
         tp1 =  booking['p1'] if isTeam1 else booking.get('p3')
         if tp1:
@@ -240,16 +239,22 @@ def _draw_booking_match(cnv, x0:int, y0:int, booking, caption=''):
     y += y_font_offset(FONT_BOOKING_CAPTION) + 1
     draw_text(cnv, x, y, caption, FONT_BOOKING_CAPTION, COLOR_BOOKING)
     y += 10
-    
-    t1 = booking_team()
-    y += y_font_offset(FONT_BOOKING_NAME)
-    draw_text(cnv, x, y, t1, FONT_BOOKING_NAME, COLOR_BOOKING)
-    y += MARGIN * 2
 
-    t2 = booking_team(False)
-    if t2:
+    txt = booking.get('display-text')
+    if txt:
+        # TODO use best fitting font size
         y += y_font_offset(FONT_BOOKING_NAME)
-        draw_text(cnv, x, y, t2, FONT_BOOKING_NAME, COLOR_BOOKING)
+        draw_text(cnv, x, y, txt, FONT_BOOKING_NAME, COLOR_BOOKING)
+    else:    
+        t1 = booking_team()
+        y += y_font_offset(FONT_BOOKING_NAME)
+        draw_text(cnv, x, y, t1, FONT_BOOKING_NAME, COLOR_BOOKING)
+        y += MARGIN * 2
+
+        t2 = booking_team(False)
+        if t2:
+            y += y_font_offset(FONT_BOOKING_NAME)
+            draw_text(cnv, x, y, t2, FONT_BOOKING_NAME, COLOR_BOOKING)
 
 
 def draw_ebusy_ads(cnv, ebusy_ads):
