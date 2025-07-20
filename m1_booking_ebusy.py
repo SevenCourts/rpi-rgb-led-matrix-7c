@@ -242,9 +242,22 @@ def _draw_booking_match(cnv, x0:int, y0:int, booking, caption=''):
 
     txt = booking.get('display-text')
     if txt:
-        # TODO use best fitting font size
+        MAX_ROW_LENGTH = 17
+        row_1 = row_2 = ''
+        for w in txt.split():
+            if row_1:
+                if len(row_1 + ' ' + w) <= MAX_ROW_LENGTH:
+                    row_1 = row_1 + ' ' + w
+                else:
+                    row_2 = row_2 + (' ' if row_2 else '') + w
+            else:
+                row_1 = w
+        logger.info(row_1)
+        logger.info(row_2)
         y += y_font_offset(FONT_BOOKING_NAME)
-        draw_text(cnv, x, y, txt, FONT_BOOKING_NAME, COLOR_BOOKING)
+        draw_text(cnv, x, y, row_1, FONT_BOOKING_NAME, COLOR_BOOKING)
+        y += MARGIN * 2 + y_font_offset(FONT_BOOKING_NAME)
+        draw_text(cnv, x, y, row_2, FONT_BOOKING_NAME, COLOR_BOOKING)
     else:    
         t1 = booking_team()
         y += y_font_offset(FONT_BOOKING_NAME)
