@@ -116,6 +116,7 @@ def _read_startup_config():
             pass
         if lines:
             result = {k: v for k, v in map(lambda x: x.split('=', 1), lines)}
+    logger.info(f"Config: '{result}'")
     return result
 
 def _write_startup_config(startup_config):
@@ -154,7 +155,9 @@ class SevenCourtsM1(SampleBase):
                     self.panel_info_failed = False
                     
                     cfg = {"timezone": self._panel_tz()}
-                    _write_startup_config(cfg)
+                    if (cfg != self.startup_config):
+                        _write_startup_config(cfg)
+                        self.startup_config = cfg
 
                     self._display_panel_info()
                     time.sleep(1)
