@@ -235,9 +235,9 @@ def _draw_booking_match(cnv, x0:int, y0:int, booking, caption=''):
     x = x0 + MARGIN
     y = y0 + MARGIN
 
-    y += y_font_offset(FONT_BOOKING_CAPTION) + 1
+    y += y_font_offset(FONT_BOOKING_CAPTION)
     draw_text(cnv, x, y, caption, FONT_BOOKING_CAPTION, COLOR_BOOKING)
-    y += 10
+    y += 11
 
     txt = booking.get('display-text')
     if txt:
