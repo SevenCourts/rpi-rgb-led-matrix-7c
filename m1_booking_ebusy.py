@@ -251,11 +251,12 @@ def _draw_booking_match(cnv, x0:int, y0:int, booking, caption=''):
                     row_2 = row_2 + (' ' if row_2 else '') + w
             else:
                 row_1 = w
-        logger.info(row_1)
-        logger.info(row_2)
         y += y_font_offset(FONT_BOOKING_NAME)
         draw_text(cnv, x, y, row_1, FONT_BOOKING_NAME, COLOR_BOOKING)
         y += MARGIN * 2 + y_font_offset(FONT_BOOKING_NAME)
+        if len(row_2) > MAX_ROW_LENGTH:
+            # ellipsize 2nd row            
+            row_2 = row_2[:MAX_ROW_LENGTH-1] + SYMBOL_ELLIPSIS
         draw_text(cnv, x, y, row_2, FONT_BOOKING_NAME, COLOR_BOOKING)
     else:    
         t1 = booking_team()
