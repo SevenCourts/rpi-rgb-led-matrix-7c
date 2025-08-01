@@ -24,6 +24,7 @@ def setup_i18n(lang='en'):
         builtins._ = lambda x: x
         return None
 
+setup_i18n('de') # FIXME configuration
 
 BASE_URL = os.getenv('TABLEAU_SERVER_BASE_URL', 'https://prod.tableau.tennismath.com')
 

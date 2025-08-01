@@ -40,8 +40,7 @@ TD_3_COUNTDOWN = timedelta(minutes = -5)
 TD_4_GAMEOVER = timedelta(minutes = 2)
 
 def draw_booking(cnv, booking_info, panel_tz):
-    setup_i18n('de') # FIXME configuration
-
+    
     court = booking_info.get('court')
     b_0_past = booking_info.get('past')
     b_1_current = booking_info.get('current')
@@ -102,7 +101,7 @@ def draw_booking(cnv, booking_info, panel_tz):
                     # 30 - 44 show current
                     # 45 - 59 show next
                 if b_2_next and (t.second >= 15 and t.second <= 29) or (t.second >= 45 and t.second <= 59):
-                    _draw_booking_match(cnv, x0, h_header, b_2_next, 'Nächste Buchung:')                    
+                    _draw_booking_match(cnv, x0, h_header, b_2_next, 'Nächste Buchung')                    
                 else:
                     _draw_booking_match(cnv, x0, h_header, b_1_current)
             else:
@@ -113,7 +112,7 @@ def draw_booking(cnv, booking_info, panel_tz):
         t_end = parser.parse(b_2_next['end-date'])
         w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG_INFO, t_start.strftime('%H:%M'), "-", t_end.strftime('%H:%M'))
         x0 = w_timebox + MARGIN * 2
-        _draw_booking_match(cnv, x0, h_header, b_2_next, 'Nächste Buchung:')
+        _draw_booking_match(cnv, x0, h_header, b_2_next, 'Nächste Buchung')
 
     else:
         # no bookings - show a default
