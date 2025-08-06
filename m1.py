@@ -210,8 +210,8 @@ class SevenCourtsM1(SampleBase):
     def _draw_offline_status(self, display_available_networks=False):
         x = 4
         margin_v = 4
-        if display_available_networks:
-            y = margin_v + y_font_offset(FONT_M)
+        y = margin_v + y_font_offset(FONT_M)        
+        if display_available_networks:            
             active_interfaces = network_utils.get_active_interfaces()
             if not active_interfaces:
                 self._draw_status_indicator(COLOR_RED, y=0)
