@@ -64,22 +64,23 @@ def get_active_interfaces():
                     interfaces.append(interface_name)
     return interfaces
 
-def get_interface_details(interface_name):
+def get_interface_type(interface_name):
     """
     Determines if an interface is LAN (Ethernet) or WLAN (Wireless).
     Checks for 'ether' or 'wlan' in the 'ip link show' output.
     """
-    output = _run_command(["ip", "link", "show", interface_name])
-    if output:
-        if "link/ether" in output:
-            return "LAN"
-        elif "link/loopback" in output: # Should ideally be filtered out earlier
-            return "Loopback"
-        # For WLAN, 'iw' command is more reliable to confirm it's wireless
-        # We'll assume if it's not 'ether' and often named 'wlanX', it's WLAN
-        # A more robust check might involve 'iw dev <interface> info'
-        elif "wlan" in interface_name.lower(): # Common naming convention
-            return "WLAN"
+    # For WLAN, 'iw' command is more reliable to confirm it's wireless
+    # We'll assume if it's not 'ether' and often named 'wlanX', it's WLAN
+    # A more robust check might involve 'iw dev <interface> info'
+    if "wlan" in interface_name.lower(): # Common naming convention
+        return "WLAN"
+    else:
+        output = _run_command(["ip", "link", "show", interface_name])
+        if output:        
+            if "link/ether" in output:
+                return "LAN"
+            elif "link/loopback" in output: # Should ideally be filtered out earlier
+                return "Loopback"    
     return "Unknown"
 
 def get_wlan_ssid(interface_name):
@@ -170,7 +171,7 @@ def main(server_url=SEVENCOURTS_PROD_SERVER_URL):
         for iface in active_interfaces:
             logger.info(f"Interface: {iface} is on: Yes (Detected as UP)")
 
-            iface_type = get_interface_details(iface)
+            iface_type = get_interface_type(iface)
             logger.info(f"Interface: {iface} type: {iface_type}")
 
             if iface_type == "WLAN":

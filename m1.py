@@ -214,7 +214,7 @@ class SevenCourtsM1(SampleBase):
                 for iface in active_interfaces:
                     logger.info(f"Interface: {iface} is on: Yes (Detected as UP)")
 
-                    iface_type = network_check.get_interface_details(iface)
+                    iface_type = network_check.get_interface_type(iface)
                     logger.info(f"Interface: {iface} type: {iface_type}")
 
                     if iface_type == "WLAN":
