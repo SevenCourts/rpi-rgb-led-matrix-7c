@@ -209,8 +209,9 @@ class SevenCourtsM1(SampleBase):
     
     def _draw_offline_status(self, display_available_networks=False):
         x = 4
+        margin_v = 4
         if display_available_networks:
-            y = 2 + y_font_offset(FONT_M)
+            y = margin_v + y_font_offset(FONT_M)
             active_interfaces = network_utils.get_active_interfaces()
             if not active_interfaces:
                 self._draw_status_indicator(COLOR_RED, y=0)
@@ -225,7 +226,7 @@ class SevenCourtsM1(SampleBase):
                     if iface_type == "WLAN":
                         ssid = network_utils.get_wlan_ssid(iface)
                         logger.info(f"Interface: {iface} WLAN Name (SSID): {ssid}")
-                        y += y_font_offset(FONT_XXS) + 2
+                        y += y_font_offset(FONT_XXS) + margin_v
                         graphics.DrawText(self.canvas, FONT_XXS, x, y, COLOR_7C_STATUS_ERROR, 
                                             f"{iface} SSID: {ssid}")
                     else:
@@ -233,6 +234,7 @@ class SevenCourtsM1(SampleBase):
 
         
         # Checking Internet and Server Accessibility
+        y += y_font_offset(FONT_XXS) + margin_v
         color_error_indicator = None
         if network_utils.check_internet_access():
             if network_utils.check_server_access(BASE_URL):
@@ -243,7 +245,6 @@ class SevenCourtsM1(SampleBase):
                 color_error_indicator = COLOR_YELLOW
                 logger.warning(f"SevenCourts server in NOT accessible: {BASE_URL}")
                 if display_available_networks:
-                    y += y_font_offset(FONT_XXS) + 2
                     graphics.DrawText(self.canvas, FONT_XXS, x, y, color_error_indicator, 
                                             f"SevenCourts server is NOT accessible:")
                     graphics.DrawText(self.canvas, FONT_XXS, x, y + 2 + y_font_offset(FONT_XXS), color_error_indicator,
@@ -252,8 +253,8 @@ class SevenCourtsM1(SampleBase):
         else:
             color_error_indicator = COLOR_RED
             logger.warning(f"Internet is NOT accessible")
-            if display_available_networks:
-                graphics.DrawText(self.canvas, FONT_XXS, 2, y, color_error_indicator,
+            if display_available_networks:                
+                graphics.DrawText(self.canvas, FONT_XXS, x, y, color_error_indicator,
                                             "No Internet connection.")
 
         self._draw_status_indicator(color_error_indicator)
