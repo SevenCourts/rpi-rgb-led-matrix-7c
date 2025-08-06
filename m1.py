@@ -25,16 +25,17 @@ class SevenCourtsM1(SampleBase):
         
         self.canvas = self.matrix.CreateFrameCanvas()
 
-        while True:            
+        while True:
+            delay_s = 3
             self.canvas.SetImage(Image.open("images/rainbow_up_192x64.png").convert('RGB'), 0, 0)
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
-            time.sleep(5)
+            time.sleep(delay_s)
             self.canvas.SetImage(Image.open("images/rainbow_down_192x64.png").convert('RGB'), 0, 0)
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
-            time.sleep(5)
+            time.sleep(delay_s)
             self.canvas.SetImage(Image.open("images/white-192x64.png").convert('RGB'), 0, 0)
             self.canvas = self.matrix.SwapOnVSync(self.canvas)
-            time.sleep(5)
+            time.sleep(delay_s)
 
 # Main function
 if __name__ == "__main__":
