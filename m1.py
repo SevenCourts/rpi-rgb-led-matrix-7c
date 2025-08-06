@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 
 import os
+from sevencourts import *
 
 # Set the environment variable USE_RGB_MATRIX_EMULATOR to use with
 # emulator https://github.com/ty-porter/RGBMatrixEmulator
 # Do not set to use with real SDK https://github.com/hzeller/rpi-rgb-led-matrix
-if os.getenv('USE_RGB_MATRIX_EMULATOR', False):
+if USE_RGB_MATRIX_EMULATOR:
     from RGBMatrixEmulator import graphics # type: ignore
 else:
     from rgbmatrix import graphics # type: ignore
 from samplebase import SampleBase
-from sevencourts import *
+
 import m1_booking_ebusy
 import m1_signage_horizontal as m1_signage
 import m1_clock
@@ -21,7 +22,7 @@ import time
 import urllib.request
 import json
 import socket
-import logging
+import network_check
 import subprocess
 from datetime import datetime
 from dateutil import tz
@@ -180,25 +181,71 @@ class SevenCourtsM1(SampleBase):
                 logger.error(f"Panel registration call to '{REGISTRATION_URL}' failed: {str(ex)}")
                 if self.panel_info:
                     logger.debug("Displaying the panel info from the last known successful state")
-                    self._display_panel_info(True)
+                    self._display_panel_info(True, display_available_networks = False)
                 else:
                     logger.debug("Displaying init screen")
-                    self._display_init_screen(True)
+                    self._display_init_screen(offline=True, display_available_networks = True)
 
                 time.sleep(1)
         return result
 
-    def _display_init_screen(self, offline=False):
+    def _display_init_screen(self, offline=False, display_available_networks=False):
         self.canvas.Clear()
         dt = datetime.now(tz.gettz(self._panel_tz()))
         text = dt.strftime('%H:%M')
         x = m1_clock.W_LOGO_WITH_CLOCK
         y = 62
         draw_text(self.canvas, x, y, text, FONT_CLOCK_DEFAULT, COLOR_CLOCK_DEFAULT)
-        self._draw_status_indicator(COLOR_7C_STATUS_ERROR if offline else COLOR_7C_STATUS_INIT)        
+        if offline:
+            self._draw_offline_status(display_available_networks)
+        else:
+            self._draw_status_indicator(COLOR_7C_STATUS_INIT)
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
+    
+    def _draw_offline_status(self, display_available_networks=False):
+        y = 10
 
-    def _display_panel_info(self, offline=False):
+        if display_available_networks:
+            active_interfaces = network_check.get_active_interfaces()
+            if not active_interfaces:
+                self._draw_status_indicator(COLOR_RED, y=0)
+                logger.warning("No active network interfaces found (excluding loopback).")
+            else:
+                for iface in active_interfaces:
+                    logger.info(f"Interface: {iface} is on: Yes (Detected as UP)")
+
+                    iface_type = network_check.get_interface_details(iface)
+                    logger.info(f"Interface: {iface} type: {iface_type}")
+
+                    if iface_type == "WLAN":
+                        ssid = network_check.get_wlan_ssid(iface)
+                        logger.info(f"Interface: {iface} WLAN Name (SSID): {ssid}")
+                        graphics.DrawText(self.canvas, FONT_XXS, 0, y, COLOR_7C_STATUS_ERROR, 
+                                            f"Interface: {iface} WLAN SSID: {ssid}")
+                    else:
+                        logger.warning(f"Interface: {iface} WLAN Name (SSID): N/A (Not a WLAN interface)")
+                        graphics.DrawText(self.canvas, FONT_XXS, 0, y, COLOR_7C_STATUS_ERROR, 
+                                            f"Interface: {iface}")
+                    y += 10
+
+        
+        # Checking Internet and Server Accessibility
+        color_error_indicator = COLOR_7C_STATUS_ERROR        
+        if network_check.check_internet_access():
+            if network_check.check_server_access(BASE_URL):
+                color_error_indicator = COLOR_GREEN
+                # should not happen in offline state
+                logger.info(f"SevenCourts server is accessible: {BASE_URL}")                
+            else:
+                color_error_indicator = COLOR_YELLOW
+                logger.warning(f"SevenCourts server in NOT accessible: {BASE_URL}")                
+        else:
+            logger.warning(f"Internet is NOT accessible")
+
+        self._draw_status_indicator(color_error_indicator)
+
+
+    def _display_panel_info(self, offline=False, display_available_networks=False):
         self.canvas.Clear()
 
         if self.panel_info.get('standby'):
@@ -215,7 +262,7 @@ class SevenCourtsM1(SampleBase):
             m1_scoreboard.draw_match(self.canvas, self.panel_info)
 
         if offline:
-            self._draw_status_indicator(COLOR_7C_STATUS_ERROR)
+            self._draw_offline_status(display_available_networks)
 
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
 
@@ -240,15 +287,16 @@ class SevenCourtsM1(SampleBase):
         draw_matrix(self.canvas, dot, W_PANEL - 3, H_PANEL - 3)
         m1_clock.draw_clock(self.canvas, True, self._panel_tz(), COLOR_GREY_DARKEST)
 
-    def _draw_status_indicator(self, color):
-        x = (COLOR_BLACK.red, COLOR_BLACK.green, COLOR_BLACK.blue)
-        o = (color.red, color.green, color.blue)
+
+    def _draw_status_indicator(self, color, x = (W_PANEL - 4), y = (H_PANEL - 4)):
+        b = (COLOR_BLACK.red, COLOR_BLACK.green, COLOR_BLACK.blue)
+        c = (color.red, color.green, color.blue)
         dot = [
-            [x, o, o, x],
-            [o, o, o, o],
-            [o, o, o, o],
-            [x, o, o, x]]
-        draw_matrix(self.canvas, dot, W_PANEL - 4, H_PANEL - 4)
+            [b, c, c, b],
+            [c, c, c, c],
+            [c, c, c, c],
+            [b, c, c, b]]
+        draw_matrix(self.canvas, dot, x, y)
 
     def _panel_tz(self):
         return self.panel_info.get('idle-info', {}).get('timezone', self.startup_config.get('timezone', 'Europe/Berlin'))

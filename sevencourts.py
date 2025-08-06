@@ -6,6 +6,8 @@ import m1_logging
 
 logger = m1_logging.logger("7c")
 
+USE_RGB_MATRIX_EMULATOR = os.getenv('USE_RGB_MATRIX_EMULATOR', False)
+
 LOCALE_DIR = os.path.join(os.path.dirname(__file__), 'locale')
 # Set up gettext
 def setup_i18n(lang='en'):
@@ -28,7 +30,7 @@ setup_i18n('de') # FIXME configuration
 
 BASE_URL = os.getenv('TABLEAU_SERVER_BASE_URL', 'https://prod.tableau.tennismath.com')
 
-if os.getenv('USE_RGB_MATRIX_EMULATOR', False):
+if USE_RGB_MATRIX_EMULATOR:
     from RGBMatrixEmulator import graphics # type: ignore
 else:
     from rgbmatrix import graphics # type: ignore
@@ -142,7 +144,7 @@ FONT_XXS = FONTS[5]
 
 FONT_DEFAULT = FONT_S
 
-if os.getenv('USE_RGB_MATRIX_EMULATOR', False):
+if USE_RGB_MATRIX_EMULATOR:
     FONT_CLOCK_DEFAULT = FONT_L
 else:
     FONT_CLOCK_DEFAULT = FONT_XL_SDK
