@@ -194,7 +194,7 @@ class SevenCourtsM1(SampleBase):
 
         x = 2
         y = 2 + y_font_offset(FONT_M)
-        draw_text(self.canvas, x, y, f"Initializing{SYMBOL_ELLIPSIS}", FONT_S, COLOR_7C_GREEN)
+        draw_text(self.canvas, x, y, f"Initializing{SYMBOL_ELLIPSIS}", FONT_M, COLOR_7C_GREEN)
 
         dt = datetime.now(tz.gettz(self._panel_tz()))
         text = dt.strftime('%H:%M')
@@ -243,6 +243,7 @@ class SevenCourtsM1(SampleBase):
                 color_error_indicator = COLOR_YELLOW
                 logger.warning(f"SevenCourts server in NOT accessible: {BASE_URL}")
                 if display_available_networks:
+                    y += y_font_offset(FONT_XXS) + 2
                     graphics.DrawText(self.canvas, FONT_XXS, x, y, color_error_indicator, 
                                             f"SevenCourts server is NOT accessible:")
                     graphics.DrawText(self.canvas, FONT_XXS, x, y + 2 + y_font_offset(FONT_XXS), color_error_indicator,
