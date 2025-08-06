@@ -22,7 +22,7 @@ import time
 import urllib.request
 import json
 import socket
-import network_check
+import network_utils
 import subprocess
 from datetime import datetime
 from dateutil import tz
@@ -79,9 +79,9 @@ def _cpu_temperature():
 
 
 def _register(url):
-    data = json.dumps({"code": PANEL_NAME, "ip": ip_address(), "firmware_version": GIT_COMMIT_ID}).encode('utf-8')
+    data = json.dumps({"code": PANEL_NAME, "ip": network_utils.ip_address(), "firmware_version": GIT_COMMIT_ID}).encode('utf-8')
     request = urllib.request.Request(url, data=data, method='POST')
-    with urllib.request.urlopen(request, timeout=10) as response:
+    with urllib.request.urlopen(request, timeout=network_utils.NETWORK_TIMEOUT_SECONDS) as response:
         _json = json.loads(response.read().decode('utf-8'))
         logger.debug(f"Registered: {url} - '{_json}'")
         return _json["id"]
@@ -93,7 +93,7 @@ def _fetch_panel_info(panel_id):
     req.add_header('7C-Is-Panel-Preview', 'false') # FIXME is to be set to 'true' when started as emulator within panel admin web UI
     req.add_header('7C-Uptime', str(uptime()))
     req.add_header('7C-CPU-Temperature', str(_cpu_temperature()))
-    with urllib.request.urlopen(req, timeout=10) as response:
+    with urllib.request.urlopen(req, timeout=network_utils.NETWORK_TIMEOUT_SECONDS) as response:
         logger.debug(f"url='{url}', status={str(response.status)}")
         if response.status == 200:
             match = json.loads(response.read().decode('utf-8'))
@@ -206,7 +206,7 @@ class SevenCourtsM1(SampleBase):
         y = 10
 
         if display_available_networks:
-            active_interfaces = network_check.get_active_interfaces()
+            active_interfaces = network_utils.get_active_interfaces()
             if not active_interfaces:
                 self._draw_status_indicator(COLOR_RED, y=0)
                 logger.warning("No active network interfaces found (excluding loopback).")
@@ -214,11 +214,11 @@ class SevenCourtsM1(SampleBase):
                 for iface in active_interfaces:
                     logger.info(f"Interface: {iface} is on: Yes (Detected as UP)")
 
-                    iface_type = network_check.get_interface_type(iface)
+                    iface_type = network_utils.get_interface_type(iface)
                     logger.info(f"Interface: {iface} type: {iface_type}")
 
                     if iface_type == "WLAN":
-                        ssid = network_check.get_wlan_ssid(iface)
+                        ssid = network_utils.get_wlan_ssid(iface)
                         logger.info(f"Interface: {iface} WLAN Name (SSID): {ssid}")
                         graphics.DrawText(self.canvas, FONT_XXS, 0, y, COLOR_7C_STATUS_ERROR, 
                                             f"Interface: {iface} WLAN SSID: {ssid}")
@@ -231,8 +231,8 @@ class SevenCourtsM1(SampleBase):
         
         # Checking Internet and Server Accessibility
         color_error_indicator = COLOR_7C_STATUS_ERROR        
-        if network_check.check_internet_access():
-            if network_check.check_server_access(BASE_URL):
+        if network_utils.check_internet_access():
+            if network_utils.check_server_access(BASE_URL):
                 color_error_indicator = COLOR_GREEN
                 # should not happen in offline state
                 logger.info(f"SevenCourts server is accessible: {BASE_URL}")                

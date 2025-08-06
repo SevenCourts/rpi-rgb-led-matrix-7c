@@ -1,6 +1,5 @@
 ## SevenCourts common module
 import os
-import socket
 import gettext
 import m1_logging
 
@@ -185,18 +184,6 @@ Y_FONT_SYMBOL_NORMAL_HEIGHTS = {
 
 H_FONT_XS = Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(FONT_XS)
 H_FONT_XXS = Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(FONT_XXS)
-
-def ip_address():
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))
-        result = s.getsockname()[0]
-        s.close()
-    except Exception as e:
-        logger.exception(e)
-        result = "###"
-    return result
-
 
 def y_font_offset(font):
     # This works only on emulator

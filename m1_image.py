@@ -2,6 +2,7 @@ from sevencourts import *
 import m1_clock
 import requests
 import urllib.request
+import network_utils
 
 logger = m1_logging.logger("image")
 
@@ -42,7 +43,7 @@ def draw_idle_mode_image_url(canvas, idle_info, panel_tz):
 
     try:
         request = urllib.request.Request(image_url, method="HEAD")
-        response = urllib.request.urlopen(request)
+        response = urllib.request.urlopen(request, timeout=network_utils.NETWORK_TIMEOUT_SECONDS)
         etag = str(response.headers["ETag"])
 
         if etag != None:

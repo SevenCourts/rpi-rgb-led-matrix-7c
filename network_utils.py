@@ -3,8 +3,11 @@ import socket
 import re
 import platform
 from urllib.parse import urlparse
+import socket
 
 import m1_logging
+
+NETWORK_TIMEOUT_SECONDS = 4
 
 # The host to check for general internet access:
 INTERNET_CHECK_HOST_IP = "8.8.8.8"  # Google's public DNS server
@@ -16,6 +19,18 @@ SEVENCOURTS_SERVER_TIMEOUT_SECONDS = 3
 SHELL_COMMAND_EXECUTION_TIMEOUT_SECONDS = 5
 
 logger = m1_logging.logger("network")
+
+def ip_address():
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect((INTERNET_CHECK_HOST_IP, 80))
+        result = s.getsockname()[0]
+        s.close()
+    except Exception as e:
+        logger.exception(e)
+        result = "###"
+    return result
+
 
 def _run_command(command):
     """
