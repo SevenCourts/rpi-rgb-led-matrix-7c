@@ -193,7 +193,7 @@ class SevenCourtsM1(SampleBase):
         self.canvas.Clear()
 
         x = 2
-        y = 2 + y_font_offset(FONT_S)
+        y = 2 + y_font_offset(FONT_M)
         draw_text(self.canvas, x, y, f"Initializing{SYMBOL_ELLIPSIS}", FONT_S, COLOR_7C_GREEN)
 
         dt = datetime.now(tz.gettz(self._panel_tz()))
@@ -208,16 +208,14 @@ class SevenCourtsM1(SampleBase):
         self.canvas = self.matrix.SwapOnVSync(self.canvas)
     
     def _draw_offline_status(self, display_available_networks=False):
-
+        x = 4
         if display_available_networks:
-            x = 3
-            y = 2 + y_font_offset(FONT_S)
+            y = 2 + y_font_offset(FONT_M)
             active_interfaces = network_utils.get_active_interfaces()
             if not active_interfaces:
                 self._draw_status_indicator(COLOR_RED, y=0)
                 logger.warning("No active network interfaces found (excluding loopback).")
             else:
-                y += y_font_offset(FONT_XXS) + 2
                 for iface in active_interfaces:
                     logger.info(f"Interface: {iface} is on: Yes (Detected as UP)")
 
@@ -227,12 +225,11 @@ class SevenCourtsM1(SampleBase):
                     if iface_type == "WLAN":
                         ssid = network_utils.get_wlan_ssid(iface)
                         logger.info(f"Interface: {iface} WLAN Name (SSID): {ssid}")
+                        y += y_font_offset(FONT_XXS) + 2
                         graphics.DrawText(self.canvas, FONT_XXS, x, y, COLOR_7C_STATUS_ERROR, 
                                             f"{iface} SSID: {ssid}")
                     else:
-                        logger.warning(f"Interface: {iface} WLAN Name (SSID): N/A (Not a WLAN interface)")                        
-                        
-                    y += y_font_offset(FONT_XXS) + 2
+                        logger.warning(f"Interface: {iface} WLAN Name (SSID): N/A (Not a WLAN interface)")
 
         
         # Checking Internet and Server Accessibility
@@ -246,9 +243,9 @@ class SevenCourtsM1(SampleBase):
                 color_error_indicator = COLOR_YELLOW
                 logger.warning(f"SevenCourts server in NOT accessible: {BASE_URL}")
                 if display_available_networks:
-                    graphics.DrawText(self.canvas, FONT_XXS, 2, y, color_error_indicator, 
-                                            f"SevenCourts server in NOT accessible:")
-                    graphics.DrawText(self.canvas, FONT_XXS, 2, y + 2 + y_font_offset(FONT_XXS), color_error_indicator,
+                    graphics.DrawText(self.canvas, FONT_XXS, x, y, color_error_indicator, 
+                                            f"SevenCourts server is NOT accessible:")
+                    graphics.DrawText(self.canvas, FONT_XXS, x, y + 2 + y_font_offset(FONT_XXS), color_error_indicator,
                                             BASE_URL)
 
         else:
