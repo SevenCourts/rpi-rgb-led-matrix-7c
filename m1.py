@@ -193,8 +193,8 @@ class SevenCourtsM1(SampleBase):
         self.canvas.Clear()
 
         x = 2
-        y = y_font_offset(FONT_XXS) + 2
-        draw_text(self.canvas, x, y, "Initializing...", FONT_XXS, COLOR_7C_BLUE)
+        y = 2 + y_font_offset(FONT_XS)
+        draw_text(self.canvas, x, y, "Initializing...", FONT_XS, COLOR_7C_BLUE)
 
         dt = datetime.now(tz.gettz(self._panel_tz()))
         text = dt.strftime('%H:%M')
@@ -211,7 +211,7 @@ class SevenCourtsM1(SampleBase):
 
         if display_available_networks:
             x = 2
-            y = y_font_offset(FONT_XXS) + 2
+            y = 2 + y_font_offset(FONT_XS) + 2 + y_font_offset(FONT_XXS)
             active_interfaces = network_utils.get_active_interfaces()
             if not active_interfaces:
                 self._draw_status_indicator(COLOR_RED, y=0)
@@ -219,8 +219,8 @@ class SevenCourtsM1(SampleBase):
             else:
                 graphics.DrawText(self.canvas, FONT_XXS, x, y, COLOR_7C_STATUS_ERROR, 
                                             "Network Interfaces:")
-                
                 x += 4
+                y += y_font_offset(FONT_XXS) + 2
                 for iface in active_interfaces:
                     logger.info(f"Interface: {iface} is on: Yes (Detected as UP)")
 
@@ -249,11 +249,15 @@ class SevenCourtsM1(SampleBase):
                 logger.info(f"SevenCourts server is accessible: {BASE_URL}")                
             else:
                 color_error_indicator = COLOR_YELLOW
-                logger.warning(f"SevenCourts server in NOT accessible: {BASE_URL}")                
+                logger.warning(f"SevenCourts server in NOT accessible: {BASE_URL}")
+                if display_available_networks:
+                    graphics.DrawText(self.canvas, FONT_XXS, 2, y, color_error_indicator, 
+                                            f"SevenCourts server in NOT accessible: {BASE_URL}")
+
         else:
             logger.warning(f"Internet is NOT accessible")
             if display_available_networks:
-                graphics.DrawText(self.canvas, FONT_XXS, 2, y, COLOR_7C_STATUS_ERROR, 
+                graphics.DrawText(self.canvas, FONT_XXS, 2, y, color_error_indicator,
                                             "No Internet connection.")
 
         self._draw_status_indicator(color_error_indicator)
