@@ -224,7 +224,6 @@ def width_in_pixels(font, text):
     # print('<{}> => {}'.format(text,result))
     return result
 
-
 def truncate_text(font, max_width, text):
     result = ""
     total_width = 0
@@ -306,9 +305,11 @@ def draw_matrix(canvas, m, x0, y0):
         y = y + 1
 
 
-def fill_rect(canvas, x0: int, y0: int, w: int, h: int, color):
+def fill_rect(canvas, x0: int, y0: int, w: int, h: int, color, round_corners=False):
     for x in range(x0, x0 + w):
         graphics.DrawLine(canvas, x, y0, x, y0 + h - 1, color)
+    if round_corners:
+        round_rect_corners(canvas, x0, y0, w, h)
 
 def round_rect_corners(cnv, x: int, y: int, w: int, h: int, color = COLOR_BLACK):
     fill_rect(cnv, x, y, 1, 1, color)
