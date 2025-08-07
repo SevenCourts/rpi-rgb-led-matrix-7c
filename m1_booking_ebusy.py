@@ -71,7 +71,7 @@ booking_3_courts = {
     'courts': (court_1, court_2, court_3)}
 
 # fonts
-f_clock = FONT_M_SPLEEN
+f_clock = FONT_M_SDK
 f_booking_info_pri = FONT_XS
 f_booking_info_sec = FONT_XXS
 f_booking_court = FONT_M
