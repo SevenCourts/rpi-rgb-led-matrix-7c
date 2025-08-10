@@ -50,6 +50,8 @@ def _display_score(canvas, match):
     t1_game = str(t1_game if t1_game is not None else "")
     t2_game = str(t2_game if t2_game is not None else "")
 
+    is_mtb = None
+
     if number_of_sets == 0:
         t1_set1 = t2_set1 = t1_set2 = t2_set2 = t1_set3 = t2_set3 = ""
         c_t1_set1 = c_t2_set1 = c_t1_set2 = c_t2_set2 = c_t1_set3 = c_t2_set3 = COLOR_BLACK
@@ -151,7 +153,7 @@ def _display_score(canvas, match):
         _display_set_digit(canvas, x_set3, y_t2, FONT_SCORE, c_t2_set3, t2_set3)
 
     # FIXME Test if this works for finished e.g. tie-break matches
-    if not is_match_over:
+    if not is_match_over or is_mtb:
         graphics.DrawText(canvas, FONT_SCORE, x_t1_score_game, y_t1, COLOR_SCORE_GAME, t1_game)
         graphics.DrawText(canvas, FONT_SCORE, x_t2_score_game, y_t2, COLOR_SCORE_GAME, t2_game)
 
