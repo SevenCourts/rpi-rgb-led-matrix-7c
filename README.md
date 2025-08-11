@@ -14,9 +14,7 @@ Install [Raspberry PI OS Lite 64 bit](https://www.raspberrypi.com/documentation/
 - Download and install the [Raspberry PI Imager](https://www.raspberrypi.com/documentation/computers/getting-started.html#raspberry-pi-imager)
 - Use exactly this version of RaspiOS: <https://downloads.raspberrypi.org/raspios_lite_arm64/images/raspios_lite_arm64-2023-02-22/>
 
-Create a default user and enable SSH.
-
-In the Raspberry PI Imager:
+Create a default user and enable SSH. In the Raspberry PI Imager:
 
 - "Raspberry PI Device": select "Raspberry PI 4"
 - "Operating System": select "Use custom" and browse for the image file
@@ -33,7 +31,7 @@ In the Raspberry PI Imager:
 
 The rest is done via SSH.
 
-- Connect to a LAN via Ethernet
+- Connect Raspi to a LAN via Ethernet
 - Find out the `<ip-address>` of the Raspi
   - e.g. with a Mikrotik router: <http://192.168.114.1/webfig/#IP:DHCP_Server.Leases>
   - or use any IP scanner software
@@ -173,6 +171,10 @@ Start update script for each panel, e.g.:
 ./7c-update-panel.sh 10.8.0.2
 ```
 
+## Logging
+
+If the environment variable `TABLEAU_DEBUG` is set to some value, `DEBUG` level is use, otherwise `INFO`.
+
 ## Switch stage [PROD|STAGING|DEV]
 
 Stop the 7c service:
@@ -255,22 +257,26 @@ set_network 0 psk "<PSK>"
 ```
 
 See the WLAN setting currently configured by 7c-controller:
+
 ```shell
 more /etc/7c_m1_assoc.json
 ```
 
 See the WLAN setting currently configured by wpa_supplicant:
+
 ```shell
 more /etc/wpa_supplicant/wpa_supplicant.conf
 ```
 
 Check the status and log of 7c-controller:
+
 ```shell
 systemctl status 7c-controller.service
 journalctl -u 7c-controller.service -f
 ```
 
 Check the current status of `wlan0`:
+
 ```shell
 iwconfig wlan0
 ```
