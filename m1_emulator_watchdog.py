@@ -7,7 +7,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 # --- Configuration ---
-BATCH_FILE = "m1_emulator.bat"
+BATCH_FILE = "m1-emulator.bat"
 DIRECTORY_TO_WATCH = "d:/dev/7c/git.github.com/rpi-rgb-led-matrix-7c"
 
 # Global variable to hold the subprocess object
@@ -20,7 +20,7 @@ def start_batch_file():
     try:
         # Use subprocess.Popen to run the batch file in a new process
         # and store the process object.
-        batch_process = subprocess.Popen(BATCH_FILE, creationflags=subprocess.CREATE_NEW_CONSOLE)
+        batch_process = subprocess.Popen(BATCH_FILE, creationflags=subprocess.CREATE_NO_WINDOW)
         print(f"➡️ Batch file started with PID: {batch_process.pid}")
     except FileNotFoundError:
         print(f"❌ Error: The batch file '{BATCH_FILE}' was not found.")

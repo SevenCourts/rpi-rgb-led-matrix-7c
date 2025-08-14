@@ -17,13 +17,13 @@ f_booking_court = FONT_M
 c_CI_primary = graphics.Color(5, 105, 167) # TABB blue
 c_CI_secondary = COLOR_7C_GOLD # COLOR_WHITE # TABB white
 
-c_grid = COLOR_7C_GOLD
+c_grid = None # COLOR_7C_GOLD
 
 c_clock = COLOR_WHITE
 c_clock_separator = COLOR_GREY_DARK
 c_booking_court = COLOR_WHITE
 c_booking_info_text = COLOR_WHITE
-c_booking_info_header = c_CI_primary
+c_booking_info_header = COLOR_GREY
 c_booking_info_header_free = COLOR_GREEN
 
 def _booking_line_heights(courts_count:int = 3):
@@ -32,7 +32,7 @@ def _booking_line_heights(courts_count:int = 3):
     '''
     switcher = {
         2: (int(H_PANEL / 2), 8, 12, 12),   # 32
-        3: (int(H_PANEL / 3), 5, 8, 8),     # 21
+        3: (int(H_PANEL / 3), 5, 7, 7),     # 21
         4: (int(H_PANEL / 4), 6, 10, None), # 16
     }
     return switcher.get(courts_count, int(H_PANEL / 3))
@@ -96,42 +96,36 @@ def _draw_booking_court(cnv, x0: int, y0:int, line_heights, w:int, court_booking
     court_name = court_bookings['court']['name']
 
     (h_total, h_row_sec, h_row_pri_1, h_row_pri_2) = line_heights    
-    w_court_name = 36
+    w_court_name = 25
 
     max_length_court_name = 3
 
     # court name
     txt = court_name[:max_length_court_name]
     fnt = f_booking_court
-    margin = 2
-    x = x0 + margin
-    y = y0 + margin
-    _w = w_court_name - margin - 1
-    _h = h_total - margin - 1
+    x = x0
+    y = y0 + 1
+    _w = w_court_name
+    _h = h_total - 2
     fill_rect(cnv, x, y, _w, _h, c_CI_primary, round_corners=True)        
-    x += x_font_center(txt, _w, fnt)
+    x += x_font_center(txt, _w+2, fnt)
     y += y_font_center(fnt, _h)
     graphics.DrawText(cnv, fnt, x, y, c_booking_court, txt)
 
-
-
     # Booking info (up to 3 rows)
-
-    
-
     info_sec = info_pri_1 = info_pri_2 = ''
     
     current = court_bookings['current']
     if current:
         
-        info_sec = ">>> 6 min."
+        info_sec = ">>> 6 min." # FIXME
         c_sec = c_booking_info_header
 
         txt = current['display-text']
         if txt:
             w_info = w - w_court_name
             if h_row_pri_2:            
-                MAX_ROW_LENGTH = 22 #FIXME dynamic 
+                MAX_ROW_LENGTH = max_string_length_for_font(f_booking_info_pri, w_info)
                 for wrd in txt.split():
                     if info_pri_1:
                         if len(info_pri_1 + ' ' + wrd) <= MAX_ROW_LENGTH:
@@ -150,22 +144,29 @@ def _draw_booking_court(cnv, x0: int, y0:int, line_heights, w:int, court_booking
             info_pri_2 = booking_team(current, False)
     else:
         c_sec = c_booking_info_header_free
-        info_sec = "Free"
+        info_sec = "Free to book"
     
     # secondary info
-    x = x0 + w_court_name + 1
-    y = y0 + h_row_sec # margin + y_font_offset(f_booking_info_sec)
+    x = x0 + w_court_name + 2
+    if info_pri_1:
+        y = y0 + 1 + h_row_sec
+    else:
+        y = y0 + (h_total + y_font_offset(f_booking_info_sec) ) / 2
     graphics.DrawText(cnv, f_booking_info_sec, x, y, c_sec, info_sec)
     
-    if info_pri_1:        
-        # primary info
+    # primary info
+    if info_pri_1:
         c = c_booking_info_text
-        y += h_row_pri_1
-        graphics.DrawText(cnv, f_booking_info_pri, x, y, c, info_pri_1)
         if info_pri_2:
+            y += h_row_pri_1
+            graphics.DrawText(cnv, f_booking_info_pri, x, y, c, info_pri_1)
+
             y += h_row_pri_2
-            logger.info(f"XXX {info_pri_2}")
+            logger.warning(f"XYZ {info_pri_2}")
             graphics.DrawText(cnv, f_booking_info_pri, x, y, c, info_pri_2)
+        else:
+            y += h_row_pri_1 + (h_row_pri_2 / 2)
+            graphics.DrawText(cnv, f_booking_info_pri, x, y, c, info_pri_1)
 
     if c_grid:
         ### vertical line separating booking court from info

@@ -235,11 +235,16 @@ def truncate_text(font, max_width, text):
             break
     return result
 
+def max_string_length_for_font(font, width):
+    txt = "W" # we assume all used fonts have fixed width
+    while width_in_pixels(font, txt) < width:
+        txt += "W"
+    return len(txt)-1
 
 def _is_font_fits(font, width, height, *texts):
     font_symbol_height = y_font_offset(font)
     max_width_with_this_font = max(map(partial(width_in_pixels, font), *texts))
-    # print('{}>={} {}>={} {}'.format(height, font_symbol_height, width, max_width_with_this_font, *texts))
+    #print('{}>={} {}>={} {}'.format(height, font_symbol_height, width, max_width_with_this_font, *texts))
 
     result = (height >= font_symbol_height) & (width >= max_width_with_this_font)
     return result
