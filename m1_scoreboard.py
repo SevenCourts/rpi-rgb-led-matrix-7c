@@ -301,11 +301,11 @@ def _display_names(canvas, match):
 
 def _display_singles_flags(canvas, img_t1, img_t2):
     if img_t1 is not None:
-        y_flag_t1 = max(0, H_PANEL / 2 / 2 - img_t1.height / 2)
+        y_flag_t1 = int(max(0, H_PANEL / 2 / 2 - img_t1.height / 2))
         canvas.SetImage(img_t1, 0, y_flag_t1)
 
     if img_t2 is not None:
-        y_flag_t2 = max(H_PANEL / 2, H_PANEL / 2 + H_PANEL / 2 / 2 - img_t2.height / 2)
+        y_flag_t2 = int(max(H_PANEL / 2, H_PANEL / 2 + H_PANEL / 2 / 2 - img_t2.height / 2))
         canvas.SetImage(img_t2, 0, y_flag_t2)
 
 def _display_winner(canvas, match):
