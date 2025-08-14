@@ -164,8 +164,8 @@ class SevenCourtsM1(SampleBase):
             except Exception as ex:
                 self._draw_status_indicator(COLOR_7C_STATUS_ERROR)
                 self.panel_info_failed = True
-                logger.error(f"Cannot refresh panel: {str(ex)}")
-                logger.debug(f"Cannot refresh panel", ex)
+                logger.error(f"Cannot fetch panel info: {str(ex)}", ex)
+                logger.debug("Cannot fetch panel info", ex)
             time.sleep(1)
 
     

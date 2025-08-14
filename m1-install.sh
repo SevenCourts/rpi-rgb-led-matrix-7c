@@ -48,7 +48,10 @@ make install-python PYTHON=$(command -v python3)
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python
 git clone https://github.com/SevenCourts/rpi-rgb-led-matrix-7c.git
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
-git switch firmware/stable
+git checkout firmware/stable
+
+# Create a symlink for convenient access to the firmware directory
+ln -s /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c/ /root/7c-firmware
 
 # Create 7c config file
 touch /opt/7c/panel.conf
