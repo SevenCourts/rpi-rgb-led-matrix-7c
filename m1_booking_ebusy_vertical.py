@@ -8,7 +8,7 @@ import m1_image
 from m1_booking_utils import *
 
 # fonts
-f_clock = FONT_M
+f_clock = FONT_L
 f_weather = FONT_M_SDK
 f_booking_court = FONT_M
 f_booking_info = FONT_XS
@@ -65,21 +65,30 @@ def draw(cnv, booking_info, weather_info, panel_tz):
 
 def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, path_to_logo_image, time_now, weather_info):
 
-    # clock
-    x_clock = x0
-    h_clock = y_font_offset(f_clock) + 1
-    y_clock = 1 + h_clock
-    m1_clock.draw_clock_by_coordinates(cnv, x_clock, y_clock, f_clock, panel_tz, c_clock, time_now)
+    style = 'BigClock'
+    style = 'WithLogo'
 
-    ## logo
-    logo_img = Image.open(path_to_logo_image)
-    m1_image.thumbnail(logo_img, w, logo_img.height)
-    x_logo_img = x0
-    y_logo_img = int((H_PANEL + logo_img.height) / 2) - logo_img.height
-    cnv.SetImage(logo_img.convert('RGB'), x_logo_img, y_logo_img)
-    #round_rect_corners(cnv, x_logo_img, y_logo_img, logo_img.width, logo_img.height)
-    ### logo placeholder bg
-    #fill_rect(cnv, x_logo, y_logo, w_logo, h_logo, c_CI_primary)
+    if style == 'BigClock':
+        x_clock = x0
+        h_clock = y_font_offset(f_clock) + 1
+        y_clock = 1 + h_clock
+        m1_clock.draw_clock_by_coordinates(cnv, x_clock, y_clock, f_clock, panel_tz, c_clock, time_now)
+    elif style == 'WithLogo':
+        # clock
+        x_clock = x0
+        h_clock = y_font_offset(f_clock) + 1
+        y_clock = 1 + h_clock
+        m1_clock.draw_clock_by_coordinates(cnv, x_clock, y_clock, f_clock, panel_tz, c_clock, time_now)
+
+        ## logo
+        logo_img = Image.open(path_to_logo_image)
+        m1_image.thumbnail(logo_img, w, logo_img.height)
+        x_logo_img = x0
+        y_logo_img = int((H_PANEL + logo_img.height) / 2) - logo_img.height
+        cnv.SetImage(logo_img.convert('RGB'), x_logo_img, y_logo_img)
+        #round_rect_corners(cnv, x_logo_img, y_logo_img, logo_img.width, logo_img.height)
+        ### logo placeholder bg
+        #fill_rect(cnv, x_logo, y_logo, w_logo, h_logo, c_CI_primary)
 
     # weather
     if weather_info:
