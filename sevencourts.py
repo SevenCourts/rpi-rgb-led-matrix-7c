@@ -309,6 +309,18 @@ def draw_matrix(canvas, m, x0, y0):
             x = x + 1
         y = y + 1
 
+def draw_rect(canvas, x0: int, y0: int, w: int, h: int, color_border, w_border=1, color_fill=COLOR_BLACK, round_corners=False):
+    fill_rect(canvas, x0, y0, w, h, color_border, round_corners)
+    
+    _x = x0 + w_border
+    _w = w - (w_border * 2)
+    _y = y0 + w_border
+    _h = h - (w_border * 2)
+    fill_rect(canvas, _x, _y, _w, _h, color_fill, False)
+    if round_corners:
+        round_rect_corners(canvas, _x, _y, _w, _h, color_border)
+
+    
 
 def fill_rect(canvas, x0: int, y0: int, w: int, h: int, color, round_corners=False):
     for x in range(x0, x0 + w):
