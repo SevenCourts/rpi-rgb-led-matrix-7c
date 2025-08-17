@@ -66,7 +66,7 @@ booking_info_4_courts = {
     '_dev_timestamp': _dev_timestamp,
     'courts': (court_1, court_2, court_3, court_4)}
 
-def draw_booking(cnv, booking_info, panel_tz):
+def draw_booking(cnv, booking_info, weather_info, panel_tz):
 
     booking_info = booking_info_3_courts
 
@@ -74,7 +74,7 @@ def draw_booking(cnv, booking_info, panel_tz):
     if total_courts == 1:
         m1_booking_ebusy_single.draw(cnv, booking_info, panel_tz)
     else:
-        m1_booking_ebusy_vertical.draw(cnv, booking_info, panel_tz)
+        m1_booking_ebusy_vertical.draw(cnv, booking_info, weather_info, panel_tz)
         # m1_booking_ebusy_grid.draw(cnv, booking_info, panel_tz)
 
 def draw_ebusy_ads(cnv, ebusy_ads):

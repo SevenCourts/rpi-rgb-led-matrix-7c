@@ -39,7 +39,7 @@ def _booking_height(courts_count:int = 3):
     }
     return switcher.get(courts_count, int(H_PANEL / 3))
 
-def draw(cnv, booking_info, panel_tz):
+def draw(cnv, booking_info, weather_info, panel_tz):
 
     # Use datetime set in the Panel Admin UI for easier testing/debugging:
     _dev_timestamp = booking_info['_dev_timestamp']
@@ -52,7 +52,7 @@ def draw(cnv, booking_info, panel_tz):
 
     # heights and widths
     w_clock = w_logo = width_in_pixels(f_clock, "00:00")    
-    _draw_club_area(cnv, 0, 0, w_clock, panel_tz, 'images/logos/TABB/tabb-logo-transparent-60x13.png', time_now)
+    _draw_club_area(cnv, 0, 0, w_clock, panel_tz, 'images/logos/TABB/tabb-logo-transparent-60x13.png', time_now, weather_info)
 
     ## booking infos
     h_booking = _booking_height(total_courts)
@@ -63,7 +63,7 @@ def draw(cnv, booking_info, panel_tz):
         _draw_booking_court(cnv, x, y, h_booking, w_booking, b, time_now)
         y += h_booking
 
-def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, path_to_logo_image, time_now):
+def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, path_to_logo_image, time_now, weather_info):
 
     # clock
     x_clock = x0
@@ -82,10 +82,11 @@ def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, path_to_logo_image,
     #fill_rect(cnv, x_logo, y_logo, w_logo, h_logo, c_CI_primary)
 
     # weather
-    weather = '21°C'
-    x_weather = x_font_center(weather, w, f_weather)
-    y_weather = H_PANEL - 2
-    graphics.DrawText(cnv, f_weather, x_weather, y_weather, c_weather, weather)
+    if weather_info:
+        temperature = f"{weather_info.get('temperature')}°C"
+        x_weather = x_font_center(temperature, w, f_weather)
+        y_weather = H_PANEL - 2
+        graphics.DrawText(cnv, f_weather, x_weather, y_weather, c_weather, temperature)
 
 
     if c_grid:

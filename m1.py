@@ -25,8 +25,17 @@ import logging
 import subprocess
 from datetime import datetime
 from dateutil import tz
+import threading
+import openweathermap
 
 logger = m1_logging.logger()
+
+# shared state
+weather_info = None
+weather_info_lock = threading.Lock()
+# Careful with this, since only 60 requests per minute are allowed:
+# FIXME Better to send the weather information from server
+UPDATE_WEATHER_PERIOD_SEC = 120 # seconds
 
 # In container there is no git binary and history -- read from file.
 # In local environment we don't want generate this file manually -- ask git.
@@ -59,6 +68,16 @@ def uptime():
         logger.debug('Cannot get uptime')
         return -1
 
+def _fetch_weather_info():
+    global weather_info
+    while True:
+        weather_info_lock.acquire()
+        try:
+            city = "Böblingen,DE" # FIXME
+            weather_info = openweathermap.fetch_weather(city)            
+        finally:
+            weather_info_lock.release()
+        time.sleep(UPDATE_WEATHER_PERIOD_SEC)
 
 # FIXME wtf?! without this call, getting CPU temperature fails when is called from within class instance
 try:
@@ -139,8 +158,13 @@ class SevenCourtsM1(SampleBase):
         self.startup_config = _read_startup_config()
         
     def run(self):
+
+        logger.info("Starting weather fetching thread")
+        # need to be daemon to interrupt keyboard (e.g. Ctrl+C)
+        update_weather_thread = threading.Thread(target=_fetch_weather_info, daemon=True)
+        update_weather_thread.start()
+
         logger.info("Starting M1 instance")
-        
         self.canvas = self.matrix.CreateFrameCanvas()
 
         self._display_init_screen()
@@ -204,7 +228,11 @@ class SevenCourtsM1(SampleBase):
         if self.panel_info.get('standby'):
             self._draw_standby_mode_indicator()
         elif 'booking' in self.panel_info:
-            m1_booking_ebusy.draw_booking(self.canvas, self.panel_info.get('booking'), self._panel_tz())
+            weather_info_lock.acquire()
+            try:
+                m1_booking_ebusy.draw_booking(self.canvas, self.panel_info.get('booking'), weather_info, self._panel_tz())
+            finally:                
+                weather_info_lock.release()            
         elif 'ebusy-ads' in self.panel_info:
             m1_booking_ebusy.draw_ebusy_ads(self.canvas, self.panel_info.get('ebusy-ads'))
         elif 'idle-info' in self.panel_info:
@@ -252,7 +280,6 @@ class SevenCourtsM1(SampleBase):
 
     def _panel_tz(self):
         return self.panel_info.get('idle-info', {}).get('timezone', self.startup_config.get('timezone', 'Europe/Berlin'))
-
 
 # Main function
 if __name__ == "__main__":
