@@ -110,17 +110,28 @@ def _draw_header(cnv, court, dt=None):
     y_court_name = y_font_offset(FONT_COURT_NAME) + MARGIN
     
     if dt:
-        clock_str = dt.strftime('%H:%M') # FIXME WTF
-        x_clock = W_PANEL - MARGIN - width_in_pixels(FONT_CURRENT_TIME, clock_str)    
+        txt_clock = dt.strftime('%H:%M') # FIXME WTF
+        x_clock = W_PANEL - MARGIN - width_in_pixels(FONT_CURRENT_TIME, txt_clock)    
         y_clock =  y_font_offset(FONT_CURRENT_TIME) + MARGIN        
         y_separator = max(y_clock, y_court_name) + MARGIN                
     else:
         y_separator = y_court_name + MARGIN
 
     fill_rect(cnv, 0, 0, W_PANEL, y_separator, COLOR_HEADER_BG)
-    draw_text(cnv, x_court_name, y_court_name, court['name'], FONT_COURT_NAME, COLOR_COURT_NAME)
+
     if dt:
-        draw_text(cnv, x_clock, y_clock, clock_str, FONT_CURRENT_TIME, COLOR_CURRENT_TIME)
+        draw_text(cnv, x_clock, y_clock, txt_clock, FONT_CURRENT_TIME, COLOR_CURRENT_TIME)
+        w_clock = width_in_pixels(FONT_COURT_NAME, txt_clock)
+    else:
+        w_clock = 0    
+    w_court_name = W_PANEL - w_clock - MARGIN*2
+    txt_court_name = truncate_text(FONT_COURT_NAME, w_court_name, court['name'])
+    if txt_court_name != court['name']:
+        # ellipsize
+        txt_court_name = txt_court_name[:len(txt_court_name)-4] + "..."
+    draw_text(cnv, x_court_name, y_court_name, txt_court_name, FONT_COURT_NAME, COLOR_COURT_NAME)
+
+
     graphics.DrawLine(cnv, 0, y_separator, W_PANEL, y_separator, COLOR_SEPARATOR_LINE)
 
     return y_separator + 1

@@ -39,6 +39,8 @@ from functools import partial
 # FIXME use not hardcoded directory (TBD)
 IMAGE_CACHE_DIR = "/opt/7c/cache-images"
 
+# FIXME not all fonts contain this character
+# If used with such a font, draw_text call will crash!
 SYMBOL_ELLIPSIS = chr(8230) # https://www.compart.com/en/unicode/U+2026
 
 # Constants for the 7C M1 panel (P5 192 x 64)
