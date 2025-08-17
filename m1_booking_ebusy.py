@@ -11,15 +11,20 @@ court_1 = {
             'current': {
                 'start-date': '2025-07-17T13:30:00+04:00',
                 'end-date': '2025-07-17T14:00:00+04:00', 
-                'display-text': 'Verbandspiel H1 gg. TC Rechberghausen-Birenbach', 
-                'p1': {'firstname': 'Ilya', 'lastname': 'Shinkarenko'}, 'p2': None, 'p3': None, 'p4': None},
+                'display-text': '',
+                'p1': {'firstname': 'Ilya', 'lastname': 'Shinkarenko'},
+                'p2': {'firstname': 'Roman', 'lastname': 'Churkov'}, 
+                'p3': {'firstname': 'Mario', 'lastname': 'Lopez'}, 
+                'p4': {'firstname': 'Alexander', 'lastname': 'Drachnev'},
+            },
             'next': {
                 'start-date': '2025-07-17T14:00:00+04:00',
                 'end-date': '2025-07-17T14:30:00+04:00', 
-                'display-text': '', 
-                'p1': {'firstname': 'Ilya', 'lastname': 'Shinkarenko'}, 
-                'p2': {'firstname': 'Roman', 'lastname': 'Churkov'}, 
-                'p3': None, 'p4': None}}
+                'display-text': 'H1 Training', 
+                'p1': {'firstname': 'Ilya', 'lastname': 'Shinkarenko'},
+                'p2': None, 
+                'p3': None, 
+                'p4': None}}
 court_2 = {
             'court': {'id': 2, 'name': 'BBG Court'},
             'past': None,
@@ -32,7 +37,7 @@ court_3 = {
             'current': {
                 'start-date': '2025-07-17T13:30:00+04:00',
                 'end-date': '2025-07-17T14:00:00+04:00', 
-                'display-text': 'Training H1',
+                'display-text': 'Verbandspiel H1 gg. TC Rechberghausen-Birenbach',
                 'p1': {'firstname': 'Ilya', 'lastname': 'Shinkarenko'}, 'p2': None, 'p3': None, 'p4': None},
             'next': None}
 court_4 = {
@@ -61,7 +66,6 @@ def draw_booking(cnv, booking_info, panel_tz):
     booking_info = booking_info_3_courts
 
     total_courts = len(booking_info['courts'])
-    logger.info(f"TOTAL COURTS: {total_courts}")
     if total_courts == 1:
         m1_booking_ebusy_single.draw(cnv, booking_info, panel_tz)
     else:

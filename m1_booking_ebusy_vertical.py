@@ -14,17 +14,19 @@ f_booking_info_sec = FONT_XXS
 f_booking_court = FONT_M
 
 # colors
-c_CI_primary = graphics.Color(5, 105, 167) # TABB blue
-c_CI_secondary = COLOR_7C_GOLD # COLOR_WHITE # TABB white
+## TABB
+c_CI_pri = graphics.Color(5, 105, 167) # blue
+c_CI_sec = COLOR_WHITE # white
 
 c_grid = None # COLOR_7C_GOLD
 
 c_clock = COLOR_WHITE
 c_clock_separator = COLOR_GREY_DARK
-c_booking_court = COLOR_WHITE
-c_booking_info_text = COLOR_WHITE
-c_booking_info_header = COLOR_GREY
-c_booking_info_header_free = COLOR_GREEN
+c_booking_court = c_CI_sec
+c_booking_court_bg = c_CI_pri
+c_booking_info_sec = COLOR_GREY
+c_booking_info_pri = COLOR_WHITE
+c_booking_info_sec_free = COLOR_GREEN
 
 def _booking_line_heights(courts_count:int = 3):
     '''Returns a tuple of integers, indicating heights of the lines or None:
@@ -107,7 +109,7 @@ def _draw_booking_court(cnv, x0: int, y0:int, line_heights, w:int, court_booking
     y = y0 + 1
     _w = w_court_name
     _h = h_total - 2
-    fill_rect(cnv, x, y, _w, _h, c_CI_primary, round_corners=True)        
+    fill_rect(cnv, x, y, _w, _h, c_booking_court_bg, round_corners=True)        
     x += x_font_center(txt, _w+2, fnt)
     y += y_font_center(fnt, _h)
     graphics.DrawText(cnv, fnt, x, y, c_booking_court, txt)
@@ -119,7 +121,7 @@ def _draw_booking_court(cnv, x0: int, y0:int, line_heights, w:int, court_booking
     if current:
         
         info_sec = ">>> 6 min." # FIXME
-        c_sec = c_booking_info_header
+        c_sec = c_booking_info_sec
 
         txt = current['display-text']
         if txt:
@@ -141,9 +143,9 @@ def _draw_booking_court(cnv, x0: int, y0:int, line_heights, w:int, court_booking
                 info_pri_1 = truncate_text(f_booking_info_pri, w_info, txt)
         else:
             info_pri_1 = booking_team(current, True)
-            info_pri_2 = booking_team(current, False)
+            info_pri_2 = booking_team(current, False)            
     else:
-        c_sec = c_booking_info_header_free
+        c_sec = c_booking_info_sec_free
         info_sec = "Free to book"
     
     # secondary info
@@ -156,13 +158,11 @@ def _draw_booking_court(cnv, x0: int, y0:int, line_heights, w:int, court_booking
     
     # primary info
     if info_pri_1:
-        c = c_booking_info_text
+        c = c_booking_info_pri
         if info_pri_2:
             y += h_row_pri_1
             graphics.DrawText(cnv, f_booking_info_pri, x, y, c, info_pri_1)
-
-            y += h_row_pri_2
-            logger.warning(f"XYZ {info_pri_2}")
+            y += h_row_pri_2            
             graphics.DrawText(cnv, f_booking_info_pri, x, y, c, info_pri_2)
         else:
             y += h_row_pri_1 + (h_row_pri_2 / 2)
