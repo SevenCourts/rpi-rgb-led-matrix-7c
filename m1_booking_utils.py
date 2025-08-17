@@ -36,7 +36,7 @@ H_HEADER = 12
 
 TD_0_UPCOMING = timedelta(minutes = -5)
 TD_1_WELCOME = timedelta(minutes = 2)
-TD_3_COUNTDOWN = timedelta(minutes = -5)
+TD_3_COUNTDOWN = TD_0_UPCOMING # these two should be equal
 TD_4_GAMEOVER = timedelta(minutes = 2)
 
 def _booking_player(player):

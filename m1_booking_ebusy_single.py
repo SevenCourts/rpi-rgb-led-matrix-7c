@@ -10,7 +10,6 @@ from m1_booking_utils import *
 logger = m1_logging.logger("eBusy")
 
 def draw(cnv, booking_info, panel_tz):
-
     
     court_bookings = booking_info['courts'][0]
     court = court_bookings['court']
@@ -21,18 +20,18 @@ def draw(cnv, booking_info, panel_tz):
     # Use datetime set in the Panel Admin UI for easier testing/debugging:
     _dev_timestamp = booking_info['_dev_timestamp']
     if _dev_timestamp and len(_dev_timestamp):
-        t = parser.parse(_dev_timestamp)
+        time_now = parser.parse(_dev_timestamp)
     else:
-        t = datetime.now(tz.gettz(panel_tz))
+        time_now = datetime.now(tz.gettz(panel_tz))
 
     # do not show time if no booking to show (time will be displayed in the main area)
     show_time_in_header = b_0_past or b_1_current or b_2_next
-    h_header = _draw_header(cnv, court, t if show_time_in_header else None)
+    h_header = _draw_header(cnv, court, time_now if show_time_in_header else None)
 
     if b_0_past and not b_1_current:
         # Show "Game over" for 2 minutes only if there is no current booking
         t_0_4_gameover_end = (parser.parse(b_0_past['end-date']) + TD_4_GAMEOVER)
-        if t < t_0_4_gameover_end:
+        if time_now < t_0_4_gameover_end:
             w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG_INFO, 'Game', 'over')
             x0 = w_timebox + MARGIN * 2
             _draw_booking_match(cnv, x0, h_header, b_0_past, 'Danke fürs Spielen!')
@@ -42,16 +41,16 @@ def draw(cnv, booking_info, panel_tz):
         t_start = parser.parse(b_1_current['start-date'])
         t_end = parser.parse(b_1_current['end-date'])
 
-        t_0_upcoming_start = (t_start + TD_0_UPCOMING)        
+        t_0_upcoming_start = (t_start + TD_0_UPCOMING)
         t_1_welcome_end = (t_start + TD_1_WELCOME)
         t_3_countdown_start = (t_end + TD_3_COUNTDOWN)
         
-        if t > t_0_upcoming_start:
+        if time_now > t_0_upcoming_start:
             # 1. time box
-            if t < t_3_countdown_start:
+            if time_now < t_3_countdown_start:
                 w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG_INFO, t_start.strftime('%H:%M'), "-", t_end.strftime('%H:%M'))
-            elif t < t_end:
-                minutes_left = (t_end - t).seconds // 60 % 60
+            elif time_now < t_end:
+                minutes_left = (t_end - time_now).seconds // 60 % 60 + 1
                 if minutes_left == 0:
                     w_timebox = _draw_time_box(cnv, h_header, COLOR_TIME_BOX_BG_WARN, 'Letzte', 'Minute')
                 else:
@@ -61,22 +60,24 @@ def draw(cnv, booking_info, panel_tz):
 
             # 2. message area
             x0 = w_timebox + MARGIN * 2
-            if t < t_1_welcome_end:                
+            if time_now < t_1_welcome_end:                
                 _draw_booking_match(cnv, x0, h_header, b_1_current, 'Viel Spaß!')
-            elif t < t_3_countdown_start:
+            elif time_now < t_3_countdown_start:
                 _draw_booking_match(cnv, x0, h_header, b_1_current)
-            elif t < t_end:
+            elif time_now < t_end:
                 # Adjacent bookings handling
                     #  0 - 14 show current
                     # 15 - 29 show next
                     # 30 - 44 show current
                     # 45 - 59 show next
-                if b_2_next and (t.second >= 15 and t.second <= 29) or (t.second >= 45 and t.second <= 59):
+                if b_2_next and (time_now.second >= 15 and time_now.second <= 29) or (time_now.second >= 45 and time_now.second <= 59):
                     _draw_booking_match(cnv, x0, h_header, b_2_next, 'Nächste Buchung')                    
                 else:
                     _draw_booking_match(cnv, x0, h_header, b_1_current)
             else:
                 raise ValueError('should never happen with eBusy data')
+        else:
+            raise ValueError('should never happen with eBusy data')
 
     elif b_2_next:
         t_start = parser.parse(b_2_next['start-date'])
@@ -96,7 +97,7 @@ def draw(cnv, booking_info, panel_tz):
         cnv.SetImage(image.convert('RGB'), x, y)
         round_rect_corners(cnv, x, y, image.width, image.height)
 
-        text = t.strftime('%H:%M')
+        text = time_now.strftime('%H:%M')
         fnt = m1_clock.FONT_CLOCK_M_1
         x = image.width + MARGIN + MARGIN
         x = x + x_font_center(text, W_PANEL - x, fnt)

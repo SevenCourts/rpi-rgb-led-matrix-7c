@@ -9,10 +9,10 @@ from m1_booking_utils import *
 
 # fonts
 f_clock = FONT_M
-f_booking_info_pri = FONT_XS
-f_booking_info_sec = FONT_XXS
-f_booking_court = FONT_M
 f_weather = FONT_M_SDK
+f_booking_court = FONT_M
+f_booking_info = FONT_XS
+f_booking_status = FONT_XXS
 
 # colors
 ## TABB
@@ -26,14 +26,12 @@ c_weather = COLOR_WHITE
 c_clock_separator = COLOR_GREY_DARK
 c_booking_court = c_CI_sec
 c_booking_court_bg = c_CI_pri
-c_booking_info_sec = COLOR_GREY
-c_booking_info_pri = COLOR_WHITE
-c_booking_info_sec_free = COLOR_GREEN
+c_booking_info = COLOR_WHITE
+c_booking_status_default = COLOR_GREY
+c_booking_status_free = COLOR_GREEN
+c_booking_status_countdown = COLOR_7C_GOLD
 
-def _booking_line_heights(courts_count:int = 3):
-    '''Returns a tuple of integers, indicating heights of the lines or None:
-    (total, row_sec, row_pri_1, row_pri_2)
-    '''
+def _booking_height(courts_count:int = 3):
     switcher = {
         2: int(H_PANEL / 2), # 32
         3: int(H_PANEL / 3), # 21
@@ -43,28 +41,35 @@ def _booking_line_heights(courts_count:int = 3):
 
 def draw(cnv, booking_info, panel_tz):
 
+    # Use datetime set in the Panel Admin UI for easier testing/debugging:
+    _dev_timestamp = booking_info['_dev_timestamp']
+    if _dev_timestamp and len(_dev_timestamp):
+        time_now = parser.parse(_dev_timestamp)
+    else:
+        time_now = datetime.now(tz.gettz(panel_tz))
+
     total_courts = len(booking_info['courts'])
 
     # heights and widths
     w_clock = w_logo = width_in_pixels(f_clock, "00:00")    
-    _draw_club_area(cnv, 0, 0, w_clock, panel_tz, 'images/logos/TABB/tabb-logo-transparent-60x13.png')
+    _draw_club_area(cnv, 0, 0, w_clock, panel_tz, 'images/logos/TABB/tabb-logo-transparent-60x13.png', time_now)
 
     ## booking infos
-    h_booking = _booking_line_heights(total_courts)
+    h_booking = _booking_height(total_courts)
     w_booking = W_PANEL - max(w_clock, w_logo)
     y = 0
     x = w_clock + 2
     for b in booking_info['courts']:
-        _draw_booking_court(cnv, x, y, h_booking, w_booking, b)
+        _draw_booking_court(cnv, x, y, h_booking, w_booking, b, time_now)
         y += h_booking
 
-def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, path_to_logo_image):
+def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, path_to_logo_image, time_now):
 
     # clock
     x_clock = x0
     h_clock = y_font_offset(f_clock) + 1
     y_clock = 1 + h_clock
-    m1_clock.draw_clock_by_coordinates(cnv, x_clock, y_clock, f_clock, panel_tz, c_clock)
+    m1_clock.draw_clock_by_coordinates(cnv, x_clock, y_clock, f_clock, panel_tz, c_clock, time_now)
 
     ## logo
     logo_img = Image.open(path_to_logo_image)
@@ -93,7 +98,7 @@ def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, path_to_logo_image)
     #graphics.DrawLine(cnv, x, 0, x, H_PANEL, c_clock_separator)
 
 
-def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings):
+def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, time_now):
 
     court_name = court_bookings['court']['name']
 
@@ -114,38 +119,92 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings):
     graphics.DrawText(cnv, fnt, x, y, c_booking_court, txt)
 
     # Booking info (up to 2 rows)
-    info_sec = info_pri_1 = info_pri_2 = ''
+    txt_info_row_1 = txt_info_row_2 = txt_status = ''
     
-    current = court_bookings['current']
-    if current:
-        
-        info_sec = "55 m." # FIXME
-        info_sec = "5 min" # FIXME
-        c_sec = c_booking_info_sec
+    b_1_current = court_bookings['current']
+    b_2_next = court_bookings['next']
 
-        txt = current['display-text']
-        if txt:
-            w_info = w - w_court_name * 2 - 2            
-            max_text_length = max_string_length_for_font(f_booking_info_pri, w_info)
-            for wrd in txt.split():
-                if info_pri_1:
-                    if len(info_pri_1 + ' ' + wrd) <= max_text_length:
-                        info_pri_1 += ' ' + wrd
-                    else:
-                        info_pri_2 += (' ' if info_pri_2 else '') + wrd
-                else:
-                    info_pri_1 = wrd
-            if len(info_pri_2) > max_text_length:
-                # ellipsize 2nd row            
-                info_pri_2 = info_pri_2[:max_text_length]
+    booking = None
+    
+    c_status = c_booking_status_default
+
+    if b_1_current:
+
+        t_start = parser.parse(b_1_current['start-date'])
+        t_end = parser.parse(b_1_current['end-date'])
+
+        t_0_upcoming_start = (t_start + TD_0_UPCOMING)
+        t_3_countdown_start = (t_end + TD_3_COUNTDOWN)
+
+        booking = b_1_current
+        
+        if time_now > t_0_upcoming_start:
             
+            seconds_left = (t_end - time_now).seconds
+            minutes_in_hour_left = seconds_left // 60 % 60 + 1
+            hours_left = seconds_left // (60 * 60)
+
+            if hours_left > 0:
+                # default
+                txt_status = f"> {hours_left} h"
+            elif time_now < t_3_countdown_start:
+                # default
+                if minutes_in_hour_left < 10:
+                    txt_status = f"{minutes_in_hour_left} min"
+                else:
+                    txt_status = f"{minutes_in_hour_left} m."                    
+            elif time_now < t_end:
+                # countdown
+                
+                # Adjacent bookings handling
+                    #  0 - 14 show current
+                    # 15 - 29 show next
+                    # 30 - 44 show current
+                    # 45 - 59 show next
+                if b_2_next and (time_now.second >= 15 and time_now.second <= 29) or (time_now.second >= 45 and time_now.second <= 59):
+                    # show next
+                    booking = b_2_next
+                    t_start = parser.parse(b_2_next['start-date'])
+                    txt_status = f"{t_start.hour:02d}:{t_start.minute:02d}"
+                else:
+                    # show current
+                    txt_status = f"{minutes_in_hour_left} min"
+                    c_status = c_booking_status_countdown
+            else:
+                raise ValueError('should never happen with eBusy data')
         else:
-            info_pri_1 = booking_team(current, True)
-            info_pri_2 = booking_team(current, False)            
+            raise ValueError('should never happen with eBusy data')
+
+        if booking['display-text']:
+            w_info = w - w_court_name * 2 - 2            
+            max_text_length = max_string_length_for_font(f_booking_info, w_info)
+            for wrd in booking['display-text'].split():
+                if txt_info_row_1:
+                    if len(txt_info_row_1 + ' ' + wrd) <= max_text_length:
+                        txt_info_row_1 += ' ' + wrd
+                    else:
+                        txt_info_row_2 += (' ' if txt_info_row_2 else '') + wrd
+                else:
+                    txt_info_row_1 = wrd
+            if len(txt_info_row_2) > max_text_length:
+                # ellipsize 2nd row            
+                txt_info_row_2 = txt_info_row_2[:max_text_length]
+        else:
+            txt_info_row_1 = booking_team(booking, True)
+            txt_info_row_2 = booking_team(booking, False)
+
+    elif b_2_next:
+
+        booking = b_2_next
+        txt_info_row_1 = booking_team(booking, True)
+        txt_info_row_2 = booking_team(booking, False)
+        t_start = parser.parse(booking['start-date'])
+        txt_status = f"{t_start.hour}:{t_start.minute}"
+
     else:
-        c_sec = c_booking_info_sec_free
-        info_sec = "18:55"
-        info_sec = "Free"
+        # no bookings - free
+        c_status = c_booking_status_free        
+        txt_status = "Free"
     
     # secondary info
     ## sec info frame
@@ -155,24 +214,24 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings):
     _y = y0 + 1
     draw_rect(cnv, _x, _y, w_status, _h, c_booking_court_bg, w_border=1, color_fill=COLOR_BLACK, round_corners=True)
     ## sec info text
-    _x += x_font_center(info_sec, w_status, f_booking_info_sec) + 1
-    _y += y_font_center(f_booking_info_sec, _h)
-    graphics.DrawText(cnv, f_booking_info_sec, _x, _y, c_sec, info_sec)
+    _x += x_font_center(txt_status, w_status, f_booking_status) + 1
+    _y += y_font_center(f_booking_status, _h)
+    graphics.DrawText(cnv, f_booking_status, _x, _y, c_status, txt_status)
     
     # primary info
     _x = x0 + w_court_name + 1
-    if info_pri_1:
-        c = c_booking_info_pri
-        if info_pri_2:
+    if txt_info_row_1:
+        c = c_booking_info
+        if txt_info_row_2:
             # correction for 4 courts rendering:
-            is_enough_place_for_2_lines = h_court_name > (2 * (1 + y_font_offset(f_booking_info_pri)))
+            is_enough_place_for_2_lines = h_court_name > (2 * (1 + y_font_offset(f_booking_info)))
             _y = y0 + int(h/2) - (0 if is_enough_place_for_2_lines else 1)
-            graphics.DrawText(cnv, f_booking_info_pri, _x, _y, c, info_pri_1)
-            _y += y_font_offset(f_booking_info_pri) + 2
-            graphics.DrawText(cnv, f_booking_info_pri, _x, _y, c, info_pri_2)
+            graphics.DrawText(cnv, f_booking_info, _x, _y, c, txt_info_row_1)
+            _y += y_font_offset(f_booking_info) + 2
+            graphics.DrawText(cnv, f_booking_info, _x, _y, c, txt_info_row_2)
         else:
-            _y = y0 + y_font_center(f_booking_info_pri, h)
-            graphics.DrawText(cnv, f_booking_info_pri, _x, _y, c, info_pri_1)
+            _y = y0 + y_font_center(f_booking_info, h)
+            graphics.DrawText(cnv, f_booking_info, _x, _y, c, txt_info_row_1)
 
     if c_grid:
         ### vertical line separating booking court from info

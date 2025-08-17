@@ -36,17 +36,22 @@ court_3 = {
             'past': None,
             'current': {
                 'start-date': '2025-07-17T13:30:00+04:00',
-                'end-date': '2025-07-17T14:00:00+04:00', 
+                'end-date': '2025-07-17T14:00:00+04:00',
                 'display-text': 'Verbandspiel H1 gg. TC Rechberghausen-Birenbach',
                 'p1': {'firstname': 'Ilya', 'lastname': 'Shinkarenko'}, 'p2': None, 'p3': None, 'p4': None},
             'next': None}
 court_4 = {
             'court': {'id': 4, 'name': 'Ballwand'},
             'past': None,
-            'current': None,
+            'current': {
+                'start-date': '2025-07-17T13:30:00+04:00',
+                'end-date': '2025-07-17T14:58:15+04:00',
+                'display-text': '',
+                'p1': {'firstname': 'Ilya', 'lastname': 'Shinkarenko'}, 'p2': None, 'p3': None, 'p4': None},
             'next': None}
 
 _dev_timestamp = '2025-07-17T13:58:16+04:00'
+# _dev_timestamp = '2025-07-17T13:58:14+04:00'
 
 booking_info_1_courts = {
     '_dev_timestamp': _dev_timestamp,

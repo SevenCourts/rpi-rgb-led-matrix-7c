@@ -16,8 +16,11 @@ def _get_time_txt(panel_tz):
     dt = datetime.now(tz.gettz(panel_tz))
     return dt.strftime('%H:%M')
 
-def draw_clock_by_coordinates(canvas, x, y, font, panel_tz, color=COLOR_CLOCK_DEFAULT):    
-    text = _get_time_txt(panel_tz)
+def draw_clock_by_coordinates(canvas, x, y, font, panel_tz, color=COLOR_CLOCK_DEFAULT, time_preset=None):    
+    if time_preset:
+        text = time_preset.strftime('%H:%M')
+    else:
+        text = _get_time_txt(panel_tz)
     draw_text(canvas, x, y, text, font, color)
 
 def draw_clock(canvas, clock, panel_tz, color=COLOR_CLOCK_DEFAULT):
