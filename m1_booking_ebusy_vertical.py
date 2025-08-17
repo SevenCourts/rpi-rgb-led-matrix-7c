@@ -112,7 +112,7 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, ti
 
     court_name = court_bookings['court']['name']
 
-    w_court_name = 25
+    w_court_name = 27
 
     max_length_court_name = 3
 
