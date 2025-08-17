@@ -52,6 +52,7 @@ court_4 = {
 
 _dev_timestamp = '2025-07-17T13:58:16+04:00'
 # _dev_timestamp = '2025-07-17T13:58:14+04:00'
+_dev_timestamp = None
 
 booking_info_1_courts = {
     '_dev_timestamp': _dev_timestamp,
@@ -68,7 +69,7 @@ booking_info_4_courts = {
 
 def draw_booking(cnv, booking_info, weather_info, panel_tz):
 
-    booking_info = booking_info_3_courts
+    booking_info = booking_info_4_courts
 
     total_courts = len(booking_info['courts'])
     if total_courts == 1:
