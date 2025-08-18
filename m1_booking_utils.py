@@ -7,6 +7,16 @@ import requests
 import m1_clock
 import m1_image
 
+from dataclasses import dataclass
+
+@dataclass
+class ClubStyle:
+    path_logo: str
+    color_1: graphics.Color
+    color_2: graphics.Color
+    is_weather_displayed: bool
+
+
 logger = m1_logging.logger("eBusy")
 
 # Style sheet

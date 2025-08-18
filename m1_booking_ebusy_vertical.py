@@ -7,25 +7,18 @@ import m1_clock
 import m1_image
 from m1_booking_utils import *
 
-# fonts
+# default styles
 f_clock = FONT_L
 f_weather = FONT_M_SDK
 f_booking_court = FONT_M
 f_booking_info = FONT_XS
 f_booking_status = FONT_XXS
 
-# colors
-## TABB
-c_CI_pri = graphics.Color(5, 105, 167) # blue
-c_CI_sec = COLOR_WHITE # white
-
 c_grid = None # COLOR_7C_GOLD
 
 c_clock = COLOR_WHITE
 c_weather = COLOR_WHITE
 c_clock_separator = COLOR_GREY_DARK
-c_booking_court = c_CI_sec
-c_booking_court_bg = c_CI_pri
 c_booking_info = COLOR_WHITE
 c_booking_status_default = COLOR_GREY
 c_booking_status_free = COLOR_GREEN
@@ -39,7 +32,7 @@ def _booking_height(courts_count:int = 3):
     }
     return switcher.get(courts_count, int(H_PANEL / 3))
 
-def draw(cnv, booking_info, weather_info, panel_tz):
+def draw(cnv, booking_info, weather_info, panel_tz, style: ClubStyle):
 
     # Use datetime set in the Panel Admin UI for easier testing/debugging:
     _dev_timestamp = booking_info['_dev_timestamp']
@@ -52,7 +45,7 @@ def draw(cnv, booking_info, weather_info, panel_tz):
 
     # heights and widths
     w_clock = w_logo = width_in_pixels(f_clock, "00:00")    
-    _draw_club_area(cnv, 0, 0, w_clock, panel_tz, 'images/logos/TABB/tabb-logo-transparent-60x13-border-3.png', time_now, weather_info)
+    _draw_club_area(cnv, 0, 0, w_clock, panel_tz, style, time_now, weather_info)
 
     ## booking infos
     h_booking = _booking_height(total_courts)
@@ -60,20 +53,21 @@ def draw(cnv, booking_info, weather_info, panel_tz):
     y = 0
     x = w_clock + 2
     for b in booking_info['courts']:
-        _draw_booking_court(cnv, x, y, h_booking, w_booking, b, time_now)
+        _draw_booking_court(cnv, x, y, h_booking, w_booking, b, time_now, style)
         y += h_booking
 
-def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, path_to_logo_image, time_now, weather_info):
+def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, style: ClubStyle, time_now, weather_info):
 
-    style = 'BigClock'
-    style = 'WithLogo'
+    # weather
+    h_weather = 0
+    if weather_info and style.is_weather_displayed:
+        temperature = f"{weather_info.get('temperature')}°"
+        x_weather = x_font_center(temperature, w, f_weather)
+        y_weather = H_PANEL - 2
+        graphics.DrawText(cnv, f_weather, x_weather, y_weather, c_weather, temperature)
+        h_weather = y_font_offset(f_weather)
 
-    if style == 'BigClock':
-        x_clock = x0
-        h_clock = y_font_offset(f_clock) + 1
-        y_clock = 1 + h_clock
-        m1_clock.draw_clock_by_coordinates(cnv, x_clock, y_clock, f_clock, panel_tz, c_clock, time_now)
-    elif style == 'WithLogo':
+    if style.path_logo:
         # clock
         x_clock = x0
         h_clock = y_font_offset(f_clock) + 1
@@ -81,21 +75,28 @@ def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, path_to_logo_image,
         m1_clock.draw_clock_by_coordinates(cnv, x_clock, y_clock, f_clock, panel_tz, c_clock, time_now)
 
         ## logo
-        logo_img = Image.open(path_to_logo_image)
-        m1_image.thumbnail(logo_img, w, logo_img.height)
-        x_logo_img = x0
-        y_logo_img = int((H_PANEL + logo_img.height) / 2) - logo_img.height
-        cnv.SetImage(logo_img.convert('RGB'), x_logo_img, y_logo_img)
+        h_max_logo = H_PANEL - h_clock - h_weather - 6
+        img_logo = Image.open(style.path_logo)
+        m1_image.thumbnail(img_logo, w, min(h_max_logo, img_logo.height))
+        h_logo = img_logo.height
+        w_logo = img_logo.width
+        x_logo_img = int((w - w_logo)/2)
+        if style.is_weather_displayed:
+            y_logo_img = int((H_PANEL + h_logo) / 2) - h_logo
+        else:
+            print(f"{h_clock} {h_logo}")
+            y_logo_img = h_clock + int(((H_PANEL - h_clock) - h_logo) / 2)
+        cnv.SetImage(img_logo.convert('RGB'), x_logo_img, y_logo_img)
         #round_rect_corners(cnv, x_logo_img, y_logo_img, logo_img.width, logo_img.height)
         ### logo placeholder bg
         #fill_rect(cnv, x_logo, y_logo, w_logo, h_logo, c_CI_primary)
-
-    # weather
-    if weather_info:
-        temperature = f"{weather_info.get('temperature')}°C"
-        x_weather = x_font_center(temperature, w, f_weather)
-        y_weather = H_PANEL - 2
-        graphics.DrawText(cnv, f_weather, x_weather, y_weather, c_weather, temperature)
+    else:
+        x_clock = x0
+        h_clock = y_font_offset(f_clock) + 1
+        y_clock = 1 + h_clock
+        m1_clock.draw_clock_by_coordinates(cnv, x_clock, y_clock, f_clock, panel_tz, c_clock, time_now)
+        
+    
 
 
     if c_grid:
@@ -108,7 +109,7 @@ def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, path_to_logo_image,
     #graphics.DrawLine(cnv, x, 0, x, H_PANEL, c_clock_separator)
 
 
-def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, time_now):
+def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, time_now, style: ClubStyle):
 
     court_name = court_bookings['court']['name']
 
@@ -117,6 +118,9 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, ti
     max_length_court_name = 3
 
     # court name
+    c_booking_court = style.color_2
+    c_booking_court_bg = style.color_1
+
     txt = court_name[:max_length_court_name]
     fnt = f_booking_court
     x = x0

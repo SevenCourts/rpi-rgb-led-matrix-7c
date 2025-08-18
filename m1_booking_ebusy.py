@@ -4,6 +4,18 @@ import requests
 import m1_booking_ebusy_single
 import m1_booking_ebusy_vertical
 import m1_booking_ebusy_grid
+from m1_booking_utils import ClubStyle
+
+
+style_TABB = ClubStyle(path_logo='images/logos/TABB/tabb-logo-transparent-60x13-border-3.png',
+                       color_1=graphics.Color(5, 105, 167), 
+                       color_2=COLOR_WHITE, 
+                       is_weather_displayed=True)
+
+style_SV1845 = ClubStyle(path_logo='images/logos/SV1845/sv1845_76x64_eBusy_demo_logo.png',
+                         color_1=COLOR_SV1845_2,
+                         color_2=COLOR_SV1845_1,
+                         is_weather_displayed=False)
 
 court_1 = {
             'court': {'id': 1, 'name': 'CUPRA Court präsentiert von Casa Automobile'},
@@ -69,13 +81,15 @@ booking_info_4_courts = {
 
 def draw_booking(cnv, booking_info, weather_info, panel_tz):
 
+    style = style_SV1845
+
     booking_info = booking_info_4_courts
 
     total_courts = len(booking_info['courts'])
     if total_courts == 1:
-        m1_booking_ebusy_single.draw(cnv, booking_info, panel_tz)
+        m1_booking_ebusy_single.draw(cnv, booking_info, panel_tz, style)
     else:
-        m1_booking_ebusy_vertical.draw(cnv, booking_info, weather_info, panel_tz)
+        m1_booking_ebusy_vertical.draw(cnv, booking_info, weather_info, panel_tz, style)
         # m1_booking_ebusy_grid.draw(cnv, booking_info, panel_tz)
 
 def draw_ebusy_ads(cnv, ebusy_ads):

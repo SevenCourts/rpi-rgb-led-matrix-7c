@@ -9,7 +9,7 @@ from m1_booking_utils import *
 
 logger = m1_logging.logger("eBusy")
 
-def draw(cnv, booking_info, panel_tz):
+def draw(cnv, booking_info, panel_tz, style: ClubStyle):
     
     court_bookings = booking_info['courts'][0]
     court = court_bookings['court']
