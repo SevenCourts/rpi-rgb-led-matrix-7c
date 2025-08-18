@@ -124,6 +124,9 @@ def draw_booking(cnv, booking_info, weather_info, panel_tz):
     style = style_SV1845
     booking_info = booking_SV1845_4_courts
 
+    style = style_TABB
+    booking_info = booking_TABB_3_courts
+
     total_courts = len(booking_info['courts'])
     if total_courts == 1:
         m1_booking_ebusy_single.draw(cnv, booking_info, panel_tz, style)
