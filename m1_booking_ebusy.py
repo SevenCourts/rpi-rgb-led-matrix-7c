@@ -15,9 +15,10 @@ style_TABB = ClubStyle(path_logo='images/logos/TABB/tabb-logo-transparent-60x13-
 style_SV1845 = ClubStyle(path_logo='images/logos/SV1845/sv1845_76x64_eBusy_demo_logo.png',
                          color_1=COLOR_SV1845_2,
                          color_2=COLOR_SV1845_1,
-                         is_weather_displayed=False)
+                         is_weather_displayed=False,
+                         is_court_name_acronym=True)
 
-court_1 = {
+court_TABB_1 = {
             'court': {'id': 1, 'name': 'CUPRA Court präsentiert von Casa Automobile'},
             'past': None,
             'current': {
@@ -37,13 +38,13 @@ court_1 = {
                 'p2': None, 
                 'p3': None, 
                 'p4': None}}
-court_2 = {
+court_TABB_2 = {
             'court': {'id': 2, 'name': 'BBG Court'},
             'past': None,
             'current': None,
             'next': None}
 
-court_3 = {
+court_TABB_3 = {
             'court': {'id': 3, 'name': 'EKW'},
             'past': None,
             'current': {
@@ -52,8 +53,46 @@ court_3 = {
                 'display-text': 'Verbandspiel H1 gg. TC Rechberghausen-Birenbach',
                 'p1': {'firstname': 'Ilya', 'lastname': 'Shinkarenko'}, 'p2': None, 'p3': None, 'p4': None},
             'next': None}
-court_4 = {
-            'court': {'id': 4, 'name': 'Ballwand'},
+
+
+
+court_SV1845_1 = {
+            'court': {'id': 1, 'name': 'Platz 1'},
+            'past': None,
+            'current': {
+                'start-date': '2025-07-17T13:30:00+04:00',
+                'end-date': '2025-07-17T14:00:00+04:00', 
+                'display-text': '',
+                'p1': {'firstname': 'Ilya', 'lastname': 'Shinkarenko'},
+                'p2': {'firstname': 'Roman', 'lastname': 'Churkov'}, 
+                'p3': {'firstname': 'Mario', 'lastname': 'Lopez'}, 
+                'p4': {'firstname': 'Alexander', 'lastname': 'Drachnev'},
+            },
+            'next': {
+                'start-date': '2025-07-17T14:00:00+04:00',
+                'end-date': '2025-07-17T14:30:00+04:00', 
+                'display-text': 'H1 Training', 
+                'p1': {'firstname': 'Ilya', 'lastname': 'Shinkarenko'},
+                'p2': None, 
+                'p3': None, 
+                'p4': None}}
+court_SV1845_2 = {
+            'court': {'id': 2, 'name': 'Platz 2'},
+            'past': None,
+            'current': None,
+            'next': None}
+
+court_SV1845_3 = {
+            'court': {'id': 3, 'name': 'Platz 3'},
+            'past': None,
+            'current': {
+                'start-date': '2025-07-17T13:30:00+04:00',
+                'end-date': '2025-07-17T14:00:00+04:00',
+                'display-text': 'Verbandspiel H1 gg. TC Rechberghausen-Birenbach',
+                'p1': {'firstname': 'Ilya', 'lastname': 'Shinkarenko'}, 'p2': None, 'p3': None, 'p4': None},
+            'next': None}
+court_SV1845_4 = {
+            'court': {'id': 4, 'name': 'Platz 4'},
             'past': None,
             'current': {
                 'start-date': '2025-07-17T13:30:00+04:00',
@@ -66,24 +105,24 @@ _dev_timestamp = '2025-07-17T13:58:16+04:00'
 # _dev_timestamp = '2025-07-17T13:58:14+04:00'
 #_dev_timestamp = None
 
-booking_info_1_courts = {
+booking_TABB_1_courts = {
     '_dev_timestamp': _dev_timestamp,
-    'courts': (court_1,)} # ! trailing comma is important for tuple declaration
-booking_info_2_courts = {
+    'courts': (court_TABB_1,)} # ! trailing comma is important for tuple declaration
+booking_TABB_2_courts = {
     '_dev_timestamp': _dev_timestamp,
-    'courts': (court_1, court_2)}
-booking_info_3_courts = {
+    'courts': (court_TABB_1, court_TABB_2)}
+booking_TABB_3_courts = {
     '_dev_timestamp': _dev_timestamp,
-    'courts': (court_1, court_2, court_3)}
-booking_info_4_courts = {
+    'courts': (court_TABB_1, court_TABB_2, court_TABB_3)}
+
+booking_SV1845_4_courts = {
     '_dev_timestamp': _dev_timestamp,
-    'courts': (court_1, court_2, court_3, court_4)}
+    'courts': (court_SV1845_1, court_SV1845_2, court_SV1845_3, court_SV1845_4)}
 
 def draw_booking(cnv, booking_info, weather_info, panel_tz):
 
     style = style_SV1845
-
-    booking_info = booking_info_4_courts
+    booking_info = booking_SV1845_4_courts
 
     total_courts = len(booking_info['courts'])
     if total_courts == 1:

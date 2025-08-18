@@ -11,10 +11,11 @@ from dataclasses import dataclass
 
 @dataclass
 class ClubStyle:
-    path_logo: str
-    color_1: graphics.Color
-    color_2: graphics.Color
-    is_weather_displayed: bool
+    path_logo: str = None
+    color_1: graphics.Color = COLOR_7C_BLUE_DARK
+    color_2: graphics.Color = COLOR_WHITE
+    is_weather_displayed: bool = True
+    is_court_name_acronym: bool = False
 
 
 logger = m1_logging.logger("eBusy")

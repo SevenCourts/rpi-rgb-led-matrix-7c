@@ -84,7 +84,6 @@ def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, style: ClubStyle, t
         if style.is_weather_displayed:
             y_logo_img = int((H_PANEL + h_logo) / 2) - h_logo
         else:
-            print(f"{h_clock} {h_logo}")
             y_logo_img = h_clock + int(((H_PANEL - h_clock) - h_logo) / 2)
         cnv.SetImage(img_logo.convert('RGB'), x_logo_img, y_logo_img)
         #round_rect_corners(cnv, x_logo_img, y_logo_img, logo_img.width, logo_img.height)
@@ -121,16 +120,22 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, ti
     c_booking_court = style.color_2
     c_booking_court_bg = style.color_1
 
-    txt = court_name[:max_length_court_name]
+    if style.is_court_name_acronym:
+        txt_court_name = ''.join(word[0].upper() for word in court_name.split() if word)        
+    else:
+        txt_court_name = court_name    
+    
+    txt_court_name = txt_court_name[:max_length_court_name]
+
     fnt = f_booking_court
     x = x0
     y = y0 + 1
     _w = w_court_name
     h_court_name = h - 2
     fill_rect(cnv, x, y, _w, h_court_name, c_booking_court_bg, round_corners=True)
-    x += x_font_center(txt, _w+2, fnt)
+    x += x_font_center(txt_court_name, _w+2, fnt)
     y += y_font_center(fnt, h_court_name)
-    graphics.DrawText(cnv, fnt, x, y, c_booking_court, txt)
+    graphics.DrawText(cnv, fnt, x, y, c_booking_court, txt_court_name)
 
     # Booking info (up to 2 rows)
     txt_info_row_1 = txt_info_row_2 = txt_status = ''
