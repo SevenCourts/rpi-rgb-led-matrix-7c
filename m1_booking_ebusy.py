@@ -52,7 +52,7 @@ court_4 = {
 
 _dev_timestamp = '2025-07-17T13:58:16+04:00'
 # _dev_timestamp = '2025-07-17T13:58:14+04:00'
-_dev_timestamp = None
+#_dev_timestamp = None
 
 booking_info_1_courts = {
     '_dev_timestamp': _dev_timestamp,

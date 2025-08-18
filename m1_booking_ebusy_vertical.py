@@ -52,7 +52,7 @@ def draw(cnv, booking_info, weather_info, panel_tz):
 
     # heights and widths
     w_clock = w_logo = width_in_pixels(f_clock, "00:00")    
-    _draw_club_area(cnv, 0, 0, w_clock, panel_tz, 'images/logos/TABB/tabb-logo-transparent-60x13.png', time_now, weather_info)
+    _draw_club_area(cnv, 0, 0, w_clock, panel_tz, 'images/logos/TABB/tabb-logo-transparent-60x13-border-3.png', time_now, weather_info)
 
     ## booking infos
     h_booking = _booking_height(total_courts)
