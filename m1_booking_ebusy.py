@@ -5,6 +5,7 @@ import m1_booking_ebusy_single
 import m1_booking_ebusy_vertical
 import m1_booking_ebusy_grid
 from m1_booking_utils import ClubStyle
+from datetime import datetime
 
 
 style_TABB = ClubStyle(path_logo='images/logos/TABB/tabb-logo-transparent-60x13-border-3.png',
@@ -12,6 +13,7 @@ style_TABB = ClubStyle(path_logo='images/logos/TABB/tabb-logo-transparent-60x13-
                        is_weather_displayed=True)
 
 style_SV1845 = ClubStyle(path_logo='images/logos/SV1845/sv1845_76x64_eBusy_demo_logo.png',
+                         round_logo_corners=True,
                          color_CI=COLOR_CI_SV1845,
                          is_weather_displayed=False,
                          is_court_name_acronym=True)
@@ -119,10 +121,13 @@ booking_SV1845_4_courts = {
 
 def draw_booking(cnv, booking_info, weather_info, panel_tz):
 
-    #style = style_SV1845
-    #booking_info = booking_SV1845_4_courts
-    style = style_TABB
-    booking_info = booking_TABB_3_courts
+    time_now = datetime.now()
+    if (time_now.second >= 15 and time_now.second <= 29) or (time_now.second >= 45 and time_now.second <= 59):
+        style = style_SV1845
+        booking_info = booking_SV1845_4_courts
+    else:
+        style = style_TABB
+        booking_info = booking_TABB_3_courts
 
     total_courts = len(booking_info['courts'])
     if total_courts == 1:

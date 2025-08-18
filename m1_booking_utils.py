@@ -12,6 +12,7 @@ from dataclasses import dataclass
 @dataclass
 class ClubStyle:
     path_logo: str = None
+    round_logo_corners: bool = False
     color_CI: graphics.Color = COLOR_7C_BLUE_DARK
     color_font: graphics.Color = COLOR_WHITE
     is_weather_displayed: bool = True

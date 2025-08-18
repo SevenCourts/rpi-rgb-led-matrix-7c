@@ -83,7 +83,9 @@ def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, style: ClubStyle, t
         x_logo_img = int((w - w_logo)/2)
         y_logo_img = h_clock + int((H_PANEL - h_clock - h_weather - h_logo) / 2)        
         cnv.SetImage(img_logo.convert('RGB'), x_logo_img, y_logo_img)
-        #round_rect_corners(cnv, x_logo_img, y_logo_img, logo_img.width, logo_img.height)
+
+        if style.round_logo_corners:
+            round_rect_corners(cnv, x_logo_img, y_logo_img, img_logo.width, img_logo.height)
         ### logo placeholder bg
         #fill_rect(cnv, x_logo, y_logo, w_logo, h_logo, c_CI_primary)
     else:
