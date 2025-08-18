@@ -1,7 +1,6 @@
 name: Build
 
-on:
-  push:
+on: workflow_dispatch
 
 env:
   TM_BUILD_GHCR_PROJECT: sevencourts
