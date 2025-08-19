@@ -121,16 +121,19 @@ booking_SV1845_4_courts = {
 
 def draw_booking(cnv, booking_info, weather_info, panel_tz):
 
-    time_now = datetime.now()
-    if (time_now.second >= 15 and time_now.second <= 29) or (time_now.second >= 45 and time_now.second <= 59):
+    t = datetime.now()
+    if (t.second >= 15 and t.second <= 29) or (t.second >= 45 and t.second <= 59):
         style = style_SV1845
-        booking_info = booking_SV1845_4_courts
+        #booking_info = booking_SV1845_4_courts
     else:
         style = style_TABB
-        booking_info = booking_TABB_3_courts
+        #booking_info = booking_TABB_3_courts
 
-    total_courts = len(booking_info['courts'])
-    if total_courts == 1:
+    total_courts = len(booking_info.get('courts', []))
+    if total_courts == 0:
+        #logger.warning(f"No courts in booking info: {booking_info}")
+        draw_text(cnv, 0, 10, "Please select court/s")        
+    elif total_courts == 1:
         m1_booking_ebusy_single.draw(cnv, booking_info, panel_tz, style)
     else:
         m1_booking_ebusy_vertical.draw(cnv, booking_info, weather_info, panel_tz, style)
