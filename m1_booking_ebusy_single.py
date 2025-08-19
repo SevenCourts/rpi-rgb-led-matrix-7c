@@ -18,7 +18,7 @@ def draw(cnv, booking_info, panel_tz, style: ClubStyle):
     b_2_next = court_bookings['next']
         
     # Use datetime set in the Panel Admin UI for easier testing/debugging:
-    _dev_timestamp = booking_info['_dev_timestamp']
+    _dev_timestamp = booking_info.get('_dev_timestamp')
     if _dev_timestamp and len(_dev_timestamp):
         time_now = parser.parse(_dev_timestamp)
     else:
