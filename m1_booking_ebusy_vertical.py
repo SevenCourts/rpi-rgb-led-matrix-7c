@@ -115,6 +115,7 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, ti
     h_court_name = h - 2
     fill_rect(cnv, x_court, y, w_court, h_court_name, s.ci.color_1, round_corners=True)
     graphics.DrawLine(cnv, x_court + 1, y + h_court_name -1, x_court + w_court -1, y + h_court_name - 1, s.ci.color_2)
+    graphics.DrawLine(cnv, x_court + 2, y + h_court_name, x0 + w, y + h_court_name, s.ci.color_2)
     _x = x_court + x_font_center(txt_court, w_court + 2, _fnt)
     y += y_font_center(_fnt, h_court_name)
     graphics.DrawText(cnv, _fnt, _x, y, s.ci.color_font, txt_court)
@@ -187,7 +188,6 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, ti
         c_time_left = s.bookings.c_free_to_book
         c_time_box_border = COLOR_BLACK
         txt_status = "Free"
-        txt_status = "18:00"
 
     # TODO no need for border?
     c_time_box_border = COLOR_BLACK
