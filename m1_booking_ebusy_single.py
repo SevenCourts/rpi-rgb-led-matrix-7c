@@ -6,10 +6,11 @@ import gettext
 import m1_clock
 import m1_image
 from m1_booking_utils import *
+from m1_club_styles import *
 
 logger = m1_logging.logger("eBusy")
 
-def draw(cnv, booking_info, panel_tz, style: ClubStyle):
+def draw(cnv, booking_info, panel_tz, s: ClubStyle):
     
     court_bookings = booking_info['courts'][0]
     court = court_bookings['court']
@@ -26,7 +27,7 @@ def draw(cnv, booking_info, panel_tz, style: ClubStyle):
 
     # do not show time if no booking to show (time will be displayed in the main area)
     show_time_in_header = b_0_past or b_1_current or b_2_next
-    h_header = _draw_header(cnv, court, time_now if show_time_in_header else None)
+    h_header = _draw_header(cnv, court, s, time_now if show_time_in_header else None)
 
     if b_0_past and not b_1_current:
         # Show "Game over" for 2 minutes only if there is no current booking
@@ -102,9 +103,9 @@ def draw(cnv, booking_info, panel_tz, style: ClubStyle):
         x = image.width + MARGIN + MARGIN
         x = x + x_font_center(text, W_PANEL - x, fnt)
         y = h_header + y_font_center(fnt, H_PANEL - h_header)
-        draw_text(cnv, x, y, text, fnt, COLOR_CLOCK_DEFAULT)
+        draw_text(cnv, x, y, text, fnt, s.ci.color_font)
 
-def _draw_header(cnv, court, dt=None):
+def _draw_header(cnv, court, s: BookingStyle, dt=None):
     """Retuns the y coordinate (height) of the header section"""        
     x_court_name = 0 + MARGIN
     y_court_name = y_font_offset(FONT_COURT_NAME) + MARGIN
@@ -117,10 +118,10 @@ def _draw_header(cnv, court, dt=None):
     else:
         y_separator = y_court_name + MARGIN
 
-    fill_rect(cnv, 0, 0, W_PANEL, y_separator, COLOR_HEADER_BG)
+    fill_rect(cnv, 0, 0, W_PANEL, y_separator, s.ci.color_1)
 
     if dt:
-        draw_text(cnv, x_clock, y_clock, txt_clock, FONT_CURRENT_TIME, COLOR_CURRENT_TIME)
+        draw_text(cnv, x_clock, y_clock, txt_clock, FONT_CURRENT_TIME, s.ci.color_font)
         w_clock = width_in_pixels(FONT_COURT_NAME, txt_clock)
     else:
         w_clock = 0    
@@ -129,10 +130,10 @@ def _draw_header(cnv, court, dt=None):
     if txt_court_name != court['name']:
         # ellipsize
         txt_court_name = txt_court_name[:len(txt_court_name)-4] + "..."
-    draw_text(cnv, x_court_name, y_court_name, txt_court_name, FONT_COURT_NAME, COLOR_COURT_NAME)
+    draw_text(cnv, x_court_name, y_court_name, txt_court_name, FONT_COURT_NAME, s.ci.color_font)
 
 
-    graphics.DrawLine(cnv, 0, y_separator, W_PANEL, y_separator, COLOR_SEPARATOR_LINE)
+    graphics.DrawLine(cnv, 0, y_separator, W_PANEL, y_separator, s.ci.color_2)
 
     return y_separator + 1
 

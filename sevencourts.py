@@ -74,10 +74,14 @@ COLOR_7C_GOLD = graphics.Color(255, 215, 0)
 # SV1845 red color - good for backgrounds?
 COLOR_7C_RED = graphics.Color( int('0xC9', 0), int('0x42', 0), int('0x40', 0))
 
-# Blue SV1845
-COLOR_CI_SV1845 = graphics.Color( int('0x29', 0), int('0x49', 0), int('0x75', 0))
-# Blue TABB
-COLOR_CI_TABB = graphics.Color( int('0x29', 0), int('0x49', 0), int('0x75', 0))
+# SV1845 Blue
+COLOR_CI_SV1845_1 = graphics.Color( int('0x29', 0), int('0x49', 0), int('0x75', 0))
+# SV1845 Red
+COLOR_CI_SV1845_2 = graphics.Color( int('0xC9', 0), int('0x42', 0), int('0x40', 0))
+
+# TABB Blue
+COLOR_CI_TABB_1 = graphics.Color( int('0x29', 0), int('0x49', 0), int('0x75', 0))
+COLOR_CI_TABB_2 = COLOR_GREY_DARK
 
 COLOR_7C_STATUS_ERROR = COLOR_7C_BLUE
 COLOR_7C_STATUS_INIT = COLOR_7C_GREEN_DARK

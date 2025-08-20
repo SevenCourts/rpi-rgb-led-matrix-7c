@@ -3,21 +3,21 @@ from sevencourts import *
 import requests
 import m1_booking_ebusy_single
 import m1_booking_ebusy_vertical
-import m1_booking_ebusy_grid
-from m1_booking_utils import ClubStyle
 from datetime import datetime
+from m1_club_styles import *
 
+style_TABB = ClubStyle(
+    logo=LogoStyle(path='images/logos/TABB/tabb-logo-transparent-60x13-border-3.png'),
+    ci=ClubCI(color_1=COLOR_CI_TABB_1, color_2=COLOR_CI_TABB_2),
+    bookings=BookingStyle(is_weather_displayed=True, is_court_name_acronym=False, is_club_area_left=True)
+)
 
-style_TABB = ClubStyle(path_logo='images/logos/TABB/tabb-logo-transparent-60x13-border-3.png',
-                       color_CI=COLOR_CI_TABB,
-                       is_weather_displayed=True)
-
-style_SV1845 = ClubStyle(path_logo='images/logos/SV1845/sv1845_76x64_eBusy_demo_logo.png',
-                         round_logo_corners=True,
-                         color_CI=COLOR_CI_SV1845,
-                         is_weather_displayed=False,
-                         is_court_name_acronym=True)
-
+style_SV1845 = ClubStyle(
+    logo=LogoStyle(path='images/logos/SV1845/sv1845_76x64_eBusy_demo_logo.png', round_corners=True),
+    ci=ClubCI(color_1=COLOR_CI_SV1845_1, color_2=COLOR_CI_SV1845_2),
+    bookings=BookingStyle(is_weather_displayed=True, is_court_name_acronym=True)
+)
+ 
 court_TABB_1 = {
             'court': {'id': 1, 'name': 'CUPRA Court präsentiert von Casa Automobile'},
             'past': None,
@@ -122,12 +122,11 @@ booking_SV1845_4_courts = {
 def draw_booking(cnv, booking_info, weather_info, panel_tz):
 
     t = datetime.now()
-    if (t.second >= 15 and t.second <= 29) or (t.second >= 45 and t.second <= 59):
-        style = style_SV1845
-        #booking_info = booking_SV1845_4_courts
+    period_seconds = 60
+    if (t.second // period_seconds) % 2 == 0:
+        style = style_SV1845        
     else:
         style = style_TABB
-        #booking_info = booking_TABB_3_courts
 
     total_courts = len(booking_info.get('courts', []))
     if total_courts == 0:
