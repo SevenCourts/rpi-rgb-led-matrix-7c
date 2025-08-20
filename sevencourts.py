@@ -56,12 +56,14 @@ W_FLAG_SMALL = int(W_FLAG / 2)  # 9
 H_FLAG_SMALL = int(H_FLAG / 2)  # 6
 
 # Style constants
+COLOR_BLACK = graphics.Color(0, 0, 0)
 COLOR_WHITE = graphics.Color(255, 255, 255)
 COLOR_GREY = graphics.Color(192, 192, 192)
 COLOR_GREY_DARK = graphics.Color(96, 96, 96)
 COLOR_GREY_DARKEST = graphics.Color(32, 32, 32)
-COLOR_BLACK = graphics.Color(0, 0, 0)
+
 COLOR_RED = graphics.Color(255, 0, 0)
+COLOR_GOLD = graphics.Color(255, 215, 0)
 COLOR_YELLOW = graphics.Color(255, 255, 0)
 COLOR_GREEN = graphics.Color(0, 255, 0)
 COLOR_BLUE = graphics.Color(0, 0, 255)
@@ -70,9 +72,6 @@ COLOR_7C_GREEN = graphics.Color(147, 196, 125)
 COLOR_7C_BLUE = graphics.Color(111, 168, 220)
 COLOR_7C_BLUE_DARK = graphics.Color(37, 56, 73)
 COLOR_7C_GREEN_DARK = graphics.Color(58, 77, 49)
-COLOR_7C_GOLD = graphics.Color(255, 215, 0)
-# SV1845 red color - good for backgrounds?
-COLOR_7C_RED = graphics.Color( int('0xC9', 0), int('0x42', 0), int('0x40', 0))
 
 # SV1845 Blue
 COLOR_CI_SV1845_1 = graphics.Color( int('0x29', 0), int('0x49', 0), int('0x75', 0))
@@ -83,13 +82,14 @@ COLOR_CI_SV1845_2 = graphics.Color( int('0xC9', 0), int('0x42', 0), int('0x40', 
 COLOR_CI_TABB_1 = graphics.Color( int('0x29', 0), int('0x49', 0), int('0x75', 0))
 COLOR_CI_TABB_2 = COLOR_GREY_DARK
 
+
 COLOR_7C_STATUS_ERROR = COLOR_7C_BLUE
 COLOR_7C_STATUS_INIT = COLOR_7C_GREEN_DARK
 
 COLOR_DEFAULT = COLOR_GREY
 COLOR_CLOCK_DEFAULT = COLOR_WHITE
 
-def load_font(path):
+def load_font(path) -> graphics.Font:
     result = graphics.Font()
     result.LoadFont(path)
     return result
@@ -233,7 +233,7 @@ def width_in_pixels(font, text):
     # print('<{}> => {}'.format(text,result))
     return result
 
-def truncate_text(font, max_width, text):
+def truncate_text(font, max_width, text) -> str:
     result = ""
     total_width = 0
     for c in text:
@@ -276,6 +276,15 @@ def _debug_font_info(font, name=''):
         font.height,
         font.baseline,
         y_font_offset(font)))
+    
+def ellipsize(text: str, max_length: int) -> str:
+    ellipsis = '^' # FIXME use SYMBOL_ELLIPSIS - must be in all fonts!!
+    if len(text) <= max_length:
+        return text
+    elif  len(text) == max_length + 1:
+        ellipsis = ''
+    return text[:max_length] + ellipsis
+
 
 
 def load_flag_image(flag_code):

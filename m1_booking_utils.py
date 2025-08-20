@@ -1,33 +1,9 @@
 from sevencourts import *
 
-from datetime import timedelta
+from datetime import timedelta, datetime
 
-logger = m1_logging.logger("eBusy")
-
-# Style sheet
-FONT_COURT_NAME = FONT_S
-FONT_CURRENT_TIME = FONT_S
-FONT_TIME_BOX = FONT_M
-FONT_BOOKING_CAPTION = FONT_S
-FONT_BOOKING_NAME = FONT_M
-FONT_MESSAGE = FONT_M
-
-COLOR_HEADER_BG = COLOR_CI_SV1845_1
-
-COLOR_COURT_NAME = COLOR_WHITE
-COLOR_CURRENT_TIME = COLOR_WHITE
-
-COLOR_TIME_BOX = COLOR_WHITE
-COLOR_TIME_BOX_BG_INFO = COLOR_CI_SV1845_1
-COLOR_TIME_BOX_BG_WARN = COLOR_7C_RED
-
-COLOR_BOOKING = COLOR_WHITE
-COLOR_MESSAGE = COLOR_YELLOW
-
-COLOR_SEPARATOR_LINE = COLOR_GREY_DARK
-
-MARGIN = 2
-H_HEADER = 12
+# Period of of interchanging adjacent bookings display, in seconds
+PERIOD_INTERCHANGE_ADJACENT_S = 10
 
 TD_0_UPCOMING = timedelta(minutes = -5)
 TD_1_WELCOME = timedelta(minutes = 2)
@@ -60,3 +36,37 @@ def booking_team(booking, isTeam1=True):
             txt += ', '
         txt = (txt or '') + booking_player(tp2)
     return txt
+
+def is_current_second_in_period(period_seconds: int = 60, time_now = datetime.now()) -> bool:
+    '''
+    Returns true if the current time second is in the specified period.
+    '''
+    return (time_now.second // period_seconds) % 2 == 0
+
+
+def truncate_to_tuple(text: str, max_length: int) -> tuple[str, str]:
+    row_1 = row_2 = ''
+    for wrd in text.split():
+        if row_1:
+            if len(row_1 + ' ' + wrd) <= max_length:
+                row_1 += ' ' + wrd
+            else:
+                row_2 += (' ' if row_2 else '') + wrd
+        else:
+            row_1 = wrd
+    return (row_1, row_2)
+
+
+def booking_info_texts(booking, w_max_px, font) -> tuple[str, str]:
+    row_1 = row_2 = ''
+    max_length = max_string_length_for_font(font, w_max_px)
+    
+    if booking.get('display-text'):
+        (row_1, row_2) = truncate_to_tuple(booking.get('display-text'), max_length)
+    elif (booking.get('p3') or booking.get('p4')):
+        row_1 = booking_team(booking, True)
+        row_2 = booking_team(booking, False)
+    else:
+        row_1 = booking_player(booking.get('p1'))
+        row_2 = booking_player(booking.get('p2'))
+    return (ellipsize(row_1, max_length), ellipsize(row_2,max_length))

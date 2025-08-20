@@ -136,7 +136,6 @@ def draw_booking(cnv, booking_info, weather_info, panel_tz):
         m1_booking_ebusy_single.draw(cnv, booking_info, panel_tz, style)
     else:
         m1_booking_ebusy_vertical.draw(cnv, booking_info, weather_info, panel_tz, style)
-        # m1_booking_ebusy_grid.draw(cnv, booking_info, panel_tz)
 
 def draw_ebusy_ads(cnv, ebusy_ads):
     id = ebusy_ads.get("id")
