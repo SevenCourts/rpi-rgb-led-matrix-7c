@@ -52,13 +52,8 @@ def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, s: ClubStyle, time_
     c_weather = s.bookings.c_weather
     h_weather = 0
     if weather_info and s.bookings.is_weather_displayed:
-        temperature = f"{weather_info.get('temperature')}°"
+        temperature = f" {weather_info.get('temperature')}°"
         x_weather = x0 + x_font_center(temperature, w, f_weather)
-
-        if s.bookings.is_club_area_left:
-           x_weather = x0 + 1
-        else:
-            x_weather = x0 + w - width_in_pixels(f_weather, temperature) - 1
 
         h_weather = y_font_offset(f_weather) + 2
         y_weather = y0 + h_weather
@@ -89,8 +84,8 @@ def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, s: ClubStyle, time_
         #fill_rect(cnv, x_logo, y_logo, w_logo, h_logo, c_CI_primary)
 
     # vertical line separating club area and bookings area
-    if not s.bookings.is_club_area_left:
-        graphics.DrawLine(cnv, x0, 0, x0, H_PANEL, s.ci.color_2)
+    #if not s.bookings.is_club_area_left:
+    #    graphics.DrawLine(cnv, x0, 0, x0, H_PANEL, s.ci.color_2)
 
 
 def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, time_now, s: ClubStyle):
@@ -114,8 +109,8 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, ti
     y = y0 + 1
     h_court_name = h - 2
     fill_rect(cnv, x_court, y, w_court, h_court_name, s.ci.color_1, round_corners=True)
-    graphics.DrawLine(cnv, x_court + 1, y + h_court_name -1, x_court + w_court -1, y + h_court_name - 1, s.ci.color_2)
-    graphics.DrawLine(cnv, x_court + 2, y + h_court_name, x0 + w, y + h_court_name, s.ci.color_2)
+    graphics.DrawLine(cnv, x_court + 1, y + h_court_name -1, x_court + w_court - 2, y + h_court_name - 1, s.ci.color_2)
+    graphics.DrawLine(cnv, x_court + 2, y + h_court_name, x0 + w - 2, y + h_court_name, s.ci.color_2)
     _x = x_court + x_font_center(txt_court, w_court + 2, _fnt)
     y += y_font_center(_fnt, h_court_name)
     graphics.DrawText(cnv, _fnt, _x, y, s.ci.color_font, txt_court)
@@ -214,7 +209,7 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, ti
             is_enough_place_for_2_lines = h_court_name > (2 * (1 + y_font_offset(_fnt)))
             _y = y0 + int(h/2) - (0 if is_enough_place_for_2_lines else 1)
             graphics.DrawText(cnv, _fnt, x, _y, c, txt_info_1)
-            _y += y_font_offset(_fnt) + 2
+            _y += y_font_offset(_fnt) + 2 - (0 if is_enough_place_for_2_lines else 1)
             graphics.DrawText(cnv, _fnt, x, _y, c, txt_info_2)
         else:
             _y = y0 + y_font_center(_fnt, h)
