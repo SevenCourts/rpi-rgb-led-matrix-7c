@@ -85,8 +85,8 @@ style_MatchCenter = ClubStyle(
 )
 
 # SevenCourts
-COLOR_CI_SevenCourts_1 = COLOR_7C_GREEN_DARK
-COLOR_CI_SevenCourts_2 = COLOR_7C_BLUE_DARK
+COLOR_CI_SevenCourts_1 = COLOR_7C_BLUE_DARK
+COLOR_CI_SevenCourts_2 = COLOR_7C_GREEN_DARK
 style_SevenCourts = ClubStyle(
     ci=ClubCI(color_1=COLOR_CI_SevenCourts_1, color_2=COLOR_CI_SevenCourts_2,
               logo=LogoStyle(path='images/logos/SevenCourts/sevencourts_58x6.png')),
