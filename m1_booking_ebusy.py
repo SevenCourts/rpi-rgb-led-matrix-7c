@@ -15,7 +15,7 @@ style_TABB = ClubStyle(
 style_SV1845 = ClubStyle(
     logo=LogoStyle(path='images/logos/SV1845/sv1845_76x64_eBusy_demo_logo.png', round_corners=True),
     ci=ClubCI(color_1=COLOR_CI_SV1845_1, color_2=COLOR_CI_SV1845_2),
-    bookings=BookingStyle(is_weather_displayed=True, is_court_name_acronym=True)
+    bookings=BookingStyle(is_weather_displayed=False, is_court_name_acronym=True)
 )
  
 court_TABB_1 = {
