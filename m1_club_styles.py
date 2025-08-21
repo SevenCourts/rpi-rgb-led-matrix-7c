@@ -25,7 +25,7 @@ class BookingStyle:
     c_free_to_book: graphics.Color = COLOR_7C_GREEN
 
     c_time_box_default: graphics.Color = COLOR_GREY
-    c_time_box_countdown: graphics.Color = COLOR_GOLD
+    c_time_box_countdown: graphics.Color = COLOR_7C_GOLD
     
     c_weather: graphics.Color = COLOR_WHITE
     f_weather: graphics.Font = FONT_M_SDK

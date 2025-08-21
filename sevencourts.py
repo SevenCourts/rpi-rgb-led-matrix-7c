@@ -64,14 +64,17 @@ COLOR_GREY_DARKEST = graphics.Color(32, 32, 32)
 
 COLOR_RED = graphics.Color(255, 0, 0)
 COLOR_GOLD = graphics.Color(255, 215, 0)
+
+
 COLOR_YELLOW = graphics.Color(255, 255, 0)
 COLOR_GREEN = graphics.Color(0, 255, 0)
 COLOR_BLUE = graphics.Color(0, 0, 255)
 
-COLOR_7C_GREEN = graphics.Color(147, 196, 125)
-COLOR_7C_BLUE = graphics.Color(111, 168, 220)
-COLOR_7C_BLUE_DARK = graphics.Color(37, 56, 73)
-COLOR_7C_GREEN_DARK = graphics.Color(58, 77, 49)
+COLOR_7C_GREEN = graphics.Color(147, 196, 125) #93c47d
+COLOR_7C_BLUE = graphics.Color(111, 168, 220) #6fa8dc
+COLOR_7C_BLUE_DARK = graphics.Color(37, 56, 73) #253849
+COLOR_7C_GREEN_DARK = graphics.Color(58, 77, 49) #3a4d31
+COLOR_7C_GOLD = graphics.Color(241, 194, 50) #f1c232 - a yellowish color, that is in harmony with this blue #6fa8dc and green #93c47d colors
 
 # SV1845 Blue
 COLOR_CI_SV1845_1 = graphics.Color( int('0x29', 0), int('0x49', 0), int('0x75', 0))
