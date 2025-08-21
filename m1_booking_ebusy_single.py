@@ -93,7 +93,7 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
         # no bookings - show a default
         image = Image.open(s.ci.logo.path)
         MAX_IMAGE_WIDTH = 76 # so that 22:22 time fits
-        h_logo = H_PANEL - h_header - mrgn
+        h_logo = H_PANEL - h_header
         m1_image.thumbnail(image, MAX_IMAGE_WIDTH, h_logo)
         x = 0
         y = h_header + (h_logo - image.height) // 2
