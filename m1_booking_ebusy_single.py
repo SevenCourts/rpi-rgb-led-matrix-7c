@@ -96,7 +96,7 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
         h_logo = H_PANEL - h_header - mrgn - mrgn
         m1_image.thumbnail(image, MAX_IMAGE_WIDTH, h_logo)
         x = mrgn
-        y = h_header + mrgn
+        y = h_header + (h_logo - image.height) // 2
         cnv.SetImage(image.convert('RGB'), x, y)
         round_rect_corners(cnv, x, y, image.width, image.height)
 
