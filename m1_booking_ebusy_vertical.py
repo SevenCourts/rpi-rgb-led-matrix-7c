@@ -42,7 +42,10 @@ def draw(cnv, booking_info, weather_info, panel_tz, s: ClubStyle):
     w_booking = W_PANEL - max(w_clock, w_logo)
     y_court = 0
     for b in booking_info['courts']:
-        _draw_booking_court(cnv, x_courts, y_court, h_booking, w_booking, b, time_now, s)
+
+        last_row = (b == booking_info['courts'][-1])
+
+        _draw_booking_court(cnv, x_courts, y_court, h_booking, w_booking, b, time_now, s, last_row)
         y_court += h_booking
 
 def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, s: ClubStyle, time_now, weather_info):
@@ -88,7 +91,7 @@ def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, s: ClubStyle, time_
     #    graphics.DrawLine(cnv, x0, 0, x0, H_PANEL, s.ci.color_2)
 
 
-def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, time_now, s: ClubStyle):
+def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, time_now, s: ClubStyle, last_row: bool):
 
     w_court = 27 # TODO dynamic?
     w_time_left = w_court
@@ -113,7 +116,8 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, ti
     #graphics.DrawLine(cnv, x_court + 1, y + h_court_name -1, x_court + w_court - 2, y + h_court_name - 1, s.ci.color_2)
     graphics.DrawLine(cnv, x_court + 2, y + h_court_name, x_court + w_court - 3, y + h_court_name, s.ci.color_2)
     #long line under whole booking
-    graphics.DrawLine(cnv, x_court + w_court + 2, y + h_court_name, x0 + w - 2, y + h_court_name, s.bookings.c_separator)
+    if not last_row:
+        graphics.DrawLine(cnv, x_court + w_court + 2, y + h_court_name, x0 + w - 2, y + h_court_name, s.bookings.c_separator)
     _x = x_court + x_font_center(txt_court, w_court + 2, _fnt)
     y += y_font_center(_fnt, h_court_name)
     graphics.DrawText(cnv, _fnt, _x, y, s.ci.color_font, txt_court)
