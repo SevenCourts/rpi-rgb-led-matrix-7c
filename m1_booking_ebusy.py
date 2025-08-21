@@ -112,11 +112,11 @@ def draw_booking(cnv, booking_info, weather_info, panel_tz):
     t = datetime.now()
     period_seconds = 10
     if (t.second // period_seconds) % 2 == 0:
-        style = style_SV1845        
+        style = style_SV1845
     else:
         style = style_MatchCenter
         
-    style = style_MatchCenter
+    style = style_SV1845
 
     total_courts = len(booking_info.get('courts', []))
     if total_courts == 0:
