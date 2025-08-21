@@ -102,7 +102,7 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
 
         txt_time = time_now.strftime('%H:%M')
         fnt = m1_clock.FONT_CLOCK_M_1
-        x = image.width + mrgn + mrgn
+        x = image.width + mrgn
         x = x + x_font_center(txt_time, W_PANEL - x, fnt)
         y = h_header + y_font_center(fnt, H_PANEL - h_header)
         draw_text(cnv, x, y, txt_time, fnt, s.ci.color_font)
