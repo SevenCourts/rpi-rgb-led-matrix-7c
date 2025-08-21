@@ -70,7 +70,7 @@ def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, s: ClubStyle, time_
     if s.ci.logo.path:
         ## logo
         h_logo_max = H_PANEL - h_clock - h_weather - 6
-        img_logo = Image.open(s.logo.path)
+        img_logo = Image.open(s.ci.logo.path)
         m1_image.thumbnail(img_logo, w, min(h_logo_max, img_logo.height))
         h_logo = img_logo.height
         w_logo = img_logo.width
