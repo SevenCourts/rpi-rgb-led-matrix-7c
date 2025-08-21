@@ -79,7 +79,7 @@ style_SV1845 = ClubStyle(
 COLOR_CI_Matchcenter_1 = COLOR_GREY_DARKEST # Black
 COLOR_CI_Matchcenter_2 = graphics.Color( int('0xE5', 0), int('0x00', 0), int('0x7D', 0)) # Magenta
 style_MatchCenter = ClubStyle(
-    logo=LogoStyle(path='images/logos/MatchCenter Filderstadt/logo-matchcenter_58x42.png'),
+    logo=LogoStyle(path='images/logos/MatchCenter Filderstadt/logo-matchcenter_58x39.png'),
     ci=ClubCI(color_1=COLOR_CI_Matchcenter_1, color_2=COLOR_CI_Matchcenter_2),
     bookings=BookingStyle(is_weather_displayed=False, is_court_name_acronym=True)
 )
