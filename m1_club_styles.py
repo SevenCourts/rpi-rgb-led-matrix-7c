@@ -22,7 +22,7 @@ class BookingStyle:
     is_club_area_left: bool = False
 
     # styles: colors and fonts
-    c_free_to_book: graphics.Color = COLOR_GREEN
+    c_free_to_book: graphics.Color = COLOR_7C_GREEN
 
     c_time_box_default: graphics.Color = COLOR_GREY
     c_time_box_countdown: graphics.Color = COLOR_GOLD

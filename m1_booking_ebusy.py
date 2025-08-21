@@ -9,7 +9,7 @@ from m1_club_styles import *
 style_TABB = ClubStyle(
     logo=LogoStyle(path='images/logos/TABB/tabb-logo-transparent-60x13-border-3.png'),
     ci=ClubCI(color_1=COLOR_CI_TABB_1, color_2=COLOR_CI_TABB_2),
-    bookings=BookingStyle(is_weather_displayed=True, is_court_name_acronym=False, is_club_area_left=True)
+    bookings=BookingStyle(is_weather_displayed=True, is_court_name_acronym=False)
 )
 
 style_SV1845 = ClubStyle(
