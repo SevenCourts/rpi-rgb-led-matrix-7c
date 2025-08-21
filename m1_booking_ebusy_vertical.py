@@ -67,7 +67,7 @@ def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, s: ClubStyle, time_
     y_clock = H_PANEL - 1
     m1_clock.draw_clock_by_coordinates(cnv, x_clock, y_clock, f_clock, panel_tz, c_clock, time_now)
     
-    if s.logo.path:
+    if s.ci.logo.path:
         ## logo
         h_logo_max = H_PANEL - h_clock - h_weather - 6
         img_logo = Image.open(s.logo.path)
@@ -78,7 +78,7 @@ def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, s: ClubStyle, time_
         y_logo_img = h_weather + int((H_PANEL - h_clock - h_weather - h_logo) / 2)        
         cnv.SetImage(img_logo.convert('RGB'), x_logo_img, y_logo_img)
 
-        if s.logo.round_corners:
+        if s.ci.logo.round_corners:
             round_rect_corners(cnv, x_logo_img, y_logo_img, img_logo.width, img_logo.height)
         ### logo placeholder bg
         #fill_rect(cnv, x_logo, y_logo, w_logo, h_logo, c_CI_primary)
