@@ -91,7 +91,7 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
 
     else:
         # no bookings - show a default
-        image = Image.open('images/logos/SV1845/sv1845_76x64_eBusy_demo_logo.png')
+        image = Image.open(s.ci.logo.path)
         MAX_IMAGE_WIDTH = 76 # so that 22:22 time fits
         h_logo = H_PANEL - h_header - mrgn - mrgn
         m1_image.thumbnail(image, MAX_IMAGE_WIDTH, h_logo)
