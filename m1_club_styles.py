@@ -45,6 +45,8 @@ class BookingStyle:
 
     f_time_box: graphics.Font = FONT_XXS
     f_single_time_box: graphics.Font = FONT_M
+
+    c_separator: graphics.Color = COLOR_GREY_DARKEST
     
 
 @dataclass
