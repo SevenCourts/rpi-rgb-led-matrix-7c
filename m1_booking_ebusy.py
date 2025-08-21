@@ -6,18 +6,6 @@ import m1_booking_ebusy_vertical
 from datetime import datetime
 from m1_club_styles import *
 
-style_TABB = ClubStyle(
-    logo=LogoStyle(path='images/logos/TABB/tabb-logo-transparent-60x13-border-3.png'),
-    ci=ClubCI(color_1=COLOR_CI_TABB_1, color_2=COLOR_CI_TABB_2),
-    bookings=BookingStyle(is_weather_displayed=True, is_court_name_acronym=False)
-)
-
-style_SV1845 = ClubStyle(
-    logo=LogoStyle(path='images/logos/SV1845/sv1845_76x64_eBusy_demo_logo.png', round_corners=True),
-    ci=ClubCI(color_1=COLOR_CI_SV1845_1, color_2=COLOR_CI_SV1845_2),
-    bookings=BookingStyle(is_weather_displayed=False, is_court_name_acronym=True)
-)
- 
 court_TABB_1 = {
             'court': {'id': 1, 'name': 'CUPRA Court präsentiert von Casa Automobile'},
             'past': None,
@@ -126,7 +114,7 @@ def draw_booking(cnv, booking_info, weather_info, panel_tz):
     if (t.second // period_seconds) % 2 == 0:
         style = style_SV1845        
     else:
-        style = style_TABB
+        style = style_MatchCenter
 
     total_courts = len(booking_info.get('courts', []))
     if total_courts == 0:

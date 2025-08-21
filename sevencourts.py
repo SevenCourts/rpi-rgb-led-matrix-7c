@@ -76,16 +76,6 @@ COLOR_7C_BLUE_DARK = graphics.Color(37, 56, 73) #253849
 COLOR_7C_GREEN_DARK = graphics.Color(58, 77, 49) #3a4d31
 COLOR_7C_GOLD = graphics.Color(241, 194, 50) #f1c232 - a yellowish color, that is in harmony with this blue #6fa8dc and green #93c47d colors
 
-# SV1845 Blue
-COLOR_CI_SV1845_1 = graphics.Color( int('0x29', 0), int('0x49', 0), int('0x75', 0))
-# SV1845 Red
-COLOR_CI_SV1845_2 = graphics.Color( int('0xC9', 0), int('0x42', 0), int('0x40', 0))
-
-# TABB Blue
-COLOR_CI_TABB_1 = graphics.Color( int('0x29', 0), int('0x49', 0), int('0x75', 0))
-COLOR_CI_TABB_2 = COLOR_GREY_DARK
-
-
 COLOR_7C_STATUS_ERROR = COLOR_7C_BLUE
 COLOR_7C_STATUS_INIT = COLOR_7C_GREEN_DARK
 
