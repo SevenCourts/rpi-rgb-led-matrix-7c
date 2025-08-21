@@ -109,8 +109,9 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, ti
     y = y0 + 1
     h_court_name = h - 2
     fill_rect(cnv, x_court, y, w_court, h_court_name, s.ci.color_1, round_corners=True)
-    #short line under court name
+    #short thick line under court name
     graphics.DrawLine(cnv, x_court + 1, y + h_court_name -1, x_court + w_court - 2, y + h_court_name - 1, s.ci.color_2)
+    graphics.DrawLine(cnv, x_court + 2, y + h_court_name, x_court + w_court - 3, y + h_court_name, s.ci.color_2)
     #long line under whole booking
     graphics.DrawLine(cnv, x_court + w_court + 2, y + h_court_name, x0 + w - 2, y + h_court_name, s.bookings.c_separator)
     _x = x_court + x_font_center(txt_court, w_court + 2, _fnt)
