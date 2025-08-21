@@ -122,7 +122,7 @@ booking_SV1845_4_courts = {
 def draw_booking(cnv, booking_info, weather_info, panel_tz):
 
     t = datetime.now()
-    period_seconds = 60
+    period_seconds = 10
     if (t.second // period_seconds) % 2 == 0:
         style = style_SV1845        
     else:
