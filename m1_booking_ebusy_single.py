@@ -39,9 +39,9 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
         # Show "Game over" for 2 minutes only if there is no current booking
         t_0_4_gameover_end = (parser.parse(b_0_past['end-date']) + TD_4_GAMEOVER)
         if time_now < t_0_4_gameover_end:
-            w_timebox = _draw_time_box(cnv, h_header, s, c_timebox, 'Game', 'over')
+            w_timebox = _draw_time_box(cnv, h_header, s, c_timebox, 'Game', 'over') # TODO i18n
             x = w_timebox + mrgn
-            _draw_booking_match(cnv, s, x, h_header, b_0_past, 'Bye!')
+            _draw_booking_match(cnv, s, x, h_header, b_0_past, 'Bye!') # TODO i18n
 
     elif b_1_current:
         
@@ -59,7 +59,7 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
             elif time_now < t_end:
                 minutes_left = (t_end - time_now).seconds // 60 % 60 + 1
                 if minutes_left == 0:
-                    w_timebox = _draw_time_box(cnv, h_header, s, c_timebox_warn, 'Letzte', 'Minute')
+                    w_timebox = _draw_time_box(cnv, h_header, s, c_timebox_warn, 'Last', 'minute') # TODO i18n
                 else:
                     w_timebox = _draw_time_box(cnv, h_header, s, c_timebox_warn, f"{minutes_left} min")
             else:
@@ -68,13 +68,13 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
             # 2. message area
             x = w_timebox + mrgn
             if time_now < t_1_welcome_end:                
-                _draw_booking_match(cnv, s, x, h_header, b_1_current, 'Viel Spaß!')
+                _draw_booking_match(cnv, s, x, h_header, b_1_current, 'Have fun!') # TODO i18n
             elif time_now < t_3_countdown_start:
                 _draw_booking_match(cnv, s, x, h_header, b_1_current)
             elif time_now < t_end:
                 # Adjacent bookings handling: interchange every 10 seconds
                 if b_2_next and is_current_second_in_period(PERIOD_INTERCHANGE_ADJACENT_S, time_now):
-                    _draw_booking_match(cnv, s, x, h_header, b_2_next, 'Nächste Buchung 11111111')                    
+                    _draw_booking_match(cnv, s, x, h_header, b_2_next, 'Next booking') # TODO i18n             
                 else:
                     _draw_booking_match(cnv, s, x, h_header, b_1_current)
             else:
@@ -87,7 +87,7 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
         t_end = parser.parse(b_2_next['end-date'])
         w_timebox = _draw_time_box(cnv, h_header, s, c_timebox, t_start.strftime('%H:%M'), "-", t_end.strftime('%H:%M'))
         x = w_timebox + mrgn
-        _draw_booking_match(cnv, s, x, h_header, b_2_next, 'Nächste Buchung 222222222')
+        _draw_booking_match(cnv, s, x, h_header, b_2_next, 'Next booking') # TODO i18n
 
     else:
         # no bookings - show a default

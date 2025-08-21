@@ -16,13 +16,12 @@ class ClubCI:
 @dataclass
 class BookingStyle:
     
+    # flags
     is_weather_displayed: bool = True
     is_court_name_acronym: bool = False
     is_club_area_left: bool = False
 
-    
-    
-    
+    # styles: colors and fonts
     c_free_to_book: graphics.Color = COLOR_GREEN
 
     c_time_box_default: graphics.Color = COLOR_GREY
@@ -33,12 +32,12 @@ class BookingStyle:
     
     c_clock: graphics.Color = COLOR_WHITE
     f_clock: graphics.Font = FONT_L
-    f_single_clock: graphics.Font = FONT_S
+    f_single_clock: graphics.Font = FONT_M
     
     f_court_name: graphics.Font = FONT_M
     f_single_court_name: graphics.Font = FONT_S
     
-    c_info_text: graphics.Color = COLOR_WHITE    
+    c_info_text: graphics.Color = COLOR_WHITE
     f_info_text: graphics.Font = FONT_XS
     f_single_info_text: graphics.Font = FONT_M
     c_single_info_caption: graphics.Color = COLOR_GREY
@@ -46,10 +45,6 @@ class BookingStyle:
 
     f_time_box: graphics.Font = FONT_XXS
     f_single_time_box: graphics.Font = FONT_M
-
-    
-    
-    
     
 
 @dataclass
