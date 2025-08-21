@@ -112,7 +112,7 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, ti
     #short line under court name
     graphics.DrawLine(cnv, x_court + 1, y + h_court_name -1, x_court + w_court - 2, y + h_court_name - 1, s.ci.color_2)
     #long line under whole booking
-    graphics.DrawLine(cnv, x_court + 2, y + h_court_name, x0 + w - 2, y + h_court_name, s.bookings.c_separator)
+    graphics.DrawLine(cnv, x_court + w_court + 2, y + h_court_name, x0 + w - 2, y + h_court_name, s.bookings.c_separator)
     _x = x_court + x_font_center(txt_court, w_court + 2, _fnt)
     y += y_font_center(_fnt, h_court_name)
     graphics.DrawText(cnv, _fnt, _x, y, s.ci.color_font, txt_court)
