@@ -11,8 +11,10 @@ TD_3_COUNTDOWN = TD_0_UPCOMING # these two should be equal
 TD_4_GAMEOVER = timedelta(minutes = 2)
 
 def booking_player(player):
-        txt = None
+    txt = ''
+    if player:
         firstname = player.get('firstname')
+            
         if firstname:
             txt = firstname
         else:
@@ -23,10 +25,10 @@ def booking_player(player):
                 txt += lastname
             else:
                 txt = _('booking.guest')
-        return txt
+    return txt
 
 def booking_team(booking, isTeam1=True):
-    txt = None
+    txt = ''
     tp1 =  booking.get('p1') if isTeam1 else booking.get('p3')
     if tp1:
         txt = booking_player(tp1)
