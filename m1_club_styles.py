@@ -1,6 +1,7 @@
 from sevencourts import *
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Dict, List
 
 @dataclass
 class LogoStyle:
@@ -17,17 +18,13 @@ class ClubCI:
 @dataclass
 class BookingStyle:
     
-    # flags
+    # signange: 2 or 3 or 4 courts
     is_weather_displayed: bool = True
     is_court_name_acronym: bool = False
     is_club_area_left: bool = False
 
-    # styles: colors and fonts
-    c_free_to_book: graphics.Color = COLOR_7C_GREEN
+    court_name_truncate_to: int = 2
 
-    c_time_box_default: graphics.Color = COLOR_GREY
-    c_time_box_countdown: graphics.Color = COLOR_7C_GOLD
-    
     c_weather: graphics.Color = COLOR_WHITE
     f_weather: graphics.Font = FONT_M_SDK
     
@@ -35,17 +32,31 @@ class BookingStyle:
     f_clock: graphics.Font = FONT_L
     f_single_clock: graphics.Font = FONT_M
     
-    f_court_name: graphics.Font = FONT_M
-    f_single_court_name: graphics.Font = FONT_S
     
-    c_info_text: graphics.Color = COLOR_WHITE
-    f_info_text: graphics.Font = FONT_XS
-    f_single_info_text: graphics.Font = FONT_M
-    c_single_info_caption: graphics.Color = COLOR_GREY
-    f_single_info_caption: graphics.Font = FONT_M
+    f_court_name: graphics.Font = FONT_M
+    c_infotext: graphics.Color = COLOR_GREY
+    
 
-    f_time_box: graphics.Font = FONT_XXS
-    f_single_time_box: graphics.Font = FONT_M
+    f_infotext: Dict[int, tuple[graphics.Font]] = field(default_factory=lambda: {
+        2: [FONT_S, FONT_S],
+        3: [FONT_S, FONT_S],
+        4: [FONT_S, FONT_XS]
+    })
+
+    c_timebox_default: graphics.Color = COLOR_WHITE
+    c_timebox_countdown: graphics.Color = COLOR_7C_GOLD
+    f_timebox: graphics.Font = FONT_S
+    c_timebox_border: graphics.Color = COLOR_BLACK
+    c_timebox_border_free: graphics.Color = COLOR_BLACK
+    c_timebox_free: graphics.Color = COLOR_7C_GREEN
+
+    # single court
+    f_time_box_single: graphics.Font = FONT_M
+    f_courtname_single: graphics.Font = FONT_S
+
+    f_info_text_single: graphics.Font = FONT_M
+    c_info_caption_single: graphics.Color = COLOR_GREY
+    f_info_caption_single: graphics.Font = FONT_M
 
     c_separator: graphics.Color = COLOR_GREY_DARKEST
     

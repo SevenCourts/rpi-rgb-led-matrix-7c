@@ -32,8 +32,8 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
     h_header = _draw_header(cnv, court, s, time_now if show_time_in_header else None)
 
 
-    c_timebox_warn = s.bookings.c_time_box_countdown
-    c_timebox = s.bookings.c_time_box_default
+    c_timebox_warn = s.bookings.c_timebox_countdown
+    c_timebox = s.bookings.c_timebox_default
 
     if b_0_past and not b_1_current:
         # Show "Game over" for 2 minutes only if there is no current booking
@@ -110,7 +110,7 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
 
 def _draw_header(cnv, court, s: ClubStyle, dt=None):
     """Retuns the y coordinate (height) of the header section"""        
-    f_name = s.bookings.f_single_court_name
+    f_name = s.bookings.f_courtname_single
     f_time = s.bookings.f_single_clock
 
     mrgn = 2
@@ -147,7 +147,7 @@ def _draw_header(cnv, court, s: ClubStyle, dt=None):
 def _draw_time_box(cnv, y0, s: ClubStyle, color, txt_1:str, txt_2:str=None, txt_3:str=None):
     '''Return the width of the timebox component'''
 
-    font = s.bookings.f_single_time_box    
+    font = s.bookings.f_time_box_single    
     padding = 1
     mrgn = 2
     x = mrgn
@@ -196,11 +196,11 @@ def _draw_time_box(cnv, y0, s: ClubStyle, color, txt_1:str, txt_2:str=None, txt_
 
 def _draw_booking_match(cnv, s: ClubStyle, x0: int, y0: int, booking, caption=''):
     
-    f_caption = s.bookings.f_single_info_caption
-    c_caption = s.bookings.c_single_info_caption
+    f_caption = s.bookings.f_info_caption_single
+    c_caption = s.bookings.c_info_caption_single
 
-    f_info = s.bookings.f_single_info_text
-    c_info = s.bookings.c_info_text
+    f_info = s.bookings.f_info_text_single
+    c_info = s.bookings.c_infotext
     
 
     x = x0 + 2

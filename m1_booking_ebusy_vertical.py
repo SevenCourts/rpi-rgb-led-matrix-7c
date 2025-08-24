@@ -38,14 +38,15 @@ def draw(cnv, booking_info, weather_info, panel_tz, s: ClubStyle):
     _draw_club_area(cnv, x_clubarea, 0, w_clock, panel_tz, s, time_now, weather_info)
 
     ## booking infos
-    h_booking = _booking_height(len(booking_info.get('courts')))
+    courts_number = len(booking_info.get('courts'))
+    h_booking = _booking_height(courts_number)
     w_booking = W_PANEL - max(w_clock, w_logo)
     y_court = 0
     for b in booking_info['courts']:
 
         last_row = (b == booking_info['courts'][-1])
 
-        _draw_booking_court(cnv, x_courts, y_court, h_booking, w_booking, b, time_now, s, last_row)
+        _draw_booking_court(cnv, x_courts, y_court, h_booking, w_booking, b, time_now, s, courts_number, last_row)
         y_court += h_booking
 
 def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, s: ClubStyle, time_now, weather_info):
@@ -91,21 +92,20 @@ def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, s: ClubStyle, time_
     #    graphics.DrawLine(cnv, x0, 0, x0, H_PANEL, s.ci.color_2)
 
 
-def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, time_now, s: ClubStyle, last_row: bool):
+def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, time_now, s: ClubStyle, courts_number: int, last_row: bool):
 
-    w_court = 27 # TODO dynamic?
-    w_time_left = w_court
-    w_info_text = w - w_court - w_time_left - 2 - 2
+    w_court = width_in_pixels(s.bookings.f_court_name, "X" * s.bookings.court_name_truncate_to) + 4
+    w_time_box = width_in_pixels(s.bookings.f_timebox, "22:22") + 2
+    w_info_text = w - w_court - w_time_box - 2 - 4
 
-    # court name
-    max_length_court_name = 3 # TODO dynamic? style parameter?
+    # court name    
     court_name = court_bookings['court']['name']
     if s.bookings.is_court_name_acronym:
         txt_court = ''.join(word[0].upper() for word in court_name.split() if word)        
     else:
         txt_court = court_name
     
-    txt_court = txt_court[:max_length_court_name]
+    txt_court = txt_court[:s.bookings.court_name_truncate_to]
 
     _fnt = s.bookings.f_court_name
     x_court = x0
@@ -130,8 +130,8 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, ti
 
     booking = None
     
-    c_time_left = s.bookings.c_time_box_default
-    c_time_box_border = s.ci.color_1
+    c_time_box = s.bookings.c_timebox_default
+    c_time_box_border = s.bookings.c_timebox_border
 
     if b_1_current:
 
@@ -151,13 +151,10 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, ti
 
             if hours_left > 0:
                 # default
-                txt_status = f"> {hours_left} h"
+                txt_status = f">{hours_left}h"
             elif time_now < t_3_countdown_start:
                 # default
-                if minutes_in_hour_left < 10:
-                    txt_status = f"{minutes_in_hour_left} min"
-                else:
-                    txt_status = f"{minutes_in_hour_left} m."                    
+                txt_status = f"{minutes_in_hour_left}'"
             elif time_now < t_end:
                 # countdown                
                 
@@ -169,57 +166,57 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, ti
                     txt_status = f"{t_start.hour:02d}:{t_start.minute:02d}"
                 else:
                     # show current
-                    txt_status = f"{minutes_in_hour_left} min"
-                    c_time_left = s.bookings.c_time_box_countdown
+                    txt_status = f"{minutes_in_hour_left}'"
+                    c_time_box = s.bookings.c_timebox_countdown
             else:
                 raise ValueError('should never happen with eBusy data')
         else:
             raise ValueError('should never happen with eBusy data')
         
-        (txt_info_1, txt_info_2) = booking_info_texts(booking, w_info_text, s.bookings.f_info_text)
+        (txt_info_1, txt_info_2) = booking_info_texts(booking, w_info_text, s.bookings.f_infotext[courts_number][1])
 
     elif b_2_next:
 
         booking = b_2_next
-        (txt_info_1, txt_info_2) = booking_info_texts(booking, w_info_text, s.bookings.f_info_text)
+        (txt_info_1, txt_info_2) = booking_info_texts(booking, w_info_text, s.bookings.f_infotext[courts_number][1])
         t_start = parser.parse(booking['start-date'])
         txt_status = f"{t_start.hour}:{t_start.minute}"
 
     else:
         # no bookings - free
-        c_time_left = s.bookings.c_free_to_book
-        c_time_box_border = COLOR_BLACK
+        c_time_box = s.bookings.c_timebox_free
+        c_time_box_border = s.bookings.c_timebox_border_free
         txt_status = "Free"
 
-    # TODO no need for border?
-    c_time_box_border = COLOR_BLACK
-    
+    # draw
+
     ## time box frame
-    _fnt = s.bookings.f_time_box
+    _fnt = s.bookings.f_timebox
     _h = h - 2
-    x_time_left = x_court + w_court + 1
+    x_time_box = x_court + w_court + 1
     _y = y0 + 1
-    draw_rect(cnv, x_time_left, _y, w_time_left, _h, c_time_box_border, w_border=1, round_corners=True)
-    
-    ## sec info text
-    _x = x_time_left + x_font_center(txt_status, w_time_left, _fnt) + 1
+    draw_rect(cnv, x_time_box, _y, w_time_box, _h, c_time_box_border, w_border=1, round_corners=True)
+        
+    ## time box text
+    _x = x_time_box + x_font_center(txt_status, w_time_box, _fnt)
     _y += y_font_center(_fnt, _h)
-    graphics.DrawText(cnv, _fnt, _x, _y, c_time_left, txt_status)
+    graphics.DrawText(cnv, _fnt, _x, _y, c_time_box, txt_status)
     
-    # info
-    x = x_time_left + w_time_left + 1
+    # info texts
+    _x = x_time_box + w_time_box + 2
     if txt_info_1:
-        c = s.bookings.c_info_text
-        _fnt = s.bookings.f_info_text
+        _c = s.bookings.c_infotext
         if txt_info_2:
+            _fnt = s.bookings.f_infotext[courts_number][1]
             # correction for 4 courts rendering:
             is_enough_place_for_2_lines = h_court_name > (2 * (1 + y_font_offset(_fnt)))
-            _y = y0 + int(h/2) - (0 if is_enough_place_for_2_lines else 1)
-            graphics.DrawText(cnv, _fnt, x, _y, c, txt_info_1)
-            _y += y_font_offset(_fnt) + 2 - (0 if is_enough_place_for_2_lines else 1)
-            graphics.DrawText(cnv, _fnt, x, _y, c, txt_info_2)
-        else:
-            _y = y0 + y_font_center(_fnt, h)
-            graphics.DrawText(cnv, _fnt, x, _y, c, txt_info_1)
 
+            _y = y0 + int(h/2) - (0 if is_enough_place_for_2_lines else 1)
+            graphics.DrawText(cnv, _fnt, _x, _y, _c, txt_info_1)
+            _y += y_font_offset(_fnt) + 2 - (0 if is_enough_place_for_2_lines else 1)
+            graphics.DrawText(cnv, _fnt, _x, _y, _c, txt_info_2)
+        else:
+            _fnt = s.bookings.f_infotext[courts_number][0]
+            _y = y0 + y_font_center(_fnt, h)
+            graphics.DrawText(cnv, _fnt, _x, _y, _c, txt_info_1)
     return
