@@ -47,7 +47,7 @@ class MultipleCourts:
     })
 
     f_timebox: graphics.Font = FONT_S
-    f_timebox_countdown: graphics.Font = FONT_M # TODO decide: same font size?
+    f_timebox_countdown: graphics.Font = FONT_S
 
     c_timebox_border: graphics.Color = COLOR_BLACK
     c_timebox_border_free: graphics.Color = COLOR_BLACK
