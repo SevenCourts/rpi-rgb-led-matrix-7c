@@ -19,21 +19,28 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
     b_0_past = court_bookings['past']
     b_1_current = court_bookings['current']
     b_2_next = court_bookings['next']
-        
-    # Use datetime set in the Panel Admin UI for easier testing/debugging:
+
+    # header
+    h_header = _draw_header(cnv, court, s)
+
+    # clock        
+    ## Use datetime set in the Panel Admin UI for easier testing/debugging:
     _dev_timestamp = booking_info.get('_dev_timestamp')
     if _dev_timestamp and len(_dev_timestamp):
         time_now = parser.parse(_dev_timestamp)
     else:
         time_now = datetime.now(tz.gettz(panel_tz))
+    ## draw clock
+    f_clock = s.booking.f_clock
+    c_clock = s.booking.c_clock
+    x_clock = W_PANEL - width_in_pixels(f_clock, "00:00")
+    h_clock = y_font_offset(f_clock) + 1
+    y_clock = H_PANEL - 1
+    m1_clock.draw_clock_by_coordinates(cnv, x_clock, y_clock, f_clock, panel_tz, c_clock, time_now)
 
-    # do not show time if no booking to show (time will be displayed in the main area)
-    show_time_in_header = b_0_past or b_1_current or b_2_next
-    h_header = _draw_header(cnv, court, s, time_now if show_time_in_header else None)
 
-
-    c_timebox_warn = s.bookings.c_timebox_countdown
-    c_timebox = s.bookings.c_timebox
+    c_timebox_warn = s.booking.c_timebox_countdown
+    c_timebox = s.booking.c_timebox
 
     if b_0_past and not b_1_current:
         # Show "Game over" for 2 minutes only if there is no current booking
@@ -90,7 +97,7 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
         _draw_booking_match(cnv, s, x, h_header, b_2_next, 'Next booking') # TODO i18n
 
     else:
-        # no bookings - show a default
+        # no bookings - show a logo and "Free" text
         image = Image.open(s.ci.logo.path)
         MAX_IMAGE_WIDTH = 76 # so that 22:22 time fits
         h_logo = H_PANEL - h_header - mrgn
@@ -101,60 +108,49 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
         if s.ci.logo.round_corners:
             round_rect_corners(cnv, x, y, image.width, image.height)
 
-        txt_time = time_now.strftime('%H:%M')
-        fnt = m1_clock.FONT_CLOCK_M_1
+        txt = "Free to book" # TODO i18n
+        fnt = s.booking.one.f_info
         x += image.width + mrgn
-        x = x + x_font_center(txt_time, W_PANEL - x, fnt)
-        y = h_header + y_font_center(fnt, H_PANEL - h_header)
-        draw_text(cnv, x, y, txt_time, fnt, s.ci.color_font)
+        x = W_PANEL - width_in_pixels(fnt, txt) - mrgn
+        y = h_header + y_font_offset(fnt) + mrgn
+        draw_text(cnv, x, y, txt, fnt, s.booking.c_timebox_free)
 
-def _draw_header(cnv, court, s: ClubStyle, dt=None):
+def _draw_header(cnv, court, s: ClubStyle):
     """Retuns the y coordinate (height) of the header section"""        
-    f_name = s.bookings.f_courtname_single
-    f_time = s.bookings.f_single_clock
-
+    f_name = s.booking.one.f_courtname
+    
     mrgn = 2
-    x_court_name = 0 + mrgn
-    y_court_name = y_font_offset(f_name) + mrgn
-        
-    if dt:
-        txt_clock = dt.strftime('%H:%M') # FIXME WTF
-        x_clock = W_PANEL - mrgn - width_in_pixels(f_time, txt_clock)    
-        y_clock =  y_font_offset(f_time) + mrgn        
-        y_separator = max(y_clock, y_court_name) + mrgn                
-    else:
-        y_separator = y_court_name + mrgn
+    _y = y_font_offset(f_name) + mrgn        
+    y_separator = _y + mrgn
+    fill_rect(cnv, 0, 0, W_PANEL, y_separator, s.ci.c_bg_1)
 
-    fill_rect(cnv, 0, 0, W_PANEL, y_separator, s.ci.color_1)
+    w_court_name = W_PANEL - mrgn*2
+    
+    # TODO refactor to lib method?
+    max_length = max_string_length_for_font(f_name, w_court_name)
+    txt = ellipsize(truncate_text(f_name, w_court_name, court['name']), max_length)
 
-    if dt:
-        draw_text(cnv, x_clock, y_clock, txt_clock, f_time, s.ci.color_font)
-        w_clock = width_in_pixels(f_name, txt_clock)
-    else:
-        w_clock = 0    
-    w_court_name = W_PANEL - w_clock - mrgn*2
-    txt_court_name = truncate_text(f_name, w_court_name, court['name'])
-    if txt_court_name != court['name']:
+    _x = max(0 + mrgn, W_PANEL - width_in_pixels(f_name, txt) - mrgn)
+    if txt != court['name']:
         # ellipsize
-        txt_court_name = txt_court_name[:len(txt_court_name)-4] + "..."
-    draw_text(cnv, x_court_name, y_court_name, txt_court_name, f_name, s.ci.color_font)
+        txt = txt[:len(txt)-4] + "..."
+    draw_text(cnv, _x, _y, txt, f_name, s.ci.c_text)
 
-
-    graphics.DrawLine(cnv, 0, y_separator, W_PANEL, y_separator, s.ci.color_2)
+    graphics.DrawLine(cnv, 0, y_separator, W_PANEL, y_separator, s.ci.c_bg_2)
 
     return y_separator + 1
 
 def _draw_time_box(cnv, y0, s: ClubStyle, color, txt_1:str, txt_2:str=None, txt_3:str=None):
     '''Return the width of the timebox component'''
 
-    font = s.bookings.f_time_box_single    
+    font = s.booking.one.f_timebox
     padding = 1
     mrgn = 2
     x = mrgn
     y = y0 + mrgn
     h = H_PANEL - y0 - mrgn - mrgn
     w = max(h, width_in_pixels(font, txt_1), width_in_pixels(font, txt_2), width_in_pixels(font, txt_3)) + padding
-    draw_rect(cnv, x, y, w, h, s.ci.color_1, round_corners=True)
+    draw_rect(cnv, x, y, w, h, s.ci.c_bg_1, round_corners=True)
     
     w_ = w
     h_ = h - padding - padding
@@ -194,39 +190,34 @@ def _draw_time_box(cnv, y0, s: ClubStyle, color, txt_1:str, txt_2:str=None, txt_
 
     return w
 
-def _draw_booking_match(cnv, s: ClubStyle, x0: int, y0: int, booking, caption=''):
+def _draw_booking_match(cnv, s: ClubStyle, x0: int, y0: int, booking, footer=''):
     
-    f_caption = s.bookings.f_info_caption_single
-    c_caption = s.bookings.c_info_caption_single
+    f_info = s.booking.one.f_info
+    c_info = s.ci.c_text
 
-    f_info = s.bookings.f_info_text_single
-    c_info = s.bookings.c_infotext
+    f_footer = s.booking.one.f_footer
+    c_footer = s.booking.one.c_footer
     
-
     x = x0 + 2
-    y = y0
     w = W_PANEL - x
-    h = H_PANEL - y - 1
-    w_text = w - 5
+    h = H_PANEL - y0 - 1
+    w_row = w - 5
+    h_row = int(h/3)
     
-    # caption
-    if caption:
-        h_row = int(h/3)
-        y_txt = y + y_font_center(f_caption, h_row)
-        caption = ellipsize(caption, max_string_length_for_font(f_caption, w_text))
-        draw_text(cnv, x, y_txt, caption, f_caption, c_caption)        
-        y += h_row
-    else:
-        h_row = int(h/2)
-        
     # info (up to 2 lines)
-    (txt_info_1, txt_info_2) = booking_info_texts(booking, w_text, f_info)
+    (txt_info_1, txt_info_2) = booking_info_texts(booking, w_row, f_info)
     if txt_info_1:
         if txt_info_2:
-            y_txt = y + y_font_center(f_caption, h_row)
-            draw_text(cnv, x, y_txt, txt_info_1, f_info, c_info)
-            y_txt = y + h_row + y_font_center(f_caption, h_row)
-            draw_text(cnv, x, y_txt, txt_info_2, f_info, c_info)            
+            _y = y0 + y_font_center(f_footer, h_row)
+            draw_text(cnv, x, _y, txt_info_1, f_info, c_info)
+            _y = y0 + h_row + y_font_center(f_footer, h_row)
+            draw_text(cnv, x, _y, txt_info_2, f_info, c_info)
         else:
-            y_txt = y + y_font_center(f_info, h)
-            draw_text(cnv, x, y_txt, txt_info_1, f_info, c_info)
+            _y = y0 + y_font_center(f_info, h_row)
+            draw_text(cnv, x, _y, txt_info_1, f_info, c_info)
+
+    # footer
+    if footer:
+        _y = y0 + 3 * h_row
+        footer = ellipsize(footer, max_string_length_for_font(f_footer, w_row))
+        draw_text(cnv, x, _y, footer, f_footer, c_footer)        
