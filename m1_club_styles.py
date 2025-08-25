@@ -24,8 +24,7 @@ class SingleCourt:
     f_info: graphics.Font = FONT_M
     c_footer: graphics.Color = COLOR_GREY_DARK
     f_footer: graphics.Font = FONT_S
-
-    c_separator: graphics.Color = COLOR_GREY_DARKEST
+    
 
 @dataclass
 class MultipleCourts:
@@ -52,6 +51,8 @@ class MultipleCourts:
 
     c_timebox_border: graphics.Color = COLOR_BLACK
     c_timebox_border_free: graphics.Color = COLOR_BLACK
+
+    c_separator: graphics.Color = COLOR_GREY_DARKEST
     
 
 @dataclass
