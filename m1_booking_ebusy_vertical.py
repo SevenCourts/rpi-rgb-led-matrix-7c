@@ -188,7 +188,7 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, ti
     else:
         # no bookings - free
         c_timebox = s.booking.c_timebox_free
-        c_timebox_border = s.booking.c_timebox_border_free
+        c_timebox_border = s.booking.many.c_timebox_border_free
         txt_status = "Free"
 
     # draw
