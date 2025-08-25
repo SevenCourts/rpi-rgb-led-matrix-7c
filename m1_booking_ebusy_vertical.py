@@ -130,8 +130,9 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, ti
 
     booking = None
     
-    c_time_box = s.bookings.c_timebox_default
-    c_time_box_border = s.bookings.c_timebox_border
+    c_timebox = s.bookings.c_timebox
+    f_timebox = s.bookings.f_timebox
+    c_timebox_border = s.bookings.c_timebox_border
 
     if b_1_current:
 
@@ -167,7 +168,8 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, ti
                 else:
                     # show current
                     txt_status = f"{minutes_in_hour_left}'"
-                    c_time_box = s.bookings.c_timebox_countdown
+                    c_timebox = s.bookings.c_timebox_countdown
+                    f_timebox = s.bookings.f_timebox_countdown
             else:
                 raise ValueError('should never happen with eBusy data')
         else:
@@ -184,23 +186,23 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, ti
 
     else:
         # no bookings - free
-        c_time_box = s.bookings.c_timebox_free
-        c_time_box_border = s.bookings.c_timebox_border_free
+        c_timebox = s.bookings.c_timebox_free
+        c_timebox_border = s.bookings.c_timebox_border_free
         txt_status = "Free"
 
     # draw
 
     ## time box frame
-    _fnt = s.bookings.f_timebox
     _h = h - 2
     x_time_box = x_court + w_court + 1
     _y = y0 + 1
-    draw_rect(cnv, x_time_box, _y, w_time_box, _h, c_time_box_border, w_border=1, round_corners=True)
+    draw_rect(cnv, x_time_box, _y, w_time_box, _h, c_timebox_border, w_border=1, round_corners=True)
         
     ## time box text
+    _fnt = f_timebox
     _x = x_time_box + x_font_center(txt_status, w_time_box, _fnt)
     _y += y_font_center(_fnt, _h)
-    graphics.DrawText(cnv, _fnt, _x, _y, c_time_box, txt_status)
+    graphics.DrawText(cnv, _fnt, _x, _y, c_timebox, txt_status)
     
     # info texts
     _x = x_time_box + w_time_box + 2

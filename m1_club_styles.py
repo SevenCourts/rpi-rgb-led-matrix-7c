@@ -32,23 +32,25 @@ class BookingStyle:
     f_clock: graphics.Font = FONT_L
     f_single_clock: graphics.Font = FONT_M
     
-    
     f_court_name: graphics.Font = FONT_M
-    c_infotext: graphics.Color = COLOR_GREY
-    
 
+    c_infotext: graphics.Color = COLOR_GREY
     f_infotext: Dict[int, tuple[graphics.Font]] = field(default_factory=lambda: {
+        # number_of_courts : [font_for_1_row, font_for_2_rows]
         2: [FONT_S, FONT_S],
         3: [FONT_S, FONT_S],
         4: [FONT_S, FONT_XS]
     })
 
-    c_timebox_default: graphics.Color = COLOR_WHITE
+    c_timebox: graphics.Color = COLOR_WHITE
     c_timebox_countdown: graphics.Color = COLOR_7C_GOLD
     f_timebox: graphics.Font = FONT_S
+    f_timebox_countdown: graphics.Font = FONT_M # TODO decide: same font size?
+
     c_timebox_border: graphics.Color = COLOR_BLACK
     c_timebox_border_free: graphics.Color = COLOR_BLACK
     c_timebox_free: graphics.Color = COLOR_7C_GREEN
+    
 
     # single court
     f_time_box_single: graphics.Font = FONT_M

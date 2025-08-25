@@ -61,14 +61,21 @@ def truncate_to_tuple(text: str, max_length: int) -> tuple[str, str]:
 
 def booking_info_texts(booking, w_max_px, font) -> tuple[str, str]:
     row_1 = row_2 = ''
+
     max_length = max_string_length_for_font(font, w_max_px)
-    
+
+    no_person_name_booking_types = {'training', 'verbandspiel'} # TODO review, localize, etc.
+    booking_type = booking.get('booking-type', '')
+        
     if booking.get('display-text'):
         (row_1, row_2) = truncate_to_tuple(booking.get('display-text'), max_length)
+    elif booking_type.lower() in no_person_name_booking_types and \
+            not (booking.get('p2') or booking.get('p3') or booking.get('p4')):
+        (row_1, row_2) = truncate_to_tuple(booking.get('booking-type'), max_length)
     elif (booking.get('p3') or booking.get('p4')):
         row_1 = booking_team(booking, True)
         row_2 = booking_team(booking, False)
     else:
         row_1 = booking_player(booking.get('p1'))
         row_2 = booking_player(booking.get('p2'))
-    return (ellipsize(row_1, max_length), ellipsize(row_2,max_length))
+    return (ellipsize(row_1, max_length), ellipsize(row_2, max_length))

@@ -33,7 +33,7 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
 
 
     c_timebox_warn = s.bookings.c_timebox_countdown
-    c_timebox = s.bookings.c_timebox_default
+    c_timebox = s.bookings.c_timebox
 
     if b_0_past and not b_1_current:
         # Show "Game over" for 2 minutes only if there is no current booking
