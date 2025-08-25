@@ -198,7 +198,7 @@ def ip_address():
     return result
 
 
-def y_font_offset(font):
+def y_font_offset(font: graphics.Font) -> int:
     # This works only on emulator
     # return Y_FONT_EXTRA_OFFSETS.get(font.headers['fontname'], 0) + font.baseline + font.headers['fbbyoff']
     return Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(font)
@@ -271,7 +271,7 @@ def _debug_font_info(font, name=''):
         y_font_offset(font)))
     
 def ellipsize(text: str, max_length: int) -> str:
-    ellipsis = '^' # FIXME use SYMBOL_ELLIPSIS - must be in all fonts!!
+    ellipsis = SYMBOL_ELLIPSIS
     if len(text) <= max_length:
         return text
     elif  len(text) == max_length + 1:
