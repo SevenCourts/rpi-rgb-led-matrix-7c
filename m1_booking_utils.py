@@ -35,7 +35,7 @@ def booking_team(booking, isTeam1=True):
     tp2 =  booking.get('p2') if isTeam1 else booking.get('p4')
     if tp2:
         if txt:
-            txt += ', '
+            txt += ' '
         txt = (txt or '') + booking_player(tp2)
     return txt
 
