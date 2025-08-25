@@ -10,7 +10,7 @@ class Logo:
 
 @dataclass
 class ClubCI:
-    c_text: graphics.Color = COLOR_WHITE    
+    c_text: graphics.Color = COLOR_WHITE
     c_bg_1: graphics.Color = COLOR_7C_BLUE_DARK
     c_bg_2: graphics.Color = COLOR_7C_GREEN_DARK    
     logo: Logo = Logo()
