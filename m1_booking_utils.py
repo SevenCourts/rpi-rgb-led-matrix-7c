@@ -20,11 +20,10 @@ def booking_player(player):
         else:
             lastname = player.get('lastname')
             if lastname:
-                if txt:
-                    txt += ' '
-                txt += lastname
+                txt = lastname
             else:
                 txt = _('booking.guest')
+                txt = '' # FIXME guests?
     return txt
 
 def booking_team(booking, isTeam1=True):
