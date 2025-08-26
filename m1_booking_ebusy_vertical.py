@@ -10,10 +10,10 @@ from m1_club_styles import *
 
 def _booking_height(courts_count:int = 3):
     switcher = {
-        1: int(H_PANEL / 1), # 64
-        2: int(H_PANEL / 2), # 32
-        3: int(H_PANEL / 3), # 21
-        4: int(H_PANEL / 4), # 16
+        1: (int(H_PANEL / 1), 4), # 64
+        2: (int(H_PANEL / 2), 3), # 32
+        3: (int(H_PANEL / 3), 1), # 21
+        4: (int(H_PANEL / 4), 0), # 16
     }
     return switcher.get(courts_count, int(H_PANEL / 3))
 
@@ -40,14 +40,14 @@ def draw(cnv, booking_info, weather_info, panel_tz, s: ClubStyle):
 
     ## booking infos
     courts_number = len(booking_info.get('courts'))
-    h_booking = _booking_height(courts_number)
+    (h_booking, rows_spacing) = _booking_height(courts_number)
     w_booking = W_PANEL - max(w_clock, w_logo)
     y_court = 0
     for b in booking_info['courts']:
 
         last_row = (b == booking_info['courts'][-1])
 
-        _draw_booking_court(cnv, x_courts, y_court, h_booking, w_booking, b, time_now, s, courts_number, last_row)
+        _draw_booking_court(cnv, x_courts, y_court, h_booking, w_booking, rows_spacing, b, time_now, s, courts_number, last_row)
         y_court += h_booking
 
 def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, s: ClubStyle, time_now, weather_info):
@@ -93,7 +93,8 @@ def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, s: ClubStyle, time_
     #    graphics.DrawLine(cnv, x0, 0, x0, H_PANEL, s.ci.color_2)
 
 
-def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, time_now, s: ClubStyle, courts_number: int, last_row: bool):
+def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, rows_spacing:int, 
+                        court_bookings, time_now, s: ClubStyle, courts_number: int, last_row: bool):
 
     w_court = width_in_pixels(s.booking.many.f_court_name, "X" * s.booking.many.courtname_truncate_to) + 4
     w_time_box = width_in_pixels(s.booking.many.f_timebox, "22:22") + 2
@@ -213,9 +214,9 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, ti
         if txt_info_2:
             _fnt = s.booking.many.f_infotext[courts_number][1]
 
-            _y = y0 + int(h/2) - 1
+            _y = y0 + int(h/2) - 2 + (1 if courts_number == 4 else 0)
             graphics.DrawText(cnv, _fnt, _x, _y, _c, txt_info_1)
-            _y += y_font_offset(_fnt) + 2 - 1
+            _y += y_font_offset(_fnt) + 1 + rows_spacing
             graphics.DrawText(cnv, _fnt, _x, _y, _c, txt_info_2)
         else:
             _fnt = s.booking.many.f_infotext[courts_number][0]
