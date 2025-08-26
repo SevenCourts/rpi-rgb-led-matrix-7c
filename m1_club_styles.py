@@ -25,8 +25,8 @@ class SingleCourt:
     '''
 
     f_info: graphics.Font = FONT_M
-    c_footer: graphics.Color = COLOR_GREY_DARK
-    f_footer: graphics.Font = FONT_S
+    c_prompt: graphics.Color = COLOR_7C_GOLD
+    f_prompt: graphics.Font = FONT_S
     
     f_timebox: graphics.Font = FONT_M
     f_courtname: graphics.Font = FONT_S
@@ -73,7 +73,7 @@ class Booking:
     c_clock: graphics.Color = COLOR_WHITE
     f_clock: graphics.Font = FONT_L
 
-    c_timebox: graphics.Color = COLOR_WHITE
+    c_timebox: graphics.Color = COLOR_GREY
     c_timebox_countdown: graphics.Color = COLOR_7C_GOLD
     c_timebox_free: graphics.Color = COLOR_7C_GREEN
 

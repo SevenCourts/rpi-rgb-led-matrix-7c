@@ -148,17 +148,15 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, rows_spacing:int,
         booking = b_1_current
         
         if time_now > t_0_upcoming_start:
-            
-            seconds_left = (t_end - time_now).seconds
-            minutes_in_hour_left = seconds_left // 60 % 60 + 1
-            hours_left = seconds_left // (60 * 60)
+
+            (minutes_in_hour_left, hours_left) = hours_minutes_diff(t_end, time_now)
 
             if hours_left > 0:
                 # default
                 txt_status = f">{hours_left}h"
             elif time_now < t_3_countdown_start:
                 # default
-                txt_status = f"{minutes_in_hour_left}'"
+                txt_status = f" {minutes_in_hour_left}'"
             elif time_now < t_end:
                 # countdown                
                 

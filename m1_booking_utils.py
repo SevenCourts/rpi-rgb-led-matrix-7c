@@ -79,3 +79,11 @@ def booking_info_texts(booking, w_max_px, font) -> tuple[str, str]:
         row_1 = booking_player(booking.get('p1'))
         row_2 = booking_player(booking.get('p2'))
     return (ellipsize_text(row_1, max_length), ellipsize_text(row_2, max_length))
+
+
+
+def hours_minutes_diff(t1: datetime, t2: datetime) -> tuple[int, int, int]:
+    seconds_left = (t1 - t2).seconds - 1
+    minutes_in_hour_left = seconds_left // 60 % 60 + 1
+    hours_left = seconds_left // (60 * 60)
+    return (hours_left, minutes_in_hour_left)

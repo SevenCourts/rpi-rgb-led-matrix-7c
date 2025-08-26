@@ -271,11 +271,13 @@ def truncate(text: str, w_container: int, font: graphics.Font) -> str:
     return result
 
 def ellipsize_text(text: str, max_length: int) -> str:
-    ellipsis = SYMBOL_ELLIPSIS
+    
     if len(text) <= max_length:
         return text
-    elif  len(text) == max_length + 1:
+    elif len(text) == max_length + 1:
         ellipsis = ''
+    else:
+        ellipsis = SYMBOL_ELLIPSIS
     return text[:max_length] + ellipsis
 
 def ellipsize(text: str, w_container: int, font: graphics.Font) -> str:
