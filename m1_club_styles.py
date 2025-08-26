@@ -12,14 +12,17 @@ class Logo:
 class ClubCI:
     c_text: graphics.Color = COLOR_WHITE
     c_bg_1: graphics.Color = COLOR_7C_BLUE_DARK
-    c_bg_2: graphics.Color = COLOR_7C_GREEN_DARK    
+    c_bg_2: graphics.Color = COLOR_7C_GREEN_DARK
     logo: Logo = Logo()
 
 @dataclass
 class SingleCourt:
-    
-    f_timebox: graphics.Font = FONT_M
-    f_courtname: graphics.Font = FONT_S
+
+    is_show_timebox_left: bool = True
+    '''
+    Timebox is displayed on the left if True.
+    Timebox is displayed above the clock if False.
+    '''
 
     f_info: graphics.Font = FONT_M
     c_footer: graphics.Color = COLOR_GREY_DARK
@@ -28,8 +31,14 @@ class SingleCourt:
 
 @dataclass
 class MultipleCourts:
-    # signange: 2 or 3 or 4 courts
+    '''
+    Signange: 2 or 3 or 4 courts.
+    '''
+
     is_club_area_left: bool = False
+
+    is_use_for_single_court: bool = False
+    '''If to use signage mode also for a single court (1 row).'''
 
     courtname_truncate_to: int = 2
 
