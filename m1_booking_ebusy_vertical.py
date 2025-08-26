@@ -10,6 +10,7 @@ from m1_club_styles import *
 
 def _booking_height(courts_count:int = 3):
     switcher = {
+        1: int(H_PANEL / 1), # 64
         2: int(H_PANEL / 2), # 32
         3: int(H_PANEL / 3), # 21
         4: int(H_PANEL / 4), # 16

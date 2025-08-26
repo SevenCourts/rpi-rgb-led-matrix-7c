@@ -18,7 +18,7 @@ class ClubCI:
 @dataclass
 class SingleCourt:
 
-    is_show_timebox_left: bool = True
+    is_show_timebox_left: bool = False
     '''
     Timebox is displayed on the left if True.
     Timebox is displayed above the clock if False.
@@ -53,6 +53,7 @@ class MultipleCourts:
     c_infotext: graphics.Color = COLOR_GREY
     f_infotext: Dict[int, tuple[graphics.Font]] = field(default_factory=lambda: {
         # number_of_courts : [font_for_1_row, font_for_2_rows]
+        1: [FONT_L, FONT_M],
         2: [FONT_S, FONT_S],
         3: [FONT_S, FONT_S],
         4: [FONT_S, FONT_XS]
@@ -107,7 +108,9 @@ COLOR_CI_SV1845_2 = graphics.Color( int('0xC9', 0), int('0x42', 0), int('0x40', 
 style_SV1845 = ClubStyle(
     ci=ClubCI(c_bg_1=COLOR_CI_SV1845_1, c_bg_2=COLOR_CI_SV1845_2,
               logo=Logo(path='images/logos/SV1845/sv1845_76x64_eBusy_demo_logo.png', round_corners=True)),
-    booking=Booking(is_weather_displayed=False, is_courtname_acronym=True))
+    booking=Booking(
+        is_weather_displayed=False, 
+        is_courtname_acronym=True))
 
 # Matchcenter Filderstadt
 COLOR_CI_Matchcenter_1 = COLOR_GREY_DARKEST # Black
@@ -115,7 +118,10 @@ COLOR_CI_Matchcenter_2 = graphics.Color( int('0xE5', 0), int('0x00', 0), int('0x
 style_MatchCenter = ClubStyle(
     ci=ClubCI(c_bg_1=COLOR_CI_Matchcenter_1, c_bg_2=COLOR_CI_Matchcenter_2,
               logo=Logo(path='images/logos/MatchCenter Filderstadt/logo-matchcenter_58x39.png')),
-    booking=Booking(is_weather_displayed=False, is_courtname_acronym=True)
+    booking=Booking(
+        is_weather_displayed=False,
+        is_courtname_acronym=True,
+        one=SingleCourt(is_show_timebox_left=True))
 )
 
 # SevenCourts
@@ -124,6 +130,8 @@ COLOR_CI_SevenCourts_2 = COLOR_7C_GREEN_DARK
 style_SevenCourts = ClubStyle(
     ci=ClubCI(c_bg_1=COLOR_CI_SevenCourts_1, c_bg_2=COLOR_CI_SevenCourts_2,
               logo=Logo(path='images/logos/SevenCourts/sevencourts_58x6.png')),
-    booking=Booking(is_weather_displayed=True, is_courtname_acronym=True)
-)
+    booking=Booking(
+        is_weather_displayed=True,
+        is_courtname_acronym=True,
+        many=MultipleCourts(is_use_for_single_court=True)))
 

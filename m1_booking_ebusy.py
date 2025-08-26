@@ -128,10 +128,11 @@ def draw_booking(cnv, booking_info, weather_info, panel_tz):
     if total_courts == 0:
         #logger.warning(f"No courts in booking info: {booking_info}")
         draw_text(cnv, 0, 10, "Please select court/s")        
-    elif total_courts == 1:
-        m1_booking_ebusy_single.draw(cnv, booking_info, panel_tz, style)
-    else:
+    elif total_courts > 1 or style.booking.many.is_use_for_single_court:
         m1_booking_ebusy_vertical.draw(cnv, booking_info, weather_info, panel_tz, style)
+    else:
+        m1_booking_ebusy_single.draw(cnv, booking_info, panel_tz, style)
+        
 
 def draw_ebusy_ads(cnv, ebusy_ads):
     id = ebusy_ads.get("id")
