@@ -259,7 +259,7 @@ def _debug_font_info(font, name=''):
         font.baseline,
         y_font_offset(font)))
 
-def truncate(text, w_container, font) -> str:
+def truncate(text: str, w_container: int, font: graphics.Font) -> str:
     result = ""
     total_width = 0
     for c in text:

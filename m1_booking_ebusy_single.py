@@ -126,7 +126,7 @@ def _draw_header(cnv, court, s: ClubStyle):
 
     w_court_name = W_PANEL - mrgn*2
     
-    txt = ellipsize(court['name'], f_name, w_court_name)
+    txt = ellipsize(court['name'], w_court_name, f_name)
 
     _x = max(0 + mrgn, W_PANEL - width_in_pixels(f_name, txt) - mrgn)
     if txt != court['name']:

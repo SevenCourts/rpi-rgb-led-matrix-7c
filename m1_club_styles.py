@@ -28,6 +28,9 @@ class SingleCourt:
     c_footer: graphics.Color = COLOR_GREY_DARK
     f_footer: graphics.Font = FONT_S
     
+    f_timebox: graphics.Font = FONT_M
+    f_courtname: graphics.Font = FONT_S
+    
 
 @dataclass
 class MultipleCourts:
