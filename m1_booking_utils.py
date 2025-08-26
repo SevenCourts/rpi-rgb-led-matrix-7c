@@ -64,12 +64,12 @@ def booking_info_texts(booking, w_max_px, font) -> tuple[str, str]:
 
     max_length = max_string_length_for_font(font, w_max_px)
 
-    no_person_name_booking_types = {'training', 'verbandspiel'} # TODO review, localize, etc.
-    booking_type = booking.get('booking-type', '')
+    # FIXME should be given by extra Booking API? #is_display_p1_name
+    no_person_name_booking_types = {'Training', 'Verbandspiel'}#, 'Mit Ballmaschine'}
         
     if booking.get('display-text'):
         (row_1, row_2) = truncate_to_tuple(booking.get('display-text'), max_length)
-    elif booking_type.lower() in no_person_name_booking_types and \
+    elif booking.get('booking-type', '') in no_person_name_booking_types and \
             not (booking.get('p2') or booking.get('p3') or booking.get('p4')):
         (row_1, row_2) = truncate_to_tuple(booking.get('booking-type'), max_length)
     elif (booking.get('p3') or booking.get('p4')):

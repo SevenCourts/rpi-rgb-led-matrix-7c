@@ -84,8 +84,10 @@ COLOR_CI_TABB_2 = COLOR_GREY_DARK
 style_TABB = ClubStyle(
     ci=ClubCI(c_bg_1=COLOR_CI_TABB_1, c_bg_2=COLOR_CI_TABB_2,
               logo=Logo(path='images/logos/TABB/tabb-logo-transparent-60x13-border-3.png')),
-    booking=Booking(is_weather_displayed=True, is_courtname_acronym=False)
-)
+    booking=Booking(
+        is_weather_displayed=True, 
+        is_courtname_acronym=False,
+        many=MultipleCourts(courtname_truncate_to=3)))
 
 # SV1845 Esslingen
 COLOR_CI_SV1845_1 = graphics.Color( int('0x29', 0), int('0x49', 0), int('0x75', 0)) # Blue
@@ -93,8 +95,7 @@ COLOR_CI_SV1845_2 = graphics.Color( int('0xC9', 0), int('0x42', 0), int('0x40', 
 style_SV1845 = ClubStyle(
     ci=ClubCI(c_bg_1=COLOR_CI_SV1845_1, c_bg_2=COLOR_CI_SV1845_2,
               logo=Logo(path='images/logos/SV1845/sv1845_76x64_eBusy_demo_logo.png', round_corners=True)),
-    booking=Booking(is_weather_displayed=False, is_courtname_acronym=True)
-)
+    booking=Booking(is_weather_displayed=False, is_courtname_acronym=True))
 
 # Matchcenter Filderstadt
 COLOR_CI_Matchcenter_1 = COLOR_GREY_DARKEST # Black

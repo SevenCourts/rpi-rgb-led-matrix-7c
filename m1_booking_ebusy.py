@@ -109,16 +109,20 @@ booking_SV1845_4_courts = {
 
 def draw_booking(cnv, booking_info, weather_info, panel_tz):
 
-    t = datetime.now()
-    period_seconds = 10
-    if (t.second // period_seconds) % 2 == 0:
-        style = style_SV1845
-    else:
-        style = style_MatchCenter
-        
-    style = style_SV1845
-    style = style_TABB
-    style = style_SV1845
+    #t = datetime.now()
+    #period_seconds = 10
+    #if (t.second // period_seconds) % 2 == 0:
+    #    style = style_SV1845
+    #else:
+    #    style = style_MatchCenter
+
+    styles = {
+        "SevenCourts": style_SevenCourts,
+        "SV1845": style_SV1845,
+        "TABB": style_TABB,        
+        "MatchCenter": style_MatchCenter,
+    }
+    style = styles.get(booking_info.get('style', 'SevenCourts'))
 
     total_courts = len(booking_info.get('courts', []))
     if total_courts == 0:

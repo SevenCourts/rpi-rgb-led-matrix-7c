@@ -211,12 +211,10 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, court_bookings, ti
         _c = s.booking.many.c_infotext
         if txt_info_2:
             _fnt = s.booking.many.f_infotext[courts_number][1]
-            # correction for 4 courts rendering:
-            is_enough_place_for_2_lines = h_court_name > (2 * (1 + y_font_offset(_fnt)))
 
-            _y = y0 + int(h/2) - (0 if is_enough_place_for_2_lines else 1)
+            _y = y0 + int(h/2) - 1
             graphics.DrawText(cnv, _fnt, _x, _y, _c, txt_info_1)
-            _y += y_font_offset(_fnt) + 2 - (0 if is_enough_place_for_2_lines else 1)
+            _y += y_font_offset(_fnt) + 2 - 1
             graphics.DrawText(cnv, _fnt, _x, _y, _c, txt_info_2)
         else:
             _fnt = s.booking.many.f_infotext[courts_number][0]

@@ -133,7 +133,7 @@ def _draw_header(cnv, court, s: ClubStyle):
     _x = max(0 + mrgn, W_PANEL - width_in_pixels(f_name, txt) - mrgn)
     if txt != court['name']:
         # ellipsize
-        txt = txt[:len(txt)-4] + "..."
+        txt = txt[:len(txt)-1] + SYMBOL_ELLIPSIS
     draw_text(cnv, _x, _y, txt, f_name, s.ci.c_text)
 
     graphics.DrawLine(cnv, 0, y_separator, W_PANEL, y_separator, s.ci.c_bg_2)
