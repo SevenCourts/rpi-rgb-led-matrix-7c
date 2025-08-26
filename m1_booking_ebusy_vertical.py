@@ -149,7 +149,7 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, rows_spacing:int,
         
         if time_now > t_0_upcoming_start:
 
-            (minutes_in_hour_left, hours_left) = hours_minutes_diff(t_end, time_now)
+            (hours_left, minutes_in_hour_left) = hours_minutes_diff(t_end, time_now)
 
             if hours_left > 0:
                 # default

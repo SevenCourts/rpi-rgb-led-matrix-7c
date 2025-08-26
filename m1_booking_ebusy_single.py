@@ -146,9 +146,9 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
         if s.ci.logo.round_corners:
             round_rect_corners(cnv, _x, _y, image.width, image.height)
 
-        txt = "Free to book" # TODO i18n
+        prompt = "Book now: 10% discount" # TODO i18n
         fnt = s.booking.one.f_prompt
-        draw_text(cnv, x_txt_free_court, Y_PROMPT, txt, fnt, s.booking.c_timebox_free)
+        draw_text(cnv, x_txt_free_court, Y_PROMPT, prompt, fnt, s.booking.one.c_prompt)
 
 def _draw_header(cnv, court, s: ClubStyle):
     """Retuns the y coordinate (height) of the header section"""        
