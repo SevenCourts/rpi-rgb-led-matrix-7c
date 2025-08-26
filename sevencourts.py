@@ -226,24 +226,13 @@ def width_in_pixels(font, text):
     # print('<{}> => {}'.format(text,result))
     return result
 
-def truncate_text(font, max_width, text) -> str:
-    result = ""
-    total_width = 0
-    for c in text:
-        total_width += font.CharacterWidth(ord(c))
-        if total_width <= max_width:
-            result += c
-        else:
-            break
-    return result
-
-def max_string_length_for_font(font, width):
+def max_string_length_for_font(font, width) -> int:
     txt = "W" # we assume all used fonts have fixed width
     while width_in_pixels(font, txt) < width:
         txt += "W"
     return len(txt)-1
 
-def _is_font_fits(font, width, height, *texts):
+def _is_font_fits(font, width, height, *texts) -> bool:
     font_symbol_height = y_font_offset(font)
     max_width_with_this_font = max(map(partial(width_in_pixels, font), *texts))
     #print('{}>={} {}>={} {}'.format(height, font_symbol_height, width, max_width_with_this_font, *texts))
@@ -252,7 +241,7 @@ def _is_font_fits(font, width, height, *texts):
     return result
 
 
-def pick_font_that_fits(width, height, *texts):
+def pick_font_that_fits(width, height, *texts) -> graphics.Font:
     if _is_font_fits(FONT_L, width, height, texts):
         result = FONT_L
     elif _is_font_fits(FONT_M, width, height, texts):
@@ -269,8 +258,19 @@ def _debug_font_info(font, name=''):
         font.height,
         font.baseline,
         y_font_offset(font)))
-    
-def ellipsize(text: str, max_length: int) -> str:
+
+def truncate(text, w_container, font) -> str:
+    result = ""
+    total_width = 0
+    for c in text:
+        total_width += font.CharacterWidth(ord(c))
+        if total_width <= w_container:
+            result += c
+        else:
+            break
+    return result
+
+def ellipsize_text(text: str, max_length: int) -> str:
     ellipsis = SYMBOL_ELLIPSIS
     if len(text) <= max_length:
         return text
@@ -278,6 +278,10 @@ def ellipsize(text: str, max_length: int) -> str:
         ellipsis = ''
     return text[:max_length] + ellipsis
 
+def ellipsize(text: str, w_container: int, font: graphics.Font) -> str:
+    txt_truncated = truncate(text, w_container, font)
+    max_length = max_string_length_for_font(font, w_container)
+    return ellipsize_text(txt_truncated, max_length)
 
 
 def load_flag_image(flag_code):

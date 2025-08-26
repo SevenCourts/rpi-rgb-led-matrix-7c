@@ -126,9 +126,7 @@ def _draw_header(cnv, court, s: ClubStyle):
 
     w_court_name = W_PANEL - mrgn*2
     
-    # TODO refactor to lib method?
-    max_length = max_string_length_for_font(f_name, w_court_name)
-    txt = ellipsize(truncate_text(f_name, w_court_name, court['name']), max_length)
+    txt = ellipsize(court['name'], f_name, w_court_name)
 
     _x = max(0 + mrgn, W_PANEL - width_in_pixels(f_name, txt) - mrgn)
     if txt != court['name']:
@@ -219,5 +217,5 @@ def _draw_booking_match(cnv, s: ClubStyle, x0: int, y0: int, booking, footer='')
     # footer
     if footer:
         _y = y0 + 3 * h_row
-        footer = ellipsize(footer, max_string_length_for_font(f_footer, w_row))
+        footer = ellipsize_text(footer, max_string_length_for_font(f_footer, w_row))
         draw_text(cnv, x, _y, footer, f_footer, c_footer)        

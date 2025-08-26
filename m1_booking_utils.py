@@ -78,4 +78,4 @@ def booking_info_texts(booking, w_max_px, font) -> tuple[str, str]:
     else:
         row_1 = booking_player(booking.get('p1'))
         row_2 = booking_player(booking.get('p2'))
-    return (ellipsize(row_1, max_length), ellipsize(row_2, max_length))
+    return (ellipsize_text(row_1, max_length), ellipsize_text(row_2, max_length))
