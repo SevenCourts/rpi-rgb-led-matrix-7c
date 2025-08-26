@@ -17,6 +17,7 @@ import m1_clock
 import m1_message
 import m1_image
 import m1_scoreboard
+import m1_devcards
 import time
 import urllib.request
 import json
@@ -225,7 +226,9 @@ class SevenCourtsM1(SampleBase):
     def _display_panel_info(self, offline=False):
         self.canvas.Clear()
 
-        if self.panel_info.get('standby'):
+        if True:
+            m1_devcards.draw_all_fonts_with_ellipsis(self.canvas)
+        elif self.panel_info.get('standby'):
             self._draw_standby_mode_indicator()
         elif 'booking' in self.panel_info:
             weather_info_lock.acquire()

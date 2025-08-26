@@ -13,7 +13,7 @@ def draw_all_fonts_with_ellipsis(cnv):
         "FONT_S_SDK": FONT_S_SDK,
         "FONT_M_SDK": FONT_M_SDK,
         "FONT_L_SDK": FONT_L_SDK,
-        #"FONT_XL_SDK": FONT_XL_SDK, # bug in font - badly shown in emulator
+        "FONT_XL_SDK": FONT_XL_SDK, # bug in font - badly shown in emulator
         "FONT_XS_SPLEEN": FONT_XS_SPLEEN,
         "FONT_S_SPLEEN": FONT_S_SPLEEN,
         "FONT_M_SPLEEN": FONT_M_SPLEEN,
@@ -54,7 +54,10 @@ def draw_all_fonts_with_ellipsis(cnv):
         try:            
             graphics.DrawText(cnv, FONT_XXS_SDK, x, y, COLOR_7C_BLUE, _i)
             _x = x + w_i
-            graphics.DrawText(cnv, font, _x, y, COLOR_7C_BLUE, SYMBOL_ELLIPSIS)
+            graphics.DrawText(cnv, font, _x, y, COLOR_7C_BLUE, "0")
+        
+        except TypeError as ex:
+            print(f"\t -> \t{ex}")
         except AttributeError as ex:
             print(f"\t -> \t{ex}")
             
