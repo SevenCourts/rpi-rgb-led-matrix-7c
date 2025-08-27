@@ -211,7 +211,7 @@ def _draw_timebox(cnv, x0:int, y0:int, w:int, h:int, s: ClubStyle,
 def _draw_match(cnv, s: ClubStyle, x0: int, y0: int, w: int, booking, prompt=''):
 
     x = x0 + 1
-    y = y0 + 1
+    y = y0
     h = H_PANEL - y0 - 2
 
     f_info = s.booking.one.f_info
