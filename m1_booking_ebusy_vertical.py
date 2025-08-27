@@ -29,12 +29,8 @@ def draw(cnv, booking_info, weather_info, panel_tz, s: ClubStyle):
     # heights and widths
     w_clock = w_logo = width_in_pixels(s.booking.f_clock, "00:00")    
 
-    if s.booking.many.is_club_area_left:
-        x_clubarea = 0
-        x_courts = w_clock + 2
-    else:
-        x_clubarea = W_PANEL - w_clock
-        x_courts = 0
+    x_clubarea = W_PANEL - w_clock
+    x_courts = 0
      
     _draw_club_area(cnv, x_clubarea, 0, w_clock, panel_tz, s, time_now, weather_info)
 
@@ -87,10 +83,6 @@ def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, s: ClubStyle, time_
             round_rect_corners(cnv, x_logo_img, y_logo_img, img_logo.width, img_logo.height)
         ### logo placeholder bg
         #fill_rect(cnv, x_logo, y_logo, w_logo, h_logo, c_CI_primary)
-
-    # vertical line separating club area and bookings area
-    #if not s.bookings.is_club_area_left:
-    #    graphics.DrawLine(cnv, x0, 0, x0, H_PANEL, s.ci.color_2)
 
 
 def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, rows_spacing:int, 
@@ -187,7 +179,7 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, rows_spacing:int,
 
     else:
         # no bookings - free
-        c_timebox = s.booking.c_timebox_free
+        c_timebox = s.booking.c_free_to_book
         c_timebox_border = s.booking.many.c_timebox_border_free
         txt_status = "Free"
 

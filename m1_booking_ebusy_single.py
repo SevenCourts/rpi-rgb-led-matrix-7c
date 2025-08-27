@@ -14,8 +14,6 @@ Y_PROMPT = H_PANEL - 3 # "Bye" - the 'y' takes 3 pixels for the tail
 
 def draw(cnv, booking_info, panel_tz, s: ClubStyle):
 
-    mrgn = 2
-    
     court_bookings = booking_info['courts'][0]
     court = court_bookings['court']
     b_0_past = court_bookings['past']
@@ -42,38 +40,28 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
     m1_clock.draw_clock_by_coordinates(cnv, x_clock, y_clock, f_clock, panel_tz, c_clock, time_now)
 
 
+    x_logo = x_timebox = x_clock
+    w_logo = w_timebox = w_clock
+    h_logo = h_timebox = H_PANEL - h_header - h_clock
+
+    x_match = 0
+    w_match = W_PANEL - w_timebox
     
-
-    if s.booking.one.is_show_timebox_left:
-        x_logo = x_timebox = 0
-        w_logo = w_timebox = width_in_pixels(s.booking.one.f_timebox, "22:22") + 6
-        h_logo = h_timebox = H_PANEL - h_header
-
-        x_match = w_timebox + 2
-        w_match = W_PANEL - x_match
-
-        x_txt_free_court = w_logo + 1
-        
-    else:
-        x_logo = x_timebox = x_clock
-        w_logo = w_timebox = w_clock
-        h_logo = h_timebox = H_PANEL - h_header - h_clock
-
-        x_match = 0
-        w_match = W_PANEL - w_timebox
-
-        x_txt_free_court = 1
-        
-    
+    txt_timebox = txt_prompt = ('', '')
+    booking = None
     
     if b_0_past and not b_1_current:
         # Show "Game over" for 2 minutes only if there is no current booking
         t_0_4_gameover_end = (parser.parse(b_0_past['end-date']) + TD_4_GAMEOVER)
         if time_now < t_0_4_gameover_end:
-            _draw_timebox(cnv, x_timebox, h_header, w_timebox, h_timebox, s, s.booking.c_timebox, 
-                           ('Game', 'over')) # TODO i18n
-            _draw_match(cnv, s, x_match, h_header, w_match, b_0_past, 
-                                'Bye!') # TODO i18n
+            txt_timebox = ('Game', 'over')
+            txt_prompt = 'Bye!'
+            booking = b_0_past
+            
+            #_draw_timebox(cnv, x_timebox, h_header, w_timebox, h_timebox, s, s.booking.c_timebox, 
+            #               ('Game', 'over')) # TODO i18n
+            #_draw_match(cnv, s, x_match, h_header, w_match, b_0_past, 
+            #                    'Bye!') # TODO i18n
 
     elif b_1_current:
         
@@ -97,28 +85,34 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
             (hours_left, minutes_in_hour_left) = hours_minutes_diff(t_end, time_now)
 
             if hours_left > 0:
-                # default
-                txt_status = f">{hours_left}h"
+                txt_timebox = (f">{hours_left}h", '')
             else:
-                txt_status = f" {minutes_in_hour_left}'"
+                txt_timebox = (f" {minutes_in_hour_left}'", '')
             
 
-            _draw_timebox(cnv, x_timebox, h_header, w_timebox, h_timebox, s, c_timebox, 
-                            (txt_status, ''))
+            #_draw_timebox(cnv, x_timebox, h_header, w_timebox, h_timebox, s, c_timebox, 
+            #                (txt_timebox, ''))
             
             # 2.match area
-            if time_now < t_1_welcome_end:                
-                _draw_match(cnv, s, x_match, h_header, w_match, b_1_current,
-                            'Push button to start')
-                                    #'Have fun!') # TODO i18n
+            if time_now < t_1_welcome_end:
+                booking = b_1_current
+                txt_prompt = 'Push any button to start keeping score'
+                txt_prompt = 'Have fun!'
+                #_draw_match(cnv, s, x_match, h_header, w_match, b_1_current,
+                #            'Push button to start')
+                #                    #'Have fun!') # TODO i18n
             elif time_now < t_3_countdown_start:
-                _draw_match(cnv, s, x_match, h_header, w_match, b_1_current)
+                booking = b_1_current
+                #_draw_match(cnv, s, x_match, h_header, w_match, b_1_current)
             elif time_now < t_end:
                 # Adjacent bookings handling: interchange every 10 seconds
                 if b_2_next and is_current_second_in_period(PERIOD_INTERCHANGE_ADJACENT_S, time_now):
-                    _draw_match(cnv, s, x_match, h_header, w_match, b_2_next, 'Next booking') # TODO i18n             
+                    booking = b_2_next
+                    txt_prompt = 'Next booking'
+                    #_draw_match(cnv, s, x_match, h_header, w_match, b_2_next, 'Next booking') # TODO i18n             
                 else:
-                    _draw_match(cnv, s, x_match, h_header, w_match, b_1_current)
+                    booking = b_1_current
+                    #_draw_match(cnv, s, x_match, h_header, w_match, b_1_current)
             else:
                 raise ValueError('should never happen with eBusy data')
         else:
@@ -127,15 +121,21 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
     elif b_2_next:
         t_start = parser.parse(b_2_next['start-date'])
         t_end = parser.parse(b_2_next['end-date'])
-        _draw_timebox(cnv, x_timebox, h_header, w_timebox, h_timebox, s, s.booking.c_timebox, 
-                       (t_start.strftime('%H:%M'), t_end.strftime('%H:%M')))
-        _draw_match(cnv, s, x_match, h_header, w_match, b_2_next, 'Next booking') # TODO i18n
+
+        booking = b_2_next
+        txt_timebox = (t_start.strftime('%H:%M'), t_end.strftime('%H:%M'))
+        txt_prompt = 'Next booking'
+
+        #_draw_timebox(cnv, x_timebox, h_header, w_timebox, h_timebox, s, s.booking.c_timebox, 
+        #               (t_start.strftime('%H:%M'), t_end.strftime('%H:%M')))
+        #_draw_match(cnv, s, x_match, h_header, w_match, b_2_next, 'Next booking') # TODO i18n
 
     else:
+        # Free court: show a logo and "Free" text with "Book me!" prompt
+
         _w = w_logo - 2
         _h = h_logo - 2
         
-        # no bookings - show a logo and "Free" text
         image = Image.open(s.ci.logo.path)
         m1_image.thumbnail(image, _w, _h)
 
@@ -146,9 +146,53 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
         if s.ci.logo.round_corners:
             round_rect_corners(cnv, _x, _y, image.width, image.height)
 
-        prompt = "Book now: 10% discount" # TODO i18n
-        fnt = s.booking.one.f_prompt
-        draw_text(cnv, x_txt_free_court, Y_PROMPT, prompt, fnt, s.booking.one.c_prompt)
+        txt_prompt = 'Book now'
+        txt_prompt = 'Book now with code FG38 for 10% discount'
+
+        #prompt = "Book now: 10% discount" # TODO i18n
+        #prompt = "Book now!" # TODO i18n
+        #fnt = s.booking.one.f_prompt
+        #draw_text(cnv, x_txt_free_court, Y_PROMPT, prompt, fnt, s.booking.one.c_prompt)
+
+    h_prompt = 2 * y_font_offset(s.booking.one.f_prompt) + 5
+    y_prompt = H_PANEL - h_prompt
+    w_prompt = W_PANEL - w_clock
+
+    h_match = H_PANEL - h_header - h_prompt
+
+    txt_prompt = 'Book now with code 7CAB for 10% discount!'
+    #txt_prompt = 'Book now!'
+    
+
+    _draw_timebox(cnv, x_timebox, h_header, w_timebox, h_timebox, s, s.booking.c_timebox, txt_timebox)
+    _draw_match(cnv, s, x_match, h_header, w_match, h_match, booking)
+    _draw_prompt(cnv, x_match, y_prompt, w_prompt, h_prompt, txt_prompt, s)
+
+
+def _draw_prompt(cnv, x0, y0, w, h, text: str, s: ClubStyle):
+
+    if False:
+        fill_rect(cnv, x0, y0, w, h, COLOR_MAGENTA)
+
+    t1, t2 = truncate_into_rows(text, w, s.booking.one.f_prompt, 2, True)
+
+    if not t2:
+        t2 = t1
+        t1 = ''
+    
+    fnt = s.booking.one.f_prompt
+    clr = s.booking.one.c_prompt
+
+    y = y0
+    x = x0 + 1
+    
+    y += y_font_offset(fnt)
+    draw_text(cnv, x, y, t1, fnt, clr)
+
+    y += y_font_offset(fnt) + 3
+    draw_text(cnv, x, y, t2, fnt, clr)
+
+
 
 def _draw_header(cnv, court, s: ClubStyle):
     """Retuns the y coordinate (height) of the header section"""        
@@ -177,7 +221,7 @@ def _draw_timebox(cnv, x0:int, y0:int, w:int, h:int, s: ClubStyle,
                   color:graphics.Color, texts: tuple[str, str, str]):
     
     if False:
-        fill_rect(cnv, x0, y0, w, h, COLOR_7C_GOLD)
+        fill_rect(cnv, x0, y0, w, h, COLOR_MAGENTA)
 
     (txt_1, txt_2) = texts
 
@@ -208,37 +252,37 @@ def _draw_timebox(cnv, x0:int, y0:int, w:int, h:int, s: ClubStyle,
         draw_text(cnv, x_txt_1, y_txt_1, txt_1, font, color)
 
 
-def _draw_match(cnv, s: ClubStyle, x0: int, y0: int, w: int, booking, prompt=''):
+def _draw_match(cnv, s: ClubStyle, x0: int, y0: int, w: int, h: int, booking):
+
+    if True:
+        fill_rect(cnv, x0, y0, w, h, COLOR_MAGENTA)
 
     x = x0 + 1
     y = y0
-    h = H_PANEL - y0 - 2
-
-    f_info = s.booking.one.f_info
-    c_info = s.ci.c_text
-
-    f_prompt = s.booking.one.f_prompt
-    c_prompt = s.booking.one.c_prompt
-
+    
+    fnt = s.booking.one.f_info
+    
+    h_row = y_font_offset(fnt) + 5
     w_row = w - 5 # experimental magic value ;)
-    h_row = y_font_offset(f_info) + 5
+
 
     if False:
-        fill_rect(cnv, x0, y0, w, h, COLOR_7C_GOLD)
+        fill_rect(cnv, x0, y0, w, h, COLOR_MAGENTA)
     
     # info (up to 2 lines)
-    (txt_1, txt_2) = booking_info_texts(booking, w_row, f_info)
+    if booking:
+        (txt_1, txt_2) = booking_info_texts(booking, w_row, fnt)
+        clr = s.ci.c_text
+    else:
+        (txt_1, txt_2) = ('Free', '') # TODO i18n
+        clr = s.booking.c_free_to_book
+
     if txt_1:
         if txt_2:
             _y = y + h_row
-            draw_text(cnv, x, _y, txt_1, f_info, c_info)
+            draw_text(cnv, x, _y, txt_1, fnt, clr)
             _y = y + h_row * 2
-            draw_text(cnv, x, _y, txt_2, f_info, c_info)
+            draw_text(cnv, x, _y, txt_2, fnt, clr)
         else:
-            _y = y + y_font_center(f_info, h_row * 2)
-            draw_text(cnv, x, _y, txt_1, f_info, c_info)
-
-    # prompt
-    if prompt:
-        prompt = ellipsize(prompt, w, f_prompt)
-        draw_text(cnv, x, Y_PROMPT, prompt, f_prompt, c_prompt)        
+            _y = y + y_font_center(fnt, h_row * 2)
+            draw_text(cnv, x, _y, txt_1, fnt, clr)

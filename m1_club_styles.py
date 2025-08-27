@@ -18,7 +18,6 @@ class ClubCI:
 @dataclass
 class SingleCourt:
 
-    is_show_timebox_left: bool = False
     '''
     Timebox is displayed on the left if True.
     Timebox is displayed above the clock if False.
@@ -37,8 +36,6 @@ class MultipleCourts:
     '''
     Signange: 2 or 3 or 4 courts.
     '''
-
-    is_club_area_left: bool = False
 
     is_use_for_single_court: bool = False
     '''If to use signage mode also for a single court (1 row).'''
@@ -75,7 +72,7 @@ class Booking:
 
     c_timebox: graphics.Color = COLOR_GREY
     c_timebox_countdown: graphics.Color = COLOR_7C_GOLD
-    c_timebox_free: graphics.Color = COLOR_7C_GREEN
+    c_free_to_book: graphics.Color = COLOR_7C_GREEN
 
     is_weather_displayed: bool = True
     is_courtname_acronym: bool = False
@@ -120,9 +117,7 @@ style_MatchCenter = ClubStyle(
               logo=Logo(path='images/logos/MatchCenter Filderstadt/logo-matchcenter_58x39.png')),
     booking=Booking(
         is_weather_displayed=False,
-        is_courtname_acronym=True,
-        one=SingleCourt(is_show_timebox_left=True))
-)
+        is_courtname_acronym=True))
 
 # SevenCourts
 COLOR_CI_SevenCourts_1 = COLOR_7C_BLUE_DARK

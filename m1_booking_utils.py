@@ -44,20 +44,6 @@ def is_current_second_in_period(period_seconds: int = 60, time_now = datetime.no
     '''
     return (time_now.second // period_seconds) % 2 == 0
 
-
-def truncate_to_tuple(text: str, max_length: int) -> tuple[str, str]:
-    row_1 = row_2 = ''
-    for wrd in text.split():
-        if row_1:
-            if len(row_1 + ' ' + wrd) <= max_length:
-                row_1 += ' ' + wrd
-            else:
-                row_2 += (' ' if row_2 else '') + wrd
-        else:
-            row_1 = wrd
-    return (row_1, row_2)
-
-
 def booking_info_texts(booking, w_max_px, font) -> tuple[str, str]:
     row_1 = row_2 = ''
 
@@ -67,10 +53,10 @@ def booking_info_texts(booking, w_max_px, font) -> tuple[str, str]:
     no_person_name_booking_types = {'Training', 'Verbandspiel'}#, 'Mit Ballmaschine'}
         
     if booking.get('display-text'):
-        (row_1, row_2) = truncate_to_tuple(booking.get('display-text'), max_length)
+        row_1, row_2 = truncate_text(booking.get('display-text'), max_length)
     elif booking.get('booking-type', '') in no_person_name_booking_types and \
             not (booking.get('p2') or booking.get('p3') or booking.get('p4')):
-        (row_1, row_2) = truncate_to_tuple(booking.get('booking-type'), max_length)
+        row_1, row_2 = truncate_text(booking.get('booking-type'), max_length)
     elif (booking.get('p3') or booking.get('p4')):
         row_1 = booking_team(booking, True)
         row_2 = booking_team(booking, False)
