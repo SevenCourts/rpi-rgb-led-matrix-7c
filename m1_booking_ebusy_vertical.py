@@ -88,18 +88,17 @@ def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, s: ClubStyle, time_
 def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, rows_spacing:int, 
                         court_bookings, time_now, s: ClubStyle, courts_number: int, last_row: bool):
 
-    w_court = width_in_pixels(s.booking.many.f_court_name, "X" * s.booking.many.courtname_truncate_to) + 4
-    w_time_box = width_in_pixels(s.booking.many.f_timebox, "22:22") + 2
-    w_info_text = w - w_court - w_time_box - 4
+    w_court = width_in_pixels(s.booking.many.f_court_name, "X" * s.booking.courtname_truncate_to) + 4
+    w_timebox = width_in_pixels(s.booking.many.f_timebox, "22:22") + 2
+    w_bookinginfo = w - w_court - w_timebox - 4
 
     # court name    
     court_name = court_bookings['court']['name']
     if s.booking.is_courtname_acronym:
-        txt_court = ''.join(word[0].upper() for word in court_name.split() if word)        
+        txt_court = acronym(court_name)
     else:
         txt_court = court_name
-
-    txt_court = txt_court[:s.booking.many.courtname_truncate_to]
+    txt_court = txt_court[:s.booking.courtname_truncate_to]
 
     _fnt = s.booking.many.f_court_name
     x_court = x0
@@ -168,12 +167,12 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, rows_spacing:int,
         else:
             raise ValueError('should never happen with eBusy data')
         
-        (txt_info_1, txt_info_2) = booking_info_texts(booking, w_info_text, s.booking.many.f_infotext[courts_number][1])
+        (txt_info_1, txt_info_2) = booking_info_texts(booking, w_bookinginfo, s.booking.many.f_infotext[courts_number][1])
 
     elif b_2_next:
 
         booking = b_2_next
-        (txt_info_1, txt_info_2) = booking_info_texts(booking, w_info_text, s.booking.many.f_infotext[courts_number][1])
+        (txt_info_1, txt_info_2) = booking_info_texts(booking, w_bookinginfo, s.booking.many.f_infotext[courts_number][1])
         t_start = parser.parse(booking['start-date'])
         txt_status = f"{t_start.hour}:{t_start.minute}"
 
@@ -189,16 +188,16 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, rows_spacing:int,
     _h = h - 2
     x_time_box = x_court + w_court + 1
     _y = y0 + 1
-    draw_rect(cnv, x_time_box, _y, w_time_box, _h, c_timebox_border, w_border=1, round_corners=True)
+    draw_rect(cnv, x_time_box, _y, w_timebox, _h, c_timebox_border, w_border=1, round_corners=True)
         
     ## time box text
     _fnt = f_timebox
-    _x = x_time_box + x_font_center(txt_status, w_time_box, _fnt)
+    _x = x_time_box + x_font_center(txt_status, w_timebox, _fnt)
     _y += y_font_center(_fnt, _h)
     graphics.DrawText(cnv, _fnt, _x, _y, c_timebox, txt_status)
     
     # info texts
-    _x = x_time_box + w_time_box + 2
+    _x = x_time_box + w_timebox + 2
     if txt_info_1:
         _c = s.booking.many.c_infotext
         if txt_info_2:

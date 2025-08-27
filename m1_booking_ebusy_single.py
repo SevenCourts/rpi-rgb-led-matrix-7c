@@ -20,8 +20,7 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
     b_2_next = court_bookings['next']
 
     # header
-
-    h_header = y_font_offset(s.booking.one.f_courtname) + 3
+    h_header = y_font_offset(s.booking.one.f_courtname_on_top) + 3
 
     # clock        
     ## Use datetime set in the Panel Admin UI for easier testing/debugging:
@@ -40,12 +39,8 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
     
     x_timebox = x_clock
     w_timebox = w_clock
-    h_timebox = H_PANEL - h_header - h_clock
     c_timebox = s.booking.c_timebox
 
-    x_match = 0
-    w_match = W_PANEL - w_timebox
-    
     txts_timebox = ('', '')
     txt_prompt = ''
     booking = None
@@ -117,40 +112,96 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
     else:
         # court is free
         txt_prompt = 'Book now with code 7CAB for 10% discount'
-        txt_prompt = 'Book now via eBusy!'
+        txt_prompt = 'Book now via eBusy'
 
-    h_prompt = 2 * y_font_offset(s.booking.one.f_prompt) + 5
+    h_prompt = 2 * y_font_offset(s.booking.one.f_prompt) + 4
     y_prompt = H_PANEL - h_prompt
-    w_prompt = W_PANEL - w_clock
+    
+    
+    if s.booking.one.is_court_name_on_top:
+        f_court = s.booking.one.f_courtname_on_top
+        txt_court = court['name']        
+        w_court = W_PANEL
+        h_court = h_header
+        w_info = W_PANEL - w_timebox
+        x_info = 0
+        y_info = y_timebox = h_header
+        
+        h_timebox = h_info = H_PANEL - h_header - h_prompt
 
-    h_match = H_PANEL - h_header - h_prompt
+        w_prompt = W_PANEL - w_clock
+
+        h_courtname_text = h_header
+    else:
+        f_court = s.booking.one.f_courtname_on_left
+
+        txt_court = court['name']
+        if s.booking.is_courtname_acronym:
+            txt_court = acronym(txt_court)
+        txt_court = txt_court[:s.booking.courtname_truncate_to]
+
+        w_court = width_in_pixels(f_court, txt_court) + 3
+        h_court = H_PANEL
+
+        x_info = w_court
+        w_info = W_PANEL - w_timebox - w_court
+        y_info = y_timebox = 0
+        
+        h_timebox = h_info = H_PANEL - h_prompt
+
+        w_prompt = W_PANEL - w_clock - w_court
+    
+
+    if booking:
+        txt_1, txt_2 = booking_info_texts(booking, w_info - 2, s.booking.one.f_info)
+        c_info = s.ci.c_text
+    else:
+        txt_1, txt_2 = ('Free till 16h00', '') # TODO i18n TODO till?
+        txt_1, txt_2 = ('Free', '') # TODO i18n
+        c_info = s.booking.c_free_to_book
+    
+    if not s.booking.one.is_court_name_on_top:
+        h_courtname_text = (h_info // 2 + 5) if txt_2 else h_info
+
+
 
     m1_clock.draw_clock_by_coordinates(cnv, x_clock, y_clock, f_clock, panel_tz, c_clock, time_now)
-    _draw_courtname(cnv, 0, 0, W_PANEL, h_header, court, s)
-    _draw_timebox(cnv, x_timebox, h_header, w_timebox, h_timebox, txts_timebox, c_timebox, s)
-    _draw_booking_info(cnv, x_match, h_header, w_match, h_match, booking, s)
-    _draw_prompt(cnv, x_match, y_prompt, w_prompt, h_prompt, txt_prompt, s)
+    _draw_court(cnv, 0, 0, w_court, h_court, h_courtname_text, txt_court, f_court, s)
+    _draw_timebox(cnv, x_timebox, y_timebox, w_timebox, h_timebox, txts_timebox, c_timebox, s)
+    _draw_info(cnv, x_info, y_info, w_info, h_info, txt_1, txt_2, c_info, s)
+    _draw_prompt(cnv, x_info, y_prompt, w_prompt, h_prompt, txt_prompt, s)
 
 
-def _draw_courtname(cnv, x0: int, y0: int, w: int, h: int, court, s: ClubStyle):
+def _draw_court(cnv, x0: int, y0: int, w: int, h: int, h_courtname_text: int, txt: str, fnt: graphics.Font, s: ClubStyle):
     """Retuns the y coordinate (height) of the header section"""
 
     if False:
         fill_rect(cnv, x0, y0, w, h, COLOR_MAGENTA)
 
-    fnt = s.booking.one.f_courtname
-        
     fill_rect(cnv, x0, y0, w, h, s.ci.c_bg_1)
 
-    _w = w - 2
-    _x = x0 + 1
-    _y = y0 + y_font_center(fnt, h)
-    y_separator = h - 1
-    
-    txt = ellipsize(court['name'], _w, fnt)
-    
-    draw_text(cnv, _x, _y, txt, fnt, s.ci.c_text)
-    graphics.DrawLine(cnv, 0, y_separator, W_PANEL, y_separator, s.ci.c_bg_2)
+    if s.booking.one.is_court_name_on_top:
+        # top        
+        _w = w - 2
+        _x = x0 + 1
+        _y = y0 + y_font_center(fnt, h)
+        y_separator = h - 1
+
+        txt = ellipsize(txt, _w, fnt)
+        
+        draw_text(cnv, _x, _y, txt, fnt, s.ci.c_text)
+        graphics.DrawLine(cnv, 0, y_separator, W_PANEL, y_separator, s.ci.c_bg_2)
+    else:
+        # left
+        _w = w - 2
+        _x = x0 + 1
+        _y = y0 + y_font_center(fnt, h_courtname_text)
+        #_y = y0 + y_font_offset(fnt) + 1
+        x_separator = x0 + w - 1
+        y_separator = y0 + h
+
+        draw_text(cnv, _x, _y, txt, fnt, s.ci.c_text)        
+        graphics.DrawLine(cnv, x_separator, 0, x_separator, y_separator, s.ci.c_bg_2)
 
 
 def _draw_timebox(cnv, x0:int, y0:int, w:int, h:int,
@@ -209,33 +260,26 @@ def _draw_logo(cnv, x0, y0, w, h, logo_path, s: ClubStyle):
         round_rect_corners(cnv, _x, _y, image.width, image.height)
 
 
-def _draw_booking_info(cnv, x0: int, y0: int, w: int, h: int, booking, s: ClubStyle):
+def _draw_info(cnv, x0: int, y0: int, w: int, h: int, txt_1: str, txt_2: str, clr: graphics.Color, s: ClubStyle):
 
     if False:
         fill_rect(cnv, x0, y0, w, h, COLOR_MAGENTA)
 
-    x = x0 + 1
-    y = y0 + 1
+    x = x0 + 2
+    y = y0 + 3
     
     fnt = s.booking.one.f_info
     
-    h_row = y_font_offset(fnt) + 5
-    w_row = w - 2
-    
-    # info (up to 2 lines)
-    if booking:
-        (txt_1, txt_2) = booking_info_texts(booking, w_row, fnt)
-        clr = s.ci.c_text
-    else:
-        (txt_1, txt_2) = ('Free till 16h00', '') # TODO i18n TODO till?
-        (txt_1, txt_2) = ('Free', '') # TODO i18n
-        clr = s.booking.c_free_to_book
+    h_row = (h - 6) // 2
 
+    
+    
+    
     if txt_1:
         if txt_2:
-            _y = y + h_row
+            _y = y + y_font_center(fnt, h_row) + 1
             draw_text(cnv, x, _y, txt_1, fnt, clr)
-            _y = y + h_row * 2 - 1
+            _y = y + h_row + y_font_center(fnt, h_row)
             draw_text(cnv, x, _y, txt_2, fnt, clr)
         else:
             _y = y + y_font_center(fnt, h_row * 2)
@@ -262,5 +306,5 @@ def _draw_prompt(cnv, x0, y0, w, h, text: str, s: ClubStyle):
     y += y_font_offset(fnt)
     draw_text(cnv, x, y, t1, fnt, clr)
 
-    y += y_font_offset(fnt) + 2
+    y += y_font_offset(fnt) + 2 - (2 if not t1 else 0)
     draw_text(cnv, x, y, t2, fnt, clr)

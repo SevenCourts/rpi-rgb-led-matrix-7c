@@ -78,3 +78,7 @@ def hours_minutes_diff(t1: datetime, t2: datetime) -> tuple[int, int, int]:
     minutes_in_hour_left = seconds_left // 60 % 60 + 1
     hours_left = seconds_left // (60 * 60)
     return (hours_left, minutes_in_hour_left)
+
+
+def acronym(text: str) -> str:
+    return ''.join(word[0].upper() for word in text.split() if word)

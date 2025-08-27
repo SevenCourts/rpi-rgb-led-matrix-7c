@@ -16,19 +16,23 @@ class ClubCI:
     logo: Logo = Logo()
 
 @dataclass
-class SingleCourt:
+class OneCourt:
 
     '''
     Timebox is displayed on the left if True.
     Timebox is displayed above the clock if False.
     '''
 
+    is_court_name_on_top: bool = True
+    '''Otherwise the court name will be displayed on the left'''
+
     f_info: graphics.Font = FONT_M
     c_prompt: graphics.Color = COLOR_7C_GOLD
     f_prompt: graphics.Font = FONT_S
     
     f_timebox: graphics.Font = FONT_M
-    f_courtname: graphics.Font = FONT_S
+    f_courtname_on_top: graphics.Font = FONT_S
+    f_courtname_on_left: graphics.Font = FONT_M
     
 
 @dataclass
@@ -36,11 +40,6 @@ class MultipleCourts:
     '''
     Signange: 2 or 3 or 4 courts.
     '''
-
-    is_use_for_single_court: bool = False
-    '''If to use signage mode also for a single court (1 row).'''
-
-    courtname_truncate_to: int = 2
 
     c_weather: graphics.Color = COLOR_WHITE
     f_weather: graphics.Font = FONT_M_SDK
@@ -67,6 +66,8 @@ class MultipleCourts:
 
 @dataclass
 class Booking:
+    courtname_truncate_to: int = 2
+
     c_clock: graphics.Color = COLOR_WHITE
     f_clock: graphics.Font = FONT_L
 
@@ -77,7 +78,7 @@ class Booking:
     is_weather_displayed: bool = True
     is_courtname_acronym: bool = False
 
-    one: SingleCourt = SingleCourt()
+    one: OneCourt = OneCourt()
     many: MultipleCourts = MultipleCourts()
     
 
@@ -97,7 +98,7 @@ style_TABB = ClubStyle(
     booking=Booking(
         is_weather_displayed=True, 
         is_courtname_acronym=False,
-        many=MultipleCourts(courtname_truncate_to=3)))
+        courtname_truncate_to=3))
 
 # SV1845 Esslingen
 COLOR_CI_SV1845_1 = graphics.Color( int('0x29', 0), int('0x49', 0), int('0x75', 0)) # Blue
@@ -117,7 +118,9 @@ style_MatchCenter = ClubStyle(
               logo=Logo(path='images/logos/MatchCenter Filderstadt/logo-matchcenter_58x39.png')),
     booking=Booking(
         is_weather_displayed=False,
-        is_courtname_acronym=True))
+        is_courtname_acronym=False,
+        courtname_truncate_to=4,
+        one=OneCourt(is_court_name_on_top=False)))
 
 # SevenCourts
 COLOR_CI_SevenCourts_1 = COLOR_7C_BLUE_DARK
@@ -128,5 +131,5 @@ style_SevenCourts = ClubStyle(
     booking=Booking(
         is_weather_displayed=True,
         is_courtname_acronym=True,
-        many=MultipleCourts(is_use_for_single_court=True)))
+        one=OneCourt(is_court_name_on_top=False)))
 
