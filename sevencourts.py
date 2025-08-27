@@ -274,7 +274,7 @@ def ellipsize_text(text: str, max_length: int) -> str:
         ellipsis = ''
     else:
         ellipsis = SYMBOL_ELLIPSIS
-    return text[:max_length] + ellipsis
+    return text[:max_length - len(ellipsis)] + ellipsis
 
 def truncate_into_rows(text: str, w_container: int, 
              font: graphics.Font,
@@ -301,36 +301,28 @@ def truncate_text(text: str, max_length: int,
         else:
             candidate = word
 
-        print(f"candidate: {candidate}")
-
         if len(candidate) > max_length:
             result.append(row)
-            
-            print(f"++ row: {row}")
-
             row = word
-            print(f"new row: {row}")
-            
         else:
             row = candidate
-            print(f"new candidate: {candidate}")
 
         if len(result) == num_rows:
-            print(f"Breaking out: len(result)={len(result)}, num_rows={num_rows}")
             break
         else:
             words_counter += 1
-            print(f"words processed: {words_counter}/{len(words)}")
 
-    if row and len(result) < num_rows:
-        result.append(row)
-
+    if row:
+        if len(result) < num_rows:
+            result.append(row)
+        elif ellipsize and len(result) == num_rows:
+            result[-1] = result[-1] + ' ' + row
+            
     if ellipsize and words_counter < len(words) :
         row = result[-1]
-        print(f"Last row before ellipsis: {row}")
-        if len(row) == max_length:
-            row = row[:len(row)-1] + SYMBOL_ELLIPSIS
-        elif words_counter < len(words):
+        if len(row) >= max_length:
+            row = row[:max_length-1] + SYMBOL_ELLIPSIS
+        else:
             row = row + SYMBOL_ELLIPSIS
 
         result[-1] = row
@@ -340,29 +332,6 @@ def truncate_text(text: str, max_length: int,
         result.append('')
 
     return result
-
-
-def split_into_rows(text: str, rows_number: int, w_max_px: int, font: graphics.Font,
-                    ellipsize: bool = False) -> List[str]:
-    row_1 = row_2 = ''
-
-    max_length = max_string_length_for_font(font, w_max_px)
-
-    # FIXME should be given by extra Booking API? #is_display_p1_name
-    no_person_name_booking_types = {'Training', 'Verbandspiel'}#, 'Mit Ballmaschine'}
-        
-    if booking.get('display-text'):
-        row_1, row_2 = truncate_text(booking.get('display-text'), max_length)
-    elif booking.get('booking-type', '') in no_person_name_booking_types and \
-            not (booking.get('p2') or booking.get('p3') or booking.get('p4')):
-        row_1, row_2 = truncate_text(booking.get('booking-type'), max_length)
-    elif (booking.get('p3') or booking.get('p4')):
-        row_1 = booking_team(booking, True)
-        row_2 = booking_team(booking, False)
-    else:
-        row_1 = booking_player(booking.get('p1'))
-        row_2 = booking_player(booking.get('p2'))
-    return (ellipsize_text(row_1, max_length), ellipsize_text(row_2, max_length))
 
 
 def load_flag_image(flag_code):

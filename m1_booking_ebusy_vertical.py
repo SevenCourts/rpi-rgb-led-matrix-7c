@@ -90,7 +90,7 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, rows_spacing:int,
 
     w_court = width_in_pixels(s.booking.many.f_court_name, "X" * s.booking.many.courtname_truncate_to) + 4
     w_time_box = width_in_pixels(s.booking.many.f_timebox, "22:22") + 2
-    w_info_text = w - w_court - w_time_box - 2 - 4
+    w_info_text = w - w_court - w_time_box - 4
 
     # court name    
     court_name = court_bookings['court']['name']
