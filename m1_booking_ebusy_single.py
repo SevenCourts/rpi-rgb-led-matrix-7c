@@ -20,7 +20,7 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
     b_2_next = court_bookings['next']
 
     # header
-    h_header = y_font_offset(s.booking.one.f_courtname_on_top) + 3
+    h_header = y_font_offset(s.booking.one.f_courtname_on_top) + 4
 
     # clock        
     ## Use datetime set in the Panel Admin UI for easier testing/debugging:
@@ -67,7 +67,8 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
         elif time_now < t_end:
             c_timebox = s.booking.c_timebox_countdown            
         else:
-            raise ValueError('should never happen with eBusy data')
+            graphics.DrawText(cnv, FONT_XXS, 0, y_font_offset(FONT_XXS), COLOR_RED, "Value error, see logs")
+            logger.error('should never happen with eBusy data', ValueError('should never happen with eBusy data'))
         
         if time_now > t_0_upcoming_start:
             (hours_left, minutes_in_hour_left) = hours_minutes_diff(t_end, time_now)
@@ -96,9 +97,13 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
                     # current booking
                     booking = b_1_current                    
             else:
-                raise ValueError('should never happen with eBusy data')
+                graphics.DrawText(cnv, FONT_XXS, 0, y_font_offset(FONT_XXS), COLOR_RED, "Value error, see logs")
+                logger.error('should never happen with eBusy data', ValueError('should never happen with eBusy data'))
+            
         else:
-            raise ValueError('should never happen with eBusy data')
+            graphics.DrawText(cnv, FONT_XXS, 0, y_font_offset(FONT_XXS), COLOR_RED, "Value error, see logs")
+            logger.error('should never happen with eBusy data', ValueError('should never happen with eBusy data'))
+            
 
     elif b_2_next:
         # next booking
@@ -183,7 +188,7 @@ def _draw_court(cnv, x0: int, y0: int, w: int, h: int, h_courtname_text: int, tx
         # top        
         _w = w - 2
         _x = x0 + 1
-        _y = y0 + y_font_center(fnt, h)
+        _y = y0 + y_font_center(fnt, h) - 1
         y_separator = h - 1
 
         txt = ellipsize(txt, _w, fnt)
