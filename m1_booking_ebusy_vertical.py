@@ -31,7 +31,13 @@ def draw(cnv, booking_info, weather_info, panel_tz, s: ClubStyle):
 
     x_clubarea = W_PANEL - w_clock
     x_courts = 0
-     
+    
+    if True:
+        #texgyre27 font
+        _w = 15 + 15 + 7 + 15 + 15 # 67
+        _h = 20
+        draw_rect(cnv, W_PANEL - _w, H_PANEL - _h, _w, _h, COLOR_MAGENTA)
+
     _draw_club_area(cnv, x_clubarea, 0, w_clock, panel_tz, s, time_now, weather_info)
 
     ## booking infos
@@ -45,6 +51,7 @@ def draw(cnv, booking_info, weather_info, panel_tz, s: ClubStyle):
 
         _draw_booking_court(cnv, x_courts, y_court, h_booking, w_booking, rows_spacing, b, time_now, s, courts_number, last_row)
         y_court += h_booking
+    
 
 def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, s: ClubStyle, time_now, weather_info):
 
