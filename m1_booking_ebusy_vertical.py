@@ -174,13 +174,13 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, rows_spacing:int,
         booking = b_2_next
         (txt_info_1, txt_info_2) = booking_info_texts(booking, w_bookinginfo, s.booking.many.f_infotext[courts_number][1])
         t_start = parser.parse(booking['start-date'])
-        txt_status = f"{t_start.hour}:{t_start.minute}"
+        txt_status = f"{t_start.hour:02d}:{t_start.minute:02d}"
 
     else:
         # no bookings - free
         c_timebox = s.booking.c_free_to_book
         c_timebox_border = s.booking.many.c_timebox_border_free
-        txt_status = "Free"
+        txt_status = 'Free'
 
     # draw
 
