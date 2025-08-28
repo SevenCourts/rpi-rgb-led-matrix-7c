@@ -32,10 +32,9 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
     ## draw clock
     f_clock = s.booking.f_clock
     c_clock = s.booking.c_clock
-    w_clock = width_in_pixels(f_clock, "00:00")
+    w_clock = width_in_pixels(f_clock, "00:00") - 2 # px to the right are empty
     x_clock = W_PANEL - w_clock
-    h_clock = y_font_offset(f_clock) + 1
-    y_clock = H_PANEL - 1
+    y_clock = H_PANEL
     
     x_timebox = x_clock
     w_timebox = w_clock
