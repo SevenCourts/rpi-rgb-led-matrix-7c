@@ -3,6 +3,20 @@ import m1_clock
 
 COLOR_MESSAGE = COLOR_7C_BLUE
 
+def draw(cnv):
+    draw_clock_fonts(cnv)
+
+def draw_clock_fonts(cnv):
+    fnt = FONT_CLOCK_DEFAULT
+    x = 0
+    y = y_font_offset(fnt)
+
+    for char in '0123456789:':
+        c_w = fnt.CharacterWidth(ord(char))
+        graphics.DrawText(cnv, fnt, x, y, COLOR_MESSAGE, char)
+        graphics.DrawText(cnv, FONT_XS, x, y + 10, COLOR_MESSAGE, f"{c_w}")
+        x += c_w
+
 def draw_all_fonts_with_ellipsis(cnv):
     
     

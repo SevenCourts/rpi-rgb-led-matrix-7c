@@ -171,26 +171,30 @@ class SevenCourtsM1(SampleBase):
         self._display_init_screen()
 
         while True:
-            panel_id = self._register()
-            try:
-                while True:
-                    panel_info = _fetch_panel_info(panel_id)
-                    if panel_info:
-                        self.panel_info = panel_info
-                    self.panel_info_failed = False
-                    
-                    cfg = {"timezone": self._panel_tz()}
-                    if (cfg != self.startup_config):
-                        _write_startup_config(cfg)
-                        self.startup_config = cfg
+            if True:
+                m1_devcards.draw(self.canvas)
+                self.canvas = self.matrix.SwapOnVSync(self.canvas)
+            else:
+                panel_id = self._register()
+                try:
+                    while True:
+                        panel_info = _fetch_panel_info(panel_id)
+                        if panel_info:
+                            self.panel_info = panel_info
+                        self.panel_info_failed = False
+                        
+                        cfg = {"timezone": self._panel_tz()}
+                        if (cfg != self.startup_config):
+                            _write_startup_config(cfg)
+                            self.startup_config = cfg
 
-                    self._display_panel_info()
-                    time.sleep(1)
-            except Exception as ex:
-                self._draw_status_indicator(COLOR_7C_STATUS_ERROR)
-                self.panel_info_failed = True
-                logger.error(f"Cannot fetch panel info: {str(ex)}", ex)
-                logger.debug("Cannot fetch panel info", ex)
+                        self._display_panel_info()
+                        time.sleep(1)
+                except Exception as ex:
+                    self._draw_status_indicator(COLOR_7C_STATUS_ERROR)
+                    self.panel_info_failed = True
+                    logger.error(f"Cannot fetch panel info: {str(ex)}", ex)
+                    logger.debug("Cannot fetch panel info", ex)
             time.sleep(1)
 
     
@@ -226,9 +230,7 @@ class SevenCourtsM1(SampleBase):
     def _display_panel_info(self, offline=False):
         self.canvas.Clear()
 
-        if True:
-            m1_devcards.draw_all_fonts_with_ellipsis(self.canvas)
-        elif self.panel_info.get('standby'):
+        if self.panel_info.get('standby'):
             self._draw_standby_mode_indicator()
         elif 'booking' in self.panel_info:
             weather_info_lock.acquire()
