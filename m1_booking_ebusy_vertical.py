@@ -32,7 +32,7 @@ def draw(cnv, booking_info, weather_info, panel_tz, s: ClubStyle):
     x_clubarea = W_PANEL - w_clock
     x_courts = 0
     
-    if True:
+    if False:
         #texgyre27 font
         _w = 15 + 15 + 7 + 15 + 15 # 67
         _h = 20
@@ -72,7 +72,7 @@ def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, s: ClubStyle, time_
     c_clock = s.booking.c_clock
     x_clock = x0
     h_clock = y_font_offset(f_clock) + 1
-    y_clock = H_PANEL - 1
+    y_clock = H_PANEL
     m1_clock.draw_clock_by_coordinates(cnv, x_clock, y_clock, f_clock, panel_tz, c_clock, time_now)
     
     if s.ci.logo.path:
