@@ -27,7 +27,7 @@ def draw(cnv, booking_info, weather_info, panel_tz, s: ClubStyle):
         time_now = datetime.now(tz.gettz(panel_tz))
 
     # heights and widths
-    w_clock = w_logo = width_in_pixels(s.booking.f_clock, "00:00")    
+    w_clock = w_logo = width_in_pixels(s.booking.f_clock, "00:00") - 2 # px to the right are empty
 
     x_clubarea = W_PANEL - w_clock
     x_courts = 0
