@@ -223,7 +223,7 @@ def _draw_timebox(cnv, x0:int, y0:int, w:int, h:int,
 
     if txt_2:
         draw_rect(cnv, x, y, _w, _h, s.ci.c_bg_1, round_corners=True)
-        h_txt = int(_h / 2)
+        h_txt = _h // 2
         y_delta_txt = y_font_center(font, h_txt)
         x_txt_1 = x + x_font_center(txt_1, _w, font)
         x_txt_2 = x + x_font_center(txt_2, _w, font)
@@ -233,7 +233,7 @@ def _draw_timebox(cnv, x0:int, y0:int, w:int, h:int,
         draw_text(cnv, x_txt_2, y_txt_2, txt_2, font, color)    
     elif txt_1:
         draw_rect(cnv, x, y, _w, _h, s.ci.c_bg_1, round_corners=True)
-        h_txt = int(_h / 1)
+        h_txt = _h // 1
         y_delta_txt = y_font_center(font, h_txt)
         x_txt_1 = x + x_font_center(txt_1, _w, font)
         y_txt_1 = y + y_delta_txt

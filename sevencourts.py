@@ -49,13 +49,13 @@ SYMBOL_ELLIPSIS = chr(8230) # https://www.compart.com/en/unicode/U+2026
 W_PANEL = 192
 H_PANEL = 64
 
-W_TILE = int(W_PANEL / 3)  # 64
-H_TILE = int(H_PANEL / 2)  # 32
+W_TILE = W_PANEL // 3  # 64
+H_TILE = H_PANEL // 2  # 32
 
 H_FLAG = 12
 W_FLAG = 18
-W_FLAG_SMALL = int(W_FLAG / 2)  # 9
-H_FLAG_SMALL = int(H_FLAG / 2)  # 6
+W_FLAG_SMALL = W_FLAG // 2  # 9
+H_FLAG_SMALL = H_FLAG // 2  # 6
 
 # Style constants
 COLOR_BLACK = graphics.Color(0, 0, 0)
@@ -354,11 +354,11 @@ def draw_text(canvas, x: int, y: int, text: str, font=FONT_DEFAULT, color=COLOR_
 
 
 def draw_grid(canvas, rows=4, cols=4, color=COLOR_GREY_DARKEST):
-    x_step_size = int(W_PANEL / cols)
+    x_step_size = W_PANEL // cols
     for i in range(cols):
         x = i * x_step_size
         graphics.DrawLine(canvas, x, 0, x, H_PANEL, color)
-    y_step_size = int(H_PANEL / rows)
+    y_step_size = H_PANEL // rows
     for i in range(rows):
         y = i * y_step_size
         graphics.DrawLine(canvas, 0, y, W_PANEL, y, color)

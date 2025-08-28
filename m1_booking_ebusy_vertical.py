@@ -10,12 +10,12 @@ from m1_club_styles import *
 
 def _booking_height(courts_count:int = 3):
     switcher = {
-        1: (int(H_PANEL / 1), 4), # 64
-        2: (int(H_PANEL / 2), 3), # 32
-        3: (int(H_PANEL / 3), 1), # 21
-        4: (int(H_PANEL / 4), 0), # 16
+        1: (H_PANEL // 1, 4), # 64
+        2: (H_PANEL // 2, 3), # 32
+        3: (H_PANEL // 3, 1), # 21
+        4: (H_PANEL // 4, 0), # 16
     }
-    return switcher.get(courts_count, int(H_PANEL / 3))
+    return switcher.get(courts_count, H_PANEL // 3)
 
 def draw(cnv, booking_info, weather_info, panel_tz, s: ClubStyle):
 
@@ -75,8 +75,8 @@ def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, s: ClubStyle, time_
         m1_image.thumbnail(img_logo, w, min(h_logo_max, img_logo.height))
         h_logo = img_logo.height
         w_logo = img_logo.width
-        x_logo_img = x0 + int((w - w_logo)/2)
-        y_logo_img = h_weather + int((H_PANEL - h_clock - h_weather - h_logo) / 2)        
+        x_logo_img = x0 + (w - w_logo) // 2
+        y_logo_img = h_weather + (H_PANEL - h_clock - h_weather - h_logo) // 2
         cnv.SetImage(img_logo.convert('RGB'), x_logo_img, y_logo_img)
 
         if s.ci.logo.round_corners:
@@ -203,7 +203,7 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, rows_spacing:int,
         if txt_info_2:
             _fnt = s.booking.many.f_infotext[courts_number][1]
 
-            _y = y0 + int(h/2) - 2 + (1 if courts_number == 4 else 0)
+            _y = y0 + h//2 - 2 + (1 if courts_number == 4 else 0)
             graphics.DrawText(cnv, _fnt, _x, _y, _c, txt_info_1)
             _y += y_font_offset(_fnt) + 1 + rows_spacing
             graphics.DrawText(cnv, _fnt, _x, _y, _c, txt_info_2)

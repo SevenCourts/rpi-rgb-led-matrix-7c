@@ -21,8 +21,8 @@ def _draw_logo(canvas, image, show_clock):
     if show_clock:
         w = m1_clock.W_LOGO_WITH_CLOCK
 
-    x = (w - image.width) / 2
-    y = (H_PANEL - image.height) / 2
+    x = (w - image.width) // 2
+    y = (H_PANEL - image.height) // 2
     canvas.SetImage(image.convert('RGB'), x, y)
 
 

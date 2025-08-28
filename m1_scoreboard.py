@@ -22,7 +22,7 @@ else:
 UPPER_CASE_NAMES = True
 MARGIN_NAMES_SCOREBOARD = 3
 
-X_MIN_SCOREBOARD = int(W_PANEL / 2)
+X_MIN_SCOREBOARD = W_PANEL//2
 W_SCORE_SET = 20
 X_SCORE_GAME = 163
 X_SCORE_SERVICE = 155
@@ -169,7 +169,7 @@ def _display_score(canvas, match):
             [y, y, y, y, y, y, y],
             [b, y, y, y, y, y, b],
             [b, b, y, y, y, b, b]]
-        y_service_t1 = int(H_PANEL / 2 / 2 - len(ball) / 2)
+        y_service_t1 = H_PANEL // 2 // 2 - len(ball) // 2
         y_service_t2 = y_service_t1 + H_PANEL / 2
         if t1_on_serve:
             draw_matrix(canvas, ball, X_SCORE_SERVICE, y_service_t1)
@@ -249,7 +249,7 @@ def _display_names(canvas, match):
 
     x = flag_width + 2
     if match["isTeamEvent"] or not match["isDoubles"]:
-        name_max_height = int(H_PANEL / 2 - 2)  # =>30
+        name_max_height = H_PANEL // 2 - 2  # =>30
         font = pick_font_that_fits(name_max_width, name_max_height, t1p1, t2p1)
         y_t1 = y_font_center(font, H_PANEL / 2)
         y_t2 = y_t1 + H_PANEL / 2
@@ -303,11 +303,11 @@ def _display_names(canvas, match):
 
 def _display_singles_flags(canvas, img_t1, img_t2):
     if img_t1 is not None:
-        y_flag_t1 = int(max(0, H_PANEL / 2 / 2 - img_t1.height / 2))
+        y_flag_t1 = max(0, H_PANEL // 2 // 2 - img_t1.height // 2)
         canvas.SetImage(img_t1, 0, y_flag_t1)
 
     if img_t2 is not None:
-        y_flag_t2 = int(max(H_PANEL / 2, H_PANEL / 2 + H_PANEL / 2 / 2 - img_t2.height / 2))
+        y_flag_t2 = max(H_PANEL // 2, H_PANEL // 2 + H_PANEL // 2 // 2 - img_t2.height // 2)
         canvas.SetImage(img_t2, 0, y_flag_t2)
 
 def _display_winner(canvas, match):

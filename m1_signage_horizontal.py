@@ -34,8 +34,8 @@ VOID_TEAM = {"name": None, "country": None}
 MAX_LENGTH_NAME_SINGLES = 14
 MAX_LENGTH_NAME_DOUBLES = 3
 
-W_MATCH = int(W_PANEL / 2)
-H_MATCH = int(H_PANEL / 2)
+W_MATCH = W_PANEL // 2
+H_MATCH = H_PANEL // 2
 
 def _match_coordinates (court_pos: int):
     x = 0 if (court_pos % 2) == 0 else W_MATCH
@@ -64,7 +64,7 @@ def _display_team_score(canvas, x0: int, y0: int, score_sets_with_color: List, s
     # 1. game score
     w_score_game = width_in_pixels(font, score_game)
     w_score_game_max = width_in_pixels(font, "Ad")
-    x_score_game = x0 + W_MATCH - int((w_score_game_max + w_score_game) / 2)
+    x_score_game = x0 + W_MATCH - (w_score_game_max + w_score_game) // 2
 
     is_some_score_present = (score_game is not None and len(score_game) > 0) or (score_sets_with_color is not None and len(score_sets_with_color) > 0) or (is_serving is not None)
     if is_some_score_present: 
