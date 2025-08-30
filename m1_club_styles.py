@@ -69,7 +69,7 @@ class Booking:
     courtname_truncate_to: int = 2
 
     c_clock: graphics.Color = COLOR_WHITE
-    f_clock: graphics.Font = FONT_CLOCK_DEFAULT # FONT_L
+    f_clock: graphics.Font = FONT_XL_SDK # FONT_CLOCK_DEFAULT # FONT_L
 
     c_timebox: graphics.Color = COLOR_GREY
     c_timebox_countdown: graphics.Color = COLOR_7C_GOLD
