@@ -67,8 +67,32 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
         elif time_now < t_end:
             c_timebox = s.booking.c_timebox_countdown            
         else:
-            graphics.DrawText(cnv, FONT_XXS, 0, y_font_offset(FONT_XXS), COLOR_RED, "Value error, see logs")
-            logger.error('should never happen with eBusy data', ValueError('should never happen with eBusy data'))
+            # raise ValueError('should never happen with eBusy data')
+            '''
+            This data is twice formally incorrect:
+
+            For 2025-08-28T22:00:00
+
+            1) end date should be "end-date": "2025-08-28T22:00:00"
+            2) start time of the next booking is the same as the end time of the current booking
+
+            "past": {                
+                "start-date": "2025-08-28T20:00:00"
+                "end-date": "2025-08-28T22:00:00"
+            },
+            "current": {
+                "start-date": "2025-08-28T22:00:00"
+                "end-date": "2025-08-28T00:00:00"                
+            }
+
+            start: 2025-08-28 22:00:00
+            end:   2025-08-28 00:00:00 (!!)
+            t0:   2025-08-28 21:55
+            t1:   2025-08-28 22:02
+            t3:   2025-08-27 23:55 (!!!)
+            '''
+            c_timebox = s.booking.c_timebox
+
         
         if time_now > t_0_upcoming_start:
             (hours_left, minutes_in_hour_left) = hours_minutes_diff(t_end, time_now)
@@ -97,11 +121,9 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
                     # current booking
                     booking = b_1_current                    
             else:
-                graphics.DrawText(cnv, FONT_XXS, 0, y_font_offset(FONT_XXS), COLOR_RED, "Value error, see logs")
                 logger.error('should never happen with eBusy data', ValueError('should never happen with eBusy data'))
             
         else:
-            graphics.DrawText(cnv, FONT_XXS, 0, y_font_offset(FONT_XXS), COLOR_RED, "Value error, see logs")
             logger.error('should never happen with eBusy data', ValueError('should never happen with eBusy data'))
             
 

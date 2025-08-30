@@ -170,7 +170,25 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, rows_spacing:int,
                     c_timebox = s.booking.c_timebox_countdown
                     f_timebox = s.booking.many.f_timebox_countdown
             else:
-                raise ValueError('should never happen with eBusy data')
+                txt_status = f" {minutes_in_hour_left}'"                
+                # raise ValueError('should never happen with eBusy data')
+                '''
+                For 2025-08-28T23:01:00
+
+                
+                2) start time of the next booking is the same as the end time of the current booking
+
+                "current": {
+                    "start-date": "2025-08-28T22:00"
+                    "end-date": "2025-08-28T00:00"
+                }
+
+                start: 2025-08-28 22:00:00
+                end:   2025-08-28 00:00:00 (!!)
+                t0:   2025-08-28 21:55
+                t1:   2025-08-28 22:02
+                t3:   2025-08-27 23:55 (!!!)
+                '''
         else:
             raise ValueError('should never happen with eBusy data')
         

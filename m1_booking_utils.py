@@ -5,9 +5,8 @@ from datetime import timedelta, datetime
 # Period of of interchanging adjacent bookings display, in seconds
 PERIOD_INTERCHANGE_ADJACENT_S = 10
 
-TD_0_UPCOMING = timedelta(minutes = -5)
 TD_1_WELCOME = timedelta(minutes = 2)
-TD_3_COUNTDOWN = TD_0_UPCOMING # these two should be equal
+TD_3_COUNTDOWN = TD_0_UPCOMING = timedelta(minutes = -5) # these two should be equal
 TD_4_GAMEOVER = timedelta(minutes = 2)
 
 
