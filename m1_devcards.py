@@ -11,10 +11,14 @@ def draw_clock_fonts(cnv):
     x = 0
     y = y_font_offset(fnt)
 
-    for char in '0123456789:':
+    for char in '0123456789:0123456789':
         c_w = fnt.CharacterWidth(ord(char))
         graphics.DrawText(cnv, fnt, x, y, COLOR_MESSAGE, char)
-        graphics.DrawText(cnv, FONT_XS, x, y + 10, COLOR_MESSAGE, f"{c_w}")
+        
+        graphics.DrawLine(cnv, x, 0, x, y + 10, COLOR_RED)
+        
+        graphics.DrawText(cnv, FONT_XS, x, y + 20, COLOR_MESSAGE, f"{c_w}")
+
         x += c_w
 
 def draw_all_fonts_with_ellipsis(cnv):
