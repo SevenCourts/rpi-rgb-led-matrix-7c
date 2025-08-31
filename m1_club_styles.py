@@ -118,8 +118,7 @@ style_MatchCenter = ClubStyle(
               logo=Logo(path='images/logos/MatchCenter Filderstadt/logo-matchcenter_58x39.png')),
     booking=Booking(
         is_weather_displayed=False,
-        is_courtname_acronym=False,
-        courtname_truncate_to=4,
+        is_courtname_acronym=True,        
         one=OneCourt(is_court_name_on_top=False)))
 
 # SevenCourts
