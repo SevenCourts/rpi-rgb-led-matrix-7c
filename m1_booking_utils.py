@@ -47,7 +47,7 @@ def is_current_second_in_period(period_seconds: int = 60, time_now = datetime.no
     return (time_now.second // period_seconds) % 2 == 0
 
 
-def booking_info_texts(booking, w_max_px, fonts: tuple[graphics.Font]) -> tuple[str, str]:
+def booking_info_texts(booking, w_max_px, fonts: tuple[graphics.Font]) -> tuple[tuple[str], graphics.Font]:
     # FIXME should be given by extra Booking API? #is_display_p1_name
     no_person_name_booking_types = {'Training', 'Verbandspiel'}#, 'Mit Ballmaschine'}
         
@@ -65,11 +65,13 @@ def booking_info_texts(booking, w_max_px, fonts: tuple[graphics.Font]) -> tuple[
             text = booking_player(booking.get('p1')) + ' ' + booking_player(booking.get('p2'))
         text = text.strip()
 
-        max_len = max_string_length_for_font(fonts[0], w_max_px)
+        font = fonts[0]
+        max_len = max_string_length_for_font(font, w_max_px)
         if len(text) > max_len:
-            max_len = max_string_length_for_font(fonts[1], w_max_px)
+            font = fonts[1]
+            max_len = max_string_length_for_font(font, w_max_px)
 
-    return truncate_text(text, max_len, ellipsize=True)
+    return (truncate_text(text, max_len, ellipsize=True), font)
 
 def hours_minutes_diff(t1: datetime, t2: datetime) -> tuple[int, int, int]:
     seconds_left = (t1 - t2).seconds - 1

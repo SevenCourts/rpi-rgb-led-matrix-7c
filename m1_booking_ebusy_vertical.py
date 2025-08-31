@@ -212,7 +212,7 @@ def _draw_booking_court(cnv, x0: int, y0: int, w:int, h: int, rows_spacing: int,
         c_timebox_border = s.booking.many.c_timebox_border_free
         txt_status = 'Free'
 
-    (txt_info_1, txt_info_2) = booking_info_texts(booking, w_info, s.booking.many.f_infotext[courts_number])
+    ((txt_info_1, txt_info_2), font) = booking_info_texts(booking, w_info, s.booking.many.f_infotext[courts_number])
     # draw
 
     ## time box frame
@@ -244,7 +244,7 @@ def _draw_booking_court(cnv, x0: int, y0: int, w:int, h: int, rows_spacing: int,
             _y += y_font_offset(_fnt) + 1 + rows_spacing
             graphics.DrawText(cnv, _fnt, _x, _y, _c, txt_info_2)
         else:
-            _fnt = s.booking.many.f_infotext[courts_number][0]
+            _fnt = font
             _y = y0 + y_font_center(_fnt, h)
             if False:
                 draw_rect(cnv, _x, y0, w_info, h, COLOR_MAGENTA)
