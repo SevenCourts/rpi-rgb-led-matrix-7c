@@ -179,7 +179,7 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
     
 
     if booking:
-        txt_1, txt_2 = booking_info_texts(booking, w_info - 2, s.booking.one.f_info)
+        txt_1, txt_2 = booking_info_texts(booking, w_info - 2, (s.booking.one.f_info, s.booking.one.f_info))
         c_info = s.ci.c_text
     else:
         txt_1, txt_2 = ('Free till 16h00', '') # TODO i18n TODO till?

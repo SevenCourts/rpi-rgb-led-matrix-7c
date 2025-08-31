@@ -49,7 +49,7 @@ def draw(cnv, booking_info, weather_info, panel_tz, s: ClubStyle):
 
         last_row = (b == booking_info['courts'][-1])
 
-        _draw_booking_court(cnv, x_courts, y_court, h_booking, w_booking, rows_spacing, b, time_now, s, courts_number, last_row)
+        _draw_booking_court(cnv, x_courts, y_court, w_booking,h_booking, rows_spacing, b, time_now, s, courts_number, last_row)
         y_court += h_booking
     
 
@@ -92,16 +92,19 @@ def _draw_club_area(cnv, x0: int, y0: int, w: int, panel_tz, s: ClubStyle, time_
         #fill_rect(cnv, x_logo, y_logo, w_logo, h_logo, c_CI_primary)
 
 
-def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, rows_spacing:int, 
+def _draw_booking_court(cnv, x0: int, y0: int, w:int, h: int, rows_spacing: int, 
                         court_bookings, time_now, s: ClubStyle, courts_number: int, last_row: bool):
+    
+    if False:
+        draw_rect(cnv, x0, y0, w, h, COLOR_MAGENTA)
 
     w_court = width_in_pixels(s.booking.many.f_court_name, "X" * s.booking.courtname_truncate_to) + 4
     w_timebox = width_in_pixels(s.booking.many.f_timebox, "22:22") + 2
-    w_bookinginfo = w - w_court - w_timebox - 4
+    w_info = w - w_court - w_timebox - 4
 
     # court name    
     court_name = court_bookings['court']['name']
-    
+
     court_name = court_name.replace("Platz", "Court") # FIXME demo only, remove ".replace"
 
     if s.booking.is_courtname_acronym:
@@ -195,12 +198,11 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, rows_spacing:int,
         else:
             raise ValueError('should never happen with eBusy data')
         
-        (txt_info_1, txt_info_2) = booking_info_texts(booking, w_bookinginfo, s.booking.many.f_infotext[courts_number][1])
+        
 
     elif b_2_next:
 
         booking = b_2_next
-        (txt_info_1, txt_info_2) = booking_info_texts(booking, w_bookinginfo, s.booking.many.f_infotext[courts_number][1])
         t_start = parser.parse(booking['start-date'])
         txt_status = f"{t_start.hour:02d}:{t_start.minute:02d}"
 
@@ -210,6 +212,7 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, rows_spacing:int,
         c_timebox_border = s.booking.many.c_timebox_border_free
         txt_status = 'Free'
 
+    (txt_info_1, txt_info_2) = booking_info_texts(booking, w_info, s.booking.many.f_infotext[courts_number])
     # draw
 
     ## time box frame
@@ -223,20 +226,27 @@ def _draw_booking_court(cnv, x0: int, y0: int, h: int, w:int, rows_spacing:int,
     _x = x_time_box + x_font_center(txt_status, w_timebox, _fnt)
     _y += y_font_center(_fnt, _h)
     graphics.DrawText(cnv, _fnt, _x, _y, c_timebox, txt_status)
+
     
     # info texts
-    _x = x_time_box + w_timebox + 2
     if txt_info_1:
         _c = s.booking.many.c_infotext
+        _x = x_time_box + w_timebox + 2        
         if txt_info_2:
             _fnt = s.booking.many.f_infotext[courts_number][1]
 
             _y = y0 + h//2 - 2 + (1 if courts_number == 4 else 0)
+
+            if False:
+                draw_rect(cnv, _x, y0, w_info, h, COLOR_MAGENTA)
+
             graphics.DrawText(cnv, _fnt, _x, _y, _c, txt_info_1)
             _y += y_font_offset(_fnt) + 1 + rows_spacing
             graphics.DrawText(cnv, _fnt, _x, _y, _c, txt_info_2)
         else:
             _fnt = s.booking.many.f_infotext[courts_number][0]
             _y = y0 + y_font_center(_fnt, h)
+            if False:
+                draw_rect(cnv, _x, y0, w_info, h, COLOR_MAGENTA)
             graphics.DrawText(cnv, _fnt, _x, _y, _c, txt_info_1)
     return

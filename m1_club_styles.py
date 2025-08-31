@@ -48,7 +48,7 @@ class MultipleCourts:
 
     c_infotext: graphics.Color = COLOR_GREY
     f_infotext: Dict[int, tuple[graphics.Font]] = field(default_factory=lambda: {
-        # number_of_courts : [font_for_1_row, font_for_2_rows]
+        # number_of_courts : [font_for_1_(one)_row, font_for_2_rows]
         1: [FONT_L, FONT_M],
         2: [FONT_S, FONT_S],
         3: [FONT_S, FONT_S],

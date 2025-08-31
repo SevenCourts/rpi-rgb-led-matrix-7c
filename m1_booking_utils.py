@@ -47,30 +47,29 @@ def is_current_second_in_period(period_seconds: int = 60, time_now = datetime.no
     return (time_now.second // period_seconds) % 2 == 0
 
 
-def booking_info_texts(booking, w_max_px, font: graphics.Font) -> tuple[str, str]:
-    row_1 = row_2 = ''
-
-    
-    max_length = max_string_length_for_font(font, w_max_px)
-
+def booking_info_texts(booking, w_max_px, fonts: tuple[graphics.Font]) -> tuple[str, str]:
     # FIXME should be given by extra Booking API? #is_display_p1_name
     no_person_name_booking_types = {'Training', 'Verbandspiel'}#, 'Mit Ballmaschine'}
         
     text = ''
-    if booking.get('display-text'):
-        text = booking.get('display-text')        
-    elif booking.get('booking-type', '') in no_person_name_booking_types and \
-            not (booking.get('p2') or booking.get('p3') or booking.get('p4')):
-        text = booking.get('booking-type')        
-    elif (booking.get('p3') or booking.get('p4')):
-        text = booking_team(booking, True) + ' ' + booking_team(booking, False)
-    else:
-        text = booking_player(booking.get('p1')) + ' ' + booking_player(booking.get('p2'))
-    
-    row_1, row_2 = truncate_text(text.strip(), max_length, ellipsize=True)
+    max_len = 0
+    if booking:
+        if booking.get('display-text'):
+            text = booking.get('display-text')        
+        elif booking.get('booking-type', '') in no_person_name_booking_types and \
+                not (booking.get('p2') or booking.get('p3') or booking.get('p4')):
+            text = booking.get('booking-type')        
+        elif (booking.get('p3') or booking.get('p4')):
+            text = booking_team(booking, True) + ' ' + booking_team(booking, False)
+        else:
+            text = booking_player(booking.get('p1')) + ' ' + booking_player(booking.get('p2'))
+        text = text.strip()
 
-    return (ellipsize_text(row_1, max_length), ellipsize_text(row_2, max_length))
+        max_len = max_string_length_for_font(fonts[0], w_max_px)
+        if len(text) > max_len:
+            max_len = max_string_length_for_font(fonts[1], w_max_px)
 
+    return truncate_text(text, max_len, ellipsize=True)
 
 def hours_minutes_diff(t1: datetime, t2: datetime) -> tuple[int, int, int]:
     seconds_left = (t1 - t2).seconds - 1
