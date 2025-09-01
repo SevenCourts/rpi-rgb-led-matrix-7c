@@ -207,7 +207,7 @@ def y_font_offset(font: graphics.Font) -> int:
 def y_font_center(font, container_height):
     """Returns y position for the font to be placed vertically centered"""
     y_offset_font = y_font_offset(font)
-    return (container_height - y_offset_font) / 2 + y_offset_font
+    return (container_height - y_offset_font) // 2 + y_offset_font
 
 
 def x_font_center(text, container_width, font):
@@ -215,7 +215,7 @@ def x_font_center(text, container_width, font):
     text_width = 0
     for c in text:
         text_width += font.CharacterWidth(ord(c))
-    return max(0, (container_width - text_width) / 2)
+    return max(0, (container_width - text_width) // 2)
 
 
 def width_in_pixels(font, text):

@@ -53,6 +53,7 @@ def booking_info_texts(booking, w_max_px, fonts: tuple[graphics.Font]) -> tuple[
         
     text = ''
     max_len = 0
+    font = fonts[0]
     if booking:
         if booking.get('display-text'):
             text = booking.get('display-text')        
@@ -65,7 +66,6 @@ def booking_info_texts(booking, w_max_px, fonts: tuple[graphics.Font]) -> tuple[
             text = booking_player(booking.get('p1')) + ' ' + booking_player(booking.get('p2'))
         text = text.strip()
 
-        font = fonts[0]
         max_len = max_string_length_for_font(font, w_max_px)
         if len(text) > max_len:
             font = fonts[1]
