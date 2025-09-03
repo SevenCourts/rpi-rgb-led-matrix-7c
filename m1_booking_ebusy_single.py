@@ -62,6 +62,9 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
         t_1_welcome_end = (t_start + TD_1_WELCOME)
         t_3_countdown_start = (t_end + TD_3_COUNTDOWN)
 
+        logger.debug(time_now)
+        logger.debug(t_3_countdown_start)        
+
         if time_now < t_3_countdown_start:
             c_timebox = s.booking.c_timebox
         elif time_now < t_end:
@@ -111,7 +114,7 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
             elif time_now < t_end:
                 c_timebox = s.booking.c_timebox_countdown
                 # Adjacent bookings handling: interchange every 10 seconds
-                if b_2_next and is_current_second_in_period(PERIOD_INTERCHANGE_ADJACENT_S, time_now):
+                if b_2_next and is_current_second_in_period(time_now, PERIOD_INTERCHANGE_ADJACENT_S):
                     # next booking
                     booking = b_2_next
                     txt_prompt = 'Next booking'                    

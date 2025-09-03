@@ -165,7 +165,7 @@ def _draw_booking_court(cnv, x0: int, y0: int, w:int, h: int, rows_spacing: int,
                 # countdown                
                 
                 # Adjacent bookings handling: interchange every 10 seconds
-                if b_2_next and is_current_second_in_period(PERIOD_INTERCHANGE_ADJACENT_S, time_now):
+                if b_2_next and is_current_second_in_period(time_now, PERIOD_INTERCHANGE_ADJACENT_S):
                     # show next
                     booking = b_2_next
                     t_start = parser.parse(booking['start-date'])

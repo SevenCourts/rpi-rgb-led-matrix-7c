@@ -40,7 +40,7 @@ def booking_team(booking, isTeam1=True):
     return txt
 
 
-def is_current_second_in_period(period_seconds: int = 60, time_now = datetime.now()) -> bool:
+def is_current_second_in_period(time_now, period_seconds: int = 60) -> bool:
     '''
     Returns true if the current time second is in the specified period.
     '''
