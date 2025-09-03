@@ -103,7 +103,8 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
             
             if time_now < t_1_welcome_end:
                 booking = b_1_current
-                txt_prompt = 'Push any button to start keeping score'
+                # txt_prompt = 'Push any button to start keeping score'
+                # txt_prompt = 'Eine Taste am Netz drücken, um zu starten'
                 txt_prompt = 'Have fun!'    
             elif time_now < t_3_countdown_start:
                 booking = b_1_current
@@ -144,7 +145,7 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
     y_prompt = H_PANEL - h_prompt
     
     txt_court = court['name']
-    txt_court = txt_court.replace("Platz", "Court") # FIXME demo only, remove ".replace"
+    # txt_court = txt_court.replace("Platz", "Court") # FIXME EN demo only, remove ".replace"
 
     if s.booking.one.is_court_name_on_top:
         f_court = s.booking.one.f_courtname_on_top

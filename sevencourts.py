@@ -68,19 +68,23 @@ COLOR_RED = graphics.Color(255, 0, 0)
 COLOR_GOLD = graphics.Color(255, 215, 0)
 COLOR_MAGENTA = graphics.Color(255, 0, 255)
 
-
 COLOR_YELLOW = graphics.Color(255, 255, 0)
 COLOR_GREEN = graphics.Color(0, 255, 0)
 COLOR_BLUE = graphics.Color(0, 0, 255)
 
-COLOR_7C_GREEN = graphics.Color(147, 196, 125) #93c47d
-COLOR_7C_BLUE = graphics.Color(111, 168, 220) #6fa8dc
-COLOR_7C_BLUE_DARK = graphics.Color(37, 56, 73) #253849
-COLOR_7C_GREEN_DARK = graphics.Color(58, 77, 49) #3a4d31
 COLOR_7C_GOLD = graphics.Color(241, 194, 50) #f1c232 - a yellowish color, that is in harmony with this blue #6fa8dc and green #93c47d colors
 
+COLOR_7C_GREY = graphics.Color(50, 50, 50) #323232
+COLOR_7C_GREEN = graphics.Color(147, 196, 125) #93c47d
+COLOR_7C_BLUE = graphics.Color(111, 168, 220) #6fa8dc
+
+COLOR_7C_DARK_GREY = graphics.Color(23, 23, 23) #171717
+COLOR_7C_DARK_GREEN = graphics.Color(58, 77, 49) #3a4d31
+COLOR_7C_DARK_BLUE = graphics.Color(37, 56, 73) #253849
+
 COLOR_7C_STATUS_ERROR = COLOR_7C_BLUE
-COLOR_7C_STATUS_INIT = COLOR_7C_GREEN_DARK
+COLOR_7C_STATUS_INIT = COLOR_7C_GREEN
+COLOR_7C_STANDBY = COLOR_7C_DARK_GREEN
 
 COLOR_DEFAULT = COLOR_GREY
 COLOR_CLOCK_DEFAULT = COLOR_WHITE

@@ -348,3 +348,9 @@ Open `http://localhost:8888` in browser, "Hello world!" is to be displayed.
 
 Use `docker container run -it --rm tennismath.tableau.emulator` command. By default it is registered on DEV SevenCourts
 server, but this can be overriden by providing server URL as `TABLEAU_SERVER_BASE_URL` env var.
+
+## Screenshots
+
+1. Use emulator_config_screenshots.json configuration
+2. Open browser and zoom out to 25%
+3. Right mouse click on emulator, then "Copy image".

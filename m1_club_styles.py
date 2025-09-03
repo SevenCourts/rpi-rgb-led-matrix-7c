@@ -11,8 +11,8 @@ class Logo:
 @dataclass
 class ClubCI:
     c_text: graphics.Color = COLOR_WHITE
-    c_bg_1: graphics.Color = COLOR_7C_BLUE_DARK
-    c_bg_2: graphics.Color = COLOR_7C_GREEN_DARK
+    c_bg_1: graphics.Color = COLOR_7C_DARK_BLUE
+    c_bg_2: graphics.Color = COLOR_7C_DARK_GREEN
     logo: Logo = Logo()
 
 @dataclass
@@ -122,8 +122,8 @@ style_MatchCenter = ClubStyle(
         one=OneCourt(is_court_name_on_top=False)))
 
 # SevenCourts
-COLOR_CI_SevenCourts_1 = COLOR_7C_BLUE_DARK
-COLOR_CI_SevenCourts_2 = COLOR_7C_GREEN_DARK
+COLOR_CI_SevenCourts_1 = COLOR_7C_DARK_BLUE
+COLOR_CI_SevenCourts_2 = COLOR_7C_DARK_GREEN
 style_SevenCourts = ClubStyle(
     ci=ClubCI(c_bg_1=COLOR_CI_SevenCourts_1, c_bg_2=COLOR_CI_SevenCourts_2,
               logo=Logo(path='images/logos/SevenCourts/sevencourts_58x6.png')),

@@ -105,7 +105,7 @@ def _draw_booking_court(cnv, x0: int, y0: int, w:int, h: int, rows_spacing: int,
     # court name    
     court_name = court_bookings['court']['name']
 
-    court_name = court_name.replace("Platz", "Court") # FIXME demo only, remove ".replace"
+    # court_name = court_name.replace("Platz", "Court") # FIXME EN demo only, remove ".replace"
 
     if s.booking.is_courtname_acronym:
         txt_court = acronym(court_name)

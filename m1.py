@@ -261,7 +261,7 @@ class SevenCourtsM1(SampleBase):
             self._draw_standby_mode_indicator()
 
     def _draw_standby_mode_indicator(self):
-        g = (COLOR_7C_GREEN_DARK.red, COLOR_7C_GREEN_DARK.green, COLOR_7C_GREEN_DARK.blue)
+        g = (COLOR_7C_STANDBY.red, COLOR_7C_STANDBY.green, COLOR_7C_STANDBY.blue)
         dot = [
             [g, g],
             [g, g]]
