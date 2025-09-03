@@ -29,6 +29,11 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
         time_now = parser.parse(_dev_timestamp)
     else:
         time_now = datetime.now(tz.gettz(panel_tz))
+
+    logger.debug(f"tz: {panel_tz}")
+    logger.debug(f"tz: {tz.gettz(panel_tz)}")
+    logger.debug(f"time_now: {time_now}")
+
     ## draw clock
     f_clock = s.booking.f_clock
     c_clock = s.booking.c_clock
