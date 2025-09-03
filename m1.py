@@ -279,7 +279,8 @@ class SevenCourtsM1(SampleBase):
         draw_matrix(self.canvas, dot, W_PANEL - 4, H_PANEL - 4)
 
     def _panel_tz(self):
-        return self.panel_info.get('idle-info', {}).get('timezone', self.startup_config.get('timezone', 'Europe/Berlin'))
+        default = 'Europe/Berlin'
+        return self.panel_info.get('idle-info', {}).get('timezone', self.startup_config.get('timezone', default)) or default
 
 # Main function
 if __name__ == "__main__":
