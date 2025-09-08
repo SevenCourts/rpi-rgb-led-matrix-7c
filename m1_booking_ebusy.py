@@ -138,8 +138,8 @@ def draw_ebusy_ads(cnv, ebusy_ads):
             image = Image.open(requests.get(url, stream=True).raw)            
             image.save(path, 'png')
 
-        x = (W_PANEL - image.width) / 2
-        y = (H_PANEL - image.height) / 2
+        x = (W_PANEL - image.width) // 2
+        y = (H_PANEL - image.height) // 2
         cnv.SetImage(image.convert('RGB'), x, y)
 
     except Exception as e:
