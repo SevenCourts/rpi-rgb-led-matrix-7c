@@ -8,6 +8,8 @@ from typing import List
 
 logger = m1_logging.logger("7c")
 
+DEFAULT_TIMEZONE = 'Europe/Berlin'
+
 LOCALE_DIR = os.path.join(os.path.dirname(__file__), 'locale')
 # Set up gettext
 def setup_i18n(lang='en'):

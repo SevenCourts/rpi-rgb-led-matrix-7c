@@ -142,7 +142,9 @@ def _write_startup_config(startup_config):
     logger.debug(f"Writing config to '{PANEL_CONFIG_FILE}'")
     if PANEL_CONFIG_FILE:
         conf = []
-        for k, v in startup_config.items(): conf.append(k + '=' + str(v))
+        for k, v in startup_config.items():
+            value = '' if v is None else str(v)
+            conf.append(k + '=' + value)
         try:
             with open(PANEL_CONFIG_FILE, 'w') as file:
                 file.write('\n'.join(conf))
@@ -279,9 +281,10 @@ class SevenCourtsM1(SampleBase):
         draw_matrix(self.canvas, dot, W_PANEL - 4, H_PANEL - 4)
 
     def _panel_tz(self):
-        default = 'Europe/Berlin'
-        return self.panel_info.get('idle-info', {}).get('timezone', self.startup_config.get('timezone', default)) or default
-
+        panel_info = self.panel_info.get('idle-info', {})
+        result = panel_info.get('timezone', self.startup_config.get('timezone'))
+        return result or DEFAULT_TIMEZONE
+        
 # Main function
 if __name__ == "__main__":
     infoboard = SevenCourtsM1()
