@@ -52,7 +52,7 @@ os.chmod(IMAGE_CACHE_DIR, 0o777)
 
 PANEL_CONFIG_FILE = os.getenv('PANEL_CONFIG')
 
-PANEL_NAME = socket.gethostname()
+PANEL_NAME = os.getenv("TABLEAU_PANEL_CODE", socket.gethostname())
 
 REGISTRATION_URL = BASE_URL + "/panels/"
 
