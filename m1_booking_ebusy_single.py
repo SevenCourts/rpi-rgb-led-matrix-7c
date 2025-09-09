@@ -152,10 +152,10 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
     h_prompt = 2 * y_font_offset(s.booking.one.f_prompt) + 4
     y_prompt = H_PANEL - h_prompt
     
-    txt_court = court['name']
-    # txt_court = txt_court.replace("Platz", "Court") # FIXME EN demo only, remove ".replace"
-
     if s.booking.one.is_court_name_on_top:
+        txt_court = court['name']
+        # txt_court = txt_court.replace("Platz", "Court") # FIXME EN demo only, remove ".replace"
+
         f_court = s.booking.one.f_courtname_on_top
         w_court = W_PANEL
         h_court = h_header
@@ -169,11 +169,10 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
 
         h_courtname_text = h_header
     else:
-        f_court = s.booking.one.f_courtname_on_left
-
-        if s.booking.is_courtname_acronym:
-            txt_court = acronym(txt_court)
+        txt_court = court['shortName']
         txt_court = txt_court[:s.booking.courtname_truncate_to]
+
+        f_court = s.booking.one.f_courtname_on_left
 
         w_court = width_in_pixels(f_court, txt_court) + 3
         h_court = H_PANEL

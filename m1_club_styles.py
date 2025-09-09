@@ -76,7 +76,6 @@ class Booking:
     c_free_to_book: graphics.Color = COLOR_7C_GREEN
 
     is_weather_displayed: bool = True
-    is_courtname_acronym: bool = False
 
     one: OneCourt = OneCourt()
     many: MultipleCourts = MultipleCourts()
@@ -96,8 +95,7 @@ style_TABB = ClubStyle(
     ci=ClubCI(c_bg_1=COLOR_CI_TABB_1, c_bg_2=COLOR_CI_TABB_2,
               logo=Logo(path='images/logos/TABB/tabb-logo-transparent-60x13-border-3.png')),
     booking=Booking(
-        is_weather_displayed=True, 
-        is_courtname_acronym=False,
+        is_weather_displayed=True,
         courtname_truncate_to=3))
 
 # SV1845 Esslingen
@@ -107,8 +105,7 @@ style_SV1845 = ClubStyle(
     ci=ClubCI(c_bg_1=COLOR_CI_SV1845_1, c_bg_2=COLOR_CI_SV1845_2,
               logo=Logo(path='images/logos/SV1845/sv1845_76x64_eBusy_demo_logo.png', round_corners=True)),
     booking=Booking(
-        is_weather_displayed=False, 
-        is_courtname_acronym=True))
+        is_weather_displayed=False))
 
 # Matchcenter Filderstadt
 COLOR_CI_Matchcenter_1 = COLOR_GREY_DARKEST # Black
@@ -118,7 +115,6 @@ style_MatchCenter = ClubStyle(
               logo=Logo(path='images/logos/MatchCenter Filderstadt/logo-matchcenter_58x39.png')),
     booking=Booking(
         is_weather_displayed=False,
-        is_courtname_acronym=True,        
         one=OneCourt(is_court_name_on_top=False)))
 
 # SevenCourts
@@ -129,6 +125,5 @@ style_SevenCourts = ClubStyle(
               logo=Logo(path='images/logos/SevenCourts/sevencourts_58x6.png')),
     booking=Booking(
         is_weather_displayed=True,
-        is_courtname_acronym=True,
         one=OneCourt(is_court_name_on_top=False)))
 

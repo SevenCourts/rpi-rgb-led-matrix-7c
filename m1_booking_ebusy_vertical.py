@@ -103,15 +103,9 @@ def _draw_booking_court(cnv, x0: int, y0: int, w:int, h: int, rows_spacing: int,
     w_info = w - w_court - w_timebox - 4
 
     # court name    
-    court_name = court_bookings['court']['name']
-
-    # court_name = court_name.replace("Platz", "Court") # FIXME EN demo only, remove ".replace"
-
-    if s.booking.is_courtname_acronym:
-        txt_court = acronym(court_name)
-    else:
-        txt_court = court_name
-    txt_court = txt_court[:s.booking.courtname_truncate_to]
+    court_name = court_bookings['court']['shortName']
+    # court_name = court_name.replace("P", "C") # FIXME EN demo only, remove ".replace"
+    txt_court = court_name[:s.booking.courtname_truncate_to]
 
     _fnt = s.booking.many.f_court_name
     x_court = x0
