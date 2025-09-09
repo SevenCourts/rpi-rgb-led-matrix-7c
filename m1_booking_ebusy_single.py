@@ -7,7 +7,7 @@ import m1_image
 from m1_booking_utils import *
 from m1_club_styles import *
 
-logger = m1_logging.logger("eBusy")
+logger = m1_logging.logger("eBuSy")
 
 Y_PROMPT = H_PANEL - 3 # "Bye" - the 'y' takes 3 pixels for the tail
 
@@ -75,7 +75,7 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
         elif time_now < t_end:
             c_timebox = s.booking.c_timebox_countdown            
         else:
-            # raise ValueError('should never happen with eBusy data')
+            # raise ValueError('should never happen with eBuSy data')
             '''
             This data is twice formally incorrect:
 
@@ -130,10 +130,10 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
                     # current booking
                     booking = b_1_current                    
             else:
-                logger.error('should never happen with eBusy data', ValueError('should never happen with eBusy data'))
+                logger.error('should never happen with eBuSy data', ValueError('should never happen with eBusy data'))
             
         else:
-            logger.error('should never happen with eBusy data', ValueError('should never happen with eBusy data'))
+            logger.error('should never happen with eBuSy data', ValueError('should never happen with eBusy data'))
             
 
     elif b_2_next:
@@ -147,7 +147,7 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
     else:
         # court is free
         txt_prompt = 'Book now with code 7CAB for 10% discount'
-        txt_prompt = 'Book now via eBusy'
+        txt_prompt = 'Book now via eBuSy'
 
     h_prompt = 2 * y_font_offset(s.booking.one.f_prompt) + 4
     y_prompt = H_PANEL - h_prompt

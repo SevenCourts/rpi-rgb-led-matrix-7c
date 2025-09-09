@@ -171,7 +171,7 @@ def _draw_booking_court(cnv, x0: int, y0: int, w:int, h: int, rows_spacing: int,
                     f_timebox = s.booking.many.f_timebox_countdown
             else:
                 txt_status = f" {minutes_in_hour_left}'"                
-                # raise ValueError('should never happen with eBusy data')
+                # raise ValueError('should never happen with eBuSy data')
                 '''
                 For 2025-08-28T23:01:00
 
@@ -190,7 +190,7 @@ def _draw_booking_court(cnv, x0: int, y0: int, w:int, h: int, rows_spacing: int,
                 t3:   2025-08-27 23:55 (!!!)
                 '''
         else:
-            raise ValueError('should never happen with eBusy data')
+            raise ValueError('should never happen with eBuSy data')
         
         
 
