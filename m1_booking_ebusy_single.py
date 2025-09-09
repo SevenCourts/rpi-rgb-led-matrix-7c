@@ -30,10 +30,6 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
     else:
         time_now = datetime.now(tz.gettz(panel_tz))
 
-    logger.debug(f"tz: {panel_tz}")
-    logger.debug(f"tz: {tz.gettz(panel_tz)}")
-    logger.debug(f"time_now: {time_now}")
-
     ## draw clock
     f_clock = s.booking.f_clock
     c_clock = s.booking.c_clock
@@ -130,10 +126,10 @@ def draw(cnv, booking_info, panel_tz, s: ClubStyle):
                     # current booking
                     booking = b_1_current                    
             else:
-                logger.error('should never happen with eBuSy data', ValueError('should never happen with eBusy data'))
+                logger.error('should never happen with eBuSy data', ValueError('should never happen with eBuSy data'))
             
         else:
-            logger.error('should never happen with eBuSy data', ValueError('should never happen with eBusy data'))
+            logger.error('should never happen with eBuSy data', ValueError('should never happen with eBuSy data'))
             
 
     elif b_2_next:
