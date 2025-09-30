@@ -35,3 +35,9 @@ journalctl -xeu openvpn-server@sevencourts.service -f
 ```
 
 Wait about 5-10 minutes for the clients to be connected.
+
+Retry `7c.sh`
+
+```bash
+./root/7c-vpn-scripts/7c
+```
