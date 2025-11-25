@@ -21,12 +21,12 @@ COLOR_COURT_NAME = COLOR_GREY
 COLOR_COURT_NAME_BG = COLOR_BW_VAIHINGEN_ROHR_BLUE
 COLOR_TEAM_NAME = COLOR_GREY
 COLOR_SETSCORE_BG = COLOR_MATCH_BG
-COLOR_SETSCORE_COMPLETED_WON_BG = COLOR_7C_GREEN_DARK
+COLOR_SETSCORE_COMPLETED_WON_BG = COLOR_7C_DARK_GREEN
 COLOR_SRV = COLOR_GREY
 COLOR_SRV_BG = COLOR_MATCH_BG
 COLOR_GAMESCORE = COLOR_WHITE
 COLOR_GAMESCORE_BG = COLOR_MATCH_BG
-COLOR_MATCH_STATUS = COLOR_7C_GOLD
+COLOR_MATCH_STATUS = COLOR_GOLD
 
 VOID_TEAM = {"name": None, "country": None}
 
@@ -34,8 +34,8 @@ VOID_TEAM = {"name": None, "country": None}
 MAX_LENGTH_NAME_SINGLES = 14
 MAX_LENGTH_NAME_DOUBLES = 3
 
-W_MATCH = int(W_PANEL / 2)
-H_MATCH = int(H_PANEL / 2)
+W_MATCH = W_PANEL // 2
+H_MATCH = H_PANEL // 2
 
 def _match_coordinates (court_pos: int):
     x = 0 if (court_pos % 2) == 0 else W_MATCH
@@ -64,7 +64,7 @@ def _display_team_score(canvas, x0: int, y0: int, score_sets_with_color: List, s
     # 1. game score
     w_score_game = width_in_pixels(font, score_game)
     w_score_game_max = width_in_pixels(font, "Ad")
-    x_score_game = x0 + W_MATCH - int((w_score_game_max + w_score_game) / 2)
+    x_score_game = x0 + W_MATCH - (w_score_game_max + w_score_game) // 2
 
     is_some_score_present = (score_game is not None and len(score_game) > 0) or (score_sets_with_color is not None and len(score_sets_with_color) > 0) or (is_serving is not None)
     if is_some_score_present: 

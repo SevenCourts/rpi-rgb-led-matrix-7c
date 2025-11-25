@@ -12,12 +12,19 @@ FONT_CLOCK_M_2=FONT_XL_SPLEEN
 FONT_CLOCK_L_2=FONT_XXL_SPLEEN
 W_LOGO_WITH_CLOCK = 120 # left from clock
 
+def _get_time_txt(panel_tz):
+    dt = datetime.now(tz.gettz(panel_tz))
+    return dt.strftime('%H:%M')
+
+def draw_clock_by_coordinates(canvas, x, y, font, panel_tz, color=COLOR_CLOCK_DEFAULT, time_preset=None):    
+    if time_preset:
+        text = time_preset.strftime('%H:%M')
+    else:
+        text = _get_time_txt(panel_tz)
+    draw_text(canvas, x, y, text, font, color)
 
 def draw_clock(canvas, clock, panel_tz, color=COLOR_CLOCK_DEFAULT):
-
-    dt = datetime.now(tz.gettz(panel_tz))
-    text = dt.strftime('%H:%M')        
-
+    text = _get_time_txt(panel_tz)    
     if clock == True: # Compiler warning is WRONG!
         # display a clock along with some other elements, using the default Spleen font
         font = FONT_CLOCK_DEFAULT
@@ -58,5 +65,5 @@ def draw_clock(canvas, clock, panel_tz, color=COLOR_CLOCK_DEFAULT):
         else:
             y = H_PANEL
     else:
-        return
-    draw_text(canvas, x, y, text, font, color)
+        return    
+    draw_clock_by_coordinates(canvas, x, y, font, panel_tz, color)

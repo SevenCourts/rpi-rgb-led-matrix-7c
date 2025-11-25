@@ -21,12 +21,14 @@ def draw_idle_mode_message(canvas, idle_info, panel_tz):
         l1 = lines[1]
         font = pick_font_that_fits(w_available, h_available, l0, l1)
 
-        x0 = max(0, (w_available - width_in_pixels(font, l0)) / 2)
-        y0 = y_font_center(font, h_available / 2)
+        x0 = max(0, (w_available - width_in_pixels(font, l0)) // 2)
+        y0 = y_font_center(font, h_available // 2)
+        print(f"draw_idle_mode_message: '{l0}' at ({x0},{y0})")
         graphics.DrawText(canvas, font, x0, y0, COLOR_MESSAGE, l0)
 
-        x1 = max(0, (w_available - width_in_pixels(font, l1)) / 2)
-        y1 = y0 + y_font_center(font, h_available / 2)
+        x1 = max(0, (w_available - width_in_pixels(font, l1)) // 2)
+        y1 = y0 + y_font_center(font, h_available // 2)
+        print(f"draw_idle_mode_message: '{l1}' at ({x1},{y1})")
         graphics.DrawText(canvas, font, x1, y1, COLOR_MESSAGE, l1)
 
     clock = idle_info.get('clock')

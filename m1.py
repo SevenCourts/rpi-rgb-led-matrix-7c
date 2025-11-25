@@ -25,8 +25,17 @@ import logging
 import subprocess
 from datetime import datetime
 from dateutil import tz
+import threading
+import openweathermap
 
 logger = m1_logging.logger()
+
+# shared state
+weather_info = None
+weather_info_lock = threading.Lock()
+# Careful with this, since only 60 requests per minute are allowed:
+# FIXME Better to send the weather information from server
+UPDATE_WEATHER_PERIOD_SEC = 120 # seconds
 
 # In container there is no git binary and history -- read from file.
 # In local environment we don't want generate this file manually -- ask git.
@@ -43,7 +52,7 @@ os.chmod(IMAGE_CACHE_DIR, 0o777)
 
 PANEL_CONFIG_FILE = os.getenv('PANEL_CONFIG')
 
-PANEL_NAME = socket.gethostname()
+PANEL_NAME = os.getenv("TABLEAU_PANEL_CODE", socket.gethostname())
 
 REGISTRATION_URL = BASE_URL + "/panels/"
 
@@ -59,6 +68,16 @@ def uptime():
         logger.debug('Cannot get uptime')
         return -1
 
+def _fetch_weather_info():
+    global weather_info
+    while True:
+        weather_info_lock.acquire()
+        try:
+            city = "Böblingen,DE" # FIXME
+            weather_info = openweathermap.fetch_weather(city)            
+        finally:
+            weather_info_lock.release()
+        time.sleep(UPDATE_WEATHER_PERIOD_SEC)
 
 # FIXME wtf?! without this call, getting CPU temperature fails when is called from within class instance
 try:
@@ -80,6 +99,7 @@ def _cpu_temperature():
 def _register(url):
     data = json.dumps({"code": PANEL_NAME, "ip": ip_address(), "firmware_version": GIT_COMMIT_ID}).encode('utf-8')
     request = urllib.request.Request(url, data=data, method='POST')
+    request.add_header('7C-Time', datetime.now(tz.gettz(DEFAULT_TIMEZONE)).isoformat())
     with urllib.request.urlopen(request, timeout=10) as response:
         _json = json.loads(response.read().decode('utf-8'))
         logger.debug(f"Registered: {url} - '{_json}'")
@@ -92,6 +112,7 @@ def _fetch_panel_info(panel_id):
     req.add_header('7C-Is-Panel-Preview', 'false') # FIXME is to be set to 'true' when started as emulator within panel admin web UI
     req.add_header('7C-Uptime', str(uptime()))
     req.add_header('7C-CPU-Temperature', str(_cpu_temperature()))
+    req.add_header('7C-Time', datetime.now(tz.gettz(DEFAULT_TIMEZONE)).isoformat())
     with urllib.request.urlopen(req, timeout=10) as response:
         logger.debug(f"url='{url}', status={str(response.status)}")
         if response.status == 200:
@@ -116,13 +137,16 @@ def _read_startup_config():
             pass
         if lines:
             result = {k: v for k, v in map(lambda x: x.split('=', 1), lines)}
+    logger.info(f"Config: '{result}'")
     return result
 
 def _write_startup_config(startup_config):
     logger.debug(f"Writing config to '{PANEL_CONFIG_FILE}'")
     if PANEL_CONFIG_FILE:
         conf = []
-        for k, v in startup_config.items(): conf.append(k + '=' + str(v))
+        for k, v in startup_config.items():
+            value = '' if v is None else str(v)
+            conf.append(k + '=' + value)
         try:
             with open(PANEL_CONFIG_FILE, 'w') as file:
                 file.write('\n'.join(conf))
@@ -138,8 +162,13 @@ class SevenCourtsM1(SampleBase):
         self.startup_config = _read_startup_config()
         
     def run(self):
+
+        logger.info("Starting weather fetching thread")
+        # need to be daemon to interrupt keyboard (e.g. Ctrl+C)
+        update_weather_thread = threading.Thread(target=_fetch_weather_info, daemon=True)
+        update_weather_thread.start()
+
         logger.info("Starting M1 instance")
-        
         self.canvas = self.matrix.CreateFrameCanvas()
 
         self._display_init_screen()
@@ -154,7 +183,9 @@ class SevenCourtsM1(SampleBase):
                     self.panel_info_failed = False
                     
                     cfg = {"timezone": self._panel_tz()}
-                    _write_startup_config(cfg)
+                    if (cfg != self.startup_config):
+                        _write_startup_config(cfg)
+                        self.startup_config = cfg
 
                     self._display_panel_info()
                     time.sleep(1)
@@ -201,7 +232,11 @@ class SevenCourtsM1(SampleBase):
         if self.panel_info.get('standby'):
             self._draw_standby_mode_indicator()
         elif 'booking' in self.panel_info:
-            m1_booking_ebusy.draw_booking(self.canvas, self.panel_info.get('booking'), self._panel_tz())
+            weather_info_lock.acquire()
+            try:
+                m1_booking_ebusy.draw_booking(self.canvas, self.panel_info.get('booking'), weather_info, self._panel_tz())
+            finally:                
+                weather_info_lock.release()            
         elif 'ebusy-ads' in self.panel_info:
             m1_booking_ebusy.draw_ebusy_ads(self.canvas, self.panel_info.get('ebusy-ads'))
         elif 'idle-info' in self.panel_info:
@@ -230,7 +265,7 @@ class SevenCourtsM1(SampleBase):
             self._draw_standby_mode_indicator()
 
     def _draw_standby_mode_indicator(self):
-        g = (COLOR_7C_GREEN_DARK.red, COLOR_7C_GREEN_DARK.green, COLOR_7C_GREEN_DARK.blue)
+        g = (COLOR_7C_STANDBY.red, COLOR_7C_STANDBY.green, COLOR_7C_STANDBY.blue)
         dot = [
             [g, g],
             [g, g]]
@@ -248,9 +283,10 @@ class SevenCourtsM1(SampleBase):
         draw_matrix(self.canvas, dot, W_PANEL - 4, H_PANEL - 4)
 
     def _panel_tz(self):
-        return self.panel_info.get('idle-info', {}).get('timezone', self.startup_config.get('timezone', 'Europe/Berlin'))
-
-
+        panel_info = self.panel_info.get('idle-info', {})
+        result = panel_info.get('timezone', self.startup_config.get('timezone'))
+        return result or DEFAULT_TIMEZONE
+        
 # Main function
 if __name__ == "__main__":
     infoboard = SevenCourtsM1()

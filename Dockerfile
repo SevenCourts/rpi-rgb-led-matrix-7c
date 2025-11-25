@@ -12,7 +12,7 @@ RUN pip install \
         RGBMatrixEmulator==0.13.3
 
 WORKDIR "/app"
-ENTRYPOINT ["/app/m1_emulator.sh"]
+ENTRYPOINT ["/app/m1.sh"]
 
 RUN mkdir -p /opt/7c && touch /opt/7c/panel_dev.conf
 ENV PANEL_CONFIG=/opt/7c/panel_dev.conf
@@ -24,11 +24,8 @@ COPY ./images ./images
 COPY \
     ./commit-id \
     ./emulator_config.json \
-    ./m1_emulator.sh \
-    ./m1.py \
+    ./*.py \
     ./m1.sh \
-    ./samplebase.py \
-    ./sevencourts.py \
     ./
 
 RUN jq '.browser.target_fps = 1' ./emulator_config.json

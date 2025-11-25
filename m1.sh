@@ -44,7 +44,9 @@ else
     --led-chain=1
     --led-cols=64
     --led-parallel=1
-    --led-rows=192
+    --led-rows=32
+    --led-chain=3
+    --led-parallel=2
   )
 fi
 readonly cmd_args
