@@ -99,6 +99,7 @@ def _cpu_temperature():
 def _register(url):
     data = json.dumps({"code": PANEL_NAME, "ip": ip_address(), "firmware_version": GIT_COMMIT_ID}).encode('utf-8')
     request = urllib.request.Request(url, data=data, method='POST')
+    request.add_header('7C-Time', datetime.now(tz.gettz(DEFAULT_TIMEZONE)).isoformat())
     with urllib.request.urlopen(request, timeout=10) as response:
         _json = json.loads(response.read().decode('utf-8'))
         logger.debug(f"Registered: {url} - '{_json}'")
@@ -111,6 +112,7 @@ def _fetch_panel_info(panel_id):
     req.add_header('7C-Is-Panel-Preview', 'false') # FIXME is to be set to 'true' when started as emulator within panel admin web UI
     req.add_header('7C-Uptime', str(uptime()))
     req.add_header('7C-CPU-Temperature', str(_cpu_temperature()))
+    req.add_header('7C-Time', datetime.now(tz.gettz(DEFAULT_TIMEZONE)).isoformat())
     with urllib.request.urlopen(req, timeout=10) as response:
         logger.debug(f"url='{url}', status={str(response.status)}")
         if response.status == 200:
