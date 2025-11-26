@@ -40,8 +40,7 @@ else:
 from PIL import Image
 from functools import partial
 
-# FIXME use not hardcoded directory (TBD)
-IMAGE_CACHE_DIR = "/opt/7c/cache-images"
+IMAGE_CACHE_DIR = os.getenv('IMAGES_CACHE_DIR', '/opt/7c/cache-images')
 
 # FIXME not all fonts contain this character
 # If used with such a font, draw_text call will crash!
