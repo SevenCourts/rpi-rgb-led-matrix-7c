@@ -329,10 +329,10 @@ sudo dd if=7c_shrinked.img of=/dev/disk4
     - `pip install Pillow`
     - `pip install requests`
     - `pip install python-dateutil`
+    - `pip install RGBMatrixEmulator==0.13.3`
 
-### RGBMatrixEmulator
+### RGBMatrixEmulator source code (optional)
 
-- Install RGBMatrixEmulator with `pip install RGBMatrixEmulator==0.13.3`
 - Clone [RGBMatrixEmulator](https://github.com/ty-porter/RGBMatrixEmulator)
 
 Smoke-test with:
