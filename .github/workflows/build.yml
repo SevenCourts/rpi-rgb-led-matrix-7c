@@ -29,6 +29,9 @@ jobs:
     - name: Create file with commit ID
       run: git rev-parse HEAD > commit-id
 
+    - name: Create file with commit date
+      run: git show -s --format=%as HEAD > commit-date
+
     - name: Log in to the container registry
       if: ${{ env.TM_BUILD_IMAGE_ALREADY_PUBLISHED != 'yes' }}
       uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1

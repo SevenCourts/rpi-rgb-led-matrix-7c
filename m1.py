@@ -36,6 +36,12 @@ try:
 except:
     GIT_COMMIT_ID = subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode()
 
+try:
+    with open('commit-date', 'r') as file:
+        GIT_COMMIT_DATE = file.read().strip()
+except:
+    GIT_COMMIT_DATE = subprocess.check_output(["git", "show", "-s", "--format=%as", "HEAD"]).strip().decode()
+
 os.makedirs(IMAGE_CACHE_DIR, exist_ok=True)
 # The default 0o777 does not work,
 # see https://stackoverflow.com/questions/5231901/permission-problems-when-creating-a-dir-with-os-makedirs-in-python
@@ -78,7 +84,7 @@ def _cpu_temperature():
 
 
 def _register(url):
-    data = json.dumps({"code": PANEL_NAME, "ip": ip_address(), "firmware_version": GIT_COMMIT_ID}).encode('utf-8')
+    data = json.dumps({"code": PANEL_NAME, "ip": ip_address(), "firmware_version": GIT_COMMIT_ID, "firmware_date": GIT_COMMIT_DATE}).encode('utf-8')
     request = urllib.request.Request(url, data=data, method='POST')
     with urllib.request.urlopen(request, timeout=10) as response:
         _json = json.loads(response.read().decode('utf-8'))

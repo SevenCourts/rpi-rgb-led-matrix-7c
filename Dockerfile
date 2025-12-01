@@ -23,6 +23,7 @@ COPY ./fonts ./fonts
 COPY ./images ./images
 COPY \
     ./commit-id \
+    ./commit-date \
     ./emulator_config.json \
     ./m1_emulator.sh \
     ./m1.py \
