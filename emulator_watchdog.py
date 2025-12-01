@@ -7,11 +7,12 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 # --- Configuration ---
-BATCH_FILE = "m1-emulator.bat"
-DIRECTORY_TO_WATCH = "d:/dev/7c/git.github.com/rpi-rgb-led-matrix-7c"
+BATCH_FILE = "m1-emulator.sh"
+DIRECTORY_TO_WATCH = "sevencourts"
 
 # Global variable to hold the subprocess object
 batch_process = None
+
 
 def start_batch_file():
     """Starts the batch file and stores the process object."""
@@ -20,7 +21,9 @@ def start_batch_file():
     try:
         # Use subprocess.Popen to run the batch file in a new process
         # and store the process object.
-        batch_process = subprocess.Popen(BATCH_FILE, creationflags=subprocess.CREATE_NO_WINDOW)
+        batch_process = subprocess.Popen(
+            BATCH_FILE, creationflags=subprocess.CREATE_NO_WINDOW
+        )
         print(f"➡️ Batch file started with PID: {batch_process.pid}")
     except FileNotFoundError:
         print(f"❌ Error: The batch file '{BATCH_FILE}' was not found.")
@@ -28,6 +31,7 @@ def start_batch_file():
     except Exception as e:
         print(f"❌ An error occurred while trying to start the batch file: {e}")
         sys.exit(1)
+
 
 def stop_batch_file():
     """Stops the currently running batch file process."""
@@ -42,16 +46,19 @@ def stop_batch_file():
     else:
         print("➡️ No batch file process is currently running.")
 
+
 def restart_batch_file():
     """Stops and then restarts the batch file."""
     stop_batch_file()
     start_batch_file()
+
 
 # --- Event Handler Class ---
 class MyHandler(FileSystemEventHandler):
     """
     A custom event handler that restarts the batch file on any file change.
     """
+
     def on_any_event(self, event):
         """
         Triggered for any file system event (created, modified, deleted).
@@ -61,11 +68,12 @@ class MyHandler(FileSystemEventHandler):
             print(f"\n📁 Change detected in '{event.src_path}'.")
             restart_batch_file()
 
+
 # --- Main Execution Loop ---
 if __name__ == "__main__":
     # Start the batch file initially
     start_batch_file()
-    
+
     # Set up and start the file system observer
     print(f"\n👀 Starting to monitor directory: {DIRECTORY_TO_WATCH}")
     event_handler = MyHandler()

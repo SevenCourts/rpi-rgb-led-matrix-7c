@@ -1,6 +1,8 @@
-from sevencourts import *
+import sevencourts.images as imgs
+from sevencourts.m1.dimens import *
+from sevencourts.rgbmatrix import *
 
-GAME_SCORES = ('15', '30', '40', 'A')
+GAME_SCORES = ("15", "30", "40", "A")
 
 # Scoreboard styles
 COLOR_SCORE_SET = COLOR_WHITE
@@ -19,29 +21,45 @@ FONT_SCORE = FONT_XL_SDK
 UPPER_CASE_NAMES = True
 MARGIN_NAMES_SCOREBOARD = 3
 
-X_MIN_SCOREBOARD = W_PANEL//2
+X_MIN_SCOREBOARD = W_PANEL // 2
 W_SCORE_SET = 20
 X_SCORE_GAME = 163
 X_SCORE_SERVICE = 155
 
+
+def draw(canvas, panel_info):
+    _draw_names(canvas, panel_info)
+    _draw_score(canvas, panel_info)
+    _draw_winner(canvas, panel_info)
+
+
 def _player_name(p, noname="Noname"):
     return p["lastname"] or p["firstname"] or noname
 
-def _display_set_digit(canvas, x, y, font, color, score):
+
+def _draw_set_digit(canvas, x, y, font, color, score):
     # FIXME meh
     if score != "":
         if int(score) < 10:
             graphics.DrawText(canvas, font, x, y, color, str(score))
         else:
             score = str(int(score) % 10)
-            fill_rect(canvas, x - 2, y + 1, width_in_pixels(font, score) + 2, -y_font_offset(font) - 3, color)
+            fill_rect(
+                canvas,
+                x - 2,
+                y + 1,
+                width_in_pixels(font, score) + 2,
+                -y_font_offset(font) - 3,
+                color,
+            )
             graphics.DrawText(canvas, font, x, y, COLOR_BLACK, score)
 
-def _display_score(canvas, match):
-    t1_on_serve=match["team1"]["serves"]
-    t2_on_serve=match["team2"]["serves"]
+
+def _draw_score(canvas, match):
+    t1_on_serve = match["team1"]["serves"]
+    t2_on_serve = match["team2"]["serves"]
     number_of_sets = len(match["team1"]["setScores"] or [])
-    is_match_over = match["matchResult"] in ('T1_WON', 'T2_WON', 'DRAW')
+    is_match_over = match["matchResult"] in ("T1_WON", "T2_WON", "DRAW")
     t1_game = match["team1"].get("gameScore", "")
     t2_game = match["team2"].get("gameScore", "")
     t1_game = str(t1_game if t1_game is not None else "")
@@ -51,15 +69,21 @@ def _display_score(canvas, match):
 
     if number_of_sets == 0:
         t1_set1 = t2_set1 = t1_set2 = t2_set2 = t1_set3 = t2_set3 = ""
-        c_t1_set1 = c_t2_set1 = c_t1_set2 = c_t2_set2 = c_t1_set3 = c_t2_set3 = COLOR_BLACK
+        c_t1_set1 = c_t2_set1 = c_t1_set2 = c_t2_set2 = c_t1_set3 = c_t2_set3 = (
+            COLOR_BLACK
+        )
         x_set1 = x_set2 = x_set3 = W_PANEL
     elif number_of_sets == 1:
         t1_set1 = match["team1"]["setScores"][0]
         t2_set1 = match["team2"]["setScores"][0]
         t1_set2 = t2_set2 = t1_set3 = t2_set3 = ""
         if is_match_over:
-            c_t1_set1 = COLOR_SCORE_SET_WON if t1_set1 > t2_set1 else COLOR_SCORE_SET_LOST
-            c_t2_set1 = COLOR_SCORE_SET_WON if t2_set1 > t1_set1 else COLOR_SCORE_SET_LOST
+            c_t1_set1 = (
+                COLOR_SCORE_SET_WON if t1_set1 > t2_set1 else COLOR_SCORE_SET_LOST
+            )
+            c_t2_set1 = (
+                COLOR_SCORE_SET_WON if t2_set1 > t1_set1 else COLOR_SCORE_SET_LOST
+            )
         else:
             c_t1_set1 = c_t2_set1 = COLOR_SCORE_SET
         c_t1_set2 = c_t2_set2 = c_t1_set3 = c_t2_set3 = COLOR_BLACK
@@ -74,8 +98,12 @@ def _display_score(canvas, match):
         c_t1_set1 = COLOR_SCORE_SET_WON if t1_set1 > t2_set1 else COLOR_SCORE_SET_LOST
         c_t2_set1 = COLOR_SCORE_SET_WON if t2_set1 > t1_set1 else COLOR_SCORE_SET_LOST
         if is_match_over:
-            c_t1_set2 = COLOR_SCORE_SET_WON if t1_set2 > t2_set2 else COLOR_SCORE_SET_LOST
-            c_t2_set2 = COLOR_SCORE_SET_WON if t2_set2 > t1_set2 else COLOR_SCORE_SET_LOST
+            c_t1_set2 = (
+                COLOR_SCORE_SET_WON if t1_set2 > t2_set2 else COLOR_SCORE_SET_LOST
+            )
+            c_t2_set2 = (
+                COLOR_SCORE_SET_WON if t2_set2 > t1_set2 else COLOR_SCORE_SET_LOST
+            )
         else:
             c_t1_set2 = c_t2_set2 = COLOR_SCORE_SET
         c_t1_set3 = c_t2_set3 = COLOR_BLACK
@@ -94,8 +122,12 @@ def _display_score(canvas, match):
         c_t1_set2 = COLOR_SCORE_SET_WON if t1_set2 > t2_set2 else COLOR_SCORE_SET_LOST
         c_t2_set2 = COLOR_SCORE_SET_WON if t2_set2 > t1_set2 else COLOR_SCORE_SET_LOST
         if is_match_over:
-            c_t1_set3 = COLOR_SCORE_SET_WON if t1_set3 > t2_set3 else COLOR_SCORE_SET_LOST
-            c_t2_set3 = COLOR_SCORE_SET_WON if t2_set3 > t1_set3 else COLOR_SCORE_SET_LOST
+            c_t1_set3 = (
+                COLOR_SCORE_SET_WON if t1_set3 > t2_set3 else COLOR_SCORE_SET_LOST
+            )
+            c_t2_set3 = (
+                COLOR_SCORE_SET_WON if t2_set3 > t1_set3 else COLOR_SCORE_SET_LOST
+            )
 
             # A crutch fix to nicely display match-tie-break result.
             # FIXME Match/score metadata is missing to do it properly.
@@ -115,7 +147,12 @@ def _display_score(canvas, match):
 
             # FIXME  meh, this will not work when score in MTB will be 15 what is rare but not excluded
             # FIXME Match/score metadata is missing to do it properly.
-            is_mtb = t1_set3 == 0 and t2_set3 == 0 and t1_game not in GAME_SCORES and t2_game not in GAME_SCORES
+            is_mtb = (
+                t1_set3 == 0
+                and t2_set3 == 0
+                and t1_game not in GAME_SCORES
+                and t2_game not in GAME_SCORES
+            )
             if is_mtb:
                 t1_set3 = t1_set2
                 t2_set3 = t2_set2
@@ -141,18 +178,22 @@ def _display_score(canvas, match):
 
     # Americano
     if not match.get("isTotalPointsMatch", False):
-        _display_set_digit(canvas, x_set1, y_t1, FONT_SCORE, c_t1_set1, t1_set1)
-        _display_set_digit(canvas, x_set2, y_t1, FONT_SCORE, c_t1_set2, t1_set2)
-        _display_set_digit(canvas, x_set3, y_t1, FONT_SCORE, c_t1_set3, t1_set3)
+        _draw_set_digit(canvas, x_set1, y_t1, FONT_SCORE, c_t1_set1, t1_set1)
+        _draw_set_digit(canvas, x_set2, y_t1, FONT_SCORE, c_t1_set2, t1_set2)
+        _draw_set_digit(canvas, x_set3, y_t1, FONT_SCORE, c_t1_set3, t1_set3)
 
-        _display_set_digit(canvas, x_set1, y_t2, FONT_SCORE, c_t2_set1, t2_set1)
-        _display_set_digit(canvas, x_set2, y_t2, FONT_SCORE, c_t2_set2, t2_set2)
-        _display_set_digit(canvas, x_set3, y_t2, FONT_SCORE, c_t2_set3, t2_set3)
+        _draw_set_digit(canvas, x_set1, y_t2, FONT_SCORE, c_t2_set1, t2_set1)
+        _draw_set_digit(canvas, x_set2, y_t2, FONT_SCORE, c_t2_set2, t2_set2)
+        _draw_set_digit(canvas, x_set3, y_t2, FONT_SCORE, c_t2_set3, t2_set3)
 
     # FIXME Test if this works for finished e.g. tie-break matches
     if not is_match_over or is_mtb:
-        graphics.DrawText(canvas, FONT_SCORE, x_t1_score_game, y_t1, COLOR_SCORE_GAME, t1_game)
-        graphics.DrawText(canvas, FONT_SCORE, x_t2_score_game, y_t2, COLOR_SCORE_GAME, t2_game)
+        graphics.DrawText(
+            canvas, FONT_SCORE, x_t1_score_game, y_t1, COLOR_SCORE_GAME, t1_game
+        )
+        graphics.DrawText(
+            canvas, FONT_SCORE, x_t2_score_game, y_t2, COLOR_SCORE_GAME, t2_game
+        )
 
     # service indicator
     if not match.get("hideServiceIndicator", False) and not is_match_over:
@@ -165,7 +206,8 @@ def _display_score(canvas, match):
             [y, y, y, y, y, y, y],
             [y, y, y, y, y, y, y],
             [b, y, y, y, y, y, b],
-            [b, b, y, y, y, b, b]]
+            [b, b, y, y, y, b, b],
+        ]
         y_service_t1 = H_PANEL // 2 // 2 - len(ball) // 2
         y_service_t2 = y_service_t1 + H_PANEL / 2
         if t1_on_serve:
@@ -173,13 +215,16 @@ def _display_score(canvas, match):
         elif t2_on_serve:
             draw_matrix(canvas, ball, X_SCORE_SERVICE, y_service_t2)
 
-def _display_names(canvas, match):
 
-    ios_teca_client_v1_1_27 = match["team1"]["p1"] is None and match["team2"]["p1"] is None
+def _draw_names(canvas, match):
+
+    ios_teca_client_v1_1_27 = (
+        match["team1"]["p1"] is None and match["team2"]["p1"] is None
+    )
 
     # 1. flags
     if ios_teca_client_v1_1_27:
-        t1p1_flag = t2p1_flag = t1p2_flag = t2p2_flag = ''
+        t1p1_flag = t2p1_flag = t1p2_flag = t2p2_flag = ""
     else:
         t1p1_flag = match["team1"]["p1"]["flag"]
         t2p1_flag = match["team2"]["p1"]["flag"]
@@ -187,7 +232,7 @@ def _display_names(canvas, match):
             t1p2_flag = match["team1"]["p2"]["flag"]
             t2p2_flag = match["team2"]["p2"]["flag"]
         else:
-            t1p2_flag = t2p2_flag = ''
+            t1p2_flag = t2p2_flag = ""
 
     t1p1_flag_len = 0 if t1p1_flag is None else len(t1p1_flag)
     t1p2_flag_len = 0 if t1p2_flag is None else len(t1p2_flag)
@@ -197,10 +242,10 @@ def _display_names(canvas, match):
     display_flags = max(t1p1_flag_len, t1p2_flag_len, t2p1_flag_len, t2p2_flag_len) > 0
     same_flags_in_teams = (t1p1_flag == t1p2_flag) & (t2p1_flag == t2p2_flag)
     if display_flags:
-        t1p1_flag = None if not t1p1_flag else load_flag_image(t1p1_flag)
-        t1p2_flag = None if not t1p2_flag else load_flag_image(t1p2_flag)
-        t2p1_flag = None if not t2p1_flag else load_flag_image(t2p1_flag)
-        t2p2_flag = None if not t2p2_flag else load_flag_image(t2p2_flag)
+        t1p1_flag = None if not t1p1_flag else imgs.load_flag_image(t1p1_flag)
+        t1p2_flag = None if not t1p2_flag else imgs.load_flag_image(t1p2_flag)
+        t2p1_flag = None if not t2p1_flag else imgs.load_flag_image(t2p1_flag)
+        t2p2_flag = None if not t2p2_flag else imgs.load_flag_image(t2p2_flag)
         flag_width = W_FLAG
     else:
         flag_width = 0
@@ -208,7 +253,7 @@ def _display_names(canvas, match):
     # 2. names
     t1_set_scores = match["team1"]["setScores"] or []
     t2_set_scores = match["team2"]["setScores"] or []
-    if (len(t1_set_scores)==0):
+    if len(t1_set_scores) == 0:
         x_scoreboard = X_SCORE_SERVICE
     elif len(t1_set_scores) == 1:
         x_scoreboard = X_MIN_SCOREBOARD + W_SCORE_SET + W_SCORE_SET
@@ -223,7 +268,7 @@ def _display_names(canvas, match):
     if ios_teca_client_v1_1_27:
         t1p1 = match["team1"]["name"]
         t2p1 = match["team2"]["name"]
-        t1p2 = t2p2 = ''
+        t1p2 = t2p2 = ""
     elif match["isTeamEvent"] or not match["isDoubles"]:
         if match["isTeamEvent"]:
             t1p1 = match["team1"]["name"]
@@ -231,7 +276,7 @@ def _display_names(canvas, match):
         else:
             t1p1 = _player_name(match["team1"]["p1"], "Player1")
             t2p1 = _player_name(match["team2"]["p1"], "Player2")
-        t1p2 = t2p2 = ''
+        t1p2 = t2p2 = ""
     elif match["isDoubles"]:
         t1p1 = _player_name(match["team1"]["p1"], "Player1")
         t1p2 = _player_name(match["team1"]["p2"], "Player2")
@@ -253,7 +298,7 @@ def _display_names(canvas, match):
         graphics.DrawText(canvas, font, x, y_t1, COLOR_TEAM_NAME, t1p1)
         graphics.DrawText(canvas, font, x, y_t2, COLOR_TEAM_NAME, t2p1)
         if display_flags:
-            _display_singles_flags(canvas, t1p1_flag, t2p1_flag)
+            _draw_singles_flags(canvas, t1p1_flag, t2p1_flag)
 
     elif match["isDoubles"]:
         # (FLAG)
@@ -264,21 +309,33 @@ def _display_names(canvas, match):
 
         name_max_height = 1 + H_FLAG + 1  # => 14
 
-        font = pick_font_that_fits(name_max_width, name_max_height, t1p1, t1p2, t2p1, t2p2)
+        font = pick_font_that_fits(
+            name_max_width, name_max_height, t1p1, t1p2, t2p1, t2p2
+        )
 
         y_offset = y_font_center(font, name_max_height)
 
         y_t1p1 = 1 + y_offset
         y_t1p2 = 1 + name_max_height + 1 + y_offset
         y_t2p1 = 1 + name_max_height + 1 + name_max_height + 2 + 2 + y_offset
-        y_t2p2 = 1 + name_max_height + 1 + name_max_height + 2 + 2 + name_max_height + 1 + y_offset
+        y_t2p2 = (
+            1
+            + name_max_height
+            + 1
+            + name_max_height
+            + 2
+            + 2
+            + name_max_height
+            + 1
+            + y_offset
+        )
         graphics.DrawText(canvas, font, x, y_t1p1, COLOR_TEAM_NAME, t1p1)
         graphics.DrawText(canvas, font, x, y_t1p2, COLOR_TEAM_NAME, t1p2)
         graphics.DrawText(canvas, font, x, y_t2p1, COLOR_TEAM_NAME, t2p1)
         graphics.DrawText(canvas, font, x, y_t2p2, COLOR_TEAM_NAME, t2p2)
         if display_flags:
             if same_flags_in_teams:
-                _display_singles_flags(canvas, t1p1_flag, t2p1_flag)
+                _draw_singles_flags(canvas, t1p1_flag, t2p1_flag)
             else:
                 # 2 (12) 3 (12) 3 3 (12) 3 (12) 2
                 y_flag_t1p1 = 2
@@ -298,16 +355,20 @@ def _display_names(canvas, match):
                 if t2p2_flag is not None:
                     canvas.SetImage(t2p2_flag, 0, y_flag_t2p2)
 
-def _display_singles_flags(canvas, img_t1, img_t2):
+
+def _draw_singles_flags(canvas, img_t1, img_t2):
     if img_t1 is not None:
         y_flag_t1 = max(0, H_PANEL // 2 // 2 - img_t1.height // 2)
         canvas.SetImage(img_t1, 0, y_flag_t1)
 
     if img_t2 is not None:
-        y_flag_t2 = max(H_PANEL // 2, H_PANEL // 2 + H_PANEL // 2 // 2 - img_t2.height // 2)
+        y_flag_t2 = max(
+            H_PANEL // 2, H_PANEL // 2 + H_PANEL // 2 // 2 - img_t2.height // 2
+        )
         canvas.SetImage(img_t2, 0, y_flag_t2)
 
-def _display_winner(canvas, match):
+
+def _draw_winner(canvas, match):
     # FIXME winner is not displayed
     b = (0, 0, 0)
     y = (255, 215, 0)
@@ -322,7 +383,8 @@ def _display_winner(canvas, match):
         [b, b, b, y, y, y, b, b, b],
         [b, b, b, b, y, b, b, b, b],
         [b, b, y, y, y, y, y, b, b],
-        [b, b, y, y, y, y, y, b, b]]
+        [b, b, y, y, y, y, y, b, b],
+    ]
     match_result = match.get("matchResult", None)
     medal_delta = 12
     x_medal = X_SCORE_SERVICE
@@ -330,8 +392,3 @@ def _display_winner(canvas, match):
         draw_matrix(canvas, cup, x_medal, medal_delta)
     elif match_result == "T2_WON":
         draw_matrix(canvas, cup, x_medal, H_PANEL / 2 + medal_delta)
-
-def draw_match(canvas, panel_info):
-    _display_names(canvas, panel_info)
-    _display_score(canvas, panel_info)
-    _display_winner(canvas, panel_info)

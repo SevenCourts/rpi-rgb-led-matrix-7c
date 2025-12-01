@@ -52,4 +52,4 @@ fi
 readonly cmd_args
 
 cd "$(dirname "${BASH_SOURCE[0]}")"
-python3 ./m1.py "${cmd_args[@]}" "$@"
+python3 -m sevencourts.m1.main "${cmd_args[@]}" "$@"

@@ -2,14 +2,9 @@ import argparse
 import time
 import sys
 import os
+from sevencourts.rgbmatrix import *
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/..'))
-
-if os.getenv('USE_RGB_MATRIX_EMULATOR', False):
-    from RGBMatrixEmulator import RGBMatrix, RGBMatrixOptions
-else:
-    from rgbmatrix import RGBMatrix, RGBMatrixOptions
-
 
 class SampleBase(object):
     def __init__(self, *args, **kwargs):
