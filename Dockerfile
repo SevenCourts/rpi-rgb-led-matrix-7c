@@ -9,7 +9,7 @@ RUN pip install \
         Pillow \
         requests \
         python-dateutil \
-        RGBMatrixEmulator==0.13.3
+        RGBMatrixEmulator==0.14.1
 
 WORKDIR "/app"
 ENTRYPOINT ["/app/m1.sh"]
