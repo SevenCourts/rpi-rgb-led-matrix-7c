@@ -26,6 +26,17 @@ except:
         subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode()
     )
 
+try:
+    with open("commit-date", "r") as file:
+        GIT_COMMIT_DATE = file.read().strip()
+except:
+    GIT_COMMIT_DATE = (
+        subprocess.check_output(["git", "show", "-s", "--format=%as", "HEAD"])
+        .strip()
+        .decode()
+    )
+
+
 TIMEOUT_S = 10
 
 BASE_URL = os.getenv("TABLEAU_SERVER_BASE_URL", "https://prod.tableau.tennismath.com")
@@ -73,7 +84,12 @@ def register_panel() -> str:
     url = _url_panel_registration()
     _log.debug(f"Registering panel at: {url}")
     data = json.dumps(
-        {"code": name, "ip": ip_address, "firmware_version": GIT_COMMIT_ID}
+        {
+            "code": name,
+            "ip": ip_address,
+            "firmware_version": GIT_COMMIT_ID,
+            "firmware_date": GIT_COMMIT_DATE,
+        }
     ).encode("utf-8")
     request = urllib.request.Request(url, data=data, method="POST")
     request.add_header(
