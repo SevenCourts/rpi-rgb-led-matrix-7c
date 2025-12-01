@@ -14,7 +14,7 @@ if os.getenv("USE_RGB_MATRIX_EMULATOR", False):
     from RGBMatrixEmulator.graphics import Color
     from RGBMatrixEmulator.emulation.canvas import Canvas
 else:
-    from rgbmatrix import graphics, core, RGBMatrix, RGBMatrixOptions
+    from rgbmatrix import graphics, RGBMatrix, RGBMatrixOptions
 
 from functools import partial
 from typing import List

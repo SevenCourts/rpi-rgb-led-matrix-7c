@@ -10,7 +10,7 @@ import sevencourts.m1.view_message as v_message
 import sevencourts.m1.view_image as imgs
 
 
-def draw(cnv: core.Canvas, state: PanelState, error=False):
+def draw(cnv, state: PanelState, error=False):
     info = state.panel_info
     if not info:
         _draw_init_screen(cnv, state)
@@ -31,7 +31,7 @@ def draw(cnv: core.Canvas, state: PanelState, error=False):
         _draw_status_indicator(cnv, COLOR_7C_STATUS_ERROR)
 
 
-def _draw_init_screen(cnv: core.Canvas, state: PanelState, error=False):
+def _draw_init_screen(cnv, state: PanelState, error=False):
     y = y_font_offset(FONT_DEFAULT)
     draw_text(cnv, 0, y, "Connecting to server...", FONT_DEFAULT, COLOR_7C_BLUE)
 
@@ -49,7 +49,7 @@ def _draw_init_screen(cnv: core.Canvas, state: PanelState, error=False):
     )
 
 
-def _draw_idle_mode(cnv: core.Canvas, idle_info, time_now: str):
+def _draw_idle_mode(cnv, idle_info, time_now: str):
     if idle_info.get("image-preset"):
         imgs.draw_image_preset(cnv, idle_info, time_now)
     elif idle_info.get("image-url"):
@@ -63,14 +63,14 @@ def _draw_idle_mode(cnv: core.Canvas, idle_info, time_now: str):
         _draw_standby_mode_indicator(cnv, time_now)
 
 
-def _draw_standby_mode_indicator(cnv: core.Canvas, time_now: str):
+def _draw_standby_mode_indicator(cnv, time_now: str):
     g = (COLOR_7C_STANDBY.red, COLOR_7C_STANDBY.green, COLOR_7C_STANDBY.blue)
     dot = [[g, g], [g, g]]
     draw_matrix(cnv, dot, W_PANEL - 3, H_PANEL - 3)
     v_clock.draw_clock(cnv, time_now, None, COLOR_GREY_DARKEST)
 
 
-def _draw_status_indicator(cnv: core.Canvas, color: Color):
+def _draw_status_indicator(cnv, color):
     x = (COLOR_BLACK.red, COLOR_BLACK.green, COLOR_BLACK.blue)
     o = (color.red, color.green, color.blue)
     dot = [[x, o, o, x], [o, o, o, o], [o, o, o, o], [x, o, o, x]]
