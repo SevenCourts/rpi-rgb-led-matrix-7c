@@ -36,11 +36,11 @@ mkdir /opt/7c
 cd /opt/7c
 git clone https://github.com/sevencourts/rpi-rgb-led-matrix.git
 cd rpi-rgb-led-matrix/
-git switch 7c/m1/dev
+git checkout sevencourts/v2
 make
 
 # Install and make python3 bindings
-apt-get install python3-dev python3-pillow python3-requests python3-gpiozero python3-dateutil -y
+apt-get install python3-dev python3-pillow python3-requests python3-gpiozero python3-dateutil cython3 -y
 make build-python PYTHON=$(command -v python3)
 make install-python PYTHON=$(command -v python3)
 
@@ -49,6 +49,13 @@ cd /opt/7c/rpi-rgb-led-matrix/bindings/python
 git clone https://github.com/SevenCourts/rpi-rgb-led-matrix-7c.git
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
 git checkout firmware/stable
+
+# Configure CPU isolation for real-time performance
+## s. https://github.com/SevenCourts/rpi-rgb-led-matrix?tab=readme-ov-file#cpu-use
+FILE="/boot/cmdline.txt"
+STRING_TO_ADD=" isolcpus=3"  # Note the leading space for clean appending
+# Check if the string exists; if NOT (!), execute the sed command
+grep -qF "$STRING_TO_ADD" "$FILE" || sed -i "s/$/$STRING_TO_ADD/" "$FILE"
 
 # Create a symlink for convenient access to the firmware directory
 ln -s /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c/ /root/7c-firmware
