@@ -22,27 +22,6 @@ weather_info_lock = t.Lock()
 panel_info_lock = t.Lock()
 
 
-class SevenCourtsM1(SampleBase):
-    def __init__(self, *args, **kwargs):
-        super(SevenCourtsM1, self).__init__(*args, **kwargs)
-
-    def run(self):
-        cnv = self.matrix.CreateFrameCanvas()
-        state_ui: PanelState = PanelState()
-        while True:
-            with panel_info_lock, weather_info_lock:
-                if state_ui == state:
-                    _log.debug("😴 Panel state unchanged, skipping redraw")
-                else:
-                    _log.info(f"🔄 New panel state detected, redrawing")
-                    _log.debug(f"New state:\n{state}\n")
-                    state_ui = copy.deepcopy(state)
-                    cnv.Clear()
-                    v.draw(cnv, state_ui)
-                    cnv = self.matrix.SwapOnVSync(cnv)
-            time.sleep(1)  # retry redraw in a second
-
-
 # Careful with this, since only 60 requests per minute are allowed:
 # FIXME get weather info from server
 UPDATE_WEATHER_PERIOD_S = 120  # seconds
@@ -93,6 +72,26 @@ def _refresh_time(period_s: int = 1):
         with panel_info_lock:
             state.refresh_time()
         time.sleep(period_s)
+
+
+class SevenCourtsM1(SampleBase):
+    def __init__(self, *args, **kwargs):
+        super(SevenCourtsM1, self).__init__(*args, **kwargs)
+
+    def run(self):
+        cnv = self.matrix.CreateFrameCanvas()
+        state_ui: PanelState = PanelState()
+        while True:
+            with panel_info_lock, weather_info_lock:
+                if state_ui == state:
+                    _log.debug("😴 Panel state unchanged, skipping redraw")
+                else:
+                    _log.info(f"🔄 New panel state detected, redrawing\n{state}")
+                    state_ui = copy.deepcopy(state)
+                    cnv.Clear()
+                    v.draw(cnv, state_ui)
+                    cnv = self.matrix.SwapOnVSync(cnv)
+            time.sleep(1)  # retry redraw in a second
 
 
 # Main function
