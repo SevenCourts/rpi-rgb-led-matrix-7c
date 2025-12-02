@@ -20,7 +20,7 @@ def draw_clock_by_coordinates(
 
 def draw_clock(cnv, time_now, clock, color=COLOR_CLOCK_DEFAULT):
     if clock == None:
-        # display a clock along with some other elements, using the default Spleen font
+        # display a clock using the default font and coordinates
         font = FONT_CLOCK_DEFAULT
         x = W_LOGO_WITH_CLOCK
         y = 62
