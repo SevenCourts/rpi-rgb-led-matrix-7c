@@ -5,7 +5,7 @@ set -eu
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
 RUNTIME_DIR=.runtime
-export PANEL_CONFIG=$RUNTIME_DIR/panel.config
+export PANEL_STATE_FILE=$RUNTIME_DIR/last_state_from_server.json
 export IMAGES_CACHE_DIR=$RUNTIME_DIR/cache
 
 mkdir -p $RUNTIME_DIR

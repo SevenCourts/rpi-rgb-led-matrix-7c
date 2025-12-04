@@ -9,10 +9,11 @@ import requests  # 3rd party lib, higher-level
 from datetime import datetime
 from dateutil import tz
 import subprocess
-import sevencourts.config as cfg
 import sevencourts.system as sys
 import sevencourts.network as network
 import sevencourts.logging as logging
+
+DEFAULT_TIMEZONE = "Europe/Berlin"
 
 _log = logging.logger("gateway")
 
@@ -62,7 +63,7 @@ def fetch_panel_info(panel_id):
     )  # FIXME is to be set to 'true' when started as emulator within panel admin web UI
     req.add_header("7C-Uptime", str(sys.uptime()))
     req.add_header("7C-CPU-Temperature", str(sys.cpu_temperature()))
-    req.add_header("7C-Time", datetime.now(tz.gettz(cfg.DEFAULT_TIMEZONE)).isoformat())
+    req.add_header("7C-Time", datetime.now(tz.gettz(DEFAULT_TIMEZONE)).isoformat())
     with urllib.request.urlopen(req, timeout=TIMEOUT_S) as response:
         _log.debug(f"url='{url}', status={str(response.status)}")
         if response.status == 200:
@@ -92,9 +93,7 @@ def register_panel() -> str:
         }
     ).encode("utf-8")
     request = urllib.request.Request(url, data=data, method="POST")
-    request.add_header(
-        "7C-Time", datetime.now(tz.gettz(cfg.DEFAULT_TIMEZONE)).isoformat()
-    )
+    request.add_header("7C-Time", datetime.now(tz.gettz(DEFAULT_TIMEZONE)).isoformat())
     with urllib.request.urlopen(request, timeout=TIMEOUT_S) as response:
         _json = json.loads(response.read().decode("utf-8"))
         _log.debug(f"Registered: {url} - '{_json}'")

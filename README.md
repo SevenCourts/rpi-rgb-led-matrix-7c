@@ -329,6 +329,7 @@ sudo dd if=7c_shrinked.img of=/dev/disk4
     - `pip install Pillow`
     - `pip install requests`
     - `pip install python-dateutil`
+    - `pip install orjson==3.10`
     - `pip install RGBMatrixEmulator==0.14.1`
 
 ### RGBMatrixEmulator source code (optional)

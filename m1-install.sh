@@ -41,6 +41,7 @@ make
 
 # Install and make python3 bindings
 apt-get install python3-dev python3-pillow python3-requests python3-gpiozero python3-dateutil cython3 -y
+pip install orjson==3.10
 make build-python PYTHON=$(command -v python3)
 make install-python PYTHON=$(command -v python3)
 

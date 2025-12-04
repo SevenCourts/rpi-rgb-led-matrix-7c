@@ -1,5 +1,7 @@
 from sevencourts.rgbmatrix import *
 from sevencourts.m1.dimens import *
+from datetime import datetime
+from dateutil import tz
 
 FONT_CLOCK_S_1 = FONT_L_7SEGMENT
 FONT_CLOCK_M_1 = FONT_XL_7SEGMENT
@@ -10,11 +12,20 @@ FONT_CLOCK_L_2 = FONT_XXL_SPLEEN
 W_LOGO_WITH_CLOCK = 120  # left from clock
 
 
+DEFAULT_TIMEZONE = "Europe/Berlin"
+
+
 def draw_clock_by_coordinates(
     cnv, time_now, x, y, font, color=COLOR_CLOCK_DEFAULT, time_preset=None
 ):
+    if time_now is None:
+        time_now = datetime.now(tz.gettz(DEFAULT_TIMEZONE)).strftime(
+            "%H:%M"
+        )  # will be a wrong timezone, but better than nothing
+
     if time_preset:
         time_now = time_preset.strftime("%H:%M")
+
     draw_text(cnv, x, y, time_now, font, color)
 
 

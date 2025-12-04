@@ -3,21 +3,19 @@
 from samplebase import SampleBase
 from sevencourts.rgbmatrix import *
 from sevencourts.m1.dimens import *
-from sevencourts.m1.model import PanelState
+import sevencourts.m1.model as model
 import sevencourts.gateway as gateway
 import sevencourts.m1.view as v
 import sevencourts.openweathermap as openweathermap
 import time
 import threading as t
 import copy
-import sevencourts.config as cfg
 import sevencourts.logging as logging
 
 _log = logging.logger("main")
 
 # shared state
-state = PanelState()
-state.saved_config = cfg.read()
+state = model.PanelState()
 weather_info_lock = t.Lock()
 panel_info_lock = t.Lock()
 
@@ -80,23 +78,22 @@ class SevenCourtsM1(SampleBase):
         super(SevenCourtsM1, self).__init__(*args, **kwargs)
 
     def run(self):
+        global state
+
         cnv = self.matrix.CreateFrameCanvas()
-        state_ui: PanelState = PanelState()
+        state = model.read_from_file()
+        _log.debug(f"Saved state:\n{state}")
+        state_ui: model.PanelState = None
         while True:
             with panel_info_lock, weather_info_lock:
                 if state_ui == state:
                     _log.debug("😴 Panel state unchanged, skipping redraw")
                 else:
                     _log.info(f"🔄 New panel state detected, redrawing\n{state}")
-
-                    new_config = {"timezone": state.tz()}
-                    if new_config != state.saved_config:
-                        cfg.write(new_config)
-                        state.saved_config = new_config
-
+                    model.write_to_file(state)
                     state_ui = copy.deepcopy(state)
                     cnv.Clear()
-                    v.draw(cnv, state_ui)
+                    v.draw(cnv, state)
                     cnv = self.matrix.SwapOnVSync(cnv)
             time.sleep(1)  # retry redraw in a second
 

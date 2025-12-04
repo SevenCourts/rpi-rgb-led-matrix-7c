@@ -5,20 +5,10 @@
 #
 # Env vars:
 #
-# - PANEL_CONFIG -- path to panel configuration, which is a shell env file.
 #  Don't put anything here, it's for `m1.py` only and will be overriden.
 # - USE_RGB_MATRIX_EMULATOR -- when set, arguments for emulator used.
 
 set -eu
-
-declare panel_config
-panel_config="${PANEL_CONFIG-}"
-readonly panel_config
-
-# shellcheck source=panel.conf
-if [[ -n $panel_config && -f $panel_config ]]; then
-  source "$panel_config"
-fi
 
 declare is_emulator
 is_emulator="${USE_RGB_MATRIX_EMULATOR-}"
