@@ -6,7 +6,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 
 RUNTIME_DIR=.runtime
 export PANEL_CONFIG=$RUNTIME_DIR/panel.config
-export IMAGES_CACHE_DIR=$RUNTIME_DIR/panel.config
+export IMAGES_CACHE_DIR=$RUNTIME_DIR/cache
 
 mkdir -p $RUNTIME_DIR
 mkdir -p $IMAGES_CACHE_DIR

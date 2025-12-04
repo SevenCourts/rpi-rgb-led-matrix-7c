@@ -10,7 +10,7 @@ import sevencourts.m1.view_message as v_message
 import sevencourts.m1.view_image as imgs
 
 
-def draw(cnv, state: PanelState, error=False):
+def draw(cnv, state: PanelState):
     info = state.panel_info
     if not info:
         _draw_init_screen(cnv, state)
@@ -27,7 +27,7 @@ def draw(cnv, state: PanelState, error=False):
     elif "team1" in info:
         v_scoreboard.draw(cnv, info)
 
-    if error:
+    if state.server_communication_error:
         _draw_status_indicator(cnv, COLOR_7C_STATUS_ERROR)
 
 

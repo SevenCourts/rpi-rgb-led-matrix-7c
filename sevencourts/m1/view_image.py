@@ -10,19 +10,15 @@ _log = logging.logger("v_image")
 def draw_image_from_url(cnv, idle_info, time_now):
     image_path = idle_info.get("image-url")  # FIXME this is a path, not url
     try:
-        image = imgs.get_with_cache(image_path)
+        image = imgs.fetch_with_cache(image_path)
 
         _draw_image_and_maybe_clock(
             cnv, image, time_now, idle_info.get("clock") == True
         )
 
-        # FIXME who loads this image? no usage!
-        path = imgs.CACHE_DIR + "/latest_idle_image"
-        image.save(path, "png")
-
     except Exception as ex:
-        # TODO show an image stub (?)
-        _log.error(f"Error downloading image {image_path}", ex)
+        _log.error(f"❌ Error downloading image '{image_path}': {str(ex)}")
+        # _log.debug(ex)
 
 
 def draw_image_preset(cnv, idle_info, time_now):

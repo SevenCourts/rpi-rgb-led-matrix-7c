@@ -2,6 +2,7 @@ import os
 from PIL import Image
 import sevencourts.gateway as gateway
 import sevencourts.logging as logging
+from pathlib import Path
 
 _log = logging.logger("images")
 
@@ -13,37 +14,55 @@ os.makedirs(CACHE_DIR, exist_ok=True)
 os.chmod(CACHE_DIR, 0o777)
 
 
-def get_with_cache(image_path: str) -> Image:
+def _get_from_cache(path: str) -> Image:
+    if os.path.isfile(path):
+        _log.debug(f"get from cache {path}")
+        return Image.open(path)
+    else:
+        return None
+
+
+def _save_to_cache(image: Image, path: str):
+    p = Path(path)
+    p.parent.mkdir(parents=True, exist_ok=True)
+    image.save(path, "png")
+    _log.debug(f"saved to cache {path}")
+
+
+def fetch_with_cache(image_path: str) -> Image:
 
     log0 = logging.logger("images-get#" + image_path)
+
+    cached_full_path = f"{CACHE_DIR}/{image_path}"
 
     try:
         response = gateway.head_image(image_path)
         etag = str(response.headers["ETag"])
         if etag != None:
             log0.debug(f"etag: {etag}")
-            cached_path = CACHE_DIR + "/" + etag
-            if os.path.isfile(cached_path):
-                log0.debug(f"get from cache {cached_path}")
-                result = Image.open(cached_path)
-            else:
+
+            cached_etag_path = f"{CACHE_DIR}/etag/{etag}.png"
+
+            result = _get_from_cache(cached_etag_path)
+            if result == None:
                 log0.debug("not found in cache by etag, dowloading...")
                 result = Image.open(gateway.get_raw_by_path(image_path))
-                result.save(cached_path, "png")
+                _save_to_cache(result, cached_etag_path)
+                _save_to_cache(result, cached_full_path)
         else:
             log0.debug("no etag, dowloading...")
             result = Image.open(gateway.get_raw_by_path(image_path))
-        return result
 
     except Exception as ex:
-        # TODO show an image stub (?)
-        _log.error(f"Error downloading image {image_path}", ex)
-        _log.exception(ex)
+        _log.error(f"❌ Error downloading image {image_path}: {str(ex)}")
+        # try to get from cache by original path
+        result = _get_from_cache(cached_full_path)
 
+    if result == None:
+        # error stub TODO must not be red :)
+        result = Image.open("images/error-32x32.png")
 
-def save_to_cache(image: Image, path: str):
-    cached_path = CACHE_DIR + "/" + path
-    image.save(cached_path, "png")
+    return result
 
 
 def shrink_to_fit(image: Image, w: int, h: int) -> Image:

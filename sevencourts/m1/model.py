@@ -15,7 +15,7 @@ class PanelState:
     panel_info: Dict = field(default_factory=dict)
     weather_info: Dict = field(default_factory=dict)
     panel_id: str = None
-    panel_info_fetch_failed: bool = None  # TODO review
+    server_communication_error: bool = None
     time_now: str = None
 
     def refresh_time(self):
@@ -37,5 +37,5 @@ class PanelState:
             and self.panel_info == other.panel_info
             and self.weather_info == other.weather_info
             and self.saved_config == other.saved_config
-            and self.panel_info_fetch_failed == other.panel_info_fetch_failed
+            and self.server_communication_error == other.server_communication_error
         )

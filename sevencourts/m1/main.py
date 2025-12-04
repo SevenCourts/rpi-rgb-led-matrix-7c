@@ -48,7 +48,8 @@ def _poll_panel_info(period_s: int = 1):
             try:
                 panel_id = gateway.register_panel()
             except Exception as ex:
-                _log.error(f"Panel registration failed: {str(ex)}")
+                _log.error(f"❌ Panel registration failed: {str(ex)}")
+                state.server_communication_error = True
                 time.sleep(period_s)
 
         try:
@@ -57,12 +58,12 @@ def _poll_panel_info(period_s: int = 1):
                 with panel_info_lock:
                     state.panel_id = panel_id
                     state.panel_info = panel_info
-                    state.panel_info_fetch_failed = None
+                    state.server_communication_error = False
                 time.sleep(period_s)
         except Exception as ex:
-            state.panel_info_fetch_failed = ex
-            _log.error(f"Cannot fetch panel info: {str(ex)}", ex)
-            _log.debug("Cannot fetch panel info", ex)
+            state.server_communication_error = True
+            _log.error(f"❌ Cannot fetch panel info: {str(ex)}")
+            # _log.debug("Cannot fetch panel info", ex)
         time.sleep(period_s)
 
 
@@ -87,6 +88,12 @@ class SevenCourtsM1(SampleBase):
                     _log.debug("😴 Panel state unchanged, skipping redraw")
                 else:
                     _log.info(f"🔄 New panel state detected, redrawing\n{state}")
+
+                    new_config = {"timezone": state.tz()}
+                    if new_config != state.saved_config:
+                        cfg.write(new_config)
+                        state.saved_config = new_config
+
                     state_ui = copy.deepcopy(state)
                     cnv.Clear()
                     v.draw(cnv, state_ui)
