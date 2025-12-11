@@ -15,13 +15,13 @@ def draw(cnv, state: PanelState):
     if not info:
         _draw_init_screen(cnv, state)
     if info.get("standby"):
-        _draw_standby_mode_indicator(cnv, state.time_now)
+        _draw_standby_mode_indicator(cnv, state.time_now_in_TZ)
     elif "booking" in info:
         v_booking_ebusy.draw(cnv, state)
     elif "ebusy-ads" in info:
         v_booking_ebusy.draw_ads(cnv, state)
     elif "idle-info" in info:
-        _draw_idle_mode(cnv, info.get("idle-info"), state.time_now)
+        _draw_idle_mode(cnv, info.get("idle-info"), state.time_now_in_TZ)
     elif "signage-info" in info:
         v_signage.draw(cnv, info.get("signage-info"))
     elif "team1" in info:
@@ -37,7 +37,7 @@ def _draw_init_screen(cnv, state: PanelState, error=False):
 
     v_clock.draw_clock_by_coordinates(
         cnv,
-        state.time_now,
+        state.time_now_in_TZ,
         v_clock.W_LOGO_WITH_CLOCK,
         H_PANEL,
         FONT_CLOCK_DEFAULT,

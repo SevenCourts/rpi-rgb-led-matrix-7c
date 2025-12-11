@@ -8,6 +8,7 @@ import sevencourts.gateway as gateway
 import sevencourts.m1.view as v
 import sevencourts.openweathermap as openweathermap
 import time
+from datetime import datetime
 import threading as t
 import copy
 import sevencourts.logging as logging
@@ -54,6 +55,7 @@ def _poll_panel_info(period_s: int = 1):
             while True:
                 panel_info = gateway.fetch_panel_info(panel_id)
                 with panel_info_lock:
+                    state.last_updated_UTC = datetime.now()
                     state.panel_id = panel_id
                     state.panel_info = panel_info
                     state.server_communication_error = False

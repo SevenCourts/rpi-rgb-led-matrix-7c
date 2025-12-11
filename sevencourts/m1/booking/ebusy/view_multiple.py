@@ -18,7 +18,7 @@ def draw(cnv, state: PanelState, s: ClubStyle):
     if _dev_timestamp and len(_dev_timestamp):
         time_now = parser.parse(_dev_timestamp)
     else:
-        time_now = state.time_now
+        time_now = state.time_now_in_TZ
 
     # heights and widths
     w_clock = w_logo = (

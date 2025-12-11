@@ -16,33 +16,24 @@ PANEL_STATE_FILE = os.getenv("PANEL_STATE_FILE", "last_state_from_server.json")
 @dataclass
 class PanelState:
     """
-    Global infoboard state
+    Global M1 infoboard state
     """
 
     panel_info: Dict = field(default_factory=dict)
     weather_info: Dict = field(default_factory=dict)
     panel_id: str = None
     server_communication_error: bool = None
-    time_now: str = None
+    time_now_in_TZ: str = None
+
+    last_updated_UTC: datetime = field(default=None, compare=False)
 
     def refresh_time(self):
         dt = datetime.now(tz.gettz(self.tz()))
-        self.time_now = dt.strftime("%H:%M")
-        return self.time_now
+        self.time_now_in_TZ = dt.strftime("%H:%M")
+        return self.time_now_in_TZ
 
     def tz(self) -> str:
         return self.panel_info.get("idle-info", {}).get("timezone", DEFAULT_TIMEZONE)
-
-    def __eq__(self, other):
-        if not isinstance(other, PanelState):
-            return False
-        return (
-            self.panel_id == other.panel_id
-            and self.time_now == other.time_now
-            and self.panel_info == other.panel_info
-            and self.weather_info == other.weather_info
-            and self.server_communication_error == other.server_communication_error
-        )
 
     @classmethod
     def from_dict(cls, data: dict):
