@@ -100,16 +100,20 @@ def register_panel() -> str:
         return _json["id"]
 
 
-def head_image(image_path):
+def head_by_path(image_path):
     url = _url(image_path)
-    request = urllib.request.Request(url, method="HEAD")
-    response = urllib.request.urlopen(request, timeout=TIMEOUT_S)
-    return response
+    return head(url)
 
 
 def get_raw_by_path(image_path):
     url = _url(image_path)
     return get_raw(url)
+
+
+def head(url):
+    request = urllib.request.Request(url, method="HEAD")
+    response = urllib.request.urlopen(request, timeout=TIMEOUT_S)
+    return response
 
 
 def get_raw(url):

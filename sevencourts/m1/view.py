@@ -51,9 +51,9 @@ def _draw_init_screen(cnv, state: PanelState, error=False):
 
 def _draw_idle_mode(cnv, idle_info, time_now: str):
     if idle_info.get("image-preset"):
-        imgs.draw_image_preset(cnv, idle_info, time_now)
+        imgs.draw_preset_image(cnv, idle_info, time_now)
     elif idle_info.get("image-url"):
-        imgs.draw_image_from_url(cnv, idle_info, time_now)
+        imgs.draw_uploaded_image(cnv, idle_info, time_now)
     elif idle_info.get("message"):
         v_message.draw(cnv, idle_info, time_now)
     elif idle_info.get("clock"):

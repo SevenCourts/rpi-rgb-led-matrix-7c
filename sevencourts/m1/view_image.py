@@ -7,10 +7,10 @@ import sevencourts.images as imgs
 _log = logging.logger("v_image")
 
 
-def draw_image_from_url(cnv, idle_info, time_now):
-    image_path = idle_info.get("image-url")  # FIXME this is a path, not url
+def draw_uploaded_image(cnv, idle_info, time_now):
+    image_path = idle_info.get("image-url")
     try:
-        image = imgs.fetch_with_cache(image_path)
+        image = imgs.fetch_by_path_with_cache(image_path)
 
         _draw_image_and_maybe_clock(
             cnv, image, time_now, idle_info.get("clock") == True
@@ -18,10 +18,9 @@ def draw_image_from_url(cnv, idle_info, time_now):
 
     except Exception as ex:
         _log.error(f"❌ Error downloading image '{image_path}': {str(ex)}")
-        # _log.debug(ex)
 
 
-def draw_image_preset(cnv, idle_info, time_now):
+def draw_preset_image(cnv, idle_info, time_now):
     path = "images/logos/" + idle_info.get("image-preset")
     image = Image.open(path)
     _draw_image_and_maybe_clock(cnv, image, time_now, idle_info.get("clock") == True)

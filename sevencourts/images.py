@@ -29,28 +29,56 @@ def _save_to_cache(image: Image, path: str):
     _log.debug(f"saved to cache {path}")
 
 
-def fetch_with_cache(image_path: str) -> Image:
+def fetch_by_url_with_cache(url: str) -> Image:
+    from urllib.parse import quote
 
-    log0 = logging.logger("images-get#" + image_path)
+    image_path = quote(url)
 
-    cached_full_path = f"{CACHE_DIR}/{image_path}"
+    cached_full_path = f"{CACHE_DIR}/internet/{image_path}.png"
 
     try:
-        response = gateway.head_image(image_path)
-        etag = str(response.headers["ETag"])
+        response = gateway.head(url)
+        etag = response.headers["ETag"]
         if etag != None:
-            log0.debug(f"etag: {etag}")
-
             cached_etag_path = f"{CACHE_DIR}/etag/{etag}.png"
 
             result = _get_from_cache(cached_etag_path)
             if result == None:
-                log0.debug("not found in cache by etag, dowloading...")
+                result = Image.open(gateway.get_raw(url))
+                _save_to_cache(result, cached_etag_path)
+        else:
+            result = Image.open(gateway.get_raw(url))
+
+        _save_to_cache(result, cached_full_path)
+
+    except Exception as ex:
+        _log.error(f"❌ Error downloading image by url '{url}': {str(ex)}")
+        # try to get from cache by original path
+        result = _get_from_cache(cached_full_path)
+
+    if result == None:
+        # error stub
+        result = Image.open("images/placeholder-82x64.png")
+
+    return result
+
+
+def fetch_by_path_with_cache(image_path: str) -> Image:
+
+    cached_full_path = f"{CACHE_DIR}/{image_path}"
+
+    try:
+        response = gateway.head_by_path(image_path)
+        etag = str(response.headers["ETag"])
+        if etag != None:
+            cached_etag_path = f"{CACHE_DIR}/etag/{etag}.png"
+
+            result = _get_from_cache(cached_etag_path)
+            if result == None:
                 result = Image.open(gateway.get_raw_by_path(image_path))
                 _save_to_cache(result, cached_etag_path)
                 _save_to_cache(result, cached_full_path)
         else:
-            log0.debug("no etag, dowloading...")
             result = Image.open(gateway.get_raw_by_path(image_path))
 
     except Exception as ex:
@@ -59,17 +87,15 @@ def fetch_with_cache(image_path: str) -> Image:
         result = _get_from_cache(cached_full_path)
 
     if result == None:
-        # error stub TODO must not be red :)
-        result = Image.open("images/error-32x32.png")
+        # error stub
+        result = Image.open("images/placeholder-82x64.png")
 
     return result
 
 
 def shrink_to_fit(image: Image, w: int, h: int) -> Image:
-    # print (f"original w: {image.width}, h: {image.height}")
     if image.width > w or image.height > h:
         image.thumbnail((w, h), Image.LANCZOS)
-    # print (f"result w: {image.width}, h: {image.height}")
     return image
 
 

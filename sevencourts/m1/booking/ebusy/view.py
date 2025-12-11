@@ -35,21 +35,10 @@ def draw(cnv, state: PanelState):
 
 def draw_ads(cnv, state: PanelState):
     ebusy_ads = state.panel_info.get("ebusy-ads", {})
-    id = ebusy_ads.get("id")
     url = ebusy_ads.get("url")
-    path = imgs.IMAGE_CACHE_DIR + "/ebusy_" + str(id)
+    image = imgs.fetch_by_url_with_cache(url)
 
-    try:
-        if os.path.isfile(path):
-            image = Image.open(path)
-        else:
-            image = Image.open(gateway.get_raw(url))
-            image.save(path, "png")
+    x = (W_PANEL - image.width) // 2
+    y = (H_PANEL - image.height) // 2
 
-        x = (W_PANEL - image.width) // 2
-        y = (H_PANEL - image.height) // 2
-        cnv.SetImage(image.convert("RGB"), x, y)
-
-    except Exception as e:
-        _log.debug(f"Error downloading image {url}", e)
-        _log.exception(e)
+    cnv.SetImage(image.convert("RGB"), x, y)
