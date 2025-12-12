@@ -10,7 +10,7 @@ _log = logging.logger("model")
 
 DEFAULT_TIMEZONE = "Europe/Berlin"
 
-PANEL_STATE_FILE = os.getenv("PANEL_STATE_FILE", "last_panel_state.json")
+PANEL_STATE_FILE = os.getenv("PANEL_STATE_FILE", "/opt/7c/last_panel_state.json")
 
 
 @dataclass

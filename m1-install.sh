@@ -41,9 +41,11 @@ make
 
 # Install and make python3 bindings
 apt-get install python3-dev python3-pillow python3-requests python3-gpiozero python3-dateutil cython3 -y
-pip install orjson==3.10
 make build-python PYTHON=$(command -v python3)
 make install-python PYTHON=$(command -v python3)
+
+apt-get install python3-pip
+pip install orjson==3.10
 
 # Install rpi-rgb-led-matrix-7c
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python
@@ -62,8 +64,9 @@ grep -qF "$STRING_TO_ADD" "$FILE" || sed -i "s/$/$STRING_TO_ADD/" "$FILE"
 ln -s /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c/ /root/7c-firmware
 
 # Create 7c config file
-touch /opt/7c/panel.conf
-chmod 666 /opt/7c/panel.conf
+rm -f /opt/7c/panel.conf
+touch /opt/7c/last_panel_state.json
+chmod 666 /opt/7c/last_panel_state.json
 
 # Set up 7c hostname systemd service
 cp 7c-os/opt/7c/7c-set-hostname.sh /opt/7c/7c-set-hostname.sh
