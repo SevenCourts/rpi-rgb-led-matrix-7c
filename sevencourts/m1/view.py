@@ -39,9 +39,9 @@ def draw_error(cnv, ex: Exception):
 
 def draw(cnv, state: PanelState):
     info = state.panel_info
-    if not info:
+    if not info or not state.is_registered():
         _draw_init_screen(cnv, state)
-    if info.get("standby"):
+    elif info.get("standby"):
         _draw_standby_mode_indicator(cnv, state.time_now_in_TZ)
     elif "booking" in info:
         v_booking_ebusy.draw(cnv, state)

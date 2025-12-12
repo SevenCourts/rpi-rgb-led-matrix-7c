@@ -84,6 +84,8 @@ class SevenCourtsM1(SampleBase):
 
         cnv = self.matrix.CreateFrameCanvas()
         state = model.read_from_file()
+        state.panel_id = None  # force re-registration on panel restart
+
         _log.debug(f"Saved state:\n{state}")
         state_ui: model.PanelState = None
         while True:
