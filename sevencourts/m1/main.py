@@ -95,7 +95,15 @@ class SevenCourtsM1(SampleBase):
                     model.write_to_file(state)
                     state_ui = copy.deepcopy(state)
                     cnv.Clear()
-                    v.draw(cnv, state)
+                    try:
+                        v.draw(cnv, state)
+                    except Exception as ex:
+                        # UI loop exception handler: the panel should not go blank and keep working
+                        v.draw_error(cnv, ex)
+                        _log.error(
+                            f"❌❌ Unexpected error during drawing: {str(ex)}", ex
+                        )
+
                     cnv = self.matrix.SwapOnVSync(cnv)
             time.sleep(1)  # retry redraw in a second
 

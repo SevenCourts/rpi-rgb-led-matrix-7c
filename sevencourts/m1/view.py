@@ -10,6 +10,33 @@ import sevencourts.m1.view_message as v_message
 import sevencourts.m1.view_image as imgs
 
 
+def draw_error(cnv, ex: Exception):
+    fnt = FONT_XS
+    h = y_font_offset(fnt)
+
+    y = h
+    draw_text(cnv, 0, y, "Ooops... Unexpected issue.", fnt, COLOR_7C_GOLD)
+
+    y += 4
+    length = max_string_length_for_font(fnt, W_PANEL)
+    text = str(ex)
+    # This uses a list comprehension to iterate from 0 to len(text)
+    # with a step of 'length', and extracts the substring for that chunk.
+    lines = [text[i : i + length] for i in range(0, len(text), length)]
+    for line in lines:
+        y += h + 2
+        draw_text(cnv, 0, y, line, fnt, COLOR_7C_BLUE)
+
+    draw_text(
+        cnv,
+        0,
+        H_PANEL - 2,
+        "Please file it to SevenCourts support.",
+        fnt,
+        COLOR_7C_GOLD,
+    )
+
+
 def draw(cnv, state: PanelState):
     info = state.panel_info
     if not info:
