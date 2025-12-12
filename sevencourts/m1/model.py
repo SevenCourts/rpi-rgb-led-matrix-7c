@@ -10,7 +10,7 @@ _log = logging.logger("model")
 
 DEFAULT_TIMEZONE = "Europe/Berlin"
 
-PANEL_STATE_FILE = os.getenv("PANEL_STATE_FILE", "last_state_from_server.json")
+PANEL_STATE_FILE = os.getenv("PANEL_STATE_FILE", "last_panel_state.json")
 
 
 @dataclass
@@ -26,6 +26,9 @@ class PanelState:
     time_now_in_TZ: str = None
 
     last_updated_UTC: datetime = field(default=None, compare=False)
+
+    def is_registered(self) -> bool:
+        return self.panel_id is not None
 
     def refresh_time(self):
         dt = datetime.now(tz.gettz(self.tz()))
