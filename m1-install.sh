@@ -44,7 +44,7 @@ apt-get install python3-dev python3-pillow python3-requests python3-gpiozero pyt
 make build-python PYTHON=$(command -v python3)
 make install-python PYTHON=$(command -v python3)
 
-apt-get install python3-pip
+apt-get install python3-pip -y
 pip install orjson==3.10
 
 # Install rpi-rgb-led-matrix-7c
@@ -63,8 +63,8 @@ grep -qF "$STRING_TO_ADD" "$FILE" || sed -i "s/$/$STRING_TO_ADD/" "$FILE"
 # Create a symlink for convenient access to the firmware directory
 ln -s /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c/ /root/7c-firmware
 
-# Create 7c config file
-rm -f /opt/7c/panel.conf
+# Create 7c offline state file
+rm -f /opt/7c/panel.conf # remove previous config if any
 touch /opt/7c/last_panel_state.json
 chmod 666 /opt/7c/last_panel_state.json
 
