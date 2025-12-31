@@ -3,7 +3,6 @@ import socket
 import re
 import platform
 from urllib.parse import urlparse
-import socket
 import sevencourts.logging as logging
 
 _log = logging.logger("network")
@@ -16,6 +15,9 @@ INET_CHECK_TIMEOUT_S = 3
 
 SC_SERVER_TIMEOUT_S = 3
 SHELL_CMD_EXECUTION_TIMEOUT_S = 5
+
+DEFAULT_SOCKET_TIMEOUT_S = 30
+socket.setdefaulttimeout(DEFAULT_SOCKET_TIMEOUT_S)
 
 
 def hostname():
@@ -97,18 +99,19 @@ def check_internet_access(host=INET_CHECK_HOST_IP, timeout=INET_CHECK_TIMEOUT_S)
     Checks if there is general internet connectivity by attempting to
     connect to a well-known public host (e.g., Google DNS).
     """
+    result = False
     try:
         # Try to resolve the hostname and connect to a common port (e.g., 53 for DNS)
         # This is more reliable than ping as ICMP (ping) might be blocked.
         socket.setdefaulttimeout(timeout)
         socket.create_connection((host, 53))  # Port 53 for DNS
-        return True
+        result = True
     except socket.error as e:
         _log.error(f"Internet check failed ({host}): {e}")
-        return False
     except socket.timeout:
         _log.error(f"Internet check timed out ({host}).")
-        return False
+    socket.setdefaulttimeout(DEFAULT_SOCKET_TIMEOUT_S)
+    return result
 
 
 def _get_port_and_address(url_string):
