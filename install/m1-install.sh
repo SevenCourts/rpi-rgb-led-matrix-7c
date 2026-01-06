@@ -99,15 +99,22 @@ update-rc.d -f fake-hwclock remove
 cp 7c-os/lib/udev/hwclock-set /lib/udev/hwclock-set
 
 # Install 'Call Home' VPN
-##  ***FIXME suprematic => gDocs ***
 ## Full documentation: see the [Wiki page](https://wiki.suprematic.team/books/tennis-cast-scoreboard/page/call-home-vpn-for-7c-scoreboard).
 apt-get install openvpn -y
 mkdir -p /root/.ssh/
 cp 7c-vpn/ssh/authorized_keys /root/.ssh/authorized_keys
-cp 7c-vpn/etc/openvpn/client/callhome.conf /etc/openvpn/client/callhome.conf
-mkdir -p /etc/systemd/system/openvpn-client@callhome.service.d/
-cp 7c-vpn/etc/systemd/system/openvpn-client@callhome.service.d/override.conf /etc/systemd/system/openvpn-client@callhome.service.d/override.conf
-systemctl enable openvpn-client@callhome
+
+cp 7c-vpn/openvpn/client/call-home* /etc/openvpn/client/
+
+mkdir -p /etc/systemd/system/openvpn-client@call-home.service.d/
+cp 7c-vpn/etc/systemd/system/openvpn-client@call-home.service.d/override.conf /etc/systemd/system/openvpn-client@call-home.service.d/override.conf
+
+systemctl enable openvpn-client@call-home
+
+# Clean-up old openvpn config
+systemctl disable openvpn-client@callhome
+rm /etc/openvpn/client/callhome.conf
+
 
 echo '----------------------'
 echo 'SUCCESSFULLY INSTALLED'
