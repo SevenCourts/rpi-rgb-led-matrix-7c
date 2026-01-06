@@ -116,12 +116,6 @@ cp $SCRIPT_DIR/7c-vpn/etc/systemd/system/openvpn-client@call-home.service.d/over
 
 systemctl enable openvpn-client@call-home
 
-# Clean-up old openvpn config
-systemctl disable openvpn-client@callhome
-rm -f /etc/openvpn/client/callhome.conf
-rm -f /etc/systemd/system/openvpn-client@callhome.service.d/override.conf
-
-
 
 echo '----------------------'
 echo 'SUCCESSFULLY INSTALLED'
