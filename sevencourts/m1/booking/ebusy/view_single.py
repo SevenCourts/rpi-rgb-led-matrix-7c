@@ -299,7 +299,7 @@ def _draw_logo(cnv, x0, y0, w, h, logo_path, s: ClubStyle):
     _h = h - 4
 
     image = Image.open(logo_path)
-    image.thumbnail(image, _w, _h)
+    image.thumbnail((w, h), Image.LANCZOS)
 
     _y = y0 + 2 + (_h - image.height) // 2
     _x = x0 + 1 + (_w - image.width) // 2
