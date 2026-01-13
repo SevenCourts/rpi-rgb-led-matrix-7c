@@ -119,11 +119,12 @@ def _display_team_score(
     w_score_game_max = width_in_pixels(font, "Ad")
     x_score_game = x0 + W_MATCH - (w_score_game_max + w_score_game) // 2
 
+    # this is an indirect indication of whether match is started or not
+    # TODO make it more explicit (needs server changes)
     is_some_score_present = (
-        (score_game is not None and len(score_game) > 0)
-        or (score_sets_with_color is not None and len(score_sets_with_color) > 0)
-        or (is_serving is not None)
+        score_sets_with_color is not None and len(score_sets_with_color) > 0
     )
+
     if is_some_score_present:
         fill_rect(
             canvas,
@@ -142,17 +143,16 @@ def _display_team_score(
             COLOR_MATCH_BG,
         )
 
-    draw_text(canvas, x_score_game, y, score_game, font, COLOR_GAMESCORE)
+        draw_text(canvas, x_score_game, y, score_game, font, COLOR_GAMESCORE)
 
-    # 2. service indicator
-    b = rgb_list(COLOR_SRV_BG)
-    o = rgb_list(COLOR_SRV)
-    service_indicator = [[b, o, o, b], [o, o, o, o], [o, o, o, o], [b, o, o, b]]
-    w_indicator = len(service_indicator[0])
-    x_indicator = x0 + W_MATCH - w_score_game_max - w_indicator - 1
-    y_indicator = y0 + 2
+        # 2. service indicator
+        b = rgb_list(COLOR_SRV_BG)
+        o = rgb_list(COLOR_SRV)
+        service_indicator = [[b, o, o, b], [o, o, o, o], [o, o, o, o], [b, o, o, b]]
+        w_indicator = len(service_indicator[0])
+        x_indicator = x0 + W_MATCH - w_score_game_max - w_indicator - 1
+        y_indicator = y0 + 2
 
-    if is_some_score_present:
         fill_rect(
             canvas,
             x_indicator,
@@ -162,39 +162,39 @@ def _display_team_score(
             COLOR_MATCH_BG,
         )
 
-    if is_serving:
-        draw_matrix(canvas, service_indicator, x_indicator, y_indicator)
+        if is_serving:
+            draw_matrix(canvas, service_indicator, x_indicator, y_indicator)
 
-    # sets scores
-    x_score_set = x_indicator + 1  # initial x position
-    is_last_set = True
-    for ss in score_sets_with_color[::-1]:
-        score_set, color = ss
-        # FIXME bug when match is completed
-        # TODO no background if the set is lost
-        c = COLOR_SETSCORE_BG  # if is_last_set else COLOR_SETSCORE_COMPLETED_BG
-        score = str(score_set)
-        w_score = width_in_pixels(font, score)
-        # FIXME potential ui bug when score is more than 2 digits
-        x_score_set -= w_score + 2
+        # sets scores
+        x_score_set = x_indicator + 1  # initial x position
+        is_last_set = True
+        for ss in score_sets_with_color[::-1]:
+            score_set, color = ss
+            # FIXME bug when match is completed
+            # TODO no background if the set is lost
+            c = COLOR_SETSCORE_BG  # if is_last_set else COLOR_SETSCORE_COMPLETED_BG
+            score = str(score_set)
+            w_score = width_in_pixels(font, score)
+            # FIXME potential ui bug when score is more than 2 digits
+            x_score_set -= w_score + 2
 
-        fill_rect(
-            canvas,
-            x_score_set - 1,
-            y + 1,
-            w_score + 2,
-            -h_font_team_name - 1,
-            COLOR_MATCH_BG,
-        )
-        fill_rect(
-            canvas, x_score_set + w_score, y, 1, -h_font_team_name, COLOR_MATCH_BG
-        )
-        fill_rect(canvas, x_score_set - 1, y, w_score + 1, -h_font_team_name, c)
+            fill_rect(
+                canvas,
+                x_score_set - 1,
+                y + 1,
+                w_score + 2,
+                -h_font_team_name - 1,
+                COLOR_MATCH_BG,
+            )
+            fill_rect(
+                canvas, x_score_set + w_score, y, 1, -h_font_team_name, COLOR_MATCH_BG
+            )
+            fill_rect(canvas, x_score_set - 1, y, w_score + 1, -h_font_team_name, c)
 
-        # draw the score
+            # draw the score
 
-        draw_text(canvas, x_score_set, y, score, font, color)
-        is_last_set = False
+            draw_text(canvas, x_score_set, y, score, font, color)
+            is_last_set = False
 
     return h_font_team_name + 3
 
