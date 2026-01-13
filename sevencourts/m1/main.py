@@ -103,7 +103,7 @@ class SevenCourtsM1(SampleBase):
                         # UI loop exception handler: the panel should not go blank and keep working
                         v.draw_error(cnv, ex)
                         _log.error(
-                            f"❌❌ Unexpected error during drawing: {str(ex)}", ex
+                            f"❌❌ Unexpected error during drawing: {str(ex)}", exc_info=True
                         )
 
                     cnv = self.matrix.SwapOnVSync(cnv)

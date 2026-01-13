@@ -127,10 +127,12 @@ def draw(cnv, state: PanelState, s: ClubStyle):
                     # current booking
                     booking = b_1_current
             else:
-                _log.error(unexpected_error_msg, ValueError(unexpected_error_msg))
+                _log.error(
+                    unexpected_error_msg, exc_info=ValueError(unexpected_error_msg)
+                )
 
         else:
-            _log.error(unexpected_error_msg, ValueError(unexpected_error_msg))
+            _log.error(unexpected_error_msg, exc_info=ValueError(unexpected_error_msg))
 
     elif b_2_next:
         # next booking
