@@ -69,7 +69,6 @@ def _booking_player(player):
             if lastname:
                 txt = lastname
             else:
-                txt = _("booking.guest")
                 txt = ""  # FIXME guests?
     return txt
 
