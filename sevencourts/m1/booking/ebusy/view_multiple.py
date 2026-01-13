@@ -11,14 +11,20 @@ from sevencourts.m1.model import PanelState
 
 def draw(cnv, state: PanelState, s: ClubStyle):
 
-    info = state.panel_info
+    booking_info = state.panel_info.get("booking")
 
     # Use datetime set in the Panel Admin UI for easier testing/debugging:
-    _dev_timestamp = info.get("_dev_timestamp")
+    _dev_timestamp = booking_info.get("_dev_timestamp")
     if _dev_timestamp and len(_dev_timestamp):
         time_now = parser.parse(_dev_timestamp)
     else:
-        time_now = state.time_now_in_TZ
+        # Parse string timestamp to datetime for comparison operations
+        from dateutil import tz
+
+        time_now = parser.parse(state.time_now_in_TZ)
+        # Make timezone-aware if it's naive to allow comparison with booking dates
+        if time_now.tzinfo is None:
+            time_now = time_now.replace(tzinfo=tz.gettz(state.tz()))
 
     # heights and widths
     w_clock = w_logo = (
@@ -37,7 +43,6 @@ def draw(cnv, state: PanelState, s: ClubStyle):
     _draw_club_area(cnv, time_now, state.weather_info, x_clubarea, 0, w_clock, s)
 
     ## booking infos
-    booking_info = info.get("booking")
     courts_number = len(booking_info.get("courts"))
     (h_booking, rows_spacing) = _booking_height(courts_number)
     w_booking = W_PANEL - max(w_clock, w_logo)
@@ -84,7 +89,9 @@ def _draw_club_area(
     x_clock = x0
     h_clock = y_font_offset(f_clock) + 1
     y_clock = H_PANEL
-    v_clock.draw_clock_by_coordinates(cnv, time_now, x_clock, y_clock, f_clock, c_clock)
+    v_clock.draw_clock_by_coordinates(
+        cnv, time_now.strftime("%H:%M"), x_clock, y_clock, f_clock, c_clock
+    )
 
     if s.ci.logo.path:
         ## logo

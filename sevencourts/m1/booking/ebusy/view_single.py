@@ -27,11 +27,17 @@ def draw(cnv, state: PanelState, s: ClubStyle):
 
     # clock
     ## Use datetime set in the Panel Admin UI for easier testing/debugging:
-    _dev_timestamp = state.panel_info.get("_dev_timestamp")
+    _dev_timestamp = booking_info.get("_dev_timestamp")
     if _dev_timestamp and len(_dev_timestamp):
         time_now = parser.parse(_dev_timestamp)
     else:
-        time_now = state.time_now_in_TZ
+        # Parse string timestamp to datetime for comparison operations
+        from dateutil import tz
+
+        time_now = parser.parse(state.time_now_in_TZ)
+        # Make timezone-aware if it's naive to allow comparison with booking dates
+        if time_now.tzinfo is None:
+            time_now = time_now.replace(tzinfo=tz.gettz(state.tz()))
 
     ## draw clock
     f_clock = s.booking.f_clock
@@ -196,7 +202,9 @@ def draw(cnv, state: PanelState, s: ClubStyle):
     if not s.booking.one.is_court_name_on_top:
         h_courtname_text = (h_info // 2 + 5) if txt_2 else h_info
 
-    v_clock.draw_clock_by_coordinates(cnv, time_now, x_clock, y_clock, f_clock, c_clock)
+    v_clock.draw_clock_by_coordinates(
+        cnv, time_now.strftime("%H:%M"), x_clock, y_clock, f_clock, c_clock
+    )
     _draw_court(cnv, 0, 0, w_court, h_court, h_courtname_text, txt_court, f_court, s)
     _draw_timebox(
         cnv, x_timebox, y_timebox, w_timebox, h_timebox, txts_timebox, c_timebox, s
