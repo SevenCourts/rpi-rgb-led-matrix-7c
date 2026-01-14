@@ -150,7 +150,7 @@ The codebase uses environment variables for all configuration (server URLs, debu
 - Hostname is last 8 bytes of `/sys/firmware/devicetree/base/serial-number`
 
 ### Remote Access
-Panels connect to `7c-vpn.sevencourts.com` via OpenVPN for remote SSH access and firmware updates.
+Panels connect to `vpn.sevencourts.com` via OpenVPN for remote SSH access and firmware updates.
 
 ### Switching Server Stage
 Edit systemd service environment:

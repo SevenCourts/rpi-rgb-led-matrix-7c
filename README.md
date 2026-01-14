@@ -76,7 +76,15 @@ journalctl -f -u openvpn-client@callhome
 
 ### Connect to the panel via "Call home VPN" server
 
-- Login to `7c-vpn.sevencourts.com` via SSH using personal LDAP credentials
+- Login to the call-home VPN via SSH using personal LDAP credentials:
+
+Old one: `7c-vpn.sevencourts.com`
+New one: `vpn.sevencourts.com`
+
+With key:
+```shell
+ssh root@vpn.sevencourts.com -i ./.ssh/id_ed25519.pub
+```
 
 ```shell
 sudo -i
@@ -94,7 +102,7 @@ Should display the list of scoreboards: hostnames together with their respective
 ---
 ```
 
-Connect to the chosen scoreboard via SSH from `7c-vpn.sevencourts.com`:
+Connect to the chosen scoreboard via SSH from `vpn.sevencourts.com`:
 
 ```shell
 ssh 10.8.0.4
@@ -147,7 +155,7 @@ Reboot. The panel should display:
 
 ## Update Firmware to the latest `firmware/stable` state
 
-- Login to `7c-vpn.sevencourts.com` via SSH using personal LDAP credentials
+- Login to `vpn.sevencourts.com` via SSH using personal LDAP credentials
 
 ```shell
 sudo -i
