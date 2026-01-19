@@ -43,6 +43,7 @@ COLOR_7C_GREY = graphics.Color(50, 50, 50)  # 323232
 COLOR_7C_GREEN = graphics.Color(147, 196, 125)  # 93c47d
 COLOR_7C_BLUE = graphics.Color(111, 168, 220)  # 6fa8dc
 
+# special "dark" colors for LED matrix display
 COLOR_7C_DARK_GREY = graphics.Color(23, 23, 23)  # 171717
 COLOR_7C_DARK_GREEN = graphics.Color(58, 77, 49)  # 3a4d31
 COLOR_7C_DARK_BLUE = graphics.Color(37, 56, 73)  # 253849
