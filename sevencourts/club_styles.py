@@ -48,6 +48,7 @@ class MultipleCourts:
     f_court_name: graphics.Font = FONT_M
 
     c_infotext: graphics.Color = COLOR_GREY
+
     f_infotext: Dict[int, tuple[graphics.Font]] = field(
         default_factory=lambda: {
             # number_of_courts : [font_for_1_(one)_row, font_for_2_rows]
@@ -77,6 +78,7 @@ class Booking:
     c_timebox: graphics.Color = COLOR_GREY
     c_timebox_countdown: graphics.Color = COLOR_7C_GOLD
     c_free_to_book: graphics.Color = COLOR_7C_GREEN
+    c_blocked: graphics.Color = COLOR_ORANGE
 
     is_weather_displayed: bool = True
 

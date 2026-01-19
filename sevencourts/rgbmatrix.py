@@ -26,6 +26,7 @@ COLOR_GREY = graphics.Color(192, 192, 192)
 COLOR_GREY_DARK = graphics.Color(96, 96, 96)
 COLOR_GREY_DARKEST = graphics.Color(32, 32, 32)
 
+COLOR_ORANGE = graphics.Color(213, 105, 105)  # D56969
 COLOR_RED = graphics.Color(255, 0, 0)
 COLOR_GOLD = graphics.Color(255, 215, 0)
 COLOR_MAGENTA = graphics.Color(255, 0, 255)

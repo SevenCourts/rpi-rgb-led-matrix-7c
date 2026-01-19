@@ -181,6 +181,8 @@ def _draw_booking_court(
     f_timebox = s.booking.many.f_timebox
     c_timebox_border = s.booking.many.c_timebox_border
 
+    blocked = False
+
     if b_1_current:
 
         t_start = parser.parse(b_1_current["start-date"])
@@ -191,7 +193,16 @@ def _draw_booking_court(
 
         booking = b_1_current
 
-        if time_now > t_0_upcoming_start:
+        if booking.get("type") == "BLOCKING":
+            # court is blocked
+            blocked = True
+            txt_status = b_1_current.get("display-text", "Blocked")
+            # FIXME 8 - magic number
+            w_timebox = width_in_pixels(s.booking.many.f_timebox, txt_status) + 8
+            c_timebox = s.booking.c_blocked
+            c_timebox_border = s.booking.many.c_timebox_border_free
+
+        elif time_now > t_0_upcoming_start:
 
             (hours_left, minutes_in_hour_left) = hours_minutes_diff(t_end, time_now)
 
@@ -245,7 +256,6 @@ def _draw_booking_court(
         booking = b_2_next
         t_start = parser.parse(booking["start-date"])
         txt_status = f"{t_start.hour:02d}:{t_start.minute:02d}"
-
     else:
         # no bookings - free
         c_timebox = s.booking.c_free_to_book
@@ -279,7 +289,7 @@ def _draw_booking_court(
     graphics.DrawText(cnv, _fnt, _x, _y, c_timebox, txt_status)
 
     # info texts
-    if txt_info_1:
+    if not blocked and txt_info_1:
         _c = s.booking.many.c_infotext
         _x = x_time_box + w_timebox + 2
         if txt_info_2:

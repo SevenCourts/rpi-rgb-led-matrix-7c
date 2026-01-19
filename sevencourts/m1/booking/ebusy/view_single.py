@@ -54,6 +54,8 @@ def draw(cnv, state: PanelState, s: ClubStyle):
     txt_prompt = ""
     booking = None
 
+    blocked = False
+
     if b_0_past and not b_1_current:
         # Show "Game over" for 2 minutes only if there is no current booking
         t_0_4_gameover_end = parser.parse(b_0_past["end-date"]) + TD_4_GAMEOVER
@@ -61,6 +63,12 @@ def draw(cnv, state: PanelState, s: ClubStyle):
             txts_timebox = ("Game", "over")
             txt_prompt = "Bye!"
             booking = b_0_past
+
+    elif b_1_current and b_1_current.get("type") == "BLOCKING":
+        # court is blocked
+        blocked = True
+        txt_1, txt_2 = (b_1_current.get("display-text", "Blocked"), "")  # TODO i18n
+        c_info = s.booking.c_blocked
 
     elif b_1_current:
         # current booking
@@ -194,8 +202,7 @@ def draw(cnv, state: PanelState, s: ClubStyle):
             booking, w_info - 2, (s.booking.one.f_info, s.booking.one.f_info)
         )
         c_info = s.ci.c_text
-    else:
-        txt_1, txt_2 = ("Free till 16h00", "")  # TODO i18n TODO till?
+    elif not blocked:
         txt_1, txt_2 = ("Free", "")  # TODO i18n
         c_info = s.booking.c_free_to_book
 
