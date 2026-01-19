@@ -28,7 +28,7 @@ def draw(cnv, state: PanelState, s: ClubStyle):
 
     # heights and widths
     w_clock = w_logo = (
-        width_in_pixels(s.booking.f_clock, "00:00") - 2
+        width_in_pixels(s.booking.f_clock, "00:00") - 1
     )  # px to the right are empty
 
     x_clubarea = W_PANEL - w_clock

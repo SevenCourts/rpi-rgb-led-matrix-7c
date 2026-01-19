@@ -42,7 +42,7 @@ def draw(cnv, state: PanelState, s: ClubStyle):
     ## draw clock
     f_clock = s.booking.f_clock
     c_clock = s.booking.c_clock
-    w_clock = width_in_pixels(f_clock, "00:00") - 2  # px to the right are empty
+    w_clock = width_in_pixels(f_clock, "00:00") - 1  # px to the right are empty
     x_clock = W_PANEL - w_clock
     y_clock = H_PANEL
 
