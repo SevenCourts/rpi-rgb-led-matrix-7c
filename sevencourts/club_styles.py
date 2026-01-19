@@ -102,6 +102,20 @@ style_TABB = ClubStyle(
     booking=Booking(is_weather_displayed=True, courtname_truncate_to=3),
 )
 
+# TC Heidelberg
+COLOR_CI_TC_Heidelberg_1 = graphics.Color(
+    int("0x3A", 0), int("0x43", 0), int("0x86", 0)
+)
+COLOR_CI_TC_Heidelberg_2 = COLOR_GREY_DARK
+style_TC_Heidelberg = ClubStyle(
+    ci=ClubCI(
+        c_bg_1=COLOR_CI_TC_Heidelberg_1,
+        c_bg_2=COLOR_CI_TC_Heidelberg_2,
+        logo=Logo(path="images/logos/TC Heidelberg/HTC-Logo-78x64_black_bg.png"),
+    ),
+    booking=Booking(is_weather_displayed=False, courtname_truncate_to=3),
+)
+
 # SV1845 Esslingen
 COLOR_CI_SV1845_1 = graphics.Color(
     int("0x29", 0), int("0x49", 0), int("0x75", 0)
