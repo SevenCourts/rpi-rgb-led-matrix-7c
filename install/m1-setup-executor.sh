@@ -38,11 +38,13 @@ fi
 
 set -x
 
-# XXX excessive copying, needed only for _m1_setup.sh dependencies
-scp -o StrictHostKeyChecking=no -r 7c-os $PANEL_IP:/tmp/
-scp -o StrictHostKeyChecking=no -r 7c-vpn $PANEL_IP:/tmp/
-
 SCRIPT_NAME=$(basename "$SCRIPT_FILE")
+
+# Copy dependencies needed only for _m1_setup.sh
+if [[ "$SCRIPT_NAME" == "_m1_setup.sh" ]]; then
+    scp -o StrictHostKeyChecking=no -r 7c-os $PANEL_IP:/tmp/
+    scp -o StrictHostKeyChecking=no -r 7c-vpn $PANEL_IP:/tmp/
+fi
 
 scp -o StrictHostKeyChecking=no "$SCRIPT_FILE" $PANEL_IP:/tmp/$SCRIPT_NAME
 ssh -o StrictHostKeyChecking=no $PANEL_IP chmod +x /tmp/$SCRIPT_NAME
