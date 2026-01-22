@@ -1,16 +1,49 @@
 #!/bin/bash
 
-set -ex
+set -e
 
-PANEL_IP=$1
+usage() {
+    echo "Usage: $0 SCRIPT_FILE PANEL_IP"
+    echo ""
+    echo "Execute a setup script on a remote panel via SSH."
+    echo ""
+    echo "Arguments:"
+    echo "  SCRIPT_FILE  Path to the script file to execute on the panel"
+    echo "  PANEL_IP     IP address of the target panel"
+    echo ""
+    echo "Example:"
+    echo "  $0 _m1_setup.sh 192.168.1.100"
+    exit 1
+}
 
-sshpass -p "password" scp -o StrictHostKeyChecking=no -r 7c-os user@$PANEL_IP:/tmp/
-sshpass -p "password" scp -o StrictHostKeyChecking=no -r 7c-vpn user@$PANEL_IP:/tmp/
+# Show help if requested
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    usage
+fi
 
-SCRIPT=_m1_setup.sh
-# SCRIPT=_m1_vpn_0.1_remove.sh
-# SCRIPT=_m1_vpn_0.2_install.sh
+# Validate arguments
+if [[ $# -ne 2 ]]; then
+    echo "Error: Expected 2 arguments, got $#"
+    usage
+fi
 
-sshpass -p "password" scp -o StrictHostKeyChecking=no $SCRIPT user@$PANEL_IP:/tmp/$SCRIPT
-sshpass -p "password" ssh -o StrictHostKeyChecking=no user@$PANEL_IP chmod +x /tmp/$SCRIPT
-sshpass -p "password" ssh -o StrictHostKeyChecking=no user@$PANEL_IP sudo bash /tmp/$SCRIPT
+SCRIPT_FILE=$1
+PANEL_IP=$2
+
+# Validate script file exists
+if [[ ! -f "$SCRIPT_FILE" ]]; then
+    echo "Error: Script file '$SCRIPT_FILE' not found"
+    exit 1
+fi
+
+set -x
+
+# XXX excessive copying, needed only for _m1_setup.sh dependencies
+scp -o StrictHostKeyChecking=no -r 7c-os $PANEL_IP:/tmp/
+scp -o StrictHostKeyChecking=no -r 7c-vpn $PANEL_IP:/tmp/
+
+SCRIPT_NAME=$(basename "$SCRIPT_FILE")
+
+scp -o StrictHostKeyChecking=no "$SCRIPT_FILE" $PANEL_IP:/tmp/$SCRIPT_NAME
+ssh -o StrictHostKeyChecking=no $PANEL_IP chmod +x /tmp/$SCRIPT_NAME
+ssh -o StrictHostKeyChecking=no $PANEL_IP sudo bash /tmp/$SCRIPT_NAME
