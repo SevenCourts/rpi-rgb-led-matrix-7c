@@ -16,6 +16,9 @@ rm -rf /opt/7c
 
 set -e
 
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+echo 'script dir:' $SCRIPT_DIR
+
 # Set the country code (must do to enable WiFi)
 ## Find your country's code here: <https://en.wikipedia.org/wiki/ISO_3166-1>
 raspi-config nonint do_wifi_country DE
@@ -69,13 +72,13 @@ touch /opt/7c/last_panel_state.json
 chmod 666 /opt/7c/last_panel_state.json
 
 # Set up 7c hostname systemd service
-cp 7c-os/opt/7c/7c-set-hostname.sh /opt/7c/7c-set-hostname.sh
+cp $SCRIPT_DIR/7c-os/opt/7c/7c-set-hostname.sh /opt/7c/7c-set-hostname.sh
 chmod u+x /opt/7c/7c-set-hostname.sh
-cp 7c-os/etc/systemd/system/7c-hostname.service /etc/systemd/system/7c-hostname.service
+cp $SCRIPT_DIR/7c-os/etc/systemd/system/7c-hostname.service /etc/systemd/system/7c-hostname.service
 systemctl enable 7c-hostname
 
 # Set up 7c systemd service
-cp 7c-os/etc/systemd/system/7c.service /etc/systemd/system/7c.service
+cp $SCRIPT_DIR/7c-os/etc/systemd/system/7c.service /etc/systemd/system/7c.service
 systemctl enable 7c
 
 # Install 7c-controller
@@ -86,7 +89,7 @@ curl -o 7c_m1_controller.zip https://dl.suprematic.net/index.php/s/YHWrGCaJ42XTp
 unzip 7c_m1_controller.zip
 chmod u+x 7c_m1_controller
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
-cp 7c-os/etc/systemd/system/7c-controller.service /etc/systemd/system/7c-controller.service
+cp $SCRIPT_DIR/7c-os/etc/systemd/system/7c-controller.service /etc/systemd/system/7c-controller.service
 systemctl enable 7c-controller
 
 # Setup RTC
@@ -96,17 +99,13 @@ apt-get install python3-smbus i2c-tools -y
 echo "dtoverlay=i2c-rtc,ds1307" >> /boot/config.txt
 apt-get -y remove fake-hwclock
 update-rc.d -f fake-hwclock remove
-cp 7c-os/lib/udev/hwclock-set /lib/udev/hwclock-set
+cp $SCRIPT_DIR/7c-os/lib/udev/hwclock-set /lib/udev/hwclock-set
 
 # Install 'Call Home' VPN
 ## Full documentation: see the [Wiki page](https://wiki.suprematic.team/books/tennis-cast-scoreboard/page/call-home-vpn-for-7c-scoreboard).
 apt-get install openvpn -y
 mkdir -p /root/.ssh/
-cp 7c-vpn/ssh/authorized_keys /root/.ssh/authorized_keys
-
-
-SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-echo 'script dir:' $SCRIPT_DIR
+cp $SCRIPT_DIR/7c-vpn/ssh/authorized_keys /root/.ssh/authorized_keys
 
 
 cp $SCRIPT_DIR/7c-vpn/etc/openvpn/client/* /etc/openvpn/client/
