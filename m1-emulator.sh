@@ -1,23 +1,53 @@
-#! /bin/bash
+#!/usr/bin/env bash
+#
+# Arguments:
+# 1. environment name or server base URL:
+#   - local (default)
+#   - dev
+#   - staging
+#   - prod
+#
 
 set -eu
 
-cd "$(dirname "${BASH_SOURCE[0]}")"
+proj_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
+readonly proj_dir
 
-RUNTIME_DIR=.runtime
-export PANEL_STATE_FILE=$RUNTIME_DIR/last_panel_state.json
-export IMAGES_CACHE_DIR=$RUNTIME_DIR/cache
+readonly param_env_or_url="${1:-}"
 
-mkdir -p $RUNTIME_DIR
-mkdir -p $IMAGES_CACHE_DIR
+case "$param_env_or_url" in
+local)
+  base_url='http://127.0.0.1:5005'
+  shift
+  ;;
+dev)
+  base_url='https://dev.server.sevencourts.com'
+  shift
+  ;;
+staging)
+  base_url='https://staging.server.sevencourts.com'
+  shift
+  ;;
+prod)
+  base_url='https://prod.server.sevencourts.com'
+  shift
+  ;;
+*) base_url='http://127.0.0.1:5005' ;;
+esac
+readonly base_url
 
-export USE_RGB_MATRIX_EMULATOR="True"
-export TABLEAU_SERVER_BASE_URL="http://127.0.0.1:5005"
-# export TABLEAU_SERVER_BASE_URL="https://dev.server.sevencourts.com"
-# export TABLEAU_SERVER_BASE_URL="https://staging.server.sevencourts.com"
-# export TABLEAU_SERVER_BASE_URL="https://prod.server.sevencourts.com"
-export TABLEAU_DEBUG="True"
+(
+  cd "$proj_dir"
 
+  RUNTIME_DIR="$proj_dir/.runtime"
+  export PANEL_STATE_FILE="$RUNTIME_DIR/last_panel_state.json"
+  export IMAGES_CACHE_DIR="$RUNTIME_DIR/cache"
 
+  mkdir -p "$RUNTIME_DIR" "$IMAGES_CACHE_DIR"
 
-./m1.sh "$@"
+  export USE_RGB_MATRIX_EMULATOR="True"
+  export TABLEAU_SERVER_BASE_URL="$base_url"
+  export TABLEAU_DEBUG="True"
+
+  ./m1.sh "$@"
+)
