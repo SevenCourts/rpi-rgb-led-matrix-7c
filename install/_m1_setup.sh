@@ -11,7 +11,8 @@ fi
 # 0. clean-up previous installations
 systemctl disable --now 7c-hostname
 systemctl disable --now 7c
-systemctl disable --now 7c-controller
+systemctl disable --now 7c-controller # disable old controller service if any
+systemctl disable --now 7c-d
 rm -rf /opt/7c
 
 set -e
@@ -81,16 +82,15 @@ systemctl enable 7c-hostname
 cp $SCRIPT_DIR/7c-os/etc/systemd/system/7c.service /etc/systemd/system/7c.service
 systemctl enable 7c
 
-# Install 7c-controller
-## ***TODO migrate source code and build for the 7c-controller (Rust project)***
+# Install sevencourts-daemon
 cd /opt/7c
-## ***FIXME suprematic***
-curl -o 7c_m1_controller.zip https://dl.suprematic.net/index.php/s/YHWrGCaJ42XTpdx/download
-unzip 7c_m1_controller.zip
-chmod u+x 7c_m1_controller
+
+curl -o sevencourts-daemon.zip https://dl.sevencourts.com/FIXME ## FIXME change URL
+unzip sevencourts-daemon.zip
+chmod u+x sevencourts-daemon
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
-cp $SCRIPT_DIR/7c-os/etc/systemd/system/7c-controller.service /etc/systemd/system/7c-controller.service
-systemctl enable 7c-controller
+cp $SCRIPT_DIR/7c-os/etc/systemd/system/7c-d.service /etc/systemd/system/7c-d.service
+systemctl enable 7c-d
 
 # Setup RTC
 ## Below is the short version of the [article](https://pimylifeup.com/raspberry-pi-rtc/) on setting up RTC on Raspberry Pi.

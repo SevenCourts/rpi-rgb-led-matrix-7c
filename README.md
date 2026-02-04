@@ -229,7 +229,7 @@ systemctl restart 7c
 
 TODO: where to download for Android / iOS
 
-#### With 7c-controller.service config
+#### With 7c-d.service config
 
 Being logged in via SSH to the device:
 
@@ -239,7 +239,7 @@ echo "{\"ssid\":\"<SSID>\",\"psk\":\"<PSK>\"}" > /etc/7c_m1_assoc.json
 
 #### With raspi-config in non-interactive mode (CLI)
 
-***CAVEAT*** this is **NOT** the recommended way, since raspi-config somehow collides with 7c-controller wpa_supplicant agent.
+***CAVEAT*** this is **NOT** the recommended way, since raspi-config collides with wpa_supplicant (via sevencourts-daemon).
 
 ```shell
 raspi-config nonint do_wifi_ssid_passphrase <SSID> <PSK>
@@ -264,7 +264,7 @@ set_network 0 ssid "<SSID>"
 set_network 0 psk "<PSK>"
 ```
 
-See the WLAN setting currently configured by 7c-controller:
+See the WLAN setting currently configured by 7c-d:
 
 ```shell
 more /etc/7c_m1_assoc.json
@@ -276,11 +276,11 @@ See the WLAN setting currently configured by wpa_supplicant:
 more /etc/wpa_supplicant/wpa_supplicant.conf
 ```
 
-Check the status and log of 7c-controller:
+Check the status and log of 7c-d:
 
 ```shell
-systemctl status 7c-controller.service
-journalctl -u 7c-controller.service -f
+systemctl status 7c-d.service
+journalctl -u 7c-d.service -f
 ```
 
 Check the current status of `wlan0`:

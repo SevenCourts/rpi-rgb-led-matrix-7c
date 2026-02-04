@@ -1,7 +1,7 @@
 #!/bin/bash
 name=`cat /sys/firmware/devicetree/base/serial-number | tail -c +9`
 
-# this is used by Python script, 7c-controller (at least)
+# this is used by Python script, 7c-d (at least)
 hostname $name
 
 # this is used by Bluetooth, s. /etc/bluetooth/main.conf

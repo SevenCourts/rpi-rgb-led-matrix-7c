@@ -1,5 +1,5 @@
 [Unit]
-Description=SevenCourts controller
+Description=SevenCourts controller daemon
 
 Requires=wpa_supplicant.service 7c-hostname.service
 After=network-online.target bluetooth.target 7c-hostname.service
@@ -13,7 +13,7 @@ RestartSec=5
 ProtectHome=true
 WorkingDirectory=/opt/7c
 
-ExecStart=/opt/7c/7c_m1_controller --log=debug run
+ExecStart=/opt/7c/sevencourts-daemon --log=debug run
 
 [Install]
 WantedBy=multi-user.target

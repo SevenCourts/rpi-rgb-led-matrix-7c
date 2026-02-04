@@ -140,8 +140,8 @@ The codebase uses environment variables for all configuration (server URLs, debu
 - Restarts automatically on failure (RestartSec=5)
 - Depends on `7c-hostname.service`
 
-**7c-controller.service** - WiFi/Bluetooth controller
-- Rust binary at `/opt/7c/7c_m1_controller`
+**7c-d.service** - WiFi/Bluetooth controller daemon
+- Rust binary at `/opt/7c/sevencourts-daemon`
 - Manages WiFi configuration via SevenCourts Admin mobile app
 - Reads config from `/etc/7c_m1_assoc.json`
 
@@ -164,7 +164,7 @@ Set `TABLEAU_SERVER_BASE_URL` environment variable to dev/staging/prod URL.
 - Panel state: `/opt/7c/last_panel_state.json`
 - Config: `/opt/7c/panel.conf`
 - Firmware: `/opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c/`
-- Controller config: `/etc/7c_m1_assoc.json`
+- Controller daemon config: `/etc/7c_m1_assoc.json`
 - SystemD services: `/etc/systemd/system/7c*.service`
 
 ## Logging
@@ -176,5 +176,5 @@ Log level is controlled by `TABLEAU_DEBUG` environment variable:
 View logs:
 ```bash
 journalctl -u 7c -f
-journalctl -u 7c-controller -f
+journalctl -u 7c-d -f
 ```
