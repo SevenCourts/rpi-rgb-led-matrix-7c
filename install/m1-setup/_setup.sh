@@ -85,7 +85,11 @@ systemctl enable 7c
 # Install sevencourts-daemon
 cd /opt/7c
 
-curl -o sevencourts-daemon.zip https://dl.sevencourts.com/FIXME ## FIXME change URL
+## Download latest sevencourts-daemon:
+# https://dl.sevencourts.com/apps/files/files/838?dir=/SevenCourts%20Daemon/_latest
+# https://dl.sevencourts.com/f/856
+curl -o sevencourts-daemon.zip https://dl.sevencourts.com/s/gCYdoPfKEJCpawT
+
 unzip sevencourts-daemon.zip
 chmod u+x sevencourts-daemon
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c

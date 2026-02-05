@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+trap 'echo "Error: command failed at line $LINENO" >&2' ERR
 
 usage() {
     echo "Usage: $0 SCRIPT_FILE PANEL_IP"
@@ -12,7 +13,7 @@ usage() {
     echo "  PANEL_IP     IP address of the target panel"
     echo ""
     echo "Example:"
-    echo "  $0 _m1_setup.sh 192.168.1.100"
+    echo "  $0 m1-setup/_setup.sh 192.168.1.100"
     exit 1
 }
 
@@ -30,22 +31,27 @@ fi
 SCRIPT_FILE=$1
 PANEL_IP=$2
 
+SSH_OPTS="-o StrictHostKeyChecking=no"
+
 # Validate script file exists
 if [[ ! -f "$SCRIPT_FILE" ]]; then
     echo "Error: Script file '$SCRIPT_FILE' not found"
     exit 1
 fi
 
-set -x
-
+SCRIPT_DIR=$(dirname "$SCRIPT_FILE")
 SCRIPT_NAME=$(basename "$SCRIPT_FILE")
 
-# Copy dependencies needed only for _m1_setup.sh
-if [[ "$SCRIPT_NAME" == "_m1_setup.sh" ]]; then
-    scp -o StrictHostKeyChecking=no -r 7c-os $PANEL_IP:/tmp/
-    scp -o StrictHostKeyChecking=no -r 7c-vpn $PANEL_IP:/tmp/
+set -x
+
+if [[ "$SCRIPT_DIR" != "." ]]; then
+    PACKAGE_NAME=$(basename "$SCRIPT_DIR")
+    REMOTE_DIR="/tmp/$PACKAGE_NAME"
+    scp $SSH_OPTS -r "$SCRIPT_DIR" "user@$PANEL_IP:/tmp/"
+else
+    REMOTE_DIR="/tmp"
+    scp $SSH_OPTS "$SCRIPT_FILE" "user@$PANEL_IP:$REMOTE_DIR/$SCRIPT_NAME"
 fi
 
-scp -o StrictHostKeyChecking=no "$SCRIPT_FILE" $PANEL_IP:/tmp/$SCRIPT_NAME
-ssh -o StrictHostKeyChecking=no $PANEL_IP chmod +x /tmp/$SCRIPT_NAME
-ssh -o StrictHostKeyChecking=no $PANEL_IP sudo bash /tmp/$SCRIPT_NAME
+ssh $SSH_OPTS "user@$PANEL_IP" chmod +x "$REMOTE_DIR/$SCRIPT_NAME"
+ssh $SSH_OPTS "user@$PANEL_IP" sudo bash "$REMOTE_DIR/$SCRIPT_NAME"
