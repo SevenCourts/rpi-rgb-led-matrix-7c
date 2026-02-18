@@ -142,6 +142,8 @@ The codebase uses environment variables for all configuration (server URLs, debu
 
 **7c-d.service** - WiFi/Bluetooth controller daemon
 - Rust binary at `/opt/7c/sevencourts-daemon`
+- Source code: https://github.com/SevenCourts/sevencourts-daemon
+- IPC format documentation: `/docs/ipc/` in the daemon repo
 - Manages WiFi configuration via SevenCourts Admin mobile app
 - Reads config from `/etc/7c_m1_assoc.json`
 
