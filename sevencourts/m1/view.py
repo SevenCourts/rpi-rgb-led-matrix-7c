@@ -8,6 +8,7 @@ import sevencourts.m1.view_signage as v_signage
 import sevencourts.m1.view_clock as v_clock
 import sevencourts.m1.view_message as v_message
 import sevencourts.m1.view_image as imgs
+import sevencourts.m1.view_daemon_status as v_daemon_status
 
 
 def draw_error(cnv, ex: Exception):
@@ -57,10 +58,12 @@ def draw(cnv, state: PanelState):
     if state.server_communication_error:
         _draw_status_indicator(cnv, COLOR_7C_STATUS_ERROR)
 
+    v_daemon_status.draw_overlay(cnv, state.daemon, state.panel_info)
+
 
 def _draw_init_screen(cnv, state: PanelState, error=False):
     y = y_font_offset(FONT_DEFAULT)
-    draw_text(cnv, 0, y, "Connecting to server...", FONT_DEFAULT, COLOR_7C_BLUE)
+    # draw_text(cnv, 0, y, "Connecting to server...", FONT_DEFAULT, COLOR_7C_BLUE)
 
     v_clock.draw_clock_by_coordinates(
         cnv,

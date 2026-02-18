@@ -42,6 +42,7 @@ readonly base_url
   RUNTIME_DIR="$proj_dir/.runtime"
   export PANEL_STATE_FILE="$RUNTIME_DIR/last_panel_state.json"
   export IMAGES_CACHE_DIR="$RUNTIME_DIR/cache"
+  export DAEMON_BLE_STATE_FILE="$RUNTIME_DIR/7c-ble-state.json"
 
   mkdir -p "$RUNTIME_DIR" "$IMAGES_CACHE_DIR"
 

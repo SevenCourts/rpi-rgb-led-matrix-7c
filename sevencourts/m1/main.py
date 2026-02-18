@@ -7,6 +7,7 @@ import sevencourts.m1.model as model
 import sevencourts.gateway as gateway
 import sevencourts.m1.view as v
 import sevencourts.openweathermap as openweathermap
+import sevencourts.m1.daemon_state as daemon_state
 import time
 from datetime import datetime
 import threading as t
@@ -19,6 +20,7 @@ _log = logging.logger("main")
 state = model.PanelState()
 weather_info_lock = t.Lock()
 panel_info_lock = t.Lock()
+daemon_state_lock = t.Lock()
 
 
 # Careful with this, since only 60 requests per minute are allowed:
@@ -75,6 +77,38 @@ def _refresh_time(period_s: int = 1):
         time.sleep(period_s)
 
 
+def _poll_daemon_state(period_s: int = 1):
+    global state
+
+    while True:
+        try:
+            ble = daemon_state.read_ble_state()
+
+            # Empty/missing file → treat as BLE disconnected
+            if ble is None:
+                ble = daemon_state.BleState()
+
+            ds = state.daemon
+            ds.ble = ble
+
+            if ble.event == "ble_client_connected":
+                device_name = ble.alias or ble.name
+                if device_name:
+                    ds.ble_status = f"Connected to {device_name}"
+                else:
+                    ds.ble_status = "Connected"
+            else:
+                ds.ble_status = ""
+
+            with daemon_state_lock:
+                state.daemon = ds
+
+        except Exception as ex:
+            _log.error(f"Daemon state poll error: {ex}")
+
+        time.sleep(period_s)
+
+
 class SevenCourtsM1(SampleBase):
     def __init__(self, *args, **kwargs):
         super(SevenCourtsM1, self).__init__(*args, **kwargs)
@@ -89,7 +123,7 @@ class SevenCourtsM1(SampleBase):
         _log.debug(f"Saved state:\n{state}")
         state_ui: model.PanelState = None
         while True:
-            with panel_info_lock, weather_info_lock:
+            with panel_info_lock, weather_info_lock, daemon_state_lock:
                 if state_ui == state:
                     _log.debug("😴 Panel state unchanged, skipping redraw")
                 else:
@@ -103,7 +137,8 @@ class SevenCourtsM1(SampleBase):
                         # UI loop exception handler: the panel should not go blank and keep working
                         v.draw_error(cnv, ex)
                         _log.error(
-                            f"❌❌ Unexpected error during drawing: {str(ex)}", exc_info=True
+                            f"❌❌ Unexpected error during drawing: {str(ex)}",
+                            exc_info=True,
                         )
 
                     cnv = self.matrix.SwapOnVSync(cnv)
@@ -119,6 +154,7 @@ if __name__ == "__main__":
     t.Thread(target=_refresh_time, daemon=True).start()
     t.Thread(target=_poll_weather_info, daemon=True).start()
     t.Thread(target=_poll_panel_info, daemon=True).start()
+    t.Thread(target=_poll_daemon_state, daemon=True).start()
 
     infoboard = SevenCourtsM1()
     if not infoboard.process():
