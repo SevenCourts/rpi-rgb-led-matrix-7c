@@ -57,6 +57,7 @@ Thumbs.db
 # Local development files
 .devbox
 .direnv
+.env
 .envrc
 .local
 .vscode
