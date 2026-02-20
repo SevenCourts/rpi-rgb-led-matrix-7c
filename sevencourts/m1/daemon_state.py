@@ -58,7 +58,7 @@ DISCONNECT_REASONS = {
     "auth_rejected": "Wrong password",
     "network_not_found": "Network not found",
     "server_unreachable": "No internet",
-    "disconnected": "Connection lost",
+    "disconnected": "Disconnected",
 }
 
 
