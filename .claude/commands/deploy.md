@@ -21,14 +21,22 @@ Ask the user which deployment mode to use:
 
 1. Get the current local branch name: `git branch --show-current`
 2. Check if the branch is pushed to remote — run `git log origin/<branch>..<branch> --oneline`. If there are unpushed commits, warn the user and ask whether to continue.
-3. SSH into the panel as `root@<panel_ip>` (use `-o StrictHostKeyChecking=no`).
+3. SSH into the panel as `user@<panel_ip>` (use `-o StrictHostKeyChecking=no`). Prefix commands requiring root with `sudo`.
 4. Run on the panel:
    ```
    cd /root/7c-firmware && git fetch origin && git checkout <branch> && git pull origin <branch>
    ```
-5. Restart the service: `systemctl restart 7c`
-6. Tail logs to confirm startup: `journalctl -u 7c -n 20 --no-pager`
-7. Show the log output to the user and confirm deployment is complete.
+5. Check for conflicting daemon processes or services on the panel. Run:
+   ```
+   pgrep -a 'sevencourts-daemon' ; systemctl is-active 7c-d 7c-controller 2>/dev/null
+   ```
+   - If `sevencourts-daemon` process is found, kill it: `pkill sevencourts-daemon` and print "Killed conflicting process: sevencourts-daemon"
+   - If `7c-d` service is active, stop it: `systemctl stop 7c-d` and print "Stopped conflicting service: 7c-d"
+   - If `7c-controller` service is active, stop it: `systemctl stop 7c-controller` and print "Stopped conflicting service: 7c-controller"
+   - If none are found, skip silently.
+6. Restart the service: `systemctl restart 7c`
+7. Tail logs to confirm startup: `journalctl -u 7c -n 20 --no-pager`
+8. Show the log output to the user and confirm deployment is complete.
 
 ### Step 3b: Full setup flow
 
