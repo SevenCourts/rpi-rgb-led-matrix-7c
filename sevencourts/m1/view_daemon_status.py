@@ -158,11 +158,9 @@ def draw_overlay(cnv, daemon: DaemonState, panel_info: dict):
     inner_w = _ICON_COL_W + _ICON_GAP + text_col_w
     inner_h = row_h * num_rows + _ROW_GAP * (num_rows - 1)
 
-    box_w = inner_w + _PAD_X * 2 + 2  # +2 for 1px border each side
+    box_x = _BOX_MARGIN
+    box_w = W_PANEL - _BOX_MARGIN * 2  # full width, margin on both sides
     box_h = max(inner_h + _PAD_Y * 2 + 2, _MIN_BOX_H)
-
-    # --- Draw box (right-aligned) ---
-    box_x = W_PANEL - _BOX_MARGIN - box_w
     draw_rect(
         cnv,
         box_x,
