@@ -51,7 +51,7 @@ _WIFI_ICON_H = 11
 
 # -- Colors -----------------------------------------------------------------
 
-COLOR_STATUS_GREEN = COLOR_7C_GREEN
+COLOR_TEXT = COLOR_WHITE
 COLOR_BT_BLUE = COLOR_7C_BLUE
 COLOR_BORDER = COLOR_7C_DARK_GREY
 COLOR_CONNECTING = COLOR_7C_GOLD  # amber for connecting
@@ -65,7 +65,8 @@ _BOX_Y = 2  # 2px from top edge
 _PAD_X = 3
 _PAD_Y = 2
 _ICON_GAP = 3  # gap between icon column and text
-_ROW_GAP = 2  # vertical gap between rows
+_ROW_GAP = 6  # vertical gap between rows
+_MIN_BOX_H = H_PANEL // 2  # overlay takes at least 50% of screen height
 _ICON_COL_W = max(_BT_ICON_W, _WIFI_ICON_W)  # shared icon column width
 
 
@@ -91,7 +92,7 @@ def _draw_ble_row(cnv, text: str, fnt, x: int, text_x: int, y_top: int, row_h: i
 
     text_h = y_font_offset(fnt)
     text_y = y_top + (row_h - text_h) // 2 + text_h  # baseline
-    draw_text(cnv, text_x, text_y, text, fnt, COLOR_STATUS_GREEN)
+    draw_text(cnv, text_x, text_y, text, fnt, COLOR_TEXT)
 
 
 def _wifi_row_color(phase: OverlayPhase):
@@ -124,7 +125,7 @@ def _draw_wifi_row(
 
     text_h = y_font_offset(fnt)
     text_y = y_top + (row_h - text_h) // 2 + text_h  # baseline
-    draw_text(cnv, text_x, text_y, text, fnt, color)
+    draw_text(cnv, text_x, text_y, text, fnt, COLOR_TEXT)
 
 
 def draw_overlay(cnv, daemon: DaemonState, panel_info: dict):
@@ -158,7 +159,7 @@ def draw_overlay(cnv, daemon: DaemonState, panel_info: dict):
     inner_h = row_h * num_rows + _ROW_GAP * (num_rows - 1)
 
     box_w = inner_w + _PAD_X * 2 + 2  # +2 for 1px border each side
-    box_h = inner_h + _PAD_Y * 2 + 2
+    box_h = max(inner_h + _PAD_Y * 2 + 2, _MIN_BOX_H)
 
     # --- Draw box ---
     draw_rect(
@@ -173,7 +174,7 @@ def draw_overlay(cnv, daemon: DaemonState, panel_info: dict):
     )
 
     content_x = _BOX_X + 1 + _PAD_X
-    content_y = _BOX_Y + 1 + _PAD_Y
+    content_y = _BOX_Y + 1 + (box_h - 2 - inner_h) // 2  # vertically center content
     text_x = content_x + _ICON_COL_W + _ICON_GAP  # shared text left edge
     y = content_y
 
