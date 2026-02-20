@@ -51,7 +51,7 @@ _WIFI_ICON_H = 11
 
 # -- Colors -----------------------------------------------------------------
 
-COLOR_TEXT = COLOR_WHITE
+COLOR_TEXT = COLOR_GREY
 COLOR_BT_BLUE = COLOR_7C_BLUE
 COLOR_BORDER = COLOR_7C_DARK_GREY
 COLOR_CONNECTING = COLOR_7C_GOLD  # amber for connecting
