@@ -48,4 +48,5 @@ cd install && bash m1-deploy.sh m1-setup/_setup.sh <panel_ip>
 ### Important
 
 - Always show the user what commands you are about to run on the remote panel before executing them.
-- If any SSH command fails, show the error and stop — do not continue with subsequent steps.
+- If any SSH command fails with "Permission denied", tell the user to run `ssh-copy-id user@<panel_ip>` manually in their terminal first, then retry the deployment.
+- If any other SSH command fails, show the error and stop — do not continue with subsequent steps.
