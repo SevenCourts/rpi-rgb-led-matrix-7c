@@ -69,9 +69,8 @@ class DaemonState:
 
     # Overlay display fields (set by polling thread, drive redraw)
     overlay_phase: OverlayPhase = OverlayPhase.HIDDEN
-    overlay_text: str = ""  # primary: "Connected to Phone", "Connecting to MyNet..."
-    overlay_detail: str = ""  # secondary: IP address, error reason
-    overlay_ssid: str = ""  # SSID shown on its own row
+    overlay_ble_text: str = ""  # row 1: "Connected to Phone"
+    overlay_wifi_text: str = ""  # row 2: "Connecting to MyNet..." / "192.168.1.42" / "Wrong password"
     blink_tick: bool = False  # toggles each poll during WIFI_CONNECTING
 
     # Persistent indicator (independent of overlay)

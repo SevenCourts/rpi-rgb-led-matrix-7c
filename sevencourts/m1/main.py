@@ -108,9 +108,6 @@ def _poll_daemon_state(period_s: int = 1):
 
             # --- State machine: compute new overlay phase ---
             new_phase = current_phase
-            overlay_text = ""
-            overlay_detail = ""
-            overlay_ssid = ""
 
             if current_phase in (OverlayPhase.WIFI_OK, OverlayPhase.WIFI_FAIL):
                 # Terminal phases: check timeout first
@@ -139,35 +136,37 @@ def _poll_daemon_state(period_s: int = 1):
                     elif net.event == "disconnected":
                         new_phase = OverlayPhase.WIFI_FAIL
 
+            # BLE disconnect while in BLE_CONNECTED → dismiss
+            if new_phase == OverlayPhase.BLE_CONNECTED and not ble_connected:
+                new_phase = OverlayPhase.HIDDEN
+
             # Track phase transitions
             if new_phase != current_phase:
                 current_phase = new_phase
                 phase_entered_at = now
 
-            # --- Build display fields per phase ---
-            blink_tick = False
-
-            if current_phase == OverlayPhase.BLE_CONNECTED:
+            # --- Row 1: BLE status (always from BLE state) ---
+            overlay_ble_text = ""
+            if ble_connected:
                 device_name = ble.alias or ble.name
-                overlay_text = f"Connected to {device_name}" if device_name else "Connected"
+                overlay_ble_text = f"Connected to {device_name}" if device_name else "Connected"
 
-            elif current_phase == OverlayPhase.WIFI_CONNECTING:
-                overlay_text = "Connected" if ble_connected else "WiFi"
-                overlay_ssid = net.ssid or "WiFi"
-                overlay_detail = "Connecting..."
-                # Toggle blink each poll cycle
+            # --- Row 2: WiFi status + blink ---
+            overlay_wifi_text = ""
+            blink_tick = False
+            ssid = net.ssid or "WiFi"
+
+            if current_phase == OverlayPhase.WIFI_CONNECTING:
+                overlay_wifi_text = f"Connecting to {ssid}..."
                 blink_tick = int(now * 2) % 2 == 0
 
             elif current_phase == OverlayPhase.WIFI_OK:
-                overlay_text = "Connected"
-                overlay_ssid = net.ssid or "WiFi"
-                overlay_detail = net.ip_address or ""
+                ip = net.ip_address or ""
+                overlay_wifi_text = f"{ssid}  {ip}" if ip else ssid
 
             elif current_phase == OverlayPhase.WIFI_FAIL:
-                overlay_text = "WiFi Failed"
-                overlay_ssid = net.ssid or ""
                 reason = daemon_state.DISCONNECT_REASONS.get(net.reason, net.reason or "Connection failed")
-                overlay_detail = reason
+                overlay_wifi_text = reason
 
             # --- Persistent WiFi error (outside setup sessions) ---
             wifi_error = (
@@ -177,19 +176,13 @@ def _poll_daemon_state(period_s: int = 1):
                 and current_phase == OverlayPhase.HIDDEN
             )
 
-            # --- BLE disconnect while in BLE_CONNECTED → dismiss ---
-            if current_phase == OverlayPhase.BLE_CONNECTED and not ble_connected:
-                current_phase = OverlayPhase.HIDDEN
-                overlay_text = ""
-
             # --- Write to shared state ---
             ds = daemon_state.DaemonState(
                 ble=ble,
                 network=net,
                 overlay_phase=current_phase,
-                overlay_text=overlay_text,
-                overlay_detail=overlay_detail,
-                overlay_ssid=overlay_ssid,
+                overlay_ble_text=overlay_ble_text,
+                overlay_wifi_text=overlay_wifi_text,
                 blink_tick=blink_tick,
                 wifi_error=wifi_error,
             )
