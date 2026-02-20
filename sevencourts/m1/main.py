@@ -116,7 +116,7 @@ def _poll_daemon_state(period_s: int = 1):
 
             if phase == OverlayPhase.WIFI_CONNECTING:
                 overlay_wifi_text = f"Connecting to {ssid}..."
-                blink_tick = int(now * 2) % 2 == 0
+                blink_tick = int(now) % 2 == 0
 
             elif phase == OverlayPhase.WIFI_OK:
                 ip = net.ip_address or ""
@@ -142,8 +142,7 @@ def _poll_daemon_state(period_s: int = 1):
         except Exception as ex:
             _log.error(f"Daemon state poll error: {ex}")
 
-        # Poll faster during connecting to drive blink animation
-        time.sleep(0.5 if phase == OverlayPhase.WIFI_CONNECTING else period_s)
+        time.sleep(period_s)
 
 
 class SevenCourtsM1(SampleBase):
