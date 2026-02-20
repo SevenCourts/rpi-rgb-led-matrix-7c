@@ -142,7 +142,8 @@ def _poll_daemon_state(period_s: int = 1):
         except Exception as ex:
             _log.error(f"Daemon state poll error: {ex}")
 
-        time.sleep(period_s)
+        # Poll faster during connecting to drive blink animation
+        time.sleep(0.5 if phase == OverlayPhase.WIFI_CONNECTING else period_s)
 
 
 class SevenCourtsM1(SampleBase):
