@@ -32,22 +32,23 @@ _BT_ICON = [
 _BT_ICON_W = 9
 _BT_ICON_H = 11
 
-# WiFi icon 13x11 pixels — plus + 2 dense arcs
+# WiFi icon 13x12 pixels — 3 arcs (1px high, 2px gaps) + cross dot
 _WIFI_ICON = [
-    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],
-    [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
-    [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0],
-    [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
-    [0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
-    [0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0],
-    [0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],  # outer arc (9px)
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # gap
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # gap
+    [0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0],  # middle arc (5px)
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # gap
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # gap
+    [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],  # inner arc (3px)
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # gap
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # gap
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],  # cross top
+    [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],  # cross center
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],  # cross bottom
 ]
 _WIFI_ICON_W = 13
-_WIFI_ICON_H = 11
+_WIFI_ICON_H = 12
 
 # -- Colors -----------------------------------------------------------------
 
@@ -123,7 +124,7 @@ def draw_overlay(cnv, daemon: DaemonState, panel_info: dict):
 
     fnt = FONT_XS
     text_h = y_font_offset(fnt)
-    row_h = max(_BT_ICON_H, text_h)  # row height = tallest of icon or text
+    row_h = max(_BT_ICON_H, _WIFI_ICON_H, text_h)  # row height = tallest of icon or text
 
     ble_text = daemon.overlay_ble_text
     wifi_text = daemon.overlay_wifi_text
