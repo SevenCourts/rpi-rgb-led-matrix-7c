@@ -60,8 +60,9 @@ _BOX_X = 2  # 2px from left edge
 _BOX_Y = 2  # 2px from top edge
 _PAD_X = 3
 _PAD_Y = 2
-_ICON_GAP = 3  # gap between icon and text
+_ICON_GAP = 3  # gap between icon column and text
 _ROW_GAP = 2  # vertical gap between rows
+_ICON_COL_W = max(_BT_ICON_W, _WIFI_ICON_W)  # shared icon column width
 
 
 # -- Icon drawing -----------------------------------------------------------
@@ -76,12 +77,12 @@ def _draw_icon(cnv, icon, x0: int, y0: int, color):
 
 # -- Rendering --------------------------------------------------------------
 
-def _draw_ble_row(cnv, text: str, fnt, x: int, y_top: int, row_h: int):
-    """Draw BLE row: BT icon + text. Returns row height."""
+def _draw_ble_row(cnv, text: str, fnt, x: int, text_x: int, y_top: int, row_h: int):
+    """Draw BLE row: BT icon (centered in icon column) + text."""
+    icon_x = x + (_ICON_COL_W - _BT_ICON_W) // 2
     icon_y = y_top + (row_h - _BT_ICON_H) // 2
-    _draw_icon(cnv, _BT_ICON, x, icon_y, COLOR_BT_BLUE)
+    _draw_icon(cnv, _BT_ICON, icon_x, icon_y, COLOR_BT_BLUE)
 
-    text_x = x + _BT_ICON_W + _ICON_GAP
     text_h = y_font_offset(fnt)
     text_y = y_top + (row_h - text_h) // 2 + text_h  # baseline
     draw_text(cnv, text_x, text_y, text, fnt, COLOR_STATUS_GREEN)
@@ -95,16 +96,16 @@ def _wifi_row_color(phase: OverlayPhase):
     return COLOR_CONNECTING
 
 
-def _draw_wifi_row(cnv, text: str, fnt, phase: OverlayPhase, blink: bool, x: int, y_top: int, row_h: int):
-    """Draw WiFi row: WiFi icon + text."""
+def _draw_wifi_row(cnv, text: str, fnt, phase: OverlayPhase, blink: bool, x: int, text_x: int, y_top: int, row_h: int):
+    """Draw WiFi row: WiFi icon (centered in icon column) + text."""
     color = _wifi_row_color(phase)
 
     # WiFi icon — hide during blink-off for connecting animation
     if phase != OverlayPhase.WIFI_CONNECTING or blink:
+        icon_x = x + (_ICON_COL_W - _WIFI_ICON_W) // 2
         icon_y = y_top + (row_h - _WIFI_ICON_H) // 2
-        _draw_icon(cnv, _WIFI_ICON, x, icon_y, color)
+        _draw_icon(cnv, _WIFI_ICON, icon_x, icon_y, color)
 
-    text_x = x + _WIFI_ICON_W + _ICON_GAP
     text_h = y_font_offset(fnt)
     text_y = y_top + (row_h - text_h) // 2 + text_h  # baseline
     draw_text(cnv, text_x, text_y, text, fnt, color)
@@ -129,9 +130,13 @@ def draw_overlay(cnv, daemon: DaemonState, panel_info: dict):
         return
 
     # --- Compute box dimensions ---
-    ble_row_w = (_BT_ICON_W + _ICON_GAP + width_in_pixels(fnt, ble_text)) if has_ble_row else 0
-    wifi_row_w = (_WIFI_ICON_W + _ICON_GAP + width_in_pixels(fnt, wifi_text)) if has_wifi_row else 0
-    inner_w = max(ble_row_w, wifi_row_w)
+    # Text starts at the same x for both rows: after icon column + gap
+    text_col_w = 0
+    if has_ble_row:
+        text_col_w = max(text_col_w, width_in_pixels(fnt, ble_text))
+    if has_wifi_row:
+        text_col_w = max(text_col_w, width_in_pixels(fnt, wifi_text))
+    inner_w = _ICON_COL_W + _ICON_GAP + text_col_w
     inner_h = row_h * num_rows + _ROW_GAP * (num_rows - 1)
 
     box_w = inner_w + _PAD_X * 2 + 2  # +2 for 1px border each side
@@ -142,13 +147,14 @@ def draw_overlay(cnv, daemon: DaemonState, panel_info: dict):
 
     content_x = _BOX_X + 1 + _PAD_X
     content_y = _BOX_Y + 1 + _PAD_Y
+    text_x = content_x + _ICON_COL_W + _ICON_GAP  # shared text left edge
     y = content_y
 
     # --- Row: BLE ---
     if has_ble_row:
-        _draw_ble_row(cnv, ble_text, fnt, content_x, y, row_h)
+        _draw_ble_row(cnv, ble_text, fnt, content_x, text_x, y, row_h)
         y += row_h + _ROW_GAP
 
     # --- Row: WiFi ---
     if has_wifi_row:
-        _draw_wifi_row(cnv, wifi_text, fnt, phase, daemon.blink_tick, content_x, y, row_h)
+        _draw_wifi_row(cnv, wifi_text, fnt, phase, daemon.blink_tick, content_x, text_x, y, row_h)
