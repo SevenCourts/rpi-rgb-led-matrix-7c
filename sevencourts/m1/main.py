@@ -91,16 +91,17 @@ def _poll_daemon_state(period_s: int = 1):
             ble_connected = ble.event == "ble_client_connected"
 
             # --- Phase derived directly from current state files ---
-            if net.event == "connecting" and net.interface == "wifi":
+            # Overlay only shown when BLE is connected
+            if not ble_connected:
+                phase = OverlayPhase.HIDDEN
+            elif net.event == "connecting" and net.interface == "wifi":
                 phase = OverlayPhase.WIFI_CONNECTING
             elif net.event == "connected" and net.interface == "wifi":
                 phase = OverlayPhase.WIFI_OK
             elif net.event == "disconnected" and net.interface == "wifi":
                 phase = OverlayPhase.WIFI_FAIL
-            elif ble_connected:
-                phase = OverlayPhase.BLE_CONNECTED
             else:
-                phase = OverlayPhase.HIDDEN
+                phase = OverlayPhase.BLE_CONNECTED
 
             # --- Row 1: BLE status ---
             overlay_ble_text = ""
