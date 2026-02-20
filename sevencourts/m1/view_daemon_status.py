@@ -62,7 +62,7 @@ COLOR_WIFI_FAIL = COLOR_RED
 
 _BOX_MARGIN = 2  # 2px from edge
 _BOX_Y = 2  # 2px from top edge
-_PAD_X = 3
+_PAD_X = 2
 _PAD_Y = 2
 _ICON_GAP = 3  # gap between icon column and text
 _ROW_GAP = 6  # vertical gap between rows
