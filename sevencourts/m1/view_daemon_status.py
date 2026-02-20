@@ -34,21 +34,20 @@ _BT_ICON_H = 11
 
 # WiFi icon 13x12 pixels — 3 arcs (1px high, 2px gaps) + cross dot
 _WIFI_ICON = [
-    [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],  # outer arc (9px)
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # gap
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # gap
-    [0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0],  # middle arc (5px)
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # gap
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # gap
+    [0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0],  # outer arc (7px)
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],  # gap
+    [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],  # gap
+    [1, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1],  # middle arc (5px)
+    [0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0],  # gap
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],  # gap
     [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],  # inner arc (3px)
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # gap
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  # gap
+    [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0],  # gap
     [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],  # cross top
     [0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0],  # cross center
     [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],  # cross bottom
 ]
 _WIFI_ICON_W = 13
-_WIFI_ICON_H = 12
+_WIFI_ICON_H = 11
 
 # -- Colors -----------------------------------------------------------------
 
@@ -72,6 +71,7 @@ _ICON_COL_W = max(_BT_ICON_W, _WIFI_ICON_W)  # shared icon column width
 
 # -- Icon drawing -----------------------------------------------------------
 
+
 def _draw_icon(cnv, icon, x0: int, y0: int, color):
     clr = rgb_list(color)
     for row_i, row in enumerate(icon):
@@ -81,6 +81,7 @@ def _draw_icon(cnv, icon, x0: int, y0: int, color):
 
 
 # -- Rendering --------------------------------------------------------------
+
 
 def _draw_ble_row(cnv, text: str, fnt, x: int, text_x: int, y_top: int, row_h: int):
     """Draw BLE row: BT icon (centered in icon column) + text."""
@@ -101,7 +102,17 @@ def _wifi_row_color(phase: OverlayPhase):
     return COLOR_CONNECTING
 
 
-def _draw_wifi_row(cnv, text: str, fnt, phase: OverlayPhase, blink: bool, x: int, text_x: int, y_top: int, row_h: int):
+def _draw_wifi_row(
+    cnv,
+    text: str,
+    fnt,
+    phase: OverlayPhase,
+    blink: bool,
+    x: int,
+    text_x: int,
+    y_top: int,
+    row_h: int,
+):
     """Draw WiFi row: WiFi icon (centered in icon column) + text."""
     color = _wifi_row_color(phase)
 
@@ -124,7 +135,9 @@ def draw_overlay(cnv, daemon: DaemonState, panel_info: dict):
 
     fnt = FONT_XS
     text_h = y_font_offset(fnt)
-    row_h = max(_BT_ICON_H, _WIFI_ICON_H, text_h)  # row height = tallest of icon or text
+    row_h = max(
+        _BT_ICON_H, _WIFI_ICON_H, text_h
+    )  # row height = tallest of icon or text
 
     ble_text = daemon.overlay_ble_text
     wifi_text = daemon.overlay_wifi_text
@@ -148,7 +161,16 @@ def draw_overlay(cnv, daemon: DaemonState, panel_info: dict):
     box_h = inner_h + _PAD_Y * 2 + 2
 
     # --- Draw box ---
-    draw_rect(cnv, _BOX_X, _BOX_Y, box_w, box_h, COLOR_BORDER, w_border=1, color_fill=COLOR_BLACK)
+    draw_rect(
+        cnv,
+        _BOX_X,
+        _BOX_Y,
+        box_w,
+        box_h,
+        COLOR_BORDER,
+        w_border=1,
+        color_fill=COLOR_BLACK,
+    )
 
     content_x = _BOX_X + 1 + _PAD_X
     content_y = _BOX_Y + 1 + _PAD_Y
@@ -162,4 +184,6 @@ def draw_overlay(cnv, daemon: DaemonState, panel_info: dict):
 
     # --- Row: WiFi ---
     if has_wifi_row:
-        _draw_wifi_row(cnv, wifi_text, fnt, phase, daemon.blink_tick, content_x, text_x, y, row_h)
+        _draw_wifi_row(
+            cnv, wifi_text, fnt, phase, daemon.blink_tick, content_x, text_x, y, row_h
+        )
