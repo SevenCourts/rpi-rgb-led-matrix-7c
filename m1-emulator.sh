@@ -43,6 +43,7 @@ readonly base_url
   export PANEL_STATE_FILE="$RUNTIME_DIR/last_panel_state.json"
   export IMAGES_CACHE_DIR="$RUNTIME_DIR/cache"
   export DAEMON_BLE_STATE_FILE="$RUNTIME_DIR/7c-ble-state.json"
+  export DAEMON_NETWORK_STATE_FILE="$RUNTIME_DIR/7c-network-state.json"
 
   mkdir -p "$RUNTIME_DIR" "$IMAGES_CACHE_DIR"
 

@@ -58,6 +58,9 @@ def draw(cnv, state: PanelState):
     if state.server_communication_error:
         _draw_status_indicator(cnv, COLOR_7C_STATUS_ERROR)
 
+    if state.daemon.wifi_error:
+        _draw_status_indicator(cnv, COLOR_7C_GOLD, x=W_PANEL - 10)
+
     v_daemon_status.draw_overlay(cnv, state.daemon, state.panel_info)
 
 
@@ -100,8 +103,8 @@ def _draw_standby_mode_indicator(cnv, time_now: str):
     v_clock.draw_clock(cnv, time_now, None, COLOR_GREY_DARKEST)
 
 
-def _draw_status_indicator(cnv, color):
-    x = (COLOR_BLACK.red, COLOR_BLACK.green, COLOR_BLACK.blue)
+def _draw_status_indicator(cnv, color, x=W_PANEL - 4):
+    b = (COLOR_BLACK.red, COLOR_BLACK.green, COLOR_BLACK.blue)
     o = (color.red, color.green, color.blue)
-    dot = [[x, o, o, x], [o, o, o, o], [o, o, o, o], [x, o, o, x]]
-    draw_matrix(cnv, dot, W_PANEL - 4, H_PANEL - 4)
+    dot = [[b, o, o, b], [o, o, o, o], [o, o, o, o], [b, o, o, b]]
+    draw_matrix(cnv, dot, x, H_PANEL - 4)
