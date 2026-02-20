@@ -60,7 +60,7 @@ COLOR_WIFI_FAIL = COLOR_RED
 
 # -- Layout constants -------------------------------------------------------
 
-_BOX_X = 2  # 2px from left edge
+_BOX_MARGIN = 2  # 2px from edge
 _BOX_Y = 2  # 2px from top edge
 _PAD_X = 3
 _PAD_Y = 2
@@ -161,10 +161,11 @@ def draw_overlay(cnv, daemon: DaemonState, panel_info: dict):
     box_w = inner_w + _PAD_X * 2 + 2  # +2 for 1px border each side
     box_h = max(inner_h + _PAD_Y * 2 + 2, _MIN_BOX_H)
 
-    # --- Draw box ---
+    # --- Draw box (right-aligned) ---
+    box_x = W_PANEL - _BOX_MARGIN - box_w
     draw_rect(
         cnv,
-        _BOX_X,
+        box_x,
         _BOX_Y,
         box_w,
         box_h,
@@ -173,7 +174,7 @@ def draw_overlay(cnv, daemon: DaemonState, panel_info: dict):
         color_fill=COLOR_BLACK,
     )
 
-    content_x = _BOX_X + 1 + _PAD_X
+    content_x = box_x + 1 + _PAD_X
     content_y = _BOX_Y + 1 + (box_h - 2 - inner_h) // 2  # vertically center content
     text_x = content_x + _ICON_COL_W + _ICON_GAP  # shared text left edge
     y = content_y
