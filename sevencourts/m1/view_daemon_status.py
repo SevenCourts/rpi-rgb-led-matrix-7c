@@ -117,16 +117,20 @@ def draw_overlay(cnv, daemon: DaemonState, panel_info: dict):
     fnt = FONT_XS
     text_h = y_font_offset(fnt)
     row_h = max(_BT_ICON_H, text_h)  # row height = tallest of icon or text
-    has_wifi_row = phase in (OverlayPhase.WIFI_CONNECTING, OverlayPhase.WIFI_OK, OverlayPhase.WIFI_FAIL)
 
-    # --- Compute box dimensions ---
     ble_text = daemon.overlay_ble_text
     wifi_text = daemon.overlay_wifi_text
+    has_ble_row = bool(ble_text)
+    has_wifi_row = bool(wifi_text)
+    num_rows = has_ble_row + has_wifi_row
+    if num_rows == 0:
+        return
 
-    ble_row_w = _BT_ICON_W + _ICON_GAP + width_in_pixels(fnt, ble_text)
+    # --- Compute box dimensions ---
+    ble_row_w = (_BT_ICON_W + _ICON_GAP + width_in_pixels(fnt, ble_text)) if has_ble_row else 0
     wifi_row_w = (_WIFI_ICON_W + _ICON_GAP + width_in_pixels(fnt, wifi_text)) if has_wifi_row else 0
     inner_w = max(ble_row_w, wifi_row_w)
-    inner_h = row_h + (_ROW_GAP + row_h if has_wifi_row else 0)
+    inner_h = row_h * num_rows + _ROW_GAP * (num_rows - 1)
 
     box_w = inner_w + _PAD_X * 2 + 2  # +2 for 1px border each side
     box_h = inner_h + _PAD_Y * 2 + 2
@@ -136,11 +140,13 @@ def draw_overlay(cnv, daemon: DaemonState, panel_info: dict):
 
     content_x = _BOX_X + 1 + _PAD_X
     content_y = _BOX_Y + 1 + _PAD_Y
+    y = content_y
 
-    # --- Row 1: BLE ---
-    _draw_ble_row(cnv, ble_text, fnt, content_x, content_y, row_h)
+    # --- Row: BLE ---
+    if has_ble_row:
+        _draw_ble_row(cnv, ble_text, fnt, content_x, y, row_h)
+        y += row_h + _ROW_GAP
 
-    # --- Row 2: WiFi ---
+    # --- Row: WiFi ---
     if has_wifi_row:
-        wifi_y = content_y + row_h + _ROW_GAP
-        _draw_wifi_row(cnv, wifi_text, fnt, phase, daemon.blink_tick, content_x, wifi_y, row_h)
+        _draw_wifi_row(cnv, wifi_text, fnt, phase, daemon.blink_tick, content_x, y, row_h)

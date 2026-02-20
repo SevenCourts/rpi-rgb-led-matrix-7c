@@ -73,9 +73,6 @@ class DaemonState:
     overlay_wifi_text: str = ""  # row 2: "Connecting to MyNet..." / "192.168.1.42" / "Wrong password"
     blink_tick: bool = False  # toggles each poll during WIFI_CONNECTING
 
-    # Persistent indicator (independent of overlay)
-    wifi_error: bool = False
-
 
 def read_json_file(path: str) -> dict | None:
     try:

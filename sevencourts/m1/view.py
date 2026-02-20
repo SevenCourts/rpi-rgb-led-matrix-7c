@@ -58,9 +58,6 @@ def draw(cnv, state: PanelState):
     if state.server_communication_error:
         _draw_status_indicator(cnv, COLOR_7C_STATUS_ERROR)
 
-    if state.daemon.wifi_error:
-        _draw_status_indicator(cnv, COLOR_7C_GOLD, x=W_PANEL - 10)
-
     v_daemon_status.draw_overlay(cnv, state.daemon, state.panel_info)
 
 
