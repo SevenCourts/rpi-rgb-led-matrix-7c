@@ -93,6 +93,16 @@ def fetch_by_path_with_cache(image_path: str) -> Image:
     return result
 
 
+def scale_to_fit(image: Image, w: int, h: int) -> Image:
+    """Scale image to fit within w×h, preserving aspect ratio. Scales up or down."""
+    ratio = min(w / image.width, h / image.height)
+    if ratio != 1:
+        new_w = int(image.width * ratio)
+        new_h = int(image.height * ratio)
+        image = image.resize((new_w, new_h), Image.LANCZOS)
+    return image
+
+
 def shrink_to_fit(image: Image, w: int, h: int) -> Image:
     if image.width > w or image.height > h:
         image.thumbnail((w, h), Image.LANCZOS)
