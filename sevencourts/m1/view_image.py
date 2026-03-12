@@ -35,7 +35,7 @@ def _draw_image_and_maybe_clock(cnv, image: Image, time_now, try_to_show_clock: 
     show_clock = try_to_show_clock and _can_show_clock(image)
 
     image_max_width = v_clock.W_LOGO_WITH_CLOCK if show_clock else W_PANEL
-    image = imgs.shrink_to_fit(image, image_max_width, H_PANEL)
+    image = imgs.scale_to_fit(image, image_max_width, H_PANEL)
 
     x = (image_max_width - image.width) // 2
     y = (H_PANEL - image.height) // 2

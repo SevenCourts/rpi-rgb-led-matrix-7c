@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 from samplebase import SampleBase
 from sevencourts.rgbmatrix import *
 from sevencourts.m1.dimens import *
@@ -184,7 +185,7 @@ class SevenCourtsM1(SampleBase):
 # Main function
 if __name__ == "__main__":
 
-    _log.info("Starting M1 instance")
+    _log.info(f"Starting {os.environ.get('PANEL_TYPE', 'M1')} instance")
 
     # must be daemon to interrupt keyboard (e.g. Ctrl+C)
     t.Thread(target=_refresh_time, daemon=True).start()
