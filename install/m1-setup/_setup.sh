@@ -18,6 +18,9 @@ if [ "$(id -u)" -ne 0 ]; then
   exit 1
 fi
 
+PANEL_TYPE="${PANEL_TYPE:-M1}"
+
+
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 echo 'script dir:' $SCRIPT_DIR
 
@@ -127,7 +130,7 @@ cp $SCRIPT_DIR/7c-os/etc/systemd/system/7c-hostname.service /etc/systemd/system/
 systemctl enable 7c-hostname
 
 # Set up 7c systemd service
-cp $SCRIPT_DIR/7c-os/etc/systemd/system/7c.service /etc/systemd/system/7c.service
+cp $SCRIPT_DIR/7c-os/etc/systemd/system/7c-${PANEL_TYPE,,}.service /etc/systemd/system/7c.service
 systemctl enable 7c
 
 # Set up sevencourts-daemon systemd service
