@@ -4,11 +4,13 @@ Deploy firmware to a remote panel via SSH.
 
 You are deploying the scoreboard firmware to a Raspberry Pi panel.
 
-### Step 1: Determine target panel IP
+### Step 1: Determine target panel and type
 
 - If arguments were provided: `$ARGUMENTS` — use the first argument as the panel IP.
 - Otherwise, read `PANEL_IP` from the `.env` file at the repo root.
 - If neither is available, ask the user for the panel IP.
+- Read `PANEL_TYPE` from the `.env` file (default: `M1`). Valid values: `M1`, `L1`.
+- Confirm both the panel IP and panel type with the user before proceeding.
 
 ### Step 2: Ask deployment mode
 
@@ -40,9 +42,9 @@ Ask the user which deployment mode to use:
 
 ### Step 3b: Full setup flow
 
-Run the existing deploy script from the `install/` directory:
+Run the existing deploy script from the `install/` directory, passing the panel type:
 ```
-cd install && bash m1-deploy.sh m1-setup/_setup.sh <panel_ip>
+cd install && PANEL_TYPE=<panel_type> bash m1-deploy.sh m1-setup/_setup.sh <panel_ip>
 ```
 
 ### Important

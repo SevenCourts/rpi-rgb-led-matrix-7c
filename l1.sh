@@ -10,6 +10,8 @@
 
 set -eu
 
+export PANEL_TYPE=L1
+
 declare is_emulator
 is_emulator="${USE_RGB_MATRIX_EMULATOR-}"
 readonly is_emulator
@@ -17,15 +19,13 @@ if [[ -n $is_emulator ]]; then
   export USE_RGB_MATRIX_EMULATOR
 fi
 
-export PANEL_TYPE="${PANEL_TYPE:-M1}"
-
 declare -a cmd_args
 if [[ -z $is_emulator ]]; then
   cmd_args=(
     --led-chain=3
     --led-cols=64
     --led-multiplexing=1
-    --led-parallel=2
+    --led-parallel=3
     --led-pwm-lsb-nanoseconds=50
     --led-row-addr-type=0
     --led-rows=32
@@ -36,24 +36,11 @@ else
     --led-chain=1
     --led-cols=64
     --led-parallel=1
-    --led-rows=32
     --led-chain=3
-    --led-parallel=2
+    --led-parallel=3
   )
 fi
 readonly cmd_args
 
 cd "$(dirname "${BASH_SOURCE[0]}")"
-SCRIPT_DIR="$(pwd)"
-
-# rgbmatrix Python bindings (bundled in tarball for hardware mode)
-if [[ -z $is_emulator ]] && [[ -d "$SCRIPT_DIR/rgbmatrix/python" ]]; then
-  export PYTHONPATH="$SCRIPT_DIR/rgbmatrix/python${PYTHONPATH:+:$PYTHONPATH}"
-fi
-
-# Vendored Python packages (e.g., orjson)
-if [[ -d "$SCRIPT_DIR/vendor" ]]; then
-  export PYTHONPATH="$SCRIPT_DIR/vendor${PYTHONPATH:+:$PYTHONPATH}"
-fi
-
 python3 -m sevencourts.m1.main "${cmd_args[@]}" "$@"

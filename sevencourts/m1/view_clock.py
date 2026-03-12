@@ -29,7 +29,7 @@ def draw_clock(cnv, time_now, clock, color=COLOR_CLOCK_DEFAULT):
         # display a clock using the default font and coordinates
         font = FONT_CLOCK_DEFAULT
         x = W_LOGO_WITH_CLOCK
-        y = 62
+        y = H_PANEL - 2
     elif clock:
         clock_size = clock.get("size")
         clock_font = clock.get("font")
