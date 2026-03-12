@@ -54,4 +54,4 @@ else
 fi
 
 ssh $SSH_OPTS "user@$PANEL_IP" chmod +x "$REMOTE_DIR/$SCRIPT_NAME"
-ssh $SSH_OPTS "user@$PANEL_IP" sudo bash "$REMOTE_DIR/$SCRIPT_NAME"
+ssh $SSH_OPTS "user@$PANEL_IP" sudo PANEL_TYPE="${PANEL_TYPE:-M1}" bash "$REMOTE_DIR/$SCRIPT_NAME"

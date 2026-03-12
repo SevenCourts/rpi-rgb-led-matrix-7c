@@ -8,6 +8,8 @@ if [ $(id -u) -ne 0 ]
   exit
 fi
 
+PANEL_TYPE="${PANEL_TYPE:-M1}"
+
 # 0. clean-up previous installations
 systemctl disable --now 7c-hostname
 systemctl disable --now 7c
@@ -79,14 +81,14 @@ cp $SCRIPT_DIR/7c-os/etc/systemd/system/7c-hostname.service /etc/systemd/system/
 systemctl enable 7c-hostname
 
 # Set up 7c systemd service
-cp $SCRIPT_DIR/7c-os/etc/systemd/system/7c.service /etc/systemd/system/7c.service
+cp $SCRIPT_DIR/7c-os/etc/systemd/system/7c-${PANEL_TYPE,,}.service /etc/systemd/system/7c.service
 systemctl enable 7c
 
 # Install sevencourts-daemon
 cd /opt/7c
 
 ## Download latest sevencourts-daemon:
-curl -o sevencourts-daemon.zip https://dl.sevencourts.com/s/gCYdoPfKEJCpawT/download
+curl -L -o sevencourts-daemon.zip https://dl.sevencourts.com/s/gCYdoPfKEJCpawT/download
 unzip sevencourts-daemon.zip
 chmod u+x sevencourts-daemon
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
