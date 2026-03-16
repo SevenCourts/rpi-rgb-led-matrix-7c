@@ -94,11 +94,11 @@ def _is_rtc_ticking() -> bool:
 
 
 def _is_ntp_synchronized() -> bool:
-    """Check if the system clock has been synchronized (by any NTP daemon)."""
+    """Check if systemd-timesyncd has synchronized the clock."""
     try:
-        plausible = datetime.now().year >= 2026
-        _log.debug(f"NTP synchronized: {plausible}")
-        return plausible
+        synced = os.path.exists('/run/systemd/timesync/synchronized')
+        _log.debug(f"NTP synchronized: {synced}")
+        return synced
     except Exception as e:
         _log.debug(f"NTP sync check failed: {e}")
         return False
