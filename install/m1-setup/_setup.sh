@@ -86,7 +86,7 @@ systemctl enable 7c
 cd /opt/7c
 
 ## Download latest sevencourts-daemon:
-curl -o sevencourts-daemon.zip https://dl.sevencourts.com/s/gCYdoPfKEJCpawT/download
+curl -L -o sevencourts-daemon.zip https://dl.sevencourts.com/s/gCYdoPfKEJCpawT/download
 unzip sevencourts-daemon.zip
 chmod u+x sevencourts-daemon
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
