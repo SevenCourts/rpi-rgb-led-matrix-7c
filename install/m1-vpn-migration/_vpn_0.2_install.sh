@@ -1,11 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 # SevenCourts vpn update script
 
+set -euo pipefail
 set -x
 
-if [ $(id -u) -ne 0 ]
-  then echo Please run this script as root or using sudo!
-  exit
+trap 'echo "VPN INSTALL FAILED at line $LINENO (exit code $?)" >&2' ERR
+
+if [ "$(id -u)" -ne 0 ]; then
+  echo "Please run this script as root or using sudo!" >&2
+  exit 1
 fi
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )

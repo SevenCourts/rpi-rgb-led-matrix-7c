@@ -4,16 +4,18 @@ set -e
 trap 'echo "Error: command failed at line $LINENO" >&2' ERR
 
 usage() {
-    echo "Usage: $0 SCRIPT_FILE PANEL_IP"
+    echo "Usage: $0 SCRIPT_FILE PANEL_IP [SCRIPT_ARGS...]"
     echo ""
     echo "Execute a setup script on a remote panel via SSH."
     echo ""
     echo "Arguments:"
-    echo "  SCRIPT_FILE  Path to the script file to execute on the panel"
-    echo "  PANEL_IP     IP address of the target panel"
+    echo "  SCRIPT_FILE   Path to the script file to execute on the panel"
+    echo "  PANEL_IP      IP address of the target panel"
+    echo "  SCRIPT_ARGS   Optional arguments forwarded to the remote script"
     echo ""
-    echo "Example:"
+    echo "Examples:"
     echo "  $0 m1-setup/_setup.sh 192.168.1.100"
+    echo "  $0 m1-setup/_setup.sh 192.168.1.100 dev/my-feature"
     exit 1
 }
 
@@ -23,13 +25,15 @@ if [[ "$1" == "-h" || "$1" == "--help" ]]; then
 fi
 
 # Validate arguments
-if [[ $# -ne 2 ]]; then
-    echo "Error: Expected 2 arguments, got $#"
+if [[ $# -lt 2 ]]; then
+    echo "Error: Expected at least 2 arguments, got $#"
     usage
 fi
 
 SCRIPT_FILE=$1
 PANEL_IP=$2
+shift 2
+SCRIPT_ARGS=("$@")
 
 SSH_OPTS="-o StrictHostKeyChecking=no"
 
@@ -54,4 +58,4 @@ else
 fi
 
 ssh $SSH_OPTS "user@$PANEL_IP" chmod +x "$REMOTE_DIR/$SCRIPT_NAME"
-ssh $SSH_OPTS "user@$PANEL_IP" sudo bash "$REMOTE_DIR/$SCRIPT_NAME"
+ssh $SSH_OPTS "user@$PANEL_IP" sudo bash "$REMOTE_DIR/$SCRIPT_NAME" "${SCRIPT_ARGS[@]}"
