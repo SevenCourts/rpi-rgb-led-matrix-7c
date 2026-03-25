@@ -37,6 +37,7 @@ cd /opt/7c
 git clone https://github.com/sevencourts/rpi-rgb-led-matrix.git
 cd rpi-rgb-led-matrix/
 git switch 7c/m1/dev
+git -c advice.detachedHead=false checkout sevencourts/v2
 make
 
 # Install and make python3 bindings
