@@ -19,10 +19,15 @@ fi
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 echo 'script dir:' $SCRIPT_DIR
 
+# Wait for any running apt/dpkg process to finish (e.g. unattended-upgrades after reboot)
+echo 'Waiting for dpkg lock...'
+while fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do
+  sleep 2
+done
+echo 'dpkg lock is free.'
 
-# ==============================================================================
-# Phase 0: Clean up previous installations (failures are non-fatal)
-# ==============================================================================
+
+echo '=== Phase 0: Clean up previous installations ==='
 
 systemctl disable --now 7c-hostname 2>/dev/null || true
 systemctl disable --now 7c 2>/dev/null || true
@@ -31,9 +36,7 @@ systemctl disable --now 7c-d 2>/dev/null || true
 rm -rf /opt/7c
 
 
-# ==============================================================================
-# Phase 1: OS configuration (no network needed)
-# ==============================================================================
+echo '=== Phase 1: OS configuration ==='
 
 # Set the country code (must do to enable WiFi)
 ## Find your country's code here: <https://en.wikipedia.org/wiki/ISO_3166-1>
@@ -62,9 +65,7 @@ update-rc.d -f fake-hwclock remove
 cp $SCRIPT_DIR/7c-os/lib/udev/hwclock-set /lib/udev/hwclock-set
 
 
-# ==============================================================================
-# Phase 2: Download (all network operations)
-# ==============================================================================
+echo '=== Phase 2: Download ==='
 
 apt-get update --allow-releaseinfo-change
 apt-get install -y \
@@ -96,19 +97,16 @@ unzip sevencourts-daemon.zip
 chmod u+x sevencourts-daemon
 
 
-# ==============================================================================
-# Phase 3: Build (CPU-intensive, no network)
-# ==============================================================================
+echo '=== Phase 3: Build ==='
 
 cd /opt/7c/rpi-rgb-led-matrix
-make
-make build-python PYTHON=$(command -v python3)
-make install-python PYTHON=$(command -v python3)
+make -C lib
+make -C bindings/python/rgbmatrix
+cd bindings/python
+$(command -v python3) setup.py install
 
 
-# ==============================================================================
-# Phase 4: Install & configure (local file ops, systemd)
-# ==============================================================================
+echo '=== Phase 4: Install & configure ==='
 
 # Create a symlink for convenient access to the firmware directory
 ln -s /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c/ /root/7c-firmware

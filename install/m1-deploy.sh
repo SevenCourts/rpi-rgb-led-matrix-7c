@@ -58,4 +58,7 @@ else
 fi
 
 ssh $SSH_OPTS "user@$PANEL_IP" chmod +x "$REMOTE_DIR/$SCRIPT_NAME"
-ssh $SSH_OPTS "user@$PANEL_IP" sudo bash "$REMOTE_DIR/$SCRIPT_NAME" "${SCRIPT_ARGS[@]}"
+# The remote script may reboot the panel, which closes the SSH connection
+# and returns a non-zero exit code. Treat exit code 255 (SSH disconnect) as success.
+ssh $SSH_OPTS "user@$PANEL_IP" sudo bash "$REMOTE_DIR/$SCRIPT_NAME" "${SCRIPT_ARGS[@]}" \
+  || { rc=$?; [ $rc -eq 255 ] && echo "Panel rebooting — install complete." || exit $rc; }
