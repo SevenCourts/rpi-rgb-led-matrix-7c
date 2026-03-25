@@ -16,6 +16,7 @@ usage() {
     echo "Examples:"
     echo "  $0 m1-setup/_setup.sh 192.168.1.100"
     echo "  $0 m1-setup/_setup.sh 192.168.1.100 dev/my-feature"
+    echo "  $0 m1-setup/_setup.sh 192.168.1.100 dev https://dl.sevencourts.com/s/XXXXX/download"
     exit 1
 }
 

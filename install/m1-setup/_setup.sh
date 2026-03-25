@@ -1,8 +1,9 @@
 #!/bin/bash
 # SevenCourts M1 installation script
 #
-# Usage: _setup.sh [BRANCH]
-#   BRANCH - firmware branch to checkout (default: firmware/stable)
+# Usage: _setup.sh [BRANCH] [DAEMON_URL]
+#   BRANCH     - firmware branch to checkout (default: firmware/stable)
+#   DAEMON_URL - sevencourts-daemon download URL (default: dl.sevencourts.com latest)
 
 set -euo pipefail
 set -x
@@ -10,6 +11,7 @@ set -x
 trap 'echo "SETUP FAILED at line $LINENO (exit code $?)" >&2' ERR
 
 FIRMWARE_BRANCH="${1:-firmware/stable}"
+DAEMON_URL="${2:-https://dl.sevencourts.com/s/gCYdoPfKEJCpawT/download}"
 
 if [ "$(id -u)" -ne 0 ]; then
   echo "Please run this script as root or using sudo!" >&2
@@ -91,8 +93,10 @@ git -c advice.detachedHead=false checkout "$FIRMWARE_BRANCH" -- || { echo "FATAL
 
 # Download sevencourts-daemon
 cd /opt/7c
-curl -fL -o sevencourts-daemon.zip https://dl.sevencourts.com/s/gCYdoPfKEJCpawT/download
+curl -fL -o sevencourts-daemon.zip "$DAEMON_URL"
 # TODO: add checksum verification (sha256sum -c "$SCRIPT_DIR/sevencourts-daemon.zip.sha256")
+file sevencourts-daemon.zip | grep -q "Zip archive" \
+  || { echo "FATAL: downloaded file is not a valid zip archive (check DAEMON_URL)" >&2; exit 1; }
 unzip sevencourts-daemon.zip
 chmod u+x sevencourts-daemon
 
