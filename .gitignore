@@ -64,3 +64,4 @@ Thumbs.db
 
 # Generated files
 commit-id
+install/register/google-credentials.json
