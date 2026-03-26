@@ -15,14 +15,23 @@ This is the SevenCourts M1 scoreboard firmware for Raspberry Pi-based RGB LED ma
 
 ## Development Commands
 
-### Running Locally with Emulator
+### Environment Setup
 
-Start the emulator (default connects to local server at port 5005):
+Uses [Devbox](https://www.jetify.com/devbox) (Nix-based) for reproducible development:
 ```bash
-./m1-emulator.sh
+devbox shell          # activates Python 3.9 + .venv
 ```
 
-Open browser to `http://localhost:8888` to view the display.
+Python dependencies (no requirements.txt — install manually):
+```bash
+pip install Pillow requests python-dateutil orjson==3.10 RGBMatrixEmulator==0.14.1
+```
+
+### Running Locally with Emulator
+
+```bash
+./m1-emulator.sh      # starts emulator, open http://localhost:8888
+```
 
 Environment variables in `m1-emulator.sh` control behavior:
 - `USE_RGB_MATRIX_EMULATOR=True` - enables emulator mode
@@ -33,12 +42,47 @@ Environment variables in `m1-emulator.sh` control behavior:
 
 ### Running on Hardware
 
-On Raspberry Pi with connected LED matrix:
 ```bash
-./m1.sh
+./m1.sh               # on Raspberry Pi with connected LED matrix
 ```
 
 This script passes hardware-specific LED matrix parameters (chain length, rows, cols, multiplexing, GPIO slowdown, etc.) to the Python application.
+
+### Testing
+
+Integration tests use [Hurl](https://hurl.dev/) (HTTP request testing), not pytest:
+```bash
+# Set target panel (BASE64-encoded hostname)
+export HURL_7c_target_panel=<base64-hostname>
+# Run all tests (Windows: run_full.cmd)
+cd test/hurl && hurl --test *.hurl
+```
+
+Test files are in `test/hurl/` — they exercise scoreboard rendering modes via the backend API.
+
+### Formatting
+
+Black formatter is configured via VSCode (format-on-save). No CLI linting tools are configured.
+
+### Docker
+
+```bash
+docker container run -it --rm tennismath.tableau.emulator
+```
+Override server with `TABLEAU_SERVER_BASE_URL` env var. CI builds via `.github/workflows/build.yml` (manual trigger, pushes to GHCR).
+
+### Panel Deployment
+
+Deploy firmware to a remote panel:
+```bash
+install/m1-deploy.sh install/m1-setup/_setup.sh <panel-ip> [branch] [daemon-url]
+```
+
+### Server Stage URLs
+
+- DEV: `https://dev.server.sevencourts.com`
+- STAGING: `https://staging.server.sevencourts.com`
+- PROD: `https://prod.server.sevencourts.com` (default)
 
 ## Architecture
 
@@ -92,26 +136,7 @@ This script passes hardware-specific LED matrix parameters (chain length, rows, 
 
 ### View Modules
 
-- **`sevencourts/m1/view_scoreboard.py`** - Tennis match scoreboard rendering
-  - Draws team names (uppercase, various font sizes based on length)
-  - Draws set scores (3 sets displayed, handles tiebreaks with superscript)
-  - Draws game scores (15/30/40/A format)
-  - Service indicator (yellow dot)
-  - Winner display with "MATCH" text
-
-- **`sevencourts/m1/view_signage.py`** - Signage mode for promotional content
-
-- **`sevencourts/m1/view_clock.py`** - Clock display (HH:MM format)
-  - Multiple font sizes for different layouts
-
-- **`sevencourts/m1/view_image.py`** - Idle mode image display
-  - Preset images or uploaded custom images
-
-- **`sevencourts/m1/view_message.py`** - Text message display
-
-- **`sevencourts/m1/booking/ebusy/`** - eBusy booking system integration
-  - `view_single.py` - Single court booking view
-  - `view_multiple.py` - Multiple court booking view
+View modules live in `sevencourts/m1/` and follow the naming convention `view_*.py`. The top-level dispatcher (`view.py`) routes to the appropriate view based on `panel_info` content. Key views: `view_scoreboard.py` (tennis scores), `view_clock.py`, `view_image.py`, `view_message.py`, `view_signage.py`, and `booking/ebusy/` (court bookings).
 
 ## Important Patterns
 
@@ -155,11 +180,7 @@ The codebase uses environment variables for all configuration (server URLs, debu
 Panels connect to `vpn.sevencourts.com` via OpenVPN for remote SSH access and firmware updates.
 
 ### Switching Server Stage
-Edit systemd service environment:
-```bash
-EDITOR=vim systemctl edit 7c
-```
-Set `TABLEAU_SERVER_BASE_URL` environment variable to dev/staging/prod URL.
+Edit systemd service environment with `EDITOR=vim systemctl edit 7c`, then set `TABLEAU_SERVER_BASE_URL` to the desired stage URL (see Server Stage URLs above).
 
 ## File Paths in Production
 
