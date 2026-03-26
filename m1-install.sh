@@ -68,7 +68,8 @@ systemctl enable 7c
 # Install 7c-controller
 ## ***TODO migrate source code and build for the 7c-controller (Rust project)***
 cd /opt/7c
-curl -L -o 7c_m1_controller.zip https://dl.sevencourts.com/s/LMy3GiocpGBKbs7/download
+# v.0.1.0 from 20.03.2023
+curl -L -o 7c_m1_controller.zip https://dl.sevencourts.com/s/3zgoLfseoSSWTRd/download
 unzip -j 7c_m1_controller.zip -d .
 chmod u+x 7c_m1_controller
 cd /opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
