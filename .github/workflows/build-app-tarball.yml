@@ -35,6 +35,8 @@ jobs:
         cd /tmp/rpi-rgb-led-matrix
         make -C lib
         make -C bindings/python/rgbmatrix
+        cd bindings/python
+        python3 setup.py build_ext --inplace
 
     - name: Vendor Python dependencies
       run: |
@@ -58,10 +60,12 @@ jobs:
         # rgbmatrix native library + Python bindings
         mkdir -p "$STAGING/rgbmatrix/lib"
         mkdir -p "$STAGING/rgbmatrix/python/rgbmatrix"
-        cp /tmp/rpi-rgb-led-matrix/lib/librgbmatrix.so* "$STAGING/rgbmatrix/lib/" 2>/dev/null || true
-        cp /tmp/rpi-rgb-led-matrix/lib/librgbmatrix.a "$STAGING/rgbmatrix/lib/" 2>/dev/null || true
-        cp /tmp/rpi-rgb-led-matrix/bindings/python/rgbmatrix/*.so "$STAGING/rgbmatrix/python/rgbmatrix/"
+        cp /tmp/rpi-rgb-led-matrix/lib/librgbmatrix.a "$STAGING/rgbmatrix/lib/"
+        # Find the compiled Python extension (.so) wherever setup.py placed it
+        find /tmp/rpi-rgb-led-matrix/bindings/python -name '*.so' -exec cp {} "$STAGING/rgbmatrix/python/rgbmatrix/" \;
         cp /tmp/rpi-rgb-led-matrix/bindings/python/rgbmatrix/*.py "$STAGING/rgbmatrix/python/rgbmatrix/"
+        # Verify the extension was found
+        ls -la "$STAGING/rgbmatrix/python/rgbmatrix/"
 
         # Vendored Python packages
         cp -r /tmp/vendor "$STAGING/vendor"

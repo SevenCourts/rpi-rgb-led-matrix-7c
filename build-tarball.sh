@@ -40,13 +40,14 @@ docker run --rm --platform linux/arm64 \
     cd /tmp/sdk
     make -C lib
     make -C bindings/python/rgbmatrix
+    cd bindings/python
+    python3 setup.py build_ext --inplace
 
     # Copy rgbmatrix outputs
     mkdir -p /out/rgbmatrix/lib /out/rgbmatrix/python/rgbmatrix
-    cp lib/librgbmatrix.a /out/rgbmatrix/lib/ 2>/dev/null || true
-    cp lib/librgbmatrix.so* /out/rgbmatrix/lib/ 2>/dev/null || true
-    cp bindings/python/rgbmatrix/*.so /out/rgbmatrix/python/rgbmatrix/
-    cp bindings/python/rgbmatrix/*.py /out/rgbmatrix/python/rgbmatrix/
+    cp /tmp/sdk/lib/librgbmatrix.a /out/rgbmatrix/lib/
+    find /tmp/sdk/bindings/python -name "*.so" -exec cp {} /out/rgbmatrix/python/rgbmatrix/ \;
+    cp /tmp/sdk/bindings/python/rgbmatrix/*.py /out/rgbmatrix/python/rgbmatrix/
 
     # Vendor Python deps
     pip install --target=/out/vendor orjson==3.10
