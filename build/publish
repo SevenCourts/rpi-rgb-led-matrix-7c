@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+build_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
+readonly build_dir
+
+readonly ci_file_to_upload="${1:?File to upload not specified}"
+
+{
+    echo "${BUILD_DATE:?}"
+    echo "${BUILD_NUMBER:?}"
+    echo "${GIT_REF:?}"
+    echo "${NEXTCLOUD_PASSWORD:?}"
+    echo "${NEXTCLOUD_USERNAME:?}"
+} > /dev/null
+
+readonly ci_dl_server=https://dl.sevencourts.com
+readonly ci_dl_server_path='SevenCourts%20Firmware'/"$GIT_REF/${BUILD_DATE}_${BUILD_NUMBER}"
+
+export WEBDAV_PASSWORD="$NEXTCLOUD_PASSWORD"
+export WEBDAV_USERNAME="$NEXTCLOUD_USERNAME"
+
+source "$build_dir/lib/webdav.bash"
+
+webdav__upload_file \
+    "$ci_dl_server/remote.php/webdav" "$ci_dl_server_path" "$ci_file_to_upload"
+
+echo "Download link: $ci_dl_server/index.php/apps/files/?dir=$ci_dl_server_path/"

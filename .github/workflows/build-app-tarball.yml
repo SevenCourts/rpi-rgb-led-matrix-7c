@@ -99,3 +99,15 @@ jobs:
           --title "7c-app $SHA" \
           --notes "App tarball built from $(git rev-parse HEAD) ($(git show -s --format=%as HEAD))." \
           || gh release upload "$TAG" "7c-app-$SHA.tar.gz" "7c-app-$SHA.sha256" --clobber
+
+    - name: Upload to dl.sevencourts.com
+      env:
+        BUILD_DATE: ${{ github.run_id }}
+        BUILD_NUMBER: ${{ github.run_number }}
+        GIT_REF: ${{ github.ref_name }}
+        NEXTCLOUD_PASSWORD: ${{ secrets.NEXTCLOUD_PASSWORD }}
+        NEXTCLOUD_USERNAME: ${{ vars.NEXTCLOUD_USERNAME }}
+      run: |
+        export BUILD_DATE="$(date '+%y%m%d-%H%M%S')"
+        ./build/publish "7c-app-$SHA.tar.gz"
+        ./build/publish "7c-app-$SHA.sha256"

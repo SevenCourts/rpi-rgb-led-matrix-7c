@@ -34,7 +34,7 @@ as `/opt/7c/current`, is immediately runnable:
 |----------|-------|
 | OS | Buildroot Linux (BusyBox init, NOT systemd) |
 | Architecture | aarch64 (Raspberry Pi 4) |
-| Python | 3.11 |
+| Python | 3.12 |
 | Init system | BusyBox init.d scripts (no `systemctl`) |
 | App service | `/etc/init.d/S99sevencourts` runs `m1.sh` |
 | App location | `/opt/7c/current` → symlink to `/opt/7c/releases/<version>/` |
@@ -75,7 +75,7 @@ fi
 On push to release branch or manual trigger:
 
 1. Build `rgbmatrix` native lib for aarch64 (use `docker buildx` with arm64
-   emulation or a self-hosted arm64 runner). Must link against Python 3.11.
+   emulation or a self-hosted arm64 runner). Must link against Python 3.12.
 2. Collect all app files into a staging directory
 3. Vendor Python deps not in OS: `pip install orjson --target=vendor/`
    (must target aarch64)
