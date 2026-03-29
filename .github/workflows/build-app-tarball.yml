@@ -1,0 +1,97 @@
+name: Build App Tarball
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - firmware/stable
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04-arm
+
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install build dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential python3-dev cython3
+
+    - name: Determine version
+      run: |
+        SHA="$(git rev-parse --short HEAD)"
+        echo "SHA=$SHA" >> "$GITHUB_ENV"
+        echo "APP_DIR=7c-app-$SHA" >> "$GITHUB_ENV"
+
+    - name: Clone and build rpi-rgb-led-matrix
+      run: |
+        git clone --depth 1 --branch sevencourts/v2 \
+          https://github.com/sevencourts/rpi-rgb-led-matrix.git /tmp/rpi-rgb-led-matrix
+        cd /tmp/rpi-rgb-led-matrix
+        make -C lib
+        make -C bindings/python/rgbmatrix
+
+    - name: Vendor Python dependencies
+      run: |
+        pip install --target=/tmp/vendor orjson==3.10
+
+    - name: Stage tarball contents
+      run: |
+        STAGING="/tmp/staging/$APP_DIR"
+        mkdir -p "$STAGING"
+
+        # Launch script and Python entry point
+        cp m1.sh samplebase.py "$STAGING/"
+
+        # Python application package
+        cp -r sevencourts "$STAGING/sevencourts"
+
+        # Assets
+        cp -r fonts "$STAGING/fonts"
+        cp -r images "$STAGING/images"
+
+        # rgbmatrix native library + Python bindings
+        mkdir -p "$STAGING/rgbmatrix/lib"
+        mkdir -p "$STAGING/rgbmatrix/python/rgbmatrix"
+        cp /tmp/rpi-rgb-led-matrix/lib/librgbmatrix.so* "$STAGING/rgbmatrix/lib/" 2>/dev/null || true
+        cp /tmp/rpi-rgb-led-matrix/lib/librgbmatrix.a "$STAGING/rgbmatrix/lib/" 2>/dev/null || true
+        cp /tmp/rpi-rgb-led-matrix/bindings/python/rgbmatrix/*.so "$STAGING/rgbmatrix/python/rgbmatrix/"
+        cp /tmp/rpi-rgb-led-matrix/bindings/python/rgbmatrix/*.py "$STAGING/rgbmatrix/python/rgbmatrix/"
+
+        # Vendored Python packages
+        cp -r /tmp/vendor "$STAGING/vendor"
+
+        # Version sentinel
+        echo "$SHA" > "$STAGING/VERSION"
+
+    - name: Create tarball and checksum
+      run: |
+        cd /tmp/staging
+        tar czf "$GITHUB_WORKSPACE/7c-app-$SHA.tar.gz" "$APP_DIR"
+        cd "$GITHUB_WORKSPACE"
+        sha256sum "7c-app-$SHA.tar.gz" > "7c-app-$SHA.sha256"
+
+    - name: Upload tarball artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-tarball
+        path: |
+          7c-app-*.tar.gz
+          7c-app-*.sha256
+
+    - name: Create GitHub Release
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        TAG="app-$SHA"
+        gh release create "$TAG" \
+          "7c-app-$SHA.tar.gz" \
+          "7c-app-$SHA.sha256" \
+          --title "7c-app $SHA" \
+          --notes "App tarball built from $(git rev-parse HEAD) ($(git show -s --format=%as HEAD))." \
+          || gh release upload "$TAG" "7c-app-$SHA.tar.gz" "7c-app-$SHA.sha256" --clobber

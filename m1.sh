@@ -42,4 +42,16 @@ fi
 readonly cmd_args
 
 cd "$(dirname "${BASH_SOURCE[0]}")"
+SCRIPT_DIR="$(pwd)"
+
+# rgbmatrix Python bindings (bundled in tarball for hardware mode)
+if [[ -z $is_emulator ]] && [[ -d "$SCRIPT_DIR/rgbmatrix/python" ]]; then
+  export PYTHONPATH="$SCRIPT_DIR/rgbmatrix/python${PYTHONPATH:+:$PYTHONPATH}"
+fi
+
+# Vendored Python packages (e.g., orjson)
+if [[ -d "$SCRIPT_DIR/vendor" ]]; then
+  export PYTHONPATH="$SCRIPT_DIR/vendor${PYTHONPATH:+:$PYTHONPATH}"
+fi
+
 python3 -m sevencourts.m1.main "${cmd_args[@]}" "$@"
