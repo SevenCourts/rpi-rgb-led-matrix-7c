@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       sha:
-        description: 'Short commit SHA to promote (from an existing release, e.g. c317d38)'
-        required: true
+        description: 'Short commit SHA to promote (leave empty for latest release)'
+        required: false
         type: string
 
 jobs:
@@ -16,11 +16,24 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
+    - name: Resolve release
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        if [ -n "${{ inputs.sha }}" ]; then
+          SHA="${{ inputs.sha }}"
+        else
+          TAG="$(gh release list --limit 1 --json tagName --jq '.[0].tagName')"
+          SHA="${TAG#app-}"
+          echo "Using latest release: $TAG"
+        fi
+        echo "SHA=$SHA" >> "$GITHUB_ENV"
+
     - name: Download release artifacts
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        TAG="app-${{ inputs.sha }}"
+        TAG="app-$SHA"
         echo "Downloading release $TAG..."
         gh release download "$TAG" --pattern '7c-app-*'
         ls -la 7c-app-*
@@ -30,10 +43,9 @@ jobs:
         NEXTCLOUD_PASSWORD: ${{ secrets.NEXTCLOUD_PASSWORD }}
         NEXTCLOUD_USERNAME: ${{ vars.NEXTCLOUD_USERNAME }}
       run: |
-        SHA="${{ inputs.sha }}"
         ./build/publish-stable "7c-app-$SHA.tar.gz" "7c-app.tar.gz"
         ./build/publish-stable "7c-app-$SHA.sha256" "7c-app.sha256"
         echo ""
-        echo "Stable download links:"
+        echo "Promoted app-$SHA to stable."
         echo "  Tarball:  https://dl.sevencourts.com/s/GggcGG4ag9Bk4zS/download"
         echo "  Checksum: https://dl.sevencourts.com/s/JqWfzbPyQ9DBSEw/download"
