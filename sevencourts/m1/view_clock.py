@@ -23,6 +23,8 @@ def draw_clock_by_coordinates(
 
 
 def draw_clock(cnv, time_now, clock, color=COLOR_CLOCK_DEFAULT):
+    if time_now is None:
+        time_now = "--:--"
     if clock == None:
         # display a clock using the default font and coordinates
         font = FONT_CLOCK_DEFAULT
