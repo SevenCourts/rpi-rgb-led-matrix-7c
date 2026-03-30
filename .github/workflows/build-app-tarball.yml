@@ -2,9 +2,6 @@ name: Build App Tarball
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - firmware/stable
 
 jobs:
   build:
