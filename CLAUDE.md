@@ -71,9 +71,23 @@ docker container run -it --rm tennismath.tableau.emulator
 ```
 Override server with `TABLEAU_SERVER_BASE_URL` env var. CI builds via `.github/workflows/build.yml` (manual trigger, pushes to GHCR).
 
-### Panel Deployment
+### Build & Release
 
-Deploy firmware to a remote panel:
+Two GitHub Actions workflows (both manual `workflow_dispatch` only):
+
+1. **Build App Tarball** (`.github/workflows/build-app-tarball.yml`) — builds the app tarball on a GitHub-hosted ARM64 runner, creates a GitHub Release, and uploads to dl.sevencourts.com (versioned path).
+   ```bash
+   gh workflow run build-app-tarball.yml --ref master
+   ```
+
+2. **Promote to Stable** (`.github/workflows/promote-stable.yml`) — downloads an existing release and uploads it to the stable path on dl.sevencourts.com.
+   ```bash
+   gh workflow run promote-stable.yml -f sha=<short-sha>
+   ```
+
+### Panel Deployment (legacy)
+
+For legacy panels running Raspberry Pi OS (see `install/m1-setup/DEPRECATED.md`):
 ```bash
 install/m1-deploy.sh install/m1-setup/_setup.sh <panel-ip> [branch] [daemon-url]
 ```
