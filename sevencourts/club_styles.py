@@ -14,7 +14,7 @@ class ClubCI:
     c_text: graphics.Color = COLOR_WHITE
     c_bg_1: graphics.Color = COLOR_7C_DARK_BLUE
     c_bg_2: graphics.Color = COLOR_7C_DARK_GREEN
-    logo: Logo = Logo()
+    logo: Logo = field(default_factory=Logo)
 
 
 @dataclass
@@ -82,14 +82,14 @@ class Booking:
 
     is_weather_displayed: bool = True
 
-    one: OneCourt = OneCourt()
-    many: MultipleCourts = MultipleCourts()
+    one: OneCourt = field(default_factory=OneCourt)
+    many: MultipleCourts = field(default_factory=MultipleCourts)
 
 
 @dataclass
 class ClubStyle:
-    ci: ClubCI = ClubCI()
-    booking: Booking = Booking()
+    ci: ClubCI = field(default_factory=ClubCI)
+    booking: Booking = field(default_factory=Booking)
 
 
 # TABB Böblingen

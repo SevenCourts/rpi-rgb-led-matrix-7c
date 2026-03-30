@@ -17,25 +17,22 @@ DEFAULT_TIMEZONE = "Europe/Berlin"
 
 _log = logging.logger("gateway")
 
-# In container there is no git binary and history -- read from file.
+# In container/production there is no git binary and history -- read from file.
 # In local environment we don't want generate this file manually -- ask git.
-try:
-    with open("commit-id", "r") as file:
-        GIT_COMMIT_ID = file.read().strip()
-except:
-    GIT_COMMIT_ID = (
-        subprocess.check_output(["git", "rev-parse", "HEAD"]).strip().decode()
-    )
+# If neither file nor git is available, fall back to "unknown".
+def _read_commit_info(filename, git_args):
+    try:
+        with open(filename, "r") as file:
+            return file.read().strip()
+    except Exception:
+        pass
+    try:
+        return subprocess.check_output(git_args).strip().decode()
+    except Exception:
+        return "unknown"
 
-try:
-    with open("commit-date", "r") as file:
-        GIT_COMMIT_DATE = file.read().strip()
-except:
-    GIT_COMMIT_DATE = (
-        subprocess.check_output(["git", "show", "-s", "--format=%as", "HEAD"])
-        .strip()
-        .decode()
-    )
+GIT_COMMIT_ID = _read_commit_info("commit-id", ["git", "rev-parse", "HEAD"])
+GIT_COMMIT_DATE = _read_commit_info("commit-date", ["git", "show", "-s", "--format=%as", "HEAD"])
 
 
 TIMEOUT_S = 10
