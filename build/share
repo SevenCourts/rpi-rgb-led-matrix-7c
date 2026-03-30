@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+build_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
+readonly build_dir
+
+readonly ci_share_path="${1:?Path to share not specified}"
+
+{
+    echo "${NEXTCLOUD_PASSWORD:?}"
+    echo "${NEXTCLOUD_USERNAME:?}"
+} > /dev/null
+
+readonly ci_dl_server=https://dl.sevencourts.com
+
+export WEBDAV_PASSWORD="$NEXTCLOUD_PASSWORD"
+export WEBDAV_USERNAME="$NEXTCLOUD_USERNAME"
+
+source "$build_dir/lib/webdav.bash"
+
+webdav__create_public_share "$ci_dl_server" "$ci_share_path"

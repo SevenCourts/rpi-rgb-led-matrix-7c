@@ -268,6 +268,88 @@ webdav__upload_file() {
   fi
 }
 
+# Creates a public share link for a path on the Nextcloud server.
+#
+# Uses the Nextcloud OCS Sharing API (v2).
+#
+# Env:
+#
+# - WEBDAV_PASSWORD
+# - WEBDAV_USERNAME
+#
+# Arguments:
+#
+# 1. The server base URL, e.g. 'https://dl.sevencourts.com'.
+# 2. The path to share, e.g. 'SevenCourts Firmware/master/260330-141500_42'.
+#
+# STDOUT:
+#
+# - The public share URL on success.
+#
+# STDERR:
+#
+# - errors.
+# - logging.
+#
+# Return code:
+#
+# - 0 on success.
+# - 1 on error.
+webdav__create_public_share() {
+  local tmp_file
+  tmp_file="$(mktemp)"
+  readonly tmp_file
+
+  local server
+  server="$1"
+  readonly server
+
+  local path
+  path="$2"
+  readonly path
+
+  local username
+  username="${WEBDAV_USERNAME:?}"
+  readonly username
+
+  local password
+  password="${WEBDAV_PASSWORD:?}"
+  readonly password
+
+  util__echo_err 'Creating public share'
+  util__echo_err "  for path '/$path'"
+  util__echo_err "  on server '$server'"
+
+  local http_code
+  http_code="$(
+    curl \
+      --output "$tmp_file" \
+      --silent \
+      --user "$username:$password" \
+      --header "OCS-APIRequest: true" \
+      --data-urlencode "path=/$path" \
+      --data "shareType=3" \
+      --data "permissions=1" \
+      --write-out "%{http_code}" \
+      "$server/ocs/v2.php/apps/files_sharing/api/v1/shares?format=json"
+  )"
+  readonly http_code
+
+  if (( http_code == 200 )); then
+    local share_url
+    share_url="$(python3 -c "import sys,json; print(json.load(sys.stdin)['ocs']['data']['url'])" < "$tmp_file")"
+    readonly share_url
+    util__echo_err "  Shared: $share_url"
+    echo "$share_url"
+  else
+    util__echo_err "  Error, HTTP code $http_code."
+    util__echo_err '  <=== Server Response ^ ===>'
+    util__cat_err "$tmp_file"
+    util__echo_err '  <=== Server Response $ ===>'
+    return 1
+  fi
+}
+
 # Uploads a file tree to the WebDav server.
 #
 # Arguments:
