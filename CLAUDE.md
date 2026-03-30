@@ -157,38 +157,35 @@ The codebase uses environment variables for all configuration (server URLs, debu
 
 ## Production Deployment
 
-### SystemD Services
+### Current: sevencourts.os (Buildroot image)
 
-**7c.service** - Main scoreboard application
-- WorkingDirectory: `/opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c`
-- Runs `m1.sh` with hardware parameters
-- Restarts automatically on failure (RestartSec=5)
-- Depends on `7c-hostname.service`
+New panels run [sevencourts.os](https://github.com/SevenCourts/sevencourts.os) — a custom Buildroot Linux image with BusyBox init. The app is deployed as a self-contained tarball to `/opt/7c/current/` via the `7c-updater.sh` mechanism. This repo's CI builds the tarball; the OS repo bakes it into the image.
 
-**7c-d.service** - WiFi/Bluetooth controller daemon
-- Rust binary at `/opt/7c/sevencourts-daemon`
-- Source code: https://github.com/SevenCourts/sevencourts-daemon
-- IPC format documentation: `/docs/ipc/` in the daemon repo
-- Manages WiFi configuration via SevenCourts Admin mobile app
-- Reads config from `/etc/7c_m1_assoc.json`
+**Service definitions live in sevencourts.os**, not here:
+- `S10sevencourts` — app service (runs `m1.sh` from `/opt/7c/current/`)
+- `S05hostname` — hostname from Pi serial number
+- `S98daemon` — sevencourts-daemon (WiFi/BLE provisioning)
 
-**7c-hostname.service** - Sets hostname from hardware serial number
-- Runs `/opt/7c/7c-set-hostname.sh` on boot
-- Hostname is last 8 bytes of `/sys/firmware/devicetree/base/serial-number`
+### Legacy: SystemD (Raspberry Pi OS)
+
+A handful of older panels still run stock Raspberry Pi OS with SystemD services. The legacy provisioning scripts and service files are in `install/m1-setup/` (see `install/m1-setup/DEPRECATED.md`).
+
+### Related Repositories
+
+- **[sevencourts.os](https://github.com/SevenCourts/sevencourts.os)** — OS image (Buildroot config, rootfs overlay, init scripts, updater). Consumes the app tarball produced by this repo's CI.
+- **[sevencourts.daemon](https://github.com/SevenCourts/sevencourts.daemon)** — WiFi/BLE controller daemon (Rust). IPC format docs: `/docs/ipc/` in that repo.
+- **[sevencourts.ops](https://github.com/SevenCourts/sevencourts.ops)** — Panel manufacturing, registration, deployment, and field operations tooling.
+- **Interface contract**: The tarball format is specified in `sevencourts.os/spec/app-tarball-spec.md`.
 
 ### Remote Access
 Panels connect to `vpn.sevencourts.com` via OpenVPN for remote SSH access and firmware updates.
 
-### Switching Server Stage
-Edit systemd service environment with `EDITOR=vim systemctl edit 7c`, then set `TABLEAU_SERVER_BASE_URL` to the desired stage URL (see Server Stage URLs above).
+## File Paths on Device
 
-## File Paths in Production
-
+- App root: `/opt/7c/current/` (symlink to active release)
 - Panel state: `/opt/7c/last_panel_state.json`
 - Config: `/opt/7c/panel.conf`
-- Firmware: `/opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c/`
 - Controller daemon config: `/etc/7c_m1_assoc.json`
-- SystemD services: `/etc/systemd/system/7c*.service`
 
 ## Logging
 
@@ -196,8 +193,7 @@ Log level is controlled by `TABLEAU_DEBUG` environment variable:
 - Set to any value → DEBUG level
 - Unset → INFO level
 
-View logs:
+View logs (sevencourts.os):
 ```bash
-journalctl -u 7c -f
-journalctl -u 7c-d -f
+cat /var/log/sevencourts.log
 ```
