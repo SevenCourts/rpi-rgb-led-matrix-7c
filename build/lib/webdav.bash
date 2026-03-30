@@ -240,8 +240,12 @@ webdav__upload_file() {
   readonly path_exists
 
   if [[ $path_exists == exists ]]; then
-    util__echo_err '  Error, file already exists.'
-    return 1
+    if [[ ${WEBDAV_OVERWRITE:-} == true ]]; then
+      util__echo_err '  File exists, overwriting.'
+    else
+      util__echo_err '  Error, file already exists.'
+      return 1
+    fi
   fi
 
   webdav__mkdirp "$server" "$path"
@@ -259,6 +263,8 @@ webdav__upload_file() {
 
   if (( http_code == 201 )); then
     util__echo_err '  Uploaded.'
+  elif (( http_code == 204 )); then
+    util__echo_err '  Overwritten.'
   else
     util__echo_err "  Error, HTTP code $http_code"
     util__echo_err '  <=== Server Response ^ ===>'
