@@ -2,6 +2,9 @@ from dataclasses import dataclass, field, fields
 from typing import Dict
 from datetime import datetime
 from dateutil import tz
+import fcntl
+import struct
+import time
 import orjson
 import os
 import sevencourts.logging as logging
@@ -33,6 +36,9 @@ class PanelState:
         return self.panel_id is not None
 
     def refresh_time(self):
+        if not is_clock_trustworthy():
+            self.time_now_in_TZ = None
+            return self.time_now_in_TZ
         dt = datetime.now(tz.gettz(self.tz()))
         self.time_now_in_TZ = dt.strftime("%H:%M")
         return self.time_now_in_TZ
@@ -43,6 +49,59 @@ class PanelState:
     @classmethod
     def from_dict(cls, data: dict):
         return cls(**data)
+
+
+_clock_trusted = False
+
+
+def is_clock_trustworthy() -> bool:
+    """
+    Check if the system clock can be trusted.
+    - Working RTC (M1): returns True immediately (RTC ticks between reads)
+    - Dead RTC (L1): returns True only after NTP has synchronized
+    Once True, the result is cached for the rest of the process lifetime.
+    """
+    global _clock_trusted
+    if _clock_trusted:
+        return True
+    rtc = _is_rtc_ticking()
+    ntp = _is_ntp_synchronized()
+    if rtc or ntp:
+        _clock_trusted = True
+        _log.info(f"Clock is now trustworthy (rtc_ticking={rtc}, ntp_synced={ntp})")
+        return True
+    _log.debug(f"Clock not yet trustworthy (rtc_ticking={rtc}, ntp_synced={ntp})")
+    return False
+
+
+def _is_rtc_ticking() -> bool:
+    """Read RTC twice 100ms apart; if time advanced, the RTC is alive."""
+    try:
+        with open('/dev/rtc0', 'rb') as f:
+            RTC_RD_TIME = 0x80247009
+            buf = bytearray(36)
+            fcntl.ioctl(f, RTC_RD_TIME, buf)
+            t1 = struct.unpack_from('9i', buf)
+            time.sleep(0.1)
+            fcntl.ioctl(f, RTC_RD_TIME, buf)
+            t2 = struct.unpack_from('9i', buf)
+            ticking = t2 > t1
+            _log.debug(f"RTC ticking check: t1={t1[:6]}, t2={t2[:6]}, ticking={ticking}")
+            return ticking
+    except Exception as e:
+        _log.debug(f"RTC not available: {e}")
+        return False
+
+
+def _is_ntp_synchronized() -> bool:
+    """Check if systemd-timesyncd has synchronized the clock."""
+    try:
+        synced = os.path.exists('/run/systemd/timesync/synchronized')
+        _log.debug(f"NTP synchronized: {synced}")
+        return synced
+    except Exception as e:
+        _log.debug(f"NTP sync check failed: {e}")
+        return False
 
 
 # Skip disk writes when state hasn't changed — called every render cycle,
