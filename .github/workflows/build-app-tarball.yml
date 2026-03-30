@@ -25,8 +25,8 @@ jobs:
     - name: Install build dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential cython3
-        pip install Pillow setuptools
+        sudo apt-get install -y build-essential cython3 python3-pil
+        pip install setuptools
 
     - name: Determine version
       run: |
@@ -42,9 +42,11 @@ jobs:
         make -C lib
         make -C bindings/python/rgbmatrix
         cd bindings/python
-        PILLOW_INCLUDE="$(python3 -c 'import os, PIL; print(os.path.dirname(PIL.__file__))')"
-        PYTHON_INCLUDE="$(python3 -c 'import sysconfig; print(sysconfig.get_path("include"))')"
-        CFLAGS="-I$PILLOW_INCLUDE -I$PYTHON_INCLUDE" python3 setup.py build_ext --inplace
+        # Imaging.h is from system python3-pil; C_INCLUDE_PATH ensures gcc finds it
+        # Imaging.h from system python3-pil; find it dynamically
+        IMAGING_DIR="$(find /usr/include -name 'Imaging.h' -printf '%h' -quit)"
+        export C_INCLUDE_PATH="$IMAGING_DIR"
+        python3 setup.py build_ext --inplace
 
     - name: Vendor Python dependencies
       run: |
