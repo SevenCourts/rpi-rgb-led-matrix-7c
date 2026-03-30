@@ -27,7 +27,11 @@ export WEBDAV_OVERWRITE=true
 source "$build_dir/lib/webdav.bash"
 
 # Rename the file to the stable name for upload
-cp "$ci_file_to_upload" "/tmp/$ci_stable_filename"
+src="$(realpath "$ci_file_to_upload")"
+dst="/tmp/$ci_stable_filename"
+if [ "$src" != "$(realpath "$dst" 2>/dev/null)" ]; then
+    cp "$src" "$dst"
+fi
 
 webdav__upload_file \
     "$ci_dl_server/remote.php/webdav" "$ci_stable_path" "/tmp/$ci_stable_filename"
