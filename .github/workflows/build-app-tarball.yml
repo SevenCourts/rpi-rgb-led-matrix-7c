@@ -42,6 +42,15 @@ jobs:
       run: |
         pip install --target=/tmp/vendor orjson==3.10
 
+    - name: Download latest sevencourts-daemon
+      run: |
+        curl -fL -o /tmp/sevencourts-daemon.zip \
+          "https://dl.sevencourts.com/s/gCYdoPfKEJCpawT/download"
+        file /tmp/sevencourts-daemon.zip | grep -q "Zip archive" \
+          || { echo "FATAL: downloaded file is not a valid zip archive"; exit 1; }
+        unzip -o /tmp/sevencourts-daemon.zip -d /tmp/sevencourts-daemon-extracted
+        chmod +x /tmp/sevencourts-daemon-extracted/sevencourts-daemon
+
     - name: Create commit info files
       run: |
         git rev-parse HEAD > commit-id
@@ -74,6 +83,9 @@ jobs:
         cp /tmp/rpi-rgb-led-matrix/bindings/python/rgbmatrix/*.py "$STAGING/rgbmatrix/python/rgbmatrix/"
         # Verify the extension was found
         ls -la "$STAGING/rgbmatrix/python/rgbmatrix/"
+
+        # sevencourts-daemon binary (aarch64)
+        cp /tmp/sevencourts-daemon-extracted/sevencourts-daemon "$STAGING/sevencourts-daemon"
 
         # Vendored Python packages
         cp -r /tmp/vendor "$STAGING/vendor"
