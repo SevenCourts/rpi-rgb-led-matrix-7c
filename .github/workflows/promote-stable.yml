@@ -45,7 +45,13 @@ jobs:
       run: |
         ./build/publish-stable "7c-app-$SHA.tar.gz" "7c-app.tar.gz"
         ./build/publish-stable "7c-app-$SHA.sha256" "7c-app.sha256"
+
+        # latest.txt — polled by on-device updater to detect new versions
+        echo -n "$SHA" > /tmp/latest.txt
+        ./build/publish-stable /tmp/latest.txt latest.txt
+
         echo ""
         echo "Promoted app-$SHA to stable."
-        echo "  Tarball:  https://dl.sevencourts.com/s/GggcGG4ag9Bk4zS/download"
-        echo "  Checksum: https://dl.sevencourts.com/s/JqWfzbPyQ9DBSEw/download"
+        echo "  Tarball:    https://dl.sevencourts.com/s/GggcGG4ag9Bk4zS/download"
+        echo "  Checksum:   https://dl.sevencourts.com/s/JqWfzbPyQ9DBSEw/download"
+        echo "  latest.txt: (create stable share link on first run)"
