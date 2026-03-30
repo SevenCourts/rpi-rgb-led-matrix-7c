@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+# Uploads a file to overwrite the stable release on Nextcloud.
+# The stable path is a fixed location whose files are already shared
+# via permanent public links.
+
+set -euo pipefail
+
+build_dir="$(realpath "$(dirname "${BASH_SOURCE[0]}")")"
+readonly build_dir
+
+readonly ci_file_to_upload="${1:?File to upload not specified}"
+readonly ci_stable_filename="${2:?Stable filename not specified}"
+
+{
+    echo "${NEXTCLOUD_PASSWORD:?}"
+    echo "${NEXTCLOUD_USERNAME:?}"
+} > /dev/null
+
+readonly ci_dl_server=https://dl.sevencourts.com
+readonly ci_stable_path='SevenCourts%20Firmware/stable'
+
+export WEBDAV_PASSWORD="$NEXTCLOUD_PASSWORD"
+export WEBDAV_USERNAME="$NEXTCLOUD_USERNAME"
+
+source "$build_dir/lib/webdav.bash"
+
+# Rename the file to the stable name for upload
+cp "$ci_file_to_upload" "/tmp/$ci_stable_filename"
+
+webdav__upload_file \
+    "$ci_dl_server/remote.php/webdav" "$ci_stable_path" "/tmp/$ci_stable_filename"
+
+echo "Updated stable: $ci_stable_path/$ci_stable_filename"

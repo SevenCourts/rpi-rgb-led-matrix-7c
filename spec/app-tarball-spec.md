@@ -19,6 +19,9 @@ as `/opt/7c/current`, is immediately runnable:
 ├── m1.sh                          # Launch script
 ├── samplebase.py                  # RGB matrix base class
 ├── sevencourts/                   # Python package (m1, views, gateway, etc.)
+├── sevencourts-daemon             # BLE/WiFi controller binary (aarch64)
+├── commit-id                      # Full git commit hash
+├── commit-date                    # Commit date (YYYY-MM-DD)
 ├── fonts/                         # All BDF fonts
 ├── images/                        # flags, logos, weather, clipart
 ├── rgbmatrix/
@@ -34,7 +37,7 @@ as `/opt/7c/current`, is immediately runnable:
 |----------|-------|
 | OS | Buildroot Linux (BusyBox init, NOT systemd) |
 | Architecture | aarch64 (Raspberry Pi 4) |
-| Python | 3.12 |
+| Python | 3.14 |
 | Init system | BusyBox init.d scripts (no `systemctl`) |
 | App service | `/etc/init.d/S99sevencourts` runs `m1.sh` |
 | App location | `/opt/7c/current` → symlink to `/opt/7c/releases/<version>/` |
@@ -75,7 +78,7 @@ fi
 On push to release branch or manual trigger:
 
 1. Build `rgbmatrix` native lib for aarch64 (use `docker buildx` with arm64
-   emulation or a self-hosted arm64 runner). Must link against Python 3.12.
+   emulation or a self-hosted arm64 runner). Must link against Python 3.14.
 2. Collect all app files into a staging directory
 3. Vendor Python deps not in OS: `pip install orjson --target=vendor/`
    (must target aarch64)
