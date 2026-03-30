@@ -77,6 +77,7 @@ jobs:
         cp -r images "$STAGING/images"
 
         # rgbmatrix Python bindings (built by scikit-build-core + cmake)
+        mkdir -p "$STAGING/rgbmatrix/python"
         cp -r /tmp/rgbmatrix-install/rgbmatrix "$STAGING/rgbmatrix/python/rgbmatrix"
         ls -la "$STAGING/rgbmatrix/python/rgbmatrix/"
 
