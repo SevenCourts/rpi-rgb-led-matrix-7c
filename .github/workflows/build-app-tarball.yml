@@ -22,8 +22,8 @@ jobs:
     - name: Install build dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential cython3 python3-pil
-        pip install setuptools
+        sudo apt-get install -y build-essential cmake
+        pip install cython scikit-build-core Pillow
 
     - name: Determine version
       run: |
@@ -33,17 +33,9 @@ jobs:
 
     - name: Clone and build rpi-rgb-led-matrix
       run: |
-        git clone --depth 1 --branch sevencourts/v2 \
+        git clone --depth 1 --branch sdk/2026-03-30 \
           https://github.com/sevencourts/rpi-rgb-led-matrix.git /tmp/rpi-rgb-led-matrix
-        cd /tmp/rpi-rgb-led-matrix
-        make -C lib
-        make -C bindings/python/rgbmatrix
-        cd bindings/python
-        # Imaging.h is from system python3-pil; C_INCLUDE_PATH ensures gcc finds it
-        # Imaging.h from system python3-pil; find it dynamically
-        IMAGING_DIR="$(find /usr/include -name 'Imaging.h' -printf '%h' -quit)"
-        export C_INCLUDE_PATH="$IMAGING_DIR"
-        python3 setup.py build_ext --inplace
+        pip install --target=/tmp/rgbmatrix-install /tmp/rpi-rgb-led-matrix
 
     - name: Vendor Python dependencies
       run: |
@@ -81,14 +73,8 @@ jobs:
         cp -r fonts "$STAGING/fonts"
         cp -r images "$STAGING/images"
 
-        # rgbmatrix native library + Python bindings
-        mkdir -p "$STAGING/rgbmatrix/lib"
-        mkdir -p "$STAGING/rgbmatrix/python/rgbmatrix"
-        cp /tmp/rpi-rgb-led-matrix/lib/librgbmatrix.a "$STAGING/rgbmatrix/lib/"
-        # Find the compiled Python extension (.so) wherever setup.py placed it
-        find /tmp/rpi-rgb-led-matrix/bindings/python -name '*.so' -exec cp {} "$STAGING/rgbmatrix/python/rgbmatrix/" \;
-        cp /tmp/rpi-rgb-led-matrix/bindings/python/rgbmatrix/*.py "$STAGING/rgbmatrix/python/rgbmatrix/"
-        # Verify the extension was found
+        # rgbmatrix Python bindings (built by scikit-build-core + cmake)
+        cp -r /tmp/rgbmatrix-install/rgbmatrix "$STAGING/rgbmatrix/python/rgbmatrix"
         ls -la "$STAGING/rgbmatrix/python/rgbmatrix/"
 
         # sevencourts-daemon binary (aarch64)
