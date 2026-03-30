@@ -2,6 +2,8 @@ from dataclasses import dataclass, field, fields
 from typing import Dict
 from datetime import datetime
 from dateutil import tz
+import ctypes
+import ctypes.util
 import fcntl
 import struct
 import time
@@ -94,14 +96,46 @@ def _is_rtc_ticking() -> bool:
 
 
 def _is_ntp_synchronized() -> bool:
-    """Check if systemd-timesyncd has synchronized the clock."""
+    """
+    Check if the kernel clock has been synchronized by any NTP daemon.
+    Uses adjtimex() to read kernel clock status — works with both
+    systemd-timesyncd (M1/legacy) and BusyBox ntpd (L1/sevencourts.os).
+    Returns True when the STA_UNSYNC bit (0x0040) is cleared.
+    """
+    # TODO: test on L1 hardware (BusyBox ntpd) to confirm STA_UNSYNC is cleared after sync
     try:
-        synced = os.path.exists('/run/systemd/timesync/synchronized')
-        _log.debug(f"NTP synchronized: {synced}")
+        synced = _is_kernel_clock_synced()
+        _log.debug(f"NTP synchronized (adjtimex): {synced}")
         return synced
     except Exception as e:
-        _log.debug(f"NTP sync check failed: {e}")
-        return False
+        _log.debug(f"adjtimex check failed: {e}, falling back to sentinel file")
+        # Fallback for systems where adjtimex is unavailable
+        synced = os.path.exists('/run/systemd/timesync/synchronized')
+        _log.debug(f"NTP synchronized (sentinel): {synced}")
+        return synced
+
+
+STA_UNSYNC = 0x0040
+
+
+def _is_kernel_clock_synced() -> bool:
+    """
+    Call adjtimex() to check if the kernel clock is synchronized.
+    Both ntpd and systemd-timesyncd clear the STA_UNSYNC bit once synced.
+    """
+    libc = ctypes.CDLL(ctypes.util.find_library("c"), use_errno=True)
+
+    # struct timex — we only need the `status` field (offset 4 on both 32/64-bit)
+    # Full struct is large; allocate 256 bytes to be safe.
+    buf = ctypes.create_string_buffer(256)
+    # modes = 0 (ADJ_OFFSET_SS_READ — read-only query)
+    struct.pack_into('i', buf, 0, 0)
+    ret = libc.adjtimex(buf)
+    if ret == -1:
+        errno = ctypes.get_errno()
+        raise OSError(errno, os.strerror(errno))
+    status = struct.unpack_from('i', buf, 4)[0]
+    return (status & STA_UNSYNC) == 0
 
 
 # Skip disk writes when state hasn't changed — called every render cycle,
