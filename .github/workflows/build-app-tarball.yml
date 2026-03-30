@@ -42,7 +42,9 @@ jobs:
         make -C lib
         make -C bindings/python/rgbmatrix
         cd bindings/python
-        python3 setup.py build_ext --inplace
+        PILLOW_INCLUDE="$(python3 -c 'import os, PIL; print(os.path.dirname(PIL.__file__))')"
+        PYTHON_INCLUDE="$(python3 -c 'import sysconfig; print(sysconfig.get_path("include"))')"
+        CFLAGS="-I$PILLOW_INCLUDE -I$PYTHON_INCLUDE" python3 setup.py build_ext --inplace
 
     - name: Vendor Python dependencies
       run: |
