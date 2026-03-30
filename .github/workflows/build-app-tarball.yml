@@ -42,6 +42,11 @@ jobs:
       run: |
         pip install --target=/tmp/vendor orjson==3.10
 
+    - name: Create commit info files
+      run: |
+        git rev-parse HEAD > commit-id
+        git show -s --format=%as HEAD > commit-date
+
     - name: Stage tarball contents
       run: |
         STAGING="/tmp/staging/$APP_DIR"
@@ -49,6 +54,9 @@ jobs:
 
         # Launch script and Python entry point
         cp m1.sh samplebase.py "$STAGING/"
+
+        # Commit info (read by gateway.py at runtime)
+        cp commit-id commit-date "$STAGING/"
 
         # Python application package
         cp -r sevencourts "$STAGING/sevencourts"
