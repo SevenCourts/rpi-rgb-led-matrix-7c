@@ -22,7 +22,7 @@ jobs:
     - name: Install build dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y build-essential cmake
+        sudo apt-get install -y build-essential cmake python3-pil
         pip install cython scikit-build-core Pillow
 
     - name: Determine version
@@ -35,6 +35,9 @@ jobs:
       run: |
         git clone --depth 1 --branch sdk/2026-03-30 \
           https://github.com/sevencourts/rpi-rgb-led-matrix.git /tmp/rpi-rgb-led-matrix
+        # Pillow's Imaging.h is needed by the rgbmatrix pillow shim
+        IMAGING_DIR="$(find /usr/include -name 'Imaging.h' -printf '%h' -quit)"
+        export C_INCLUDE_PATH="${IMAGING_DIR}"
         pip install --target=/tmp/rgbmatrix-install /tmp/rpi-rgb-led-matrix
 
     - name: Vendor Python dependencies
