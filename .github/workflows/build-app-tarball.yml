@@ -151,5 +151,5 @@ jobs:
         ./build/publish-stable "7c-app-$SHA.sha256" "7c-app.sha256"
         echo ""
         echo "Stable download links:"
-        echo "  Tarball:  https://dl.sevencourts.com/s/RRcCRD4YkinMt4m/download"
-        echo "  Checksum: https://dl.sevencourts.com/s/sYnrCWcdsfF8CkL/download"
+        echo "  Tarball:  https://dl.sevencourts.com/s/GggcGG4ag9Bk4zS/download"
+        echo "  Checksum: https://dl.sevencourts.com/s/JqWfzbPyQ9DBSEw/download"
