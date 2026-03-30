@@ -54,4 +54,4 @@ jobs:
         echo "Promoted app-$SHA to stable."
         echo "  Tarball:    https://dl.sevencourts.com/s/GggcGG4ag9Bk4zS/download"
         echo "  Checksum:   https://dl.sevencourts.com/s/JqWfzbPyQ9DBSEw/download"
-        echo "  latest.txt: (create stable share link on first run)"
+        echo "  latest.txt: https://dl.sevencourts.com/s/dBZccC4fCtR2fBP/download"
