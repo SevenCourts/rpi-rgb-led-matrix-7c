@@ -26,4 +26,7 @@ source "$build_dir/lib/webdav.bash"
 webdav__upload_file \
     "$ci_dl_server/remote.php/webdav" "$ci_dl_server_path" "$ci_file_to_upload"
 
-echo "Download link: $ci_dl_server/index.php/apps/files/?dir=$ci_dl_server_path/"
+file_name="$(basename "$ci_file_to_upload")"
+share_path="SevenCourts Firmware/$GIT_REF/${BUILD_DATE}_${BUILD_NUMBER}/$file_name"
+share_url="$(webdav__create_public_share "$ci_dl_server" "$share_path")"
+echo "Download: ${share_url}/download"

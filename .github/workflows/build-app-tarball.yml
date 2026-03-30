@@ -119,6 +119,3 @@ jobs:
         export BUILD_DATE="$(date '+%y%m%d-%H%M%S')"
         ./build/publish "7c-app-$SHA.tar.gz"
         ./build/publish "7c-app-$SHA.sha256"
-        SHARE_PATH="SevenCourts Firmware/$GIT_REF/${BUILD_DATE}_${BUILD_NUMBER}"
-        SHARE_URL="$(./build/share "$SHARE_PATH")"
-        echo "Public download: $SHARE_URL"
