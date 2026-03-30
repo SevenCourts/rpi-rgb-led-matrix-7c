@@ -1,0 +1,39 @@
+name: Promote to Stable
+
+on:
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: 'Short commit SHA to promote (from an existing release, e.g. c317d38)'
+        required: true
+        type: string
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Download release artifacts
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        TAG="app-${{ inputs.sha }}"
+        echo "Downloading release $TAG..."
+        gh release download "$TAG" --pattern '7c-app-*'
+        ls -la 7c-app-*
+
+    - name: Update stable release on dl.sevencourts.com
+      env:
+        NEXTCLOUD_PASSWORD: ${{ secrets.NEXTCLOUD_PASSWORD }}
+        NEXTCLOUD_USERNAME: ${{ vars.NEXTCLOUD_USERNAME }}
+      run: |
+        SHA="${{ inputs.sha }}"
+        ./build/publish-stable "7c-app-$SHA.tar.gz" "7c-app.tar.gz"
+        ./build/publish-stable "7c-app-$SHA.sha256" "7c-app.sha256"
+        echo ""
+        echo "Stable download links:"
+        echo "  Tarball:  https://dl.sevencourts.com/s/GggcGG4ag9Bk4zS/download"
+        echo "  Checksum: https://dl.sevencourts.com/s/JqWfzbPyQ9DBSEw/download"

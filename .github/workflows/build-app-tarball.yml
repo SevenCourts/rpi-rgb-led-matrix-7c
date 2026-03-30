@@ -141,15 +141,3 @@ jobs:
         export BUILD_DATE="$(date '+%y%m%d-%H%M%S')"
         ./build/publish "7c-app-$SHA.tar.gz"
         ./build/publish "7c-app-$SHA.sha256"
-
-    - name: Update stable release on dl.sevencourts.com
-      env:
-        NEXTCLOUD_PASSWORD: ${{ secrets.NEXTCLOUD_PASSWORD }}
-        NEXTCLOUD_USERNAME: ${{ vars.NEXTCLOUD_USERNAME }}
-      run: |
-        ./build/publish-stable "7c-app-$SHA.tar.gz" "7c-app.tar.gz"
-        ./build/publish-stable "7c-app-$SHA.sha256" "7c-app.sha256"
-        echo ""
-        echo "Stable download links:"
-        echo "  Tarball:  https://dl.sevencourts.com/s/GggcGG4ag9Bk4zS/download"
-        echo "  Checksum: https://dl.sevencourts.com/s/JqWfzbPyQ9DBSEw/download"
