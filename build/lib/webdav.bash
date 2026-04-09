@@ -286,7 +286,7 @@ webdav__upload_file() {
 # Arguments:
 #
 # 1. The server base URL, e.g. 'https://dl.sevencourts.com'.
-# 2. The path to share, e.g. 'SevenCourts Firmware/master/260330-141500_42'.
+# 2. The path to share, e.g. 'SevenCourts Firmware Tarball/master/260330-141500_42'.
 #
 # STDOUT:
 #

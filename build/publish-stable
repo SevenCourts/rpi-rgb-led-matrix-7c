@@ -18,7 +18,7 @@ readonly ci_stable_filename="${2:?Stable filename not specified}"
 } > /dev/null
 
 readonly ci_dl_server=https://dl.sevencourts.com
-readonly ci_stable_path='SevenCourts%20Firmware/_stable'
+readonly ci_stable_path='SevenCourts%20Firmware%20Tarball/_stable'
 
 export WEBDAV_PASSWORD="$NEXTCLOUD_PASSWORD"
 export WEBDAV_USERNAME="$NEXTCLOUD_USERNAME"
