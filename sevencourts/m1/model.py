@@ -4,7 +4,6 @@ from datetime import datetime
 from dateutil import tz
 import fcntl
 import struct
-import time
 import orjson
 import os
 import sevencourts.logging as logging
@@ -75,22 +74,40 @@ def is_clock_trustworthy() -> bool:
 
 
 def _is_rtc_ticking() -> bool:
-    """Read RTC twice 100ms apart; if time advanced, the RTC is alive."""
+    """Return True if /dev/rtc0 returns a plausible current time.
+
+    The kernel reads the RTC at boot (`hctosys`) and seeds the system
+    clock from it; if the RTC reads a sane time now, the system clock
+    is trustworthy even before NTP catches up.
+    """
     try:
-        with open('/dev/rtc0', 'rb') as f:
-            RTC_RD_TIME = 0x80247009
-            buf = bytearray(36)
-            fcntl.ioctl(f, RTC_RD_TIME, buf)
-            t1 = struct.unpack_from('9i', buf)
-            time.sleep(0.1)
-            fcntl.ioctl(f, RTC_RD_TIME, buf)
-            t2 = struct.unpack_from('9i', buf)
-            ticking = t2 > t1
-            _log.debug(f"RTC ticking check: t1={t1[:6]}, t2={t2[:6]}, ticking={ticking}")
-            return ticking
+        rtc_dt = _read_rtc_time()
     except Exception as e:
         _log.debug(f"RTC not available: {e}")
         return False
+    if rtc_dt.year < 2020 or rtc_dt.year > 2099:
+        _log.debug(f"RTC time out of plausible range: {rtc_dt}")
+        return False
+    if _is_ntp_synchronized():
+        delta = abs((rtc_dt - datetime.utcnow()).total_seconds())
+        if delta > 300:
+            _log.debug(f"RTC disagrees with NTP-synced clock by {delta:.0f}s: rtc={rtc_dt}")
+            return False
+    _log.debug(f"RTC ticking, time={rtc_dt}")
+    return True
+
+
+# struct rtc_time: 9 ints (sec, min, hour, mday, mon, year, wday, yday, isdst)
+_RTC_RD_TIME = 0x80247009
+
+
+def _read_rtc_time() -> datetime:
+    """Read /dev/rtc0 via RTC_RD_TIME ioctl; return naive UTC datetime."""
+    with open('/dev/rtc0', 'rb') as f:
+        buf = bytearray(36)
+        fcntl.ioctl(f, _RTC_RD_TIME, buf)
+        sec, minute, hour, mday, mon, year_since_1900, *_ = struct.unpack_from('9i', buf)
+    return datetime(year_since_1900 + 1900, mon + 1, mday, hour, minute, sec)
 
 
 def _is_ntp_synchronized() -> bool:
