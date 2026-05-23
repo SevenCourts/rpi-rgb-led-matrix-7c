@@ -2,8 +2,6 @@ from dataclasses import dataclass, field, fields
 from typing import Dict
 from datetime import datetime
 from dateutil import tz
-import fcntl
-import struct
 import orjson
 import os
 import sevencourts.logging as logging
@@ -73,12 +71,18 @@ def is_clock_trustworthy() -> bool:
     return False
 
 
-def _is_rtc_ticking() -> bool:
-    """Return True if /dev/rtc0 returns a plausible current time.
+_RTC_SYSFS_SINCE_EPOCH = "/sys/class/rtc/rtc0/since_epoch"
 
-    The kernel reads the RTC at boot (`hctosys`) and seeds the system
-    clock from it; if the RTC reads a sane time now, the system clock
-    is trustworthy even before NTP catches up.
+
+def _is_rtc_ticking() -> bool:
+    """Return True if the hardware RTC is reading a plausible current time.
+
+    Reads via sysfs (`/sys/class/rtc/rtc0/since_epoch`) instead of
+    `/dev/rtc0`. The device node requires exclusive access — anyone
+    else opening it returns EBUSY — and a leaked file handle here
+    would silently break this check for the rest of the process
+    lifetime. Sysfs has no such contention: it's just a kernel-cached
+    timestamp read.
     """
     try:
         rtc_dt = _read_rtc_time()
@@ -97,17 +101,11 @@ def _is_rtc_ticking() -> bool:
     return True
 
 
-# struct rtc_time: 9 ints (sec, min, hour, mday, mon, year, wday, yday, isdst)
-_RTC_RD_TIME = 0x80247009
-
-
 def _read_rtc_time() -> datetime:
-    """Read /dev/rtc0 via RTC_RD_TIME ioctl; return naive UTC datetime."""
-    with open('/dev/rtc0', 'rb') as f:
-        buf = bytearray(36)
-        fcntl.ioctl(f, _RTC_RD_TIME, buf)
-        sec, minute, hour, mday, mon, year_since_1900, *_ = struct.unpack_from('9i', buf)
-    return datetime(year_since_1900 + 1900, mon + 1, mday, hour, minute, sec)
+    """Read the RTC's current time via sysfs. Returns naive UTC datetime."""
+    with open(_RTC_SYSFS_SINCE_EPOCH) as f:
+        epoch = int(f.read().strip())
+    return datetime.utcfromtimestamp(epoch)
 
 
 def _is_ntp_synchronized() -> bool:
