@@ -1,13 +1,6 @@
 from sevencourts.rgbmatrix import *
 from sevencourts.m1.dimens import *
-
-FONT_CLOCK_S_1 = FONT_L_7SEGMENT
-FONT_CLOCK_M_1 = FONT_XL_7SEGMENT
-FONT_CLOCK_L_1 = FONT_XXL_7SEGMENT
-FONT_CLOCK_S_2 = FONT_L_SPLEEN
-FONT_CLOCK_M_2 = FONT_XL_SPLEEN
-FONT_CLOCK_L_2 = FONT_XXL_SPLEEN
-W_LOGO_WITH_CLOCK = 120  # left from clock
+from sevencourts.m1.layouts import current_layout
 
 
 def draw_clock_by_coordinates(
@@ -23,47 +16,50 @@ def draw_clock_by_coordinates(
 
 
 def draw_clock(cnv, time_now, clock, color=COLOR_CLOCK_DEFAULT):
+    layout = current_layout().clock
     if time_now is None:
         time_now = "--:--"
-    if clock == None:
-        # display a clock using the default font and coordinates
+    if clock is None:
         font = FONT_CLOCK_DEFAULT
         x = W_LOGO_WITH_CLOCK
         y = H_PANEL - 2
     elif clock:
-        clock_size = clock.get("size")
-        clock_font = clock.get("font")
-        clock_h_align = clock.get("h-align")
-        clock_v_align = clock.get("v-align")
-
-        if clock_font == "font-2":
-            if clock_size == "small":
-                font = FONT_CLOCK_S_2
-            elif clock_size == "medium":
-                font = FONT_CLOCK_M_2
-            else:
-                font = FONT_CLOCK_L_2
-        else:
-            if clock_size == "small":
-                font = FONT_CLOCK_S_1
-            elif clock_size == "medium":
-                font = FONT_CLOCK_M_1
-            else:
-                font = FONT_CLOCK_L_1
-
-        if clock_h_align == "left":
-            x = 0
-        elif clock_h_align == "center":
-            x = max(1, (W_PANEL - width_in_pixels(font, time_now)) / 2)
-        else:
-            x = max(0, W_PANEL - width_in_pixels(font, time_now))
-
-        if clock_v_align == "top":
-            y = y_font_offset(font)
-        elif clock_v_align == "center":
-            y = (H_PANEL + y_font_offset(font)) / 2
-        else:
-            y = H_PANEL
+        # `clock: true` is the legacy "default config" sentinel; treat as empty dict.
+        cfg = clock if isinstance(clock, dict) else {}
+        font = _pick_font(layout, cfg)
+        x = _pick_x(font, time_now, cfg.get("h-align"))
+        y = _pick_y(font, cfg.get("v-align"))
     else:
         return
     draw_clock_by_coordinates(cnv, time_now, x, y, font, color)
+
+
+def _pick_font(layout, clock):
+    size = clock.get("size")
+    if clock.get("font") == "font-2":
+        if size == "small":
+            return layout.font_clock_s_2
+        if size == "medium":
+            return layout.font_clock_m_2
+        return layout.font_clock_l_2
+    if size == "small":
+        return layout.font_clock_s_1
+    if size == "medium":
+        return layout.font_clock_m_1
+    return layout.font_clock_l_1
+
+
+def _pick_x(font, time_now, h_align):
+    if h_align == "left":
+        return 0
+    if h_align == "center":
+        return max(1, (W_PANEL - width_in_pixels(font, time_now)) / 2)
+    return max(0, W_PANEL - width_in_pixels(font, time_now))
+
+
+def _pick_y(font, v_align):
+    if v_align == "top":
+        return y_font_offset(font)
+    if v_align == "center":
+        return (H_PANEL + y_font_offset(font)) / 2
+    return H_PANEL

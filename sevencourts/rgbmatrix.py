@@ -226,9 +226,6 @@ def rgb_list(color):
         raise ValueError(f"Unsupported color type: {type(color)}")
 
 
-FONT_CLOCK_DEFAULT = FONT_XL_SDK
-
-
 def y_font_offset(font: graphics.Font) -> int:
     # This works only on emulator:
     # return Y_FONT_EXTRA_OFFSETS.get(font.headers['fontname'], 0) + font.baseline + font.headers['fbbyoff']
@@ -250,14 +247,15 @@ def _is_font_fits(font, width, height, *texts) -> bool:
     return result
 
 
-def pick_font_that_fits(width, height, *texts) -> graphics.Font:
-    if _is_font_fits(FONT_L, width, height, texts):
-        result = FONT_L
-    elif _is_font_fits(FONT_M, width, height, texts):
-        result = FONT_M
-    else:
-        result = FONT_S
-    return result
+def pick_font_that_fits(width, height, *texts, candidates=None) -> graphics.Font:
+    # `candidates` is a list of fonts ordered from largest to smallest preferred.
+    # The smallest entry is the fallback returned when nothing fits.
+    if candidates is None:
+        candidates = [FONT_L, FONT_M, FONT_S]
+    for font in candidates[:-1]:
+        if _is_font_fits(font, width, height, texts):
+            return font
+    return candidates[-1]
 
 
 def _debug_font_info(font, name=""):

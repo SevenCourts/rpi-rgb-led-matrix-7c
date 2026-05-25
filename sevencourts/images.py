@@ -3,8 +3,15 @@ from PIL import Image
 import sevencourts.gateway as gateway
 import sevencourts.logging as logging
 from pathlib import Path
+from sevencourts.m1.dimens import W_FLAG, H_FLAG
 
 _log = logging.logger("images")
+
+# Source flag PNGs ship at 18×12. Scale up at load time when the active panel
+# advertises a larger flag size (e.g. XL1: 27×18). Nearest-neighbor preserves
+# the pixel-art look and is cheap on the Pi.
+_FLAG_SOURCE_W = 18
+_FLAG_SOURCE_H = 12
 
 CACHE_DIR = os.getenv("IMAGES_CACHE_DIR", "/opt/7c/cache-images")
 
@@ -111,9 +118,20 @@ def shrink_to_fit(image: Image, w: int, h: int) -> Image:
 
 def load_flag_image(flag_code: str) -> Image:
     try:
-        return Image.open("images/flags/" + (flag_code or "VOID") + ".png").convert(
+        image = Image.open("images/flags/" + (flag_code or "VOID") + ".png").convert(
             "RGB"
         )
     except Exception as e:
         _log.exception(e)
-        return Image.open("images/flags/VOID.png").convert("RGB")
+        image = Image.open("images/flags/VOID.png").convert("RGB")
+    return _scale_flag_for_panel(image)
+
+
+def _scale_flag_for_panel(image: Image) -> Image:
+    """Scale source 18×12 flag to the active panel's W_FLAG×H_FLAG (nearest-neighbor).
+
+    No-op when the panel uses the source size (M1, L1).
+    """
+    if image.size == (W_FLAG, H_FLAG):
+        return image
+    return image.resize((W_FLAG, H_FLAG), Image.NEAREST)
