@@ -4,7 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is the SevenCourts M1 scoreboard firmware for Raspberry Pi-based RGB LED matrix displays (192x64 pixels). The scoreboard displays live tennis match scores, booking information, signage, and idle mode content (clocks, images, messages) by polling a backend server API.
+This is the SevenCourts scoreboard firmware for Raspberry Pi-based RGB LED matrix displays. The scoreboard displays live tennis match scores, booking information, signage, and idle mode content (clocks, images, messages) by polling a backend server API.
+
+**Supported panel form factors** (chosen at runtime via `PANEL_TYPE`):
+- **M1** — 192×64 px (chain=3 parallel=2). Stable, original design.
+- **L1** — 192×96 px (chain=3 parallel=3). Same width as M1, taller.
+- **XL1** — 320×96 px (chain=5 parallel=3). Wider and taller.
 
 **Key Technologies:**
 - Python 3.9
@@ -43,10 +48,13 @@ Environment variables in `m1-emulator.sh` control behavior:
 ### Running on Hardware
 
 ```bash
-./m1.sh               # on Raspberry Pi with connected LED matrix
+./run.sh              # production entry point — dispatches by PANEL_TYPE
+./m1.sh / ./l1.sh / ./xl1.sh   # bypass the dispatcher (dev / direct)
 ```
 
-This script passes hardware-specific LED matrix parameters (chain length, rows, cols, multiplexing, GPIO slowdown, etc.) to the Python application.
+`run.sh` resolves the panel type from (in order): `PANEL_TYPE` env, `PANEL_TYPE` in `/etc/7c/panel.conf`, then falls back to M1. It execs the matching per-panel script, which sets the correct `--led-*` hardware arguments (chain, parallel, rows, cols, multiplexing, GPIO slowdown, PWM lsb-ns).
+
+The sevencourts.os supervisor (`/etc/init.d/S10sevencourts`) must invoke `run.sh` (not `m1.sh` directly) for L1 / XL1 panels to launch correctly. Tracked in `spec/sevencourts-os/supervisor-multi-panel.md`.
 
 ### Testing
 

@@ -1,6 +1,8 @@
 #!/bin/bash
 #
-# Build a self-contained app tarball for SevenCourts M1 scoreboard.
+# Build a self-contained app tarball for SevenCourts panels (M1 / L1 / XL1).
+# Single tarball, panel-type chosen at runtime via PANEL_TYPE in
+# /etc/7c/panel.conf — run.sh dispatches to the right per-panel script.
 #
 # On x86_64 hosts, uses Docker with QEMU emulation to cross-build
 # the rgbmatrix native library for ARM64.
@@ -60,7 +62,9 @@ cp -r "$BUILD_OUT/vendor" "$STAGING/$APP_DIR/vendor"
 echo "--- Staging app files ---"
 
 cd "$REPO_DIR"
-cp m1.sh samplebase.py "$STAGING/$APP_DIR/"
+# Bundle all panel-type entry points + the run.sh dispatcher. The OS-side
+# supervisor invokes run.sh; it reads PANEL_TYPE and execs the right shell.
+cp run.sh m1.sh l1.sh xl1.sh samplebase.py "$STAGING/$APP_DIR/"
 cp -r sevencourts "$STAGING/$APP_DIR/sevencourts"
 cp -r fonts "$STAGING/$APP_DIR/fonts"
 cp -r images "$STAGING/$APP_DIR/images"
