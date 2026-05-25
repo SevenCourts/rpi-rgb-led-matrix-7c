@@ -109,6 +109,58 @@ class TestXL1Layout(unittest.TestCase):
         self.assertIn("ok", result.stdout)
 
 
+class TestL1Layout(unittest.TestCase):
+    """L1 Layout smoke test (subprocess-isolated, same pattern as XL1)."""
+
+    def test_l1_layout_has_no_none_fields(self):
+        import subprocess
+        import sys
+
+        code = (
+            "import os, dataclasses;"
+            "os.environ['PANEL_TYPE']='L1';"
+            "os.environ.setdefault('USE_RGB_MATRIX_EMULATOR','1');"
+            "os.environ.setdefault('IMAGES_CACHE_DIR','/tmp/7c_test_imgs');"
+            "from sevencourts.m1.layouts import current_layout;"
+            "from sevencourts.m1.dimens import W_FLAG, H_FLAG;"
+            "layout = current_layout();"
+            # L1 inherits M1's legacy clock placement; no divider.
+            "exceptions = {('message','clock_divider_y')};"
+            "missing=[];"
+            "[missing.append(f'{v.name}.{f.name}')"
+            " for v in dataclasses.fields(layout)"
+            " for f in dataclasses.fields(getattr(layout, v.name))"
+            " if (v.name,f.name) not in exceptions"
+            " and getattr(getattr(layout, v.name), f.name) is None];"
+            "assert not missing, missing;"
+            # L1 shares XL1's flag size (panels are equally tall).
+            "assert W_FLAG==27 and H_FLAG==18, (W_FLAG, H_FLAG);"
+            # Score-zone horizontal coords identical to M1 (width unchanged).
+            "sb=layout.scoreboard;"
+            "assert sb.x_min_scoreboard==96, sb.x_min_scoreboard;"
+            "assert sb.w_score_set==20;"
+            # Doubles spacing leverages the taller (96 px) canvas.
+            "assert sb.doubles_gap_within_team==2;"
+            # L1 mirrors XL1's between-team gap so the doubles row pair y matches.
+            "assert sb.doubles_gap_between_teams==10;"
+            "assert sb.winner_scale==2;"
+            "sig=layout.signage;"
+            # L1 keeps M1's name fonts; doubles gets a small bump for taller cells.
+            "assert sig.max_length_name_doubles==5;"
+            "print('ok')"
+        )
+        result = subprocess.run(
+            [sys.executable, "-c", code],
+            capture_output=True,
+            text=True,
+            cwd=os.path.join(os.path.dirname(__file__), ".."),
+        )
+        self.assertEqual(
+            result.returncode, 0, msg=f"stderr:\n{result.stderr}\nstdout:\n{result.stdout}"
+        )
+        self.assertIn("ok", result.stdout)
+
+
 class TestPickFontThatFitsBackwardCompat(unittest.TestCase):
     def test_default_candidates_match_legacy_behaviour(self):
         from sevencourts.rgbmatrix import (

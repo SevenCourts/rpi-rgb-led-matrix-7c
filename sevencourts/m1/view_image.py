@@ -38,5 +38,8 @@ def _draw_image_and_maybe_clock(cnv, image: Image, time_now, try_to_show_clock: 
     y = (H_PANEL - image.height) // 2
     cnv.SetImage(image.convert("RGB"), x, y)
 
-    if try_to_show_clock and _can_show_clock(image):
+    # Use the decision made *before* scaling — checking the scaled width here
+    # caused overlap when the image was wide enough to take the full panel but
+    # narrow enough after scaling to look like it could share with the clock.
+    if show_clock:
         v_clock.draw_clock(cnv, time_now, None)

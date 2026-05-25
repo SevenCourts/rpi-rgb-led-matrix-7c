@@ -34,14 +34,15 @@ def _resolve_layout() -> Layout:
         from sevencourts.m1.layouts.m1 import LAYOUT
 
         return LAYOUT
+    if _PANEL_TYPE == "L1":
+        from sevencourts.m1.layouts.l1 import LAYOUT
+
+        return LAYOUT
     if _PANEL_TYPE == "XL1":
         from sevencourts.m1.layouts.xl1 import LAYOUT
 
         return LAYOUT
-    raise NotImplementedError(
-        f"No Layout defined for PANEL_TYPE={_PANEL_TYPE!r}. "
-        "Phase 3 will add the layout for L1."
-    )
+    raise NotImplementedError(f"No Layout defined for PANEL_TYPE={_PANEL_TYPE!r}.")
 
 
 __all__ = [
