@@ -1,0 +1,589 @@
+"""XL1 visual-test fixture server.
+
+Mimics the SevenCourts backend endpoints the panel firmware polls. Cycles a
+curated catalogue of XL1 v1 scenarios (scoreboard variants, idle clock/image/
+message, signage, standby). Auto-advances on a timer; web UI at `/` exposes
+Next / Prev / Pause / Resume / Jump.
+
+Usage:
+    python3 test/xl1_test_server.py [--port 8000] [--interval 15] [--no-auto]
+
+Point the panel at the dev workstation:
+    TABLEAU_SERVER_BASE_URL=http://192.168.178.175:8000 ./xl1.sh
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import threading
+import time
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+
+
+def _synth_image(w: int, h: int, label: str) -> bytes:
+    """Generate a vivid test image so size/aspect issues are immediately visible
+    on the panel. PNG bytes returned. Cached on first call by (w, h, label)."""
+    from io import BytesIO
+    from PIL import Image, ImageDraw
+
+    cache_key = (w, h, label)
+    cached = _SYNTH_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+    img = Image.new("RGB", (w, h), (0, 0, 0))
+    px = img.load()
+    for y in range(h):
+        for x in range(w):
+            px[x, y] = (
+                int(255 * x / max(w - 1, 1)),     # red ramps left→right
+                int(255 * y / max(h - 1, 1)),     # green ramps top→bottom
+                128,
+            )
+    # 1-px border so panel-edge alignment is verifiable
+    draw = ImageDraw.Draw(img)
+    draw.rectangle([0, 0, w - 1, h - 1], outline=(255, 255, 255))
+    # Crosshair through the center
+    draw.line([(0, h // 2), (w - 1, h // 2)], fill=(255, 255, 255))
+    draw.line([(w // 2, 0), (w // 2, h - 1)], fill=(255, 255, 255))
+    # Size label, top-left
+    draw.text((3, 2), label, fill=(255, 255, 255))
+    buf = BytesIO()
+    img.save(buf, format="PNG")
+    data = buf.getvalue()
+    _SYNTH_CACHE[cache_key] = data
+    return data
+
+
+_SYNTH_CACHE: Dict[tuple, bytes] = {}
+
+
+# --- Fixture catalogue --------------------------------------------------------
+
+# Flag codes used in fixtures map to filenames under images/flags/<name>.png.
+_FLAGS = {
+    "CH": "switzerland", "ES": "spain", "RU": "russia", "RS": "serbia",
+    "DE": "germany", "NL": "netherlands", "RO": "romania", "AU": "australia",
+    "GB": "great britain", "NO": "norway", "GR": "greece", "CA": "canada",
+    "FR": "france", "IT": "italy",
+}
+
+
+def _player(name: str, flag: str = "DE") -> Dict[str, Any]:
+    # Scoreboard reads `lastname` / `firstname`; signage reads `name`. Provide all.
+    return {
+        "name": name,
+        "lastname": name,
+        "firstname": "",
+        "flag": _FLAGS.get(flag, flag),
+    }
+
+
+def _team(p1: Dict[str, Any], p2: Optional[Dict[str, Any]] = None, *,
+          serves: bool = False, set_scores=None, game_score: str = "",
+          name: Optional[str] = None) -> Dict[str, Any]:
+    return {
+        "name": name,
+        "p1": p1,
+        "p2": p2,
+        "serves": serves,
+        "setScores": set_scores or [],
+        "gameScore": game_score,
+    }
+
+
+def _scoreboard(team1, team2, *, match_result: Optional[str] = None,
+                is_total_points: bool = False,
+                hide_service: bool = False,
+                is_team_event: bool = False) -> Dict[str, Any]:
+    is_doubles = (team1.get("p2") is not None) or (team2.get("p2") is not None)
+    return {
+        "team1": team1,
+        "team2": team2,
+        "matchResult": match_result,
+        "isTotalPointsMatch": is_total_points,
+        "hideServiceIndicator": hide_service,
+        "isDoubles": is_doubles,
+        "isTeamEvent": is_team_event,
+    }
+
+
+def _signage_team(p1: Dict[str, Any], p2: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    return {"p1": p1, "p2": p2}
+
+
+def _signage_match_court(name, team1, team2, *,
+                         score_sets=None, score_game=("", ""),
+                         is_serving_t1: bool = False,
+                         match_status: Optional[str] = None) -> Dict[str, Any]:
+    """Signage uses a different schema than scoreboard:
+    `score-sets` is a list of [t1, t2] pairs and `score-game` is a [t1, t2] pair."""
+    return {
+        "name": name,
+        "team1": team1,
+        "team2": team2,
+        "score-sets": score_sets or [],
+        "score-game": list(score_game),
+        "is-serving-t1": is_serving_t1,
+        "match-status": match_status,
+    }
+
+
+def _idle(**kw) -> Dict[str, Any]:
+    base = {"timezone": "Europe/Berlin"}
+    base.update(kw)
+    return {"idle-info": base}
+
+
+def _signage_court(name, team1, team2, *, status: Optional[str] = None):
+    court = {"name": name, "team1": team1, "team2": team2}
+    if status is not None:
+        court["status"] = status
+    return court
+
+
+def _signage(*courts) -> Dict[str, Any]:
+    return {"signage-info": {"courts": list(courts)}}
+
+
+FIXTURES: List[Dict[str, Any]] = [
+    # --- Standby / idle states -----------------------------------------------
+    {"name": "standby", "info": {"standby": True}},
+
+    # --- Clock variants (font-1 = 7-segment) ---------------------------------
+    {"name": "clock — default (clock:true)", "info": _idle(clock=True)},
+    {"name": "clock — font-1 large center/center",
+     "info": _idle(clock={"font": "font-1", "size": "large",
+                          "h-align": "center", "v-align": "center"})},
+    {"name": "clock — font-1 medium center/center",
+     "info": _idle(clock={"font": "font-1", "size": "medium",
+                          "h-align": "center", "v-align": "center"})},
+    {"name": "clock — font-1 small center/center",
+     "info": _idle(clock={"font": "font-1", "size": "small",
+                          "h-align": "center", "v-align": "center"})},
+    {"name": "clock — font-2 (Spleen) large center/center",
+     "info": _idle(clock={"font": "font-2", "size": "large",
+                          "h-align": "center", "v-align": "center"})},
+    {"name": "clock — font-1 large right/bottom",
+     "info": _idle(clock={"font": "font-1", "size": "large",
+                          "h-align": "right", "v-align": "bottom"})},
+
+    # --- Message variants ----------------------------------------------------
+    {"name": "message — short single line", "info": _idle(message="WELCOME")},
+    {"name": "message — long single line",
+     "info": _idle(message="COURT MAINTENANCE THIS AFTERNOON")},
+    {"name": "message — two lines",
+     "info": _idle(message="MATCH STARTS\nIN 10 MINUTES")},
+    {"name": "message — with clock strip",
+     "info": _idle(message="WELCOME", clock=True)},
+
+    # --- Image variants ------------------------------------------------------
+    {"name": "image — uploaded", "info": _idle(**{"image-url": "panel-image/test-xl1.png"})},
+    {"name": "image — uploaded with clock",
+     "info": _idle(clock=True, **{"image-url": "panel-image/test-xl1-portrait.png"})},
+    {"name": "image — preset (sevencourts logo)",
+     "info": _idle(**{"image-preset": "7C/sevencourts_7c_64x32.png"})},
+
+    # --- Scoreboard singles --------------------------------------------------
+    {"name": "scoreboard — singles, 0 sets",
+     "info": _scoreboard(
+         _team(_player("FEDERER", "CH"), serves=True, game_score="15"),
+         _team(_player("NADAL", "ES"), game_score="0"),
+     )},
+    {"name": "scoreboard — singles, 1 set in progress",
+     "info": _scoreboard(
+         _team(_player("FEDERER", "CH"), serves=True, set_scores=[3], game_score="30"),
+         _team(_player("NADAL", "ES"), set_scores=[2], game_score="15"),
+     )},
+    {"name": "scoreboard — singles, 3 sets in progress",
+     "info": _scoreboard(
+         _team(_player("FEDERER", "CH"), serves=False, set_scores=[6, 7, 3], game_score="40"),
+         _team(_player("NADAL", "ES"), serves=True, set_scores=[4, 5, 6], game_score="A"),
+     )},
+    {"name": "scoreboard — singles, long names (font fallback)",
+     "info": _scoreboard(
+         _team(_player("KHACHANOV", "RU"), serves=True, set_scores=[6, 7], game_score="15"),
+         _team(_player("AUGER-ALIASSIME", "CA"), set_scores=[4, 6], game_score="40"),
+     )},
+    {"name": "scoreboard — singles, T1 game point (Ad)",
+     "info": _scoreboard(
+         _team(_player("DJOKOVIC", "RS"), serves=True, set_scores=[6, 7, 3], game_score="A"),
+         _team(_player("ALCARAZ", "ES"), set_scores=[4, 5, 6], game_score="40"),
+     )},
+    {"name": "scoreboard — singles, T2 won",
+     "info": _scoreboard(
+         _team(_player("FEDERER", "CH"), set_scores=[6, 4, 3], game_score=""),
+         _team(_player("NADAL", "ES"), set_scores=[4, 6, 6], game_score=""),
+         match_result="T2_WON",
+     )},
+    {"name": "scoreboard — match tiebreak (10-pt)",
+     "info": _scoreboard(
+         _team(_player("ZVEREV", "DE"), serves=True, set_scores=[6, 3, 7], game_score="8"),
+         _team(_player("MEDVEDEV", "RU"), set_scores=[4, 6, 5], game_score="6"),
+     )},
+    {"name": "scoreboard — Americano (total points)",
+     "info": _scoreboard(
+         _team(_player("RUUD", "NO"), serves=True, game_score="21"),
+         _team(_player("TSITSIPAS", "GR"), game_score="17"),
+         is_total_points=True,
+     )},
+
+    # --- Scoreboard doubles --------------------------------------------------
+    {"name": "scoreboard — doubles, 3 sets",
+     "info": _scoreboard(
+         _team(_player("MUELLER", "DE"), _player("SCHMID", "DE"),
+               serves=True, set_scores=[6, 4, 3], game_score="40"),
+         _team(_player("ROJER", "NL"), _player("TECAU", "RO"),
+               set_scores=[4, 6, 6], game_score="30"),
+     )},
+    {"name": "scoreboard — doubles, long names",
+     "info": _scoreboard(
+         _team(_player("KOOLHOF", "NL"), _player("SKUPSKI", "GB"),
+               serves=True, set_scores=[7, 6], game_score="15"),
+         _team(_player("KUBLER", "AU"), _player("HIJIKATA", "AU"),
+               set_scores=[5, 7], game_score="40"),
+     )},
+    # Exercises the `same_flags_in_teams` branch in view_scoreboard:
+    # both players in each team share a flag → one large flag is rendered
+    # per team via `_draw_singles_flags`, not 4 small flags.
+    {"name": "scoreboard — doubles, team flags (same nationality)",
+     "info": _scoreboard(
+         _team(_player("MUELLER", "DE"), _player("SCHMID", "DE"),
+               serves=True, set_scores=[6, 4, 3], game_score="40"),
+         _team(_player("LOPEZ", "ES"), _player("GARCIA", "ES"),
+               set_scores=[4, 6, 6], game_score="30"),
+     )},
+
+    # --- Signage -------------------------------------------------------------
+    # Signage uses score-sets / score-game / is-serving-t1 / match-status
+    # (different schema from the scoreboard view).
+    {"name": "signage — 1 court",
+     "info": _signage(
+         _signage_match_court("Court 1",
+             _signage_team(_player("FEDERER", "CH")),
+             _signage_team(_player("NADAL", "ES")),
+             score_sets=[[6, 4], [7, 5]],
+             score_game=("15", "40"),
+             is_serving_t1=True,
+             match_status="14:00"),
+     )},
+    {"name": "signage — 2 courts (court 2 = doubles)",
+     "info": _signage(
+         _signage_match_court("Court 1",
+             _signage_team(_player("FEDERER", "CH")),
+             _signage_team(_player("NADAL", "ES")),
+             score_sets=[[6, 4], [7, 5]],
+             score_game=("15", "40"),
+             is_serving_t1=True,
+             match_status="14:00"),
+         _signage_match_court("Court 2",
+             _signage_team(_player("DJOKOVIC", "RS"), _player("RUUD", "NO")),
+             _signage_team(_player("ALCARAZ", "ES"), _player("NADAL", "ES")),
+             score_sets=[[3, 6], [6, 4]],
+             score_game=("40", "30"),
+             is_serving_t1=False,
+             match_status="14:30"),
+     )},
+    {"name": "signage — 4 courts (full grid)",
+     "info": _signage(
+         _signage_match_court("Court 1",
+             _signage_team(_player("FEDERER", "CH")),
+             _signage_team(_player("NADAL", "ES")),
+             score_sets=[[6, 4], [7, 5]],
+             score_game=("15", "40"),
+             is_serving_t1=True,
+             match_status="14:00"),
+         _signage_match_court("Court 2",
+             _signage_team(_player("DJOKOVIC", "RS"), _player("RUUD", "NO")),
+             _signage_team(_player("ALCARAZ", "ES"), _player("NADAL", "ES")),
+             score_sets=[[3, 6], [6, 4]],
+             score_game=("40", "30"),
+             is_serving_t1=False,
+             match_status="14:30"),
+         _signage_match_court("Court 3",
+             _signage_team(_player("ZVEREV", "DE")),
+             _signage_team(_player("MEDVEDEV", "RU")),
+             score_sets=[[6, 4], [3, 6], [7, 5]],
+             score_game=("A", "40"),
+             is_serving_t1=True,
+             match_status="Walko."),
+         _signage_match_court("Court 4",
+             _signage_team(_player("RUUD", "NO")),
+             _signage_team(_player("TSITSIPAS", "GR")),
+             score_sets=[[6, 3], [4, 6]],
+             score_game=("0", "30"),
+             is_serving_t1=False,
+             match_status="15:45"),
+     )},
+]
+
+
+# Drop the now-unused legacy helper to avoid confusion.
+del _signage_court
+
+
+# --- Server state -------------------------------------------------------------
+
+class State:
+    def __init__(self, interval: float, auto: bool):
+        self.lock = threading.Lock()
+        self.index = 0
+        self.interval = interval
+        self.auto = auto
+        self.last_change = time.monotonic()
+
+    def snapshot(self) -> Dict[str, Any]:
+        with self.lock:
+            return {
+                "index": self.index,
+                "name": FIXTURES[self.index]["name"],
+                "auto": self.auto,
+                "interval": self.interval,
+                "count": len(FIXTURES),
+            }
+
+    def current_info(self) -> Dict[str, Any]:
+        with self.lock:
+            return FIXTURES[self.index]["info"]
+
+    def next(self):
+        with self.lock:
+            self.index = (self.index + 1) % len(FIXTURES)
+            self.last_change = time.monotonic()
+
+    def prev(self):
+        with self.lock:
+            self.index = (self.index - 1) % len(FIXTURES)
+            self.last_change = time.monotonic()
+
+    def jump(self, i: int):
+        with self.lock:
+            self.index = i % len(FIXTURES)
+            self.last_change = time.monotonic()
+
+    def set_auto(self, auto: bool):
+        with self.lock:
+            self.auto = auto
+            self.last_change = time.monotonic()
+
+
+def _auto_advance_loop(state: State):
+    while True:
+        time.sleep(0.5)
+        with state.lock:
+            if state.auto and (time.monotonic() - state.last_change) >= state.interval:
+                state.index = (state.index + 1) % len(FIXTURES)
+                state.last_change = time.monotonic()
+
+
+# --- HTTP handler -------------------------------------------------------------
+
+STATE: State = None  # set at startup
+
+
+class Handler(BaseHTTPRequestHandler):
+    server_version = "XL1TestServer/0.1"
+
+    def log_message(self, fmt, *args):
+        # Keep server output tidy; uncomment for verbose access logs.
+        pass
+
+    def _send_json(self, payload: Any, status: int = 200):
+        body = json.dumps(payload).encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _send_text(self, text: str, status: int = 200, ctype: str = "text/plain"):
+        body = text.encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type", ctype + "; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _send_image_for_path(self, request_path: str, *, head_only: bool = False):
+        """Serve a synthesized PNG sized appropriately for the requested fixture."""
+        if request_path.endswith("test-xl1-portrait.png"):
+            data = _synth_image(120, 96, "120x96")
+        else:
+            data = _synth_image(320, 96, "320x96 XL1 TEST")
+        etag = f'"{len(data)}-{request_path}"'
+        self.send_response(200)
+        self.send_header("Content-Type", "image/png")
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("ETag", etag)
+        self.end_headers()
+        if not head_only:
+            self.wfile.write(data)
+
+    # --- routing ----------------------------------------------------------
+
+    def do_POST(self):
+        if self.path.rstrip("/") == "/panels":
+            length = int(self.headers.get("Content-Length", "0"))
+            self.rfile.read(length)  # discard body
+            self._send_json({"id": "test-xl1"})
+            return
+        self._send_text("not found", 404)
+
+    def do_HEAD(self):
+        if self.path.startswith("/panel-image/") or self.path.startswith("/images/"):
+            self._send_image_for_path(self.path, head_only=True)
+            return
+        self.send_response(200)
+        self.end_headers()
+
+    def do_GET(self):
+        path = self.path.split("?", 1)[0]
+        query = {}
+        if "?" in self.path:
+            for kv in self.path.split("?", 1)[1].split("&"):
+                if "=" in kv:
+                    k, v = kv.split("=", 1)
+                    query[k] = v
+
+        if path == "/":
+            self._send_text(_render_ui(STATE.snapshot()), ctype="text/html")
+            return
+        if path == "/state":
+            self._send_json(STATE.snapshot())
+            return
+        if path == "/control":
+            cmd = query.get("cmd", "")
+            if cmd == "next":
+                STATE.next()
+            elif cmd == "prev":
+                STATE.prev()
+            elif cmd == "jump":
+                try:
+                    STATE.jump(int(query.get("i", "0")))
+                except ValueError:
+                    pass
+            elif cmd == "pause":
+                STATE.set_auto(False)
+            elif cmd == "resume":
+                STATE.set_auto(True)
+            self._send_json(STATE.snapshot())
+            return
+        if path == "/healthz":
+            self._send_text("ok")
+            return
+
+        # /panels/<id>/match
+        if path.startswith("/panels/") and path.endswith("/match"):
+            self._send_json(STATE.current_info())
+            return
+
+        # Any image path the firmware tries to fetch — return the default test image.
+        if path.startswith("/panel-image/") or path.startswith("/images/"):
+            self._send_image_for_path(self.path)
+            return
+
+        self._send_text("not found", 404)
+
+
+# --- Web UI -------------------------------------------------------------------
+
+def _render_ui(snap: Dict[str, Any]) -> str:
+    rows = []
+    for i, fx in enumerate(FIXTURES):
+        sel = " selected" if i == snap["index"] else ""
+        rows.append(f'<option value="{i}"{sel}>{i:02d} — {fx["name"]}</option>')
+    return f"""<!doctype html>
+<html><head><meta charset="utf-8"><title>XL1 Test Server</title>
+<style>
+body {{ font-family: sans-serif; margin: 2em; max-width: 720px; }}
+h1 {{ font-size: 1.4em; }}
+.current {{ background: #eef; padding: 1em; border-radius: 6px; margin: 1em 0; }}
+.current b {{ font-size: 1.2em; }}
+button {{ font-size: 1em; padding: .5em 1em; margin-right: .5em; }}
+select {{ font-size: 1em; padding: .3em; width: 100%; }}
+.muted {{ color: #888; font-size: .9em; }}
+</style>
+<script>
+async function ctrl(cmd, extra='') {{
+  const r = await fetch('/control?cmd=' + cmd + extra);
+  const s = await r.json();
+  document.getElementById('idx').textContent = s.index.toString().padStart(2,'0');
+  document.getElementById('name').textContent = s.name;
+  document.getElementById('auto').textContent = s.auto ? 'auto ('+s.interval+'s)' : 'paused';
+  document.getElementById('sel').value = s.index;
+}}
+async function refresh() {{
+  const r = await fetch('/state');
+  const s = await r.json();
+  document.getElementById('idx').textContent = s.index.toString().padStart(2,'0');
+  document.getElementById('name').textContent = s.name;
+  document.getElementById('auto').textContent = s.auto ? 'auto ('+s.interval+'s)' : 'paused';
+  document.getElementById('sel').value = s.index;
+}}
+setInterval(refresh, 1000);
+</script>
+</head><body>
+<h1>XL1 Test Server</h1>
+<div class="current">
+  <div class="muted">current fixture (<span id="auto">{('auto ('+str(snap['interval'])+'s)') if snap['auto'] else 'paused'}</span>)</div>
+  <b><span id="idx">{snap['index']:02d}</span> — <span id="name">{snap['name']}</span></b>
+</div>
+<p>
+  <button onclick="ctrl('prev')">⏮ Prev</button>
+  <button onclick="ctrl('next')">Next ⏭</button>
+  <button onclick="ctrl('pause')">⏸ Pause</button>
+  <button onclick="ctrl('resume')">▶ Resume</button>
+</p>
+<p>Jump to:</p>
+<select id="sel" onchange="ctrl('jump', '&i=' + this.value)">
+{''.join(rows)}
+</select>
+<p class="muted">{snap['count']} fixtures total. Panel polls /panels/test-xl1/match every ~1s.</p>
+</body></html>
+"""
+
+
+# --- Entry point --------------------------------------------------------------
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--port", type=int, default=8000)
+    parser.add_argument("--interval", type=float, default=3.0,
+                        help="auto-advance interval in seconds (default 3)")
+    parser.add_argument("--no-auto", action="store_true",
+                        help="start paused (use Next/Jump in the web UI)")
+    parser.add_argument("--only", default=None,
+                        help="restrict to fixtures whose name contains this substring "
+                             "(case-insensitive). e.g. --only scoreboard")
+    args = parser.parse_args()
+
+    if args.only:
+        needle = args.only.lower()
+        filtered = [f for f in FIXTURES if needle in f["name"].lower()]
+        if not filtered:
+            raise SystemExit(f"no fixtures match --only {args.only!r}")
+        FIXTURES[:] = filtered
+
+    global STATE
+    STATE = State(interval=args.interval, auto=not args.no_auto)
+
+    threading.Thread(target=_auto_advance_loop, args=(STATE,), daemon=True).start()
+
+    httpd = ThreadingHTTPServer(("0.0.0.0", args.port), Handler)
+    print(f"XL1 test server on http://0.0.0.0:{args.port}/  ({len(FIXTURES)} fixtures, "
+          f"{'auto-cycle' if STATE.auto else 'paused'}, interval={args.interval}s)")
+    print(f"Point the panel at: TABLEAU_SERVER_BASE_URL=http://<this-host>:{args.port}")
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print("\nshutting down")
+
+
+if __name__ == "__main__":
+    main()
