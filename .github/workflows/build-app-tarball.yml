@@ -63,8 +63,12 @@ jobs:
         STAGING="/tmp/staging/$APP_DIR"
         mkdir -p "$STAGING"
 
-        # Launch script and Python entry point
-        cp m1.sh samplebase.py "$STAGING/"
+        # Launch scripts and Python entry point. run.sh is the dispatcher
+        # invoked by S10sevencourts; it execs m1.sh / l1.sh / xl1.sh based
+        # on PANEL_TYPE in /opt/7c/panel.conf. All four must ship together
+        # or the supervisor silently falls back to m1.sh and forces M1
+        # hardware geometry on every panel.
+        cp run.sh m1.sh l1.sh xl1.sh samplebase.py "$STAGING/"
 
         # Commit info (read by gateway.py at runtime)
         cp commit-id commit-date "$STAGING/"
