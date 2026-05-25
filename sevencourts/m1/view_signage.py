@@ -64,9 +64,12 @@ def _match_coordinates(court_pos: int):
 
 
 def _draw_flag(canvas, x, y, flag_code=None, small=False):
-    image = imgs.load_flag_image(flag_code)
+    # Ask the loader for the exact target size — it'll prefer a pre-rendered
+    # native-size PNG over runtime scaling, preserving pixel-perfect borders.
     if small:
-        image.thumbnail((W_FLAG_SMALL, H_FLAG_SMALL), Image.LANCZOS)
+        image = imgs.load_flag_image(flag_code, (W_FLAG_SMALL, H_FLAG_SMALL))
+    else:
+        image = imgs.load_flag_image(flag_code)
     canvas.SetImage(image, x, y)
 
 

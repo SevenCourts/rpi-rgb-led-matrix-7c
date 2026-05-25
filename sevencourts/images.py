@@ -116,21 +116,48 @@ def shrink_to_fit(image: Image, w: int, h: int) -> Image:
     return image
 
 
-def load_flag_image(flag_code: str) -> Image:
+def load_flag_image(flag_code: str, size: tuple = None) -> Image:
+    """Load a flag image at the requested target size.
+
+    `size` is (width, height); defaults to the active panel's
+    (W_FLAG, H_FLAG). When a native-size PNG exists under
+    `images/flags_<W>x<H>/`, it is returned verbatim (no scaling). This is
+    the path that preserves pixel-perfect hand-tuned / procedural art.
+    Otherwise the 18×12 source is loaded and scaled: Lanczos when
+    downscaling (small variants), nearest-neighbor when upscaling.
+    """
+    if size is None:
+        size = (W_FLAG, H_FLAG)
+    w, h = size
+    code = flag_code or "VOID"
+
+    native_dir = f"images/flags_{w}x{h}"
+    native_path = f"{native_dir}/{code}.png"
     try:
-        image = Image.open("images/flags/" + (flag_code or "VOID") + ".png").convert(
-            "RGB"
-        )
+        return Image.open(native_path).convert("RGB")
+    except FileNotFoundError:
+        pass
+    except Exception as e:
+        _log.exception(e)
+
+    try:
+        image = Image.open("images/flags/" + code + ".png").convert("RGB")
     except Exception as e:
         _log.exception(e)
         image = Image.open("images/flags/VOID.png").convert("RGB")
-    return _scale_flag_for_panel(image)
+
+    if image.size != (w, h):
+        src_w, src_h = image.size
+        method = Image.LANCZOS if (w < src_w or h < src_h) else Image.NEAREST
+        image = image.resize((w, h), method)
+    return image
 
 
 def _scale_flag_for_panel(image: Image) -> Image:
     """Scale source 18×12 flag to the active panel's W_FLAG×H_FLAG (nearest-neighbor).
 
-    No-op when the panel uses the source size (M1, L1).
+    Kept for backward compatibility; new code should pass a size to
+    `load_flag_image` directly.
     """
     if image.size == (W_FLAG, H_FLAG):
         return image
