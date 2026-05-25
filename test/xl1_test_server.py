@@ -27,6 +27,26 @@ from typing import Any, Dict, List, Optional
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
+def _lan_ip() -> str:
+    """Best-effort LAN IP of this host (the one the panels can reach)."""
+    import socket
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # No packet is sent; the kernel just resolves which interface
+        # would route to 8.8.8.8 and returns its address.
+        s.connect(("8.8.8.8", 80))
+        return s.getsockname()[0]
+    except OSError:
+        return "127.0.0.1"
+    finally:
+        s.close()
+
+
+# Used to build absolute URLs for `ebusy-ads` (fetched via gateway.head() which
+# does NOT prepend TABLEAU_SERVER_BASE_URL — it expects a full URL).
+LAN_BASE_URL = f"http://{_lan_ip()}:8000"
+
+
 def _synth_image(w: int, h: int, label: str) -> bytes:
     """Generate a vivid test image so size/aspect issues are immediately visible
     on the panel. PNG bytes returned. Cached on first call by (w, h, label)."""
@@ -152,6 +172,87 @@ def _signage(*courts) -> Dict[str, Any]:
     return {"signage-info": {"courts": list(courts)}}
 
 
+# --- eBusy (court booking) helpers --------------------------------------------
+
+# All booking fixtures share a fixed "now" so the past/current/next slots
+# resolve consistently regardless of when the test server is launched.
+_EBUSY_NOW = "2026-05-25T14:30:00+02:00"
+
+
+def _bp(first: str, last: str) -> Dict[str, str]:
+    return {"firstname": first, "lastname": last}
+
+
+def _bslot(start: str, end: str, *, text: str = "",
+           p1=None, p2=None, p3=None, p4=None,
+           blocking: bool = False) -> Optional[Dict[str, Any]]:
+    slot: Dict[str, Any] = {
+        "start-date": f"2026-05-25T{start}+02:00",
+        "end-date":   f"2026-05-25T{end}+02:00",
+        "display-text": text,
+        "p1": p1, "p2": p2, "p3": p3, "p4": p4,
+    }
+    if blocking:
+        slot["type"] = "BLOCKING"
+    return slot
+
+
+def _bcourt(cid: int, name: str, *, past=None, current=None, next=None,
+            short_name: Optional[str] = None) -> Dict[str, Any]:
+    return {
+        "court": {
+            "id": cid,
+            "name": name,
+            "shortName": short_name or f"P{cid}",
+        },
+        "past": past, "current": current, "next": next,
+    }
+
+
+def _booking(style: str, *courts) -> Dict[str, Any]:
+    return {"booking": {
+        "style": style,
+        "_dev_timestamp": _EBUSY_NOW,
+        "courts": list(courts),
+    }}
+
+
+def _ebusy_ads(url: str) -> Dict[str, Any]:
+    return {"ebusy-ads": {"url": url}}
+
+
+# Realistic court samples reused across style fixtures.
+def _court_busy_singles(cid: int, name: str) -> Dict[str, Any]:
+    return _bcourt(cid, name,
+        current=_bslot("13:00:00", "14:30:00", p1=_bp("Roger", "Federer")),
+        next=_bslot("14:30:00", "16:00:00", text="H1 Training",
+                    p1=_bp("Rafael", "Nadal")),
+    )
+
+
+def _court_busy_doubles(cid: int, name: str) -> Dict[str, Any]:
+    return _bcourt(cid, name,
+        current=_bslot("14:00:00", "15:30:00",
+                       p1=_bp("Ilya", "Shinkarenko"),
+                       p2=_bp("Roman", "Churkov"),
+                       p3=_bp("Mario", "Lopez"),
+                       p4=_bp("Alex", "Drachnev")),
+        next=_bslot("15:30:00", "17:00:00", text="Verbandspiel",
+                    p1=_bp("Novak", "Djokovic")),
+    )
+
+
+def _court_blocking(cid: int, name: str) -> Dict[str, Any]:
+    return _bcourt(cid, name,
+        current=_bslot("13:00:00", "18:00:00", text="Maintenance",
+                       blocking=True),
+    )
+
+
+def _court_empty(cid: int, name: str) -> Dict[str, Any]:
+    return _bcourt(cid, name)
+
+
 FIXTURES: List[Dict[str, Any]] = [
     # --- Standby / idle states -----------------------------------------------
     {"name": "standby", "info": {"standby": True}},
@@ -259,6 +360,38 @@ FIXTURES: List[Dict[str, Any]] = [
          _team(_player("LOPEZ", "ES"), _player("GARCIA", "ES"),
                set_scores=[4, 6, 6], game_score="30"),
      )},
+
+    # --- eBusy / booking -----------------------------------------------------
+    # 5 styles × 4 court counts + edge cases (blocking, empty, ads).
+    # Court samples are sharable across styles since the schema is the same.
+] + [
+    {"name": f"booking — {style}, {n}-court",
+     "info": _booking(style, *[_court_busy_singles(i + 1, f"Platz {i + 1}")
+                                for i in range(n)])}
+    for style in ("SevenCourts", "SV1845", "TABB", "MatchCenter", "TC Heidelberg")
+    for n in (1, 2, 3, 4)
+] + [
+    # Edge cases on the SevenCourts style.
+    {"name": "booking — empty (no slots)",
+     "info": _booking("SevenCourts",
+                      _court_empty(1, "Platz 1"),
+                      _court_empty(2, "Platz 2"))},
+    {"name": "booking — BLOCKING (maintenance)",
+     "info": _booking("SevenCourts",
+                      _court_blocking(1, "Platz 1"))},
+    {"name": "booking — doubles match in progress",
+     "info": _booking("SevenCourts",
+                      _court_busy_doubles(1, "Center Court"))},
+    {"name": "booking — mixed (singles + doubles + free)",
+     "info": _booking("SevenCourts",
+                      _court_busy_singles(1, "Platz 1"),
+                      _court_busy_doubles(2, "Platz 2"),
+                      _court_empty(3, "Platz 3"))},
+    {"name": "ebusy-ads — promotional image",
+     # Full URL is required: draw_ads → fetch_by_url_with_cache → gateway.head
+     # passes the URL through without prepending TABLEAU_SERVER_BASE_URL.
+     "info": _ebusy_ads(f"{LAN_BASE_URL}/panel-image/test-xl1.png")},
+] + [
 
     # --- Signage -------------------------------------------------------------
     # Signage uses score-sets / score-game / is-serving-t1 / match-status
@@ -413,7 +546,9 @@ class Handler(BaseHTTPRequestHandler):
     def _send_image_for_path(self, request_path: str, *, head_only: bool = False):
         """Serve a synthesized PNG sized appropriately for the requested fixture."""
         if request_path.endswith("test-xl1-portrait.png"):
-            data = _synth_image(120, 96, "120x96")
+            # Narrower than the smallest W_LOGO_WITH_CLOCK (M1=120) so the
+            # image-with-clock layout fits side-by-side on every panel type.
+            data = _synth_image(90, 96, "90x96")
         else:
             data = _synth_image(320, 96, "320x96 XL1 TEST")
         etag = f'"{len(data)}-{request_path}"'
