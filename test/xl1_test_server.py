@@ -84,15 +84,80 @@ def _synth_image(w: int, h: int, label: str) -> bytes:
 _SYNTH_CACHE: Dict[tuple, bytes] = {}
 
 
+# 320×96 tile of 27×18 flags with 1-px black gutters between cells.
+# 11 cols × 5 rows = 55 flags per page → 3 pages cover all 156.
+_FLAG_TILE_W, _FLAG_TILE_H = 27, 18
+_FLAG_STRIDE_X = _FLAG_TILE_W + 1  # 28
+_FLAG_STRIDE_Y = _FLAG_TILE_H + 1  # 19
+_FLAG_COLS = 11   # 11 * 28 - 1 = 307 px wide, 13 px right margin
+_FLAG_ROWS = 5    #  5 * 19 - 1 =  94 px tall,  2 px bottom margin
+_FLAGS_PER_PAGE = _FLAG_COLS * _FLAG_ROWS
+
+
+def _synth_flags_page(page: int) -> bytes:
+    """Tile 55 27×18 flags into a 320×96 panel image. `page` is 1-indexed.
+
+    Reads from `images/flags_27x18/`. Pages are taken in sorted order so the
+    same page always shows the same flags."""
+    from io import BytesIO
+    from PIL import Image as PILImage
+
+    cache_key = ("flags-page", page)
+    cached = _SYNTH_CACHE.get(cache_key)
+    if cached is not None:
+        return cached
+
+    flags_dir = REPO_ROOT / "images" / "flags_27x18"
+    all_flags = sorted(p for p in flags_dir.glob("*.png"))
+    start = (page - 1) * _FLAGS_PER_PAGE
+    chunk = all_flags[start:start + _FLAGS_PER_PAGE]
+
+    canvas = PILImage.new("RGB", (320, 96), (0, 0, 0))
+    for i, path in enumerate(chunk):
+        col, row = i % _FLAG_COLS, i // _FLAG_COLS
+        x = col * _FLAG_STRIDE_X
+        y = row * _FLAG_STRIDE_Y
+        flag = PILImage.open(path).convert("RGB")
+        canvas.paste(flag, (x, y))
+
+    buf = BytesIO()
+    canvas.save(buf, format="PNG")
+    data = buf.getvalue()
+    _SYNTH_CACHE[cache_key] = data
+    return data
+
+
+def _flag_page_count() -> int:
+    flags_dir = REPO_ROOT / "images" / "flags_27x18"
+    if not flags_dir.exists():
+        return 0
+    n = len(list(flags_dir.glob("*.png")))
+    return (n + _FLAGS_PER_PAGE - 1) // _FLAGS_PER_PAGE
+
+
 # --- Fixture catalogue --------------------------------------------------------
 
 # Flag codes used in fixtures map to filenames under images/flags/<name>.png.
+# Restricted set during the hand-drawn-flag rollout: the redrawn flags we want
+# to eyeball + a few emblem-bearing ones to exercise the load path.
 _FLAGS = {
-    "CH": "switzerland", "ES": "spain", "RU": "russia", "RS": "serbia",
-    "DE": "germany", "NL": "netherlands", "RO": "romania", "AU": "australia",
-    "GB": "great britain", "NO": "norway", "GR": "greece", "CA": "canada",
-    "FR": "france", "IT": "italy",
+    "US": "usa",
+    "DE": "germany",
+    "CH": "switzerland",
+    "ES": "spain",
+    "GB": "great britain",
+    "SE": "sweden",
+    "GR": "greece",
+    "AU": "australia",
+    # Emblem extras
+    "BR": "brazil",
+    "MX": "mexico",
+    "AR": "argentina",
 }
+
+# When True, drop fixtures that don't render a flag (clocks, messages, images,
+# bookings, standby, ebusy-ads). Toggle off to bring them back into the rotation.
+FLAGS_ONLY = True
 
 
 def _player(name: str, flag: str = "DE") -> Dict[str, Any]:
@@ -309,12 +374,12 @@ FIXTURES: List[Dict[str, Any]] = [
      )},
     {"name": "scoreboard — singles, long names (font fallback)",
      "info": _scoreboard(
-         _team(_player("KHACHANOV", "RU"), serves=True, set_scores=[6, 7], game_score="15"),
-         _team(_player("AUGER-ALIASSIME", "CA"), set_scores=[4, 6], game_score="40"),
+         _team(_player("STEFANSSON", "SE"), serves=True, set_scores=[6, 7], game_score="15"),
+         _team(_player("PAPADOPOULOS", "GR"), set_scores=[4, 6], game_score="40"),
      )},
     {"name": "scoreboard — singles, T1 game point (Ad)",
      "info": _scoreboard(
-         _team(_player("DJOKOVIC", "RS"), serves=True, set_scores=[6, 7, 3], game_score="A"),
+         _team(_player("KYRGIOS", "AU"), serves=True, set_scores=[6, 7, 3], game_score="A"),
          _team(_player("ALCARAZ", "ES"), set_scores=[4, 5, 6], game_score="40"),
      )},
     {"name": "scoreboard — singles, T2 won",
@@ -326,26 +391,36 @@ FIXTURES: List[Dict[str, Any]] = [
     {"name": "scoreboard — match tiebreak (10-pt)",
      "info": _scoreboard(
          _team(_player("ZVEREV", "DE"), serves=True, set_scores=[6, 3, 7], game_score="8"),
-         _team(_player("MEDVEDEV", "RU"), set_scores=[4, 6, 5], game_score="6"),
+         _team(_player("FRITZ", "US"), set_scores=[4, 6, 5], game_score="6"),
      )},
     {"name": "scoreboard — Americano (total points)",
      "info": _scoreboard(
-         _team(_player("RUUD", "NO"), serves=True, game_score="21"),
+         _team(_player("BERG", "SE"), serves=True, game_score="21"),
          _team(_player("TSITSIPAS", "GR"), game_score="17"),
          is_total_points=True,
+     )},
+    {"name": "scoreboard — singles, emblem flags",
+     "info": _scoreboard(
+         _team(_player("ALCARAZ", "ES"), serves=True, set_scores=[6, 4], game_score="40"),
+         _team(_player("SILVA", "BR"), set_scores=[4, 6], game_score="30"),
+     )},
+    {"name": "scoreboard — singles, emblem flags 2",
+     "info": _scoreboard(
+         _team(_player("MARTINEZ", "MX"), serves=True, set_scores=[7], game_score="0"),
+         _team(_player("GONZALEZ", "AR"), set_scores=[5], game_score="15"),
      )},
 
     # --- Scoreboard doubles --------------------------------------------------
     {"name": "scoreboard — doubles, 3 sets",
      "info": _scoreboard(
-         _team(_player("MUELLER", "DE"), _player("SCHMID", "DE"),
+         _team(_player("MUELLER", "DE"), _player("SCHMID", "CH"),
                serves=True, set_scores=[6, 4, 3], game_score="40"),
-         _team(_player("ROJER", "NL"), _player("TECAU", "RO"),
+         _team(_player("PAPPAS", "GR"), _player("BERG", "SE"),
                set_scores=[4, 6, 6], game_score="30"),
      )},
     {"name": "scoreboard — doubles, long names",
      "info": _scoreboard(
-         _team(_player("KOOLHOF", "NL"), _player("SKUPSKI", "GB"),
+         _team(_player("STEFANSSON", "SE"), _player("SKUPSKI", "GB"),
                serves=True, set_scores=[7, 6], game_score="15"),
          _team(_player("KUBLER", "AU"), _player("HIJIKATA", "AU"),
                set_scores=[5, 7], game_score="40"),
@@ -392,6 +467,12 @@ FIXTURES: List[Dict[str, Any]] = [
      # passes the URL through without prepending TABLEAU_SERVER_BASE_URL.
      "info": _ebusy_ads(f"{LAN_BASE_URL}/panel-image/test-xl1.png")},
 ] + [
+    # Tiled flag pages — 55 27×18 flags per 320×96 panel, ~3 pages total.
+    {"name": f"flags — page {p}/{_flag_page_count()}",
+     "info": _idle(**{"image-url": f"panel-image/flags-page-{p}.png"})}
+    for p in range(1, _flag_page_count() + 1)
+] + [
+] + [
 
     # --- Signage -------------------------------------------------------------
     # Signage uses score-sets / score-game / is-serving-t1 / match-status
@@ -416,7 +497,7 @@ FIXTURES: List[Dict[str, Any]] = [
              is_serving_t1=True,
              match_status="14:00"),
          _signage_match_court("Court 2",
-             _signage_team(_player("DJOKOVIC", "RS"), _player("RUUD", "NO")),
+             _signage_team(_player("KYRGIOS", "AU"), _player("BERG", "SE")),
              _signage_team(_player("ALCARAZ", "ES"), _player("NADAL", "ES")),
              score_sets=[[3, 6], [6, 4]],
              score_game=("40", "30"),
@@ -433,7 +514,7 @@ FIXTURES: List[Dict[str, Any]] = [
              is_serving_t1=True,
              match_status="14:00"),
          _signage_match_court("Court 2",
-             _signage_team(_player("DJOKOVIC", "RS"), _player("RUUD", "NO")),
+             _signage_team(_player("KYRGIOS", "AU"), _player("SKUPSKI", "GB")),
              _signage_team(_player("ALCARAZ", "ES"), _player("NADAL", "ES")),
              score_sets=[[3, 6], [6, 4]],
              score_game=("40", "30"),
@@ -441,13 +522,13 @@ FIXTURES: List[Dict[str, Any]] = [
              match_status="14:30"),
          _signage_match_court("Court 3",
              _signage_team(_player("ZVEREV", "DE")),
-             _signage_team(_player("MEDVEDEV", "RU")),
+             _signage_team(_player("FRITZ", "US")),
              score_sets=[[6, 4], [3, 6], [7, 5]],
              score_game=("A", "40"),
              is_serving_t1=True,
              match_status="Walko."),
          _signage_match_court("Court 4",
-             _signage_team(_player("RUUD", "NO")),
+             _signage_team(_player("BERG", "SE")),
              _signage_team(_player("TSITSIPAS", "GR")),
              score_sets=[[6, 3], [4, 6]],
              score_game=("0", "30"),
@@ -459,6 +540,16 @@ FIXTURES: List[Dict[str, Any]] = [
 
 # Drop the now-unused legacy helper to avoid confusion.
 del _signage_court
+
+
+if FLAGS_ONLY:
+    # Keep only scenarios that actually paint a flag onto the panel:
+    # scoreboards (player flags), signage (player flags), and the tiled flag
+    # pages. Drop standby/clock/message/image/booking/ebusy-ads for now.
+    FIXTURES = [
+        f for f in FIXTURES
+        if f["name"].startswith(("scoreboard", "signage", "flags"))
+    ]
 
 
 # --- Server state -------------------------------------------------------------
@@ -545,7 +636,12 @@ class Handler(BaseHTTPRequestHandler):
 
     def _send_image_for_path(self, request_path: str, *, head_only: bool = False):
         """Serve a synthesized PNG sized appropriately for the requested fixture."""
-        if request_path.endswith("test-xl1-portrait.png"):
+        # /panel-image/flags-page-N.png → 320×96 grid of native-size flags.
+        import re
+        m = re.search(r"flags-page-(\d+)\.png$", request_path)
+        if m:
+            data = _synth_flags_page(int(m.group(1)))
+        elif request_path.endswith("test-xl1-portrait.png"):
             # Narrower than the smallest W_LOGO_WITH_CLOCK (M1=120) so the
             # image-with-clock layout fits side-by-side on every panel type.
             data = _synth_image(90, 96, "90x96")
