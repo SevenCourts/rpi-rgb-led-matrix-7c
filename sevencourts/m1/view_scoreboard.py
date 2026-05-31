@@ -183,28 +183,57 @@ def _draw_score(canvas, match, layout):
 
     if not match.get("hideServiceIndicator", False) and not is_match_over:
         _draw_service_indicator(
-            canvas, t1_on_serve, t2_on_serve, layout.x_score_service
+            canvas, t1_on_serve, t2_on_serve, layout
         )
 
 
-def _draw_service_indicator(canvas, t1_on_serve, t2_on_serve, x_service):
-    b = (0, 0, 0)
-    y = (255, 255, 0)
-    ball = [
-        [b, b, y, y, y, b, b],
-        [b, y, y, y, y, y, b],
-        [y, y, y, y, y, y, y],
-        [y, y, y, y, y, y, y],
-        [y, y, y, y, y, y, y],
-        [b, y, y, y, y, y, b],
-        [b, b, y, y, y, b, b],
-    ]
-    y_service_t1 = H_PANEL // 2 // 2 - len(ball) // 2
-    y_service_t2 = y_service_t1 + H_PANEL / 2
+# Chamfered-circle ball patterns indexed by edge length. Hand-tuned so the
+# silhouette stays round on the LED grid (a strict d²≤r² mask leaves visible
+# stair-steps at small sizes).
+_BALL_PATTERNS = {
+    7: [
+        [0, 0, 1, 1, 1, 0, 0],
+        [0, 1, 1, 1, 1, 1, 0],
+        [1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1],
+        [0, 1, 1, 1, 1, 1, 0],
+        [0, 0, 1, 1, 1, 0, 0],
+    ],
+    11: [
+        [0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0],
+        [0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+        [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+        [0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+        [0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0],
+    ],
+}
+
+
+def _draw_service_indicator(canvas, t1_on_serve, t2_on_serve, layout):
+    color = layout.color_score_service
+    fg = (color.red, color.green, color.blue)
+    bg = (0, 0, 0)
+    pattern = _BALL_PATTERNS[layout.service_ball_size]
+    ball = [[fg if px else bg for px in row] for row in pattern]
+    size = len(ball)
+    # Centre the ball on the score-digit midpoint (the score baseline sits at
+    # y_font_center(font_score, H_PANEL/2); glyph mid = baseline - h_score/2).
+    # `top = mid - (size - 1) // 2` puts the ball's middle row on the mid.
+    h_score = y_font_offset(layout.font_score)
+    score_mid_t1 = y_font_center(layout.font_score, H_PANEL / 2) - h_score / 2
+    y_service_t1 = int(round(score_mid_t1 - (size - 1) / 2))
+    y_service_t2 = y_service_t1 + H_PANEL // 2
     if t1_on_serve:
-        draw_matrix(canvas, ball, x_service, y_service_t1)
+        draw_matrix(canvas, ball, layout.x_score_service, y_service_t1)
     elif t2_on_serve:
-        draw_matrix(canvas, ball, x_service, y_service_t2)
+        draw_matrix(canvas, ball, layout.x_score_service, y_service_t2)
 
 
 def _draw_names(canvas, match, layout):
@@ -321,10 +350,22 @@ def _draw_names(canvas, match, layout):
 
         gap_within = layout.doubles_gap_within_team
         gap_between = layout.doubles_gap_between_teams
-        y_t1p1 = 1 + y_offset
-        y_t1p2 = y_t1p1 + name_max_height + gap_within
-        y_t2p1 = y_t1p2 + name_max_height + gap_between
-        y_t2p2 = y_t2p1 + name_max_height + gap_within
+        if display_flags and same_flags_in_teams:
+            # One flag per team (drawn centred via `_draw_singles_flags`) and
+            # the score column also centres on the team-half mid. Centre the
+            # 2-name block on that same axis so flag / names / score align.
+            char_h = y_font_offset(font)
+            block_h = 2 * char_h + gap_within
+            top_t1 = (H_PANEL // 2 - block_h) // 2
+            y_t1p1 = top_t1 + char_h
+            y_t1p2 = y_t1p1 + char_h + gap_within
+            y_t2p1 = y_t1p1 + H_PANEL // 2
+            y_t2p2 = y_t1p2 + H_PANEL // 2
+        else:
+            y_t1p1 = 1 + y_offset
+            y_t1p2 = y_t1p1 + name_max_height + gap_within
+            y_t2p1 = y_t1p2 + name_max_height + gap_between
+            y_t2p2 = y_t2p1 + name_max_height + gap_within
         graphics.DrawText(canvas, font, x, y_t1p1, c_team, t1p1)
         graphics.DrawText(canvas, font, x, y_t1p2, c_team, t1p2)
         graphics.DrawText(canvas, font, x, y_t2p1, c_team, t2p1)
@@ -380,11 +421,16 @@ def _draw_winner(canvas, match, layout):
         [b, b, y, y, y, y, y, b, b],
     ]
     scale = max(1, layout.winner_scale)
-    if scale > 1:
+    src_h, src_w = len(cup), len(cup[0])
+    tw = layout.winner_target_w if layout.winner_target_w > 0 else src_w * scale
+    th = layout.winner_target_h if layout.winner_target_h > 0 else src_h * scale
+    if (tw, th) != (src_w, src_h):
+        # Nearest-neighbour resize. Uniform scale (default) reduces to the
+        # plain pixel-replication of the previous implementation; non-uniform
+        # target dims squish/stretch along one axis.
         cup = [
-            [px for px in row for _ in range(scale)]
-            for row in cup
-            for _ in range(scale)
+            [cup[i * src_h // th][j * src_w // tw] for j in range(tw)]
+            for i in range(th)
         ]
     match_result = match.get("matchResult", None)
     x_medal = layout.winner_x if layout.winner_x >= 0 else layout.x_score_service

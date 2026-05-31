@@ -56,6 +56,11 @@ SCOREBOARD = ScoreboardLayout(
     w_score_set=20,
     x_score_game=163,
     x_score_service=155,
+    # Cup matches L1/XL1 sizing (was scale=1). 2× cup is 18×20; centred in
+    # the 32-px team half ((32 - 20) // 2 = 6).
+    winner_scale=2,
+    winner_y_t1=6,
+    winner_y_t2=38,
 )
 
 
@@ -98,7 +103,7 @@ SIGNAGE = SignageLayout(
     color_court_name_bg=club_styles.COLOR_BW_VAIHINGEN_ROHR_BLUE,
     color_team_name=COLOR_GREY,
     color_setscore_completed_won_bg=COLOR_7C_DARK_GREEN,
-    color_srv=COLOR_GREY,
+    color_srv=COLOR_YELLOW,
     color_gamescore=COLOR_WHITE,
     color_match_status=COLOR_GOLD,
     max_length_name_singles=14,

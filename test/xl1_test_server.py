@@ -155,9 +155,10 @@ _FLAGS = {
     "AR": "argentina",
 }
 
-# When True, drop fixtures that don't render a flag (clocks, messages, images,
-# bookings, standby, ebusy-ads). Toggle off to bring them back into the rotation.
-FLAGS_ONLY = True
+# When True, drop the dedicated flag-page demo fixtures ("flags — page N") while
+# keeping everything else (scoreboards, signage, clocks, messages, images,
+# bookings, standby, ebusy-ads). Toggle off to include the flag pages too.
+EXCLUDE_FLAGS_DEMO = True
 
 
 def _player(name: str, flag: str = "DE") -> Dict[str, Any]:
@@ -516,7 +517,7 @@ FIXTURES: List[Dict[str, Any]] = [
          _signage_match_court("Court 2",
              _signage_team(_player("KYRGIOS", "AU"), _player("SKUPSKI", "GB")),
              _signage_team(_player("ALCARAZ", "ES"), _player("NADAL", "ES")),
-             score_sets=[[3, 6], [6, 4]],
+             score_sets=[[3, 6], [6, 4], [7, 5]],
              score_game=("40", "30"),
              is_serving_t1=False,
              match_status="14:30"),
@@ -542,13 +543,13 @@ FIXTURES: List[Dict[str, Any]] = [
 del _signage_court
 
 
-if FLAGS_ONLY:
-    # Keep only scenarios that actually paint a flag onto the panel:
-    # scoreboards (player flags), signage (player flags), and the tiled flag
-    # pages. Drop standby/clock/message/image/booking/ebusy-ads for now.
+if EXCLUDE_FLAGS_DEMO:
+    # Drop the dedicated tiled flag-page demo ("flags — page N"); keep every
+    # other scenario (scoreboards, signage, clocks, messages, images, bookings,
+    # standby, ebusy-ads).
     FIXTURES = [
         f for f in FIXTURES
-        if f["name"].startswith(("scoreboard", "signage", "flags"))
+        if not f["name"].startswith("flags")
     ]
 
 

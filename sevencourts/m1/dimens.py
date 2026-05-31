@@ -14,9 +14,10 @@ if _panel_type == "XL1":
 elif _panel_type == "L1":
     W_PANEL = 192
     H_PANEL = 96
-    # L1 and XL1 share flag size because both panels are 96 px tall.
-    W_FLAG = 27
-    H_FLAG = 18
+    # Flags match M1 (192-px panels share scoreboard horizontal budget; the
+    # 27×18 size XL1 uses crowds the L1 name zone).
+    W_FLAG = 18
+    H_FLAG = 12
     W_LOGO_WITH_CLOCK = 120
     FONT_CLOCK_DEFAULT = FONT_XL_SDK
 else:  # M1

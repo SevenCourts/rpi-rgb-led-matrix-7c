@@ -41,6 +41,10 @@ class ScoreboardLayout:
     # same column edge as 2-digit values. One glyph advance in `font_score`.
     dx_score_game_single_digit: int = 8
 
+    # Service indicator ball edge length (px). Must be odd and present in
+    # view_scoreboard._BALL_PATTERNS (currently 7 or 11).
+    service_ball_size: int = 7
+
     # Doubles name spacing (vertical px) — only used in doubles layout.
     doubles_gap_within_team: int = 1
     doubles_gap_between_teams: int = 4
@@ -49,10 +53,14 @@ class ScoreboardLayout:
     # becomes `scale`×`scale` panel pixels). `x` defaults to x_score_service
     # when -1. `y_t1` / `y_t2` are absolute cup top-edge coordinates;
     # `y_t2 = -1` means "y_t1 + H_PANEL // 2".
+    # `target_h` / `target_w` override the natural `10 * scale` / `9 * scale`
+    # dimensions — non-uniform values are realised by nearest-neighbour resize.
     winner_scale: int = 1
     winner_x: int = -1
     winner_y_t1: int = 12
     winner_y_t2: int = -1
+    winner_target_w: int = -1
+    winner_target_h: int = -1
 
 
 @dataclass(frozen=True)

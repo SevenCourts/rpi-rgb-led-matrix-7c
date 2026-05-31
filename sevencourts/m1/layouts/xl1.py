@@ -12,7 +12,6 @@ from sevencourts.rgbmatrix import (
     COLOR_BLACK,
     COLOR_GOLD,
     COLOR_GREY,
-    COLOR_GREY_DARK,
     COLOR_WHITE,
     COLOR_YELLOW,
     FONT_L_7SEGMENT,
@@ -70,20 +69,28 @@ SCOREBOARD = ScoreboardLayout(
     w_score_set=22,
     # Game score right-aligned: 2 × 17-px advance = 34 px → starts at x=282.
     x_score_game=282,
-    # Service indicator nestled between set3 column (ends ~x=269) and game
-    # column (starts at x=282); ball is 7 px wide so 273..279 leaves a 2-px gap.
-    x_score_service=273,
+    # Service indicator sized 11 px (see service_ball_size below). Right edge
+    # at 280 leaves a 1-px gap before the game column (x=282). Left side has
+    # 5 px to the last visible set-3 ink (~x=264), avoiding any overlap.
+    x_score_service=270,
     # Center single-char game scores ("A") horizontally inside the 2-char slot.
     # Half-advance (17 / 2 ≈ 9) shifts a 1-char glyph to the slot center.
     dx_score_game_single_digit=9,
-    # Doubles spacing: 2 px between p1/p2 within a team, 10 px between teams.
-    doubles_gap_within_team=2,
-    doubles_gap_between_teams=10,
-    # 2× cup matrix (9×10 → 18×20 px), vertically centered in each team half
-    # ((48 - 20) // 2 = 14 from team top).
-    winner_scale=2,
-    winner_y_t1=14,
-    winner_y_t2=62,  # 48 (team-2 top) + 14
+    # 11-px ball (≈1.5× the M1/L1 default 7) — bigger feels right next to the
+    # FONT_L_7SEGMENT score; positioning logic centres it on the score-digit mid.
+    service_ball_size=11,
+    # Doubles spacing: 3 px between p1/p2 within a team, 7 px between teams.
+    doubles_gap_within_team=3,
+    doubles_gap_between_teams=7,
+    # Cup: 9×10 source resized proportionally to 23×25 (5 px shorter than
+    # the natural 3× → 27×30, but aspect-preserved). 25 = FONT_L_7SEGMENT
+    # glyph height; cup top y=11 matches the score-glyph top
+    # (baseline 36 − 25 = 11), so cup and score align at their top edges.
+    winner_scale=3,
+    winner_target_w=23,
+    winner_target_h=25,
+    winner_y_t1=11,
+    winner_y_t2=59,
 )
 
 
@@ -105,14 +112,14 @@ IMAGE = ImageLayout()
 
 # --- Message ------------------------------------------------------------------
 # XL1 message view: right-aligned FONT_L_7SEGMENT clock at baseline y=95,
-# color COLOR_GREY_DARK so it doesn't compete with the message text.
+# full white so it reads clearly alongside the message text.
 MESSAGE = MessageLayout(
     color_message=COLOR_7C_BLUE,
     font_candidates=[FONT_XXL_SPLEEN, FONT_XL, FONT_L_SPLEEN, FONT_M_SPLEEN, FONT_S_SPLEEN],
     clock_x=None,  # unused when right-aligned
     clock_y=95,
     clock_font=FONT_L_7SEGMENT,
-    clock_color=COLOR_GREY_DARK,
+    clock_color=COLOR_WHITE,
     clock_right_aligned=True,
     clock_divider_y=None,
     color_clock_divider=COLOR_7C_DARK_GREY,
@@ -127,7 +134,10 @@ MESSAGE = MessageLayout(
 SIGNAGE = SignageLayout(
     font_court_name=FONT_S_SPLEEN,
     font_team_name=FONT_S_SPLEEN,
-    font_score=FONT_M_SPLEEN,
+    # Match font_team_name (was FONT_M_SPLEEN; the heavier 8×16 glyphs read as
+    # bold next to the 6×12 names AND eat enough width to clip the 5th doubles
+    # name character).
+    font_score=FONT_S_SPLEEN,
     color_score=COLOR_WHITE,
     color_score_won=COLOR_WHITE,
     color_score_lost=COLOR_GREY,
@@ -136,12 +146,15 @@ SIGNAGE = SignageLayout(
     color_court_name_bg=club_styles.COLOR_BW_VAIHINGEN_ROHR_BLUE,
     color_team_name=COLOR_GREY,
     color_setscore_completed_won_bg=COLOR_7C_DARK_GREEN,
-    color_srv=COLOR_GREY,
+    color_srv=COLOR_YELLOW,
     color_gamescore=COLOR_WHITE,
     color_match_status=COLOR_GOLD,
     max_length_name_singles=12,
-    max_length_name_doubles=5,
-    cell_padding_left=3,
+    max_length_name_doubles=7,
+    # Flush-left so the flag (and doubles name block) starts at the same x
+    # as the blue court-name header background. Right padding kept at 3 so
+    # the score column doesn't kiss the cell edge.
+    cell_padding_left=0,
     cell_padding_right=3,
     gap_title_to_team=5,
 )

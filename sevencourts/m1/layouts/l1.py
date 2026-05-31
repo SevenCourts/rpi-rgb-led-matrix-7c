@@ -67,9 +67,10 @@ SCOREBOARD = ScoreboardLayout(
     w_score_set=20,
     x_score_game=163,
     x_score_service=155,
-    # L1-specific vertical spacing: leverages H_PANEL=96 (vs M1's 64).
-    doubles_gap_within_team=2,
-    doubles_gap_between_teams=10,
+    # Doubles spacing matches M1 (defaults) — the narrower 18×12 flag and the
+    # M1-style tight stack reads better than the prior L1-specific spacing.
+    doubles_gap_within_team=1,
+    doubles_gap_between_teams=4,
     # 2× cup, vertically centered in the 48-px team half.
     winner_scale=2,
     winner_y_t1=14,
@@ -128,16 +129,18 @@ SIGNAGE = SignageLayout(
     color_court_name_bg=club_styles.COLOR_BW_VAIHINGEN_ROHR_BLUE,
     color_team_name=COLOR_GREY,
     color_setscore_completed_won_bg=COLOR_7C_DARK_GREEN,
-    color_srv=COLOR_GREY,
+    color_srv=COLOR_YELLOW,
     color_gamescore=COLOR_WHITE,
     color_match_status=COLOR_GOLD,
     max_length_name_singles=14,
-    # Doubles benefit from L1's extra vertical room (48-px cells vs M1's 32).
-    max_length_name_doubles=5,
+    # Doubles names match M1 (3 chars). 96-px wide L1 cell matches M1 width,
+    # so the same constraint applies.
+    max_length_name_doubles=3,
     cell_padding_left=0,
     cell_padding_right=0,
-    # Slightly more breathing room than M1's default (2) — L1 has the vertical budget.
-    gap_title_to_team=4,
+    # Pushes the team block down so it sits vertically centred in the 48-px
+    # cell (court strip ~8 px, 2 team rows × 11 px, free 14 px split 9 top + ~5 bottom).
+    gap_title_to_team=9,
 )
 
 
