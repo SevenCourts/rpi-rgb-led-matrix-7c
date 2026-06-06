@@ -86,12 +86,19 @@ def _display_team_player(
     )
 
     x_content = x0 + layout.cell_padding_left
-    x_flag = x_content + x_shift
-    y_flag = y0
-    _draw_flag(canvas, x_flag, y_flag, flag_code, True)
+
+    # No flag (e.g. Tennis-Ticker without a custom team flag and no derivable
+    # country): draw nothing and flush the name to where the flag would have
+    # started, so there's no blank gap.
+    if flag_code:
+        x_flag = x_content + x_shift
+        y_flag = y0
+        _draw_flag(canvas, x_flag, y_flag, flag_code, True)
+        x_name = x_content + x_shift + W_FLAG_SMALL + 1
+    else:
+        x_name = x_content + x_shift
 
     y_name = y0 + Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(font)
-    x_name = x_content + x_shift + W_FLAG_SMALL + 1
     draw_text(canvas, x_name, y_name, name, font, layout.color_team_name)
 
 
