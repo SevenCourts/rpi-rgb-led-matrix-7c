@@ -10,6 +10,7 @@ from sevencourts.rgbmatrix import (
     COLOR_7C_DARK_GREEN,
     COLOR_7C_DARK_GREY,
     COLOR_BLACK,
+    COLOR_DEEP_ORANGE,
     COLOR_GOLD,
     COLOR_GREY,
     COLOR_WHITE,
@@ -23,7 +24,6 @@ from sevencourts.rgbmatrix import (
     FONT_XXL_7SEGMENT,
     FONT_XXL_SPLEEN,  # used by MessageLayout
 )
-import sevencourts.club_styles as club_styles
 
 from sevencourts.m1.layouts.types import (
     ClockLayout,
@@ -142,8 +142,8 @@ SIGNAGE = SignageLayout(
     color_score_won=COLOR_WHITE,
     color_score_lost=COLOR_GREY,
     color_match_bg=COLOR_BLACK,
-    color_court_name=COLOR_GREY,
-    color_court_name_bg=club_styles.COLOR_BW_VAIHINGEN_ROHR_BLUE,
+    color_court_name=COLOR_DEEP_ORANGE,
+    color_court_name_bg=COLOR_7C_DARK_GREY,
     color_team_name=COLOR_GREY,
     color_setscore_completed_won_bg=COLOR_7C_DARK_GREEN,
     color_srv=COLOR_YELLOW,
