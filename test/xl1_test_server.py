@@ -394,6 +394,21 @@ FIXTURES: List[Dict[str, Any]] = [
          _team(_player("ZVEREV", "DE"), serves=True, set_scores=[6, 3, 7], game_score="8"),
          _team(_player("FRITZ", "US"), set_scores=[4, 6, 5], game_score="6"),
      )},
+    # Finished match-tie-break: deciding set score >= 10 moves into the big
+    # game-score slot (winner white / loser grey) and the cup shrinks to tuck
+    # left of the 2-digit score. Exercises the won/lost color-shift fix.
+    {"name": "scoreboard — match tiebreak FINISHED, T1 won (10-8)",
+     "info": _scoreboard(
+         _team(_player("ZVEREV", "DE"), set_scores=[6, 3, 10], game_score=""),
+         _team(_player("FRITZ", "US"), set_scores=[4, 6, 8], game_score=""),
+         match_result="T1_WON",
+     )},
+    {"name": "scoreboard — match tiebreak FINISHED, T2 won (7-10)",
+     "info": _scoreboard(
+         _team(_player("FEDERER", "CH"), set_scores=[4, 6, 7], game_score=""),
+         _team(_player("NADAL", "ES"), set_scores=[6, 4, 10], game_score=""),
+         match_result="T2_WON",
+     )},
     {"name": "scoreboard — Americano (total points)",
      "info": _scoreboard(
          _team(_player("BERG", "SE"), serves=True, game_score="21"),
@@ -613,7 +628,7 @@ STATE: State = None  # set at startup
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "XL1TestServer/0.1"
+    server_version = "SevenCourtsLEDPanelsTestServer/0.1"
 
     def log_message(self, fmt, *args):
         # Keep server output tidy; uncomment for verbose access logs.
@@ -725,58 +740,108 @@ class Handler(BaseHTTPRequestHandler):
 
 # --- Web UI -------------------------------------------------------------------
 
+# Emulator browser-adapter ports for the embedded live previews. Start the
+# emulators (one per panel type) on these ports and they appear in the UI.
+# See `.runtime/emu/` working dirs / `make-emulators` helper.
+EMULATORS = [
+    {"key": "m1", "label": "M1 — 192×64", "port": 8888, "w": 768, "h": 256},
+    {"key": "l1", "label": "L1 — 192×96", "port": 8889, "w": 768, "h": 384},
+    {"key": "xl1", "label": "XL1 — 320×96", "port": 8890, "w": 1280, "h": 384},
+]
+
+
 def _render_ui(snap: Dict[str, Any]) -> str:
     rows = []
     for i, fx in enumerate(FIXTURES):
         sel = " selected" if i == snap["index"] else ""
         rows.append(f'<option value="{i}"{sel}>{i:02d} — {fx["name"]}</option>')
+
+    # Each emulator preview is rendered at its native matrix size and scaled
+    # down with a CSS transform so all three fit in the column. The iframe src
+    # is set client-side from location.hostname so the previews work whether the
+    # page is opened via localhost or the workstation's LAN IP.
+    #
+    # The emulator page wraps its canvas in an 8px body margin + a 1px image
+    # border, so the iframe must be 18px larger than the canvas in each axis to
+    # show the whole canvas without clipping; `scrolling=no` removes the
+    # cross-origin scrollbars the overflow would otherwise add.
+    scale = 0.5
+    chrome = 18
+    emu_blocks = []
+    for e in EMULATORS:
+        fw, fh = e["w"] + chrome, e["h"] + chrome
+        emu_blocks.append(f"""
+    <div class="emu">
+      <div class="label">{e['label']} (:{e['port']})</div>
+      <div class="frame" style="width:{int(fw*scale)}px;height:{int(fh*scale)}px;">
+        <iframe id="emu-{e['key']}" data-port="{e['port']}" scrolling="no"
+                style="width:{fw}px;height:{fh}px;transform:scale({scale});"></iframe>
+      </div>
+    </div>""")
+
     return f"""<!doctype html>
-<html><head><meta charset="utf-8"><title>XL1 Test Server</title>
+<html><head><meta charset="utf-8"><title>SevenCourts LED panels test server</title>
 <style>
-body {{ font-family: sans-serif; margin: 2em; max-width: 720px; }}
-h1 {{ font-size: 1.4em; }}
-.current {{ background: #eef; padding: 1em; border-radius: 6px; margin: 1em 0; }}
+body {{ font-family: sans-serif; margin: 0; background: #111; color: #eee; }}
+header {{ padding: 10px 18px; background: #1b1b1f; border-bottom: 1px solid #333; }}
+h1 {{ font-size: 1.25em; margin: 0; }}
+.wrap {{ display: flex; flex-wrap: wrap; gap: 18px; padding: 18px; align-items: flex-start; }}
+.control {{ flex: 0 0 320px; }}
+.current {{ background: #1d2233; padding: 1em; border-radius: 6px; margin: 0 0 1em; }}
 .current b {{ font-size: 1.2em; }}
-button {{ font-size: 1em; padding: .5em 1em; margin-right: .5em; }}
+button {{ font-size: .95em; padding: .5em .9em; margin: 0 .4em .4em 0; cursor: pointer; }}
 select {{ font-size: 1em; padding: .3em; width: 100%; }}
-.muted {{ color: #888; font-size: .9em; }}
+.muted {{ color: #888; font-size: .85em; }}
+.emus {{ display: flex; flex-direction: column; gap: 16px; }}
+.emu .label {{ font-size: .85em; color: #9cf; margin-bottom: 4px; }}
+.emu .frame {{ overflow: hidden; background: #000; border: 1px solid #333; border-radius: 6px; }}
+.emu iframe {{ border: 0; transform-origin: top left; background: #000; display: block; }}
 </style>
 <script>
-async function ctrl(cmd, extra='') {{
-  const r = await fetch('/control?cmd=' + cmd + extra);
-  const s = await r.json();
+function applyState(s) {{
   document.getElementById('idx').textContent = s.index.toString().padStart(2,'0');
   document.getElementById('name').textContent = s.name;
   document.getElementById('auto').textContent = s.auto ? 'auto ('+s.interval+'s)' : 'paused';
   document.getElementById('sel').value = s.index;
+}}
+async function ctrl(cmd, extra='') {{
+  const r = await fetch('/control?cmd=' + cmd + extra);
+  applyState(await r.json());
 }}
 async function refresh() {{
   const r = await fetch('/state');
-  const s = await r.json();
-  document.getElementById('idx').textContent = s.index.toString().padStart(2,'0');
-  document.getElementById('name').textContent = s.name;
-  document.getElementById('auto').textContent = s.auto ? 'auto ('+s.interval+'s)' : 'paused';
-  document.getElementById('sel').value = s.index;
+  applyState(await r.json());
 }}
+// Point each embedded emulator at the same host the page was loaded from.
+window.addEventListener('DOMContentLoaded', () => {{
+  document.querySelectorAll('iframe[data-port]').forEach(f => {{
+    f.src = location.protocol + '//' + location.hostname + ':' + f.dataset.port + '/';
+  }});
+}});
 setInterval(refresh, 1000);
 </script>
 </head><body>
-<h1>XL1 Test Server</h1>
-<div class="current">
-  <div class="muted">current fixture (<span id="auto">{('auto ('+str(snap['interval'])+'s)') if snap['auto'] else 'paused'}</span>)</div>
-  <b><span id="idx">{snap['index']:02d}</span> — <span id="name">{snap['name']}</span></b>
+<header><h1>SevenCourts LED panels test server</h1></header>
+<div class="wrap">
+  <div class="control">
+    <div class="current">
+      <div class="muted">current fixture (<span id="auto">{('auto ('+str(snap['interval'])+'s)') if snap['auto'] else 'paused'}</span>)</div>
+      <b><span id="idx">{snap['index']:02d}</span> — <span id="name">{snap['name']}</span></b>
+    </div>
+    <p>
+      <button onclick="ctrl('prev')">⏮ Prev</button>
+      <button onclick="ctrl('next')">Next ⏭</button>
+      <button onclick="ctrl('pause')">⏸ Pause</button>
+      <button onclick="ctrl('resume')">▶ Resume</button>
+    </p>
+    <p class="muted">Jump to:</p>
+    <select id="sel" onchange="ctrl('jump', '&i=' + this.value)">
+    {''.join(rows)}
+    </select>
+    <p class="muted">{snap['count']} fixtures total. Panels poll /panels/&lt;id&gt;/match every ~1s.</p>
+  </div>
+  <div class="emus">{''.join(emu_blocks)}</div>
 </div>
-<p>
-  <button onclick="ctrl('prev')">⏮ Prev</button>
-  <button onclick="ctrl('next')">Next ⏭</button>
-  <button onclick="ctrl('pause')">⏸ Pause</button>
-  <button onclick="ctrl('resume')">▶ Resume</button>
-</p>
-<p>Jump to:</p>
-<select id="sel" onchange="ctrl('jump', '&i=' + this.value)">
-{''.join(rows)}
-</select>
-<p class="muted">{snap['count']} fixtures total. Panel polls /panels/test-xl1/match every ~1s.</p>
 </body></html>
 """
 
@@ -808,7 +873,7 @@ def main():
     threading.Thread(target=_auto_advance_loop, args=(STATE,), daemon=True).start()
 
     httpd = ThreadingHTTPServer(("0.0.0.0", args.port), Handler)
-    print(f"XL1 test server on http://0.0.0.0:{args.port}/  ({len(FIXTURES)} fixtures, "
+    print(f"SevenCourts LED panels test server on http://0.0.0.0:{args.port}/  ({len(FIXTURES)} fixtures, "
           f"{'auto-cycle' if STATE.auto else 'paused'}, interval={args.interval}s)")
     print(f"Point the panel at: TABLEAU_SERVER_BASE_URL=http://<this-host>:{args.port}")
     try:
