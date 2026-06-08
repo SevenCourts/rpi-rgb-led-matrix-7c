@@ -81,12 +81,19 @@ def register_panel() -> str:
     ip_address = network.ip_address()
     url = _url_panel_registration()
     _log.debug(f"Registering panel at: {url}")
+    # OS image provenance, stamped into /etc/7c-os-release at build time.
+    # TODO: also report the running daemon version -- see TODO-report-daemon-version.md
+    os_info = sys.os_release()
     data = json.dumps(
         {
             "code": name,
             "ip": ip_address,
             "firmware_version": GIT_COMMIT_ID,
             "firmware_date": GIT_COMMIT_DATE,
+            "os_version": os_info.get("os_commit_full", "unknown"),
+            "os_buildroot": os_info.get("buildroot", "unknown"),
+            "os_build_date": os_info.get("build_date", "unknown"),
+            "rgbmatrix_version": os_info.get("rgbmatrix_commit", "unknown"),
         }
     ).encode("utf-8")
     request = urllib.request.Request(url, data=data, method="POST")
