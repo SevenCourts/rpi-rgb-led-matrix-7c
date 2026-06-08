@@ -56,12 +56,17 @@ SCOREBOARD = ScoreboardLayout(
     x_min_scoreboard=W_PANEL // 2,
     w_score_set=20,
     x_score_game=163,
-    x_score_service=155,
+    # 7-px ball; right edge at 159 leaves a ~3-px gap before the 2-digit game
+    # score (x=163) — balanced between the set column and "40".
+    x_score_service=153,
     # Cup matches L1/XL1 sizing (was scale=1). 2× cup is 18×20; centred in
     # the 32-px team half ((32 - 20) // 2 = 6).
     winner_scale=2,
     winner_y_t1=6,
     winner_y_t2=38,
+    # Shrunk cup for match-tie-break finishes (tucks left of the 2-digit score).
+    winner_mtb_h=12,
+    winner_mtb_dx=3,
 )
 
 

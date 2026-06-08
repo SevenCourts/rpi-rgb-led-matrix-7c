@@ -61,6 +61,15 @@ class ScoreboardLayout:
     winner_y_t2: int = -1
     winner_target_w: int = -1
     winner_target_h: int = -1
+    # Match-tie-break finishes also render the 2-digit deciding score in the
+    # game-score column, so the normal cup would overlap it. When > 0, the cup
+    # is shrunk to this height (width keeps the 9:10 aspect) and right-aligned
+    # just left of `x_score_game` for tie-break results. -1 keeps the full cup.
+    winner_mtb_h: int = -1
+    # Horizontal nudge (px) for the shrunken MTB cup. The cup art carries a ~2px
+    # transparent border, so right-aligning its box leaves a visible gap to the
+    # score; a positive value shifts it right to close that gap per panel.
+    winner_mtb_dx: int = 0
 
 
 @dataclass(frozen=True)

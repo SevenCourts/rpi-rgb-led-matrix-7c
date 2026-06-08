@@ -67,7 +67,8 @@ SCOREBOARD = ScoreboardLayout(
     x_min_scoreboard=W_PANEL // 2,
     w_score_set=20,
     x_score_game=163,
-    x_score_service=155,
+    # See M1: ball nudged left so it doesn't crowd 2-digit game scores ("40").
+    x_score_service=153,
     # Doubles spacing matches M1 (defaults) — the narrower 18×12 flag and the
     # M1-style tight stack reads better than the prior L1-specific spacing.
     doubles_gap_within_team=1,
@@ -76,6 +77,9 @@ SCOREBOARD = ScoreboardLayout(
     winner_scale=2,
     winner_y_t1=14,
     winner_y_t2=62,
+    # Shrunk cup for match-tie-break finishes (tucks left of the 2-digit score).
+    winner_mtb_h=12,
+    winner_mtb_dx=3,
 )
 
 

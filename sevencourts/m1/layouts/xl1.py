@@ -36,11 +36,9 @@ from sevencourts.m1.layouts.types import (
 
 
 # --- Scoreboard ---------------------------------------------------------------
-# Score zone is content-sized starting at x=170 (decisions.md):
-#   set columns x=170..235 (3 × 22px) | service indicator centered at x≈245
-#   | game score in FONT_XL_7SEGMENT right-aligned at x=316.
-# `x_score_service` value 242 places the 7px service ball centered at x≈245
-# (242 + 3 = 245), matching mockup `scoreboard_native.png`.
+# Score zone is content-sized: set columns from x=204 (3 × 22px) | 11-px
+# service indicator | game score in FONT_L_7SEGMENT right-aligned ending at
+# x=316. Exact x values and gaps are documented on each field below.
 SCOREBOARD = ScoreboardLayout(
     color_score_set=COLOR_WHITE,
     color_score_set_won=COLOR_WHITE,
@@ -70,9 +68,10 @@ SCOREBOARD = ScoreboardLayout(
     # Game score right-aligned: 2 × 17-px advance = 34 px → starts at x=282.
     x_score_game=282,
     # Service indicator sized 11 px (see service_ball_size below). Right edge
-    # at 280 leaves a 1-px gap before the game column (x=282). Left side has
-    # 5 px to the last visible set-3 ink (~x=264), avoiding any overlap.
-    x_score_service=270,
+    # at 278 leaves a ~3-px gap before the game column (x=282) so the ball no
+    # longer crowds 2-digit scores ("40"); left side keeps ~4 px to the last
+    # visible set-3 ink (~x=264) in the rare 3-set + serve case.
+    x_score_service=268,
     # Center single-char game scores ("A") horizontally inside the 2-char slot.
     # Half-advance (17 / 2 ≈ 9) shifts a 1-char glyph to the slot center.
     dx_score_game_single_digit=9,
@@ -91,6 +90,9 @@ SCOREBOARD = ScoreboardLayout(
     winner_target_h=25,
     winner_y_t1=11,
     winner_y_t2=59,
+    # Shrunk cup for match-tie-break finishes (tucks left of the 2-digit score).
+    winner_mtb_h=18,
+    winner_mtb_dx=7,
 )
 
 

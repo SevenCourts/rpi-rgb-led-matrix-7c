@@ -9,8 +9,8 @@ GAME_SCORES = ("15", "30", "40", "A")
 def draw(canvas, panel_info):
     layout = current_layout().scoreboard
     _draw_names(canvas, panel_info, layout)
-    _draw_score(canvas, panel_info, layout)
-    _draw_winner(canvas, panel_info, layout)
+    is_mtb = _draw_score(canvas, panel_info, layout)
+    _draw_winner(canvas, panel_info, layout, is_mtb)
 
 
 def _player_name(p, noname="Noname"):
@@ -52,6 +52,10 @@ def _draw_score(canvas, match, layout):
     c_set_lost = layout.color_score_set_lost
     x_min = layout.x_min_scoreboard
     w_set = layout.w_score_set
+
+    # Game-score digit colors. Default both white; a finished tie-break carries
+    # the deciding set's won/lost colors here (winner white, loser grey).
+    c_t1_game = c_t2_game = layout.color_score_game
 
     is_mtb = None
 
@@ -109,14 +113,20 @@ def _draw_score(canvas, match, layout):
             # FIXME Match/score metadata is missing to do it properly.
             is_mtb = t1_set3 >= 10 or t2_set3 >= 10
             if is_mtb:
+                # The deciding tie-break moves into the big game-score slot and
+                # keeps its won/lost colors there; the set columns each shift
+                # one place right, so their colors must shift in lock-step too
+                # (otherwise winner/loser colors land on the wrong digits).
                 t1_game = str(t1_set3)
                 t2_game = str(t2_set3)
-                t1_set3 = t1_set2
-                t2_set3 = t2_set2
-                t1_set2 = t1_set1
-                t2_set2 = t2_set1
-                t1_set1 = ""
-                t2_set1 = ""
+                c_t1_game = c_t1_set3
+                c_t2_game = c_t2_set3
+                t1_set3, c_t1_set3 = t1_set2, c_t1_set2
+                t2_set3, c_t2_set3 = t2_set2, c_t2_set2
+                t1_set2, c_t1_set2 = t1_set1, c_t1_set1
+                t2_set2, c_t2_set2 = t2_set1, c_t2_set1
+                t1_set1 = t2_set1 = ""
+                c_t1_set1 = c_t2_set1 = COLOR_BLACK
         else:
             c_t1_set3 = c_t2_set3 = c_set
 
@@ -129,12 +139,15 @@ def _draw_score(canvas, match, layout):
                 and t2_game not in GAME_SCORES
             )
             if is_mtb:
-                t1_set3 = t1_set2
-                t2_set3 = t2_set2
-                t1_set2 = t1_set1
-                t2_set2 = t2_set1
-                t1_set1 = ""
-                t2_set1 = ""
+                # In-progress tie-break: shift set digits AND their colors one
+                # place right; the live tie-break tally stays in the game-score
+                # slot (both white, as set above).
+                t1_set3, c_t1_set3 = t1_set2, c_t1_set2
+                t2_set3, c_t2_set3 = t2_set2, c_t2_set2
+                t1_set2, c_t1_set2 = t1_set1, c_t1_set1
+                t2_set2, c_t2_set2 = t2_set1, c_t2_set1
+                t1_set1 = t2_set1 = ""
+                c_t1_set1 = c_t2_set1 = COLOR_BLACK
 
         x_set1 = x_min
         x_set2 = x_set1 + w_set
@@ -175,16 +188,23 @@ def _draw_score(canvas, match, layout):
     # FIXME Test if this works for finished e.g. tie-break matches
     if not is_match_over or is_mtb:
         graphics.DrawText(
-            canvas, font_score, x_t1_score_game, y_t1, layout.color_score_game, t1_game
+            canvas, font_score, x_t1_score_game, y_t1, c_t1_game, t1_game
         )
         graphics.DrawText(
-            canvas, font_score, x_t2_score_game, y_t2, layout.color_score_game, t2_game
+            canvas, font_score, x_t2_score_game, y_t2, c_t2_game, t2_game
         )
 
     if not match.get("hideServiceIndicator", False) and not is_match_over:
+        # Single-digit game scores are shifted right by `dx_single` to centre
+        # them in the 2-char slot; shift the ball by the same amount so the
+        # ball-to-score gap stays constant whether the score is "0" or "40".
+        dx_serve_t1 = dx_single if len(t1_game) == 1 else 0
+        dx_serve_t2 = dx_single if len(t2_game) == 1 else 0
         _draw_service_indicator(
-            canvas, t1_on_serve, t2_on_serve, layout
+            canvas, t1_on_serve, t2_on_serve, layout, dx_serve_t1, dx_serve_t2
         )
+
+    return bool(is_mtb)
 
 
 # Chamfered-circle ball patterns indexed by edge length. Hand-tuned so the
@@ -216,7 +236,7 @@ _BALL_PATTERNS = {
 }
 
 
-def _draw_service_indicator(canvas, t1_on_serve, t2_on_serve, layout):
+def _draw_service_indicator(canvas, t1_on_serve, t2_on_serve, layout, dx_t1=0, dx_t2=0):
     color = layout.color_score_service
     fg = (color.red, color.green, color.blue)
     bg = (0, 0, 0)
@@ -231,9 +251,9 @@ def _draw_service_indicator(canvas, t1_on_serve, t2_on_serve, layout):
     y_service_t1 = int(round(score_mid_t1 - (size - 1) / 2))
     y_service_t2 = y_service_t1 + H_PANEL // 2
     if t1_on_serve:
-        draw_matrix(canvas, ball, layout.x_score_service, y_service_t1)
+        draw_matrix(canvas, ball, layout.x_score_service + dx_t1, y_service_t1)
     elif t2_on_serve:
-        draw_matrix(canvas, ball, layout.x_score_service, y_service_t2)
+        draw_matrix(canvas, ball, layout.x_score_service + dx_t2, y_service_t2)
 
 
 def _draw_names(canvas, match, layout):
@@ -404,7 +424,7 @@ def _draw_singles_flags(canvas, img_t1, img_t2):
         canvas.SetImage(img_t2, 0, y_flag_t2)
 
 
-def _draw_winner(canvas, match, layout):
+def _draw_winner(canvas, match, layout, is_mtb=False):
     b = (0, 0, 0)
     y = (255, 215, 0)
     w = (96, 64, 0)
@@ -420,10 +440,25 @@ def _draw_winner(canvas, match, layout):
         [b, b, y, y, y, y, y, b, b],
         [b, b, y, y, y, y, y, b, b],
     ]
-    scale = max(1, layout.winner_scale)
     src_h, src_w = len(cup), len(cup[0])
-    tw = layout.winner_target_w if layout.winner_target_w > 0 else src_w * scale
-    th = layout.winner_target_h if layout.winner_target_h > 0 else src_h * scale
+
+    if is_mtb and layout.winner_mtb_h > 0:
+        # Tie-break finishes also draw the 2-digit deciding score in the
+        # game-score column. Shrink the cup (keeping aspect) and right-align it
+        # just left of that score so it no longer overlaps the digits.
+        th = layout.winner_mtb_h
+        tw = max(1, round(th * src_w / src_h))
+        x_medal = layout.x_score_game - tw - 1 + layout.winner_mtb_dx
+        y_t1 = (H_PANEL // 2 - th) // 2
+        y_t2 = y_t1 + H_PANEL // 2
+    else:
+        scale = max(1, layout.winner_scale)
+        tw = layout.winner_target_w if layout.winner_target_w > 0 else src_w * scale
+        th = layout.winner_target_h if layout.winner_target_h > 0 else src_h * scale
+        x_medal = layout.winner_x if layout.winner_x >= 0 else layout.x_score_service
+        y_t1 = layout.winner_y_t1
+        y_t2 = layout.winner_y_t2 if layout.winner_y_t2 >= 0 else H_PANEL // 2 + y_t1
+
     if (tw, th) != (src_w, src_h):
         # Nearest-neighbour resize. Uniform scale (default) reduces to the
         # plain pixel-replication of the previous implementation; non-uniform
@@ -433,9 +468,6 @@ def _draw_winner(canvas, match, layout):
             for i in range(th)
         ]
     match_result = match.get("matchResult", None)
-    x_medal = layout.winner_x if layout.winner_x >= 0 else layout.x_score_service
-    y_t1 = layout.winner_y_t1
-    y_t2 = layout.winner_y_t2 if layout.winner_y_t2 >= 0 else H_PANEL // 2 + y_t1
     if match_result == "T1_WON":
         draw_matrix(canvas, cup, x_medal, y_t1)
     elif match_result == "T2_WON":
