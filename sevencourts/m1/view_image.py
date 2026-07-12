@@ -25,7 +25,14 @@ def draw_preset_image(cnv, idle_info, time_now):
 
 
 def _can_show_clock(image: Image) -> bool:
-    return image.width < W_LOGO_WITH_CLOCK
+    # Whether the image, once scaled to the panel height, is narrow enough to
+    # leave room for the clock beside it. Keyed on the aspect ratio (not the raw
+    # pixel width) so the decision is independent of the server-side asset size:
+    # the tableau server now sends one shared image sized to the tallest panel
+    # (96 px), and a 96-px-tall asset must decide the same as a 64-px-tall one of
+    # the same picture would.
+    scaled_width = image.width * (H_PANEL / image.height)
+    return scaled_width < W_LOGO_WITH_CLOCK
 
 
 def _draw_image_and_maybe_clock(cnv, image: Image, time_now, try_to_show_clock: bool):
