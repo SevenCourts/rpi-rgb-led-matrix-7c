@@ -319,6 +319,18 @@ def _court_empty(cid: int, name: str) -> Dict[str, Any]:
     return _bcourt(cid, name)
 
 
+def _court_training(cid: int, name: str, trainer: str) -> Dict[str, Any]:
+    """Court with a long display-text training booking (e.g. "Trainer M. Braun").
+
+    Reproduces a field report: with 3 courts the bottom row's booking text runs
+    into the bottom-right clock. The 07:0x timestamp puts the clock right next to
+    the third court's text. See `booking — 3-court training (clock overlap)`.
+    """
+    return _bcourt(cid, name, short_name=f"P{cid:02d}",
+        current=_bslot("06:00:00", "08:00:00", text=trainer),
+    )
+
+
 FIXTURES: List[Dict[str, Any]] = [
     # --- Standby / idle states -----------------------------------------------
     {"name": "standby", "info": {"standby": True}},
@@ -478,6 +490,18 @@ FIXTURES: List[Dict[str, Any]] = [
                       _court_busy_singles(1, "Platz 1"),
                       _court_busy_doubles(2, "Platz 2"),
                       _court_empty(3, "Platz 3"))},
+    {"name": "booking — 3-court training (clock overlap)",
+     # Field-reported bug: 3rd court's booking text collides with the clock.
+     # _dev_timestamp 07:02 → clock "07:02" sits beside the bottom court row.
+     "info": {"booking": {
+         "style": "SevenCourts",
+         "_dev_timestamp": "2026-05-25T07:02:00+02:00",
+         "courts": [
+             _court_training(1, "Platz 1", "Trainer M. Braun"),
+             _court_training(2, "Platz 2", "Trainer S. Mataric"),
+             _court_training(3, "Platz 3", "Trainer C. Jussli"),
+         ],
+     }}},
     {"name": "ebusy-ads — promotional image",
      # Full URL is required: draw_ads → fetch_by_url_with_cache → gateway.head
      # passes the URL through without prepending TABLEAU_SERVER_BASE_URL.

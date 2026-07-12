@@ -40,7 +40,7 @@ def draw(cnv, state: PanelState, s: ClubStyle):
         _h = 20
         draw_rect(cnv, W_PANEL - _w, H_PANEL - _h, _w, _h, COLOR_MAGENTA)
 
-    _draw_club_area(cnv, time_now, state.weather_info, x_clubarea, 0, w_clock, s)
+    _draw_club_area(cnv, state.weather_info, x_clubarea, 0, w_clock, s)
 
     ## booking infos
     courts_number = len(booking_info.get("courts"))
@@ -66,10 +66,27 @@ def draw(cnv, state: PanelState, s: ClubStyle):
         )
         y_court += h_booking
 
+    # Clock drawn last, on its own black background, on top of every booking
+    # row. The booking columns are sized to avoid the clock, but this guarantees
+    # the clock stays legible even if a row's text overruns into its column.
+    _draw_clock(cnv, time_now, x_clubarea, w_clock, s)
 
-def _draw_club_area(
-    cnv, time_now, weather_info, x0: int, y0: int, w: int, s: ClubStyle
-):
+
+def _draw_clock(cnv, time_now, x0: int, w: int, s: ClubStyle):
+    f_clock = s.booking.f_clock
+    c_clock = s.booking.c_clock
+    h_clock = y_font_offset(f_clock) + 1
+
+    # Black backdrop spanning the full clock band so any overrunning booking
+    # text underneath is masked before the clock glyphs are painted on top.
+    fill_rect(cnv, x0, H_PANEL - h_clock, W_PANEL - x0, h_clock, COLOR_BLACK)
+
+    v_clock.draw_clock_by_coordinates(
+        cnv, time_now.strftime("%H:%M"), x0, H_PANEL, f_clock, c_clock
+    )
+
+
+def _draw_club_area(cnv, weather_info, x0: int, y0: int, w: int, s: ClubStyle):
 
     # weather
     f_weather = s.booking.many.f_weather
@@ -83,15 +100,11 @@ def _draw_club_area(
         y_weather = y0 + h_weather
         graphics.DrawText(cnv, f_weather, x_weather, y_weather, c_weather, temperature)
 
-    # clock
+    # clock: only reserve its vertical band here so the logo sits above it.
+    # The clock itself is drawn last (on top of everything) by `_draw_clock`,
+    # so a booking row that overruns its column can never cover the clock.
     f_clock = s.booking.f_clock
-    c_clock = s.booking.c_clock
-    x_clock = x0
     h_clock = y_font_offset(f_clock) + 1
-    y_clock = H_PANEL
-    v_clock.draw_clock_by_coordinates(
-        cnv, time_now.strftime("%H:%M"), x_clock, y_clock, f_clock, c_clock
-    )
 
     if s.ci.logo.path:
         ## logo
