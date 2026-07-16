@@ -16,9 +16,9 @@ import time
 logger = m1_logging.logger()
 
 
-class SevenCourtsM1(SampleBase):
+class SevenCourtsLedTest(SampleBase):
     def __init__(self, *args, **kwargs):
-        super(SevenCourtsM1, self).__init__(*args, **kwargs)
+        super(SevenCourtsLedTest, self).__init__(*args, **kwargs)
         
     def load_test_image(self, name):
         # Prefer an image matching the panel resolution (e.g. 192x64 for M1,
@@ -53,6 +53,6 @@ class SevenCourtsM1(SampleBase):
 
 # Main function
 if __name__ == "__main__":
-    infoboard = SevenCourtsM1()
+    infoboard = SevenCourtsLedTest()
     if not infoboard.process():
         infoboard.print_help()

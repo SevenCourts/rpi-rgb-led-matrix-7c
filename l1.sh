@@ -1,6 +1,6 @@
 #! /bin/bash
 #
-# Starts the LED test on an XL1 panel (320x96, chain=5, parallel=3).
+# Starts the LED test on an L1 panel (192x96, chain=3, parallel=3).
 # Invoked by run.sh, which resolves PANEL_TYPE; can also be run directly.
 #
 # Env vars:
@@ -19,7 +19,7 @@ fi
 declare -a cmd_args
 if [[ -z $is_emulator ]]; then
   cmd_args=(
-    --led-chain=5
+    --led-chain=3
     --led-cols=64
     --led-multiplexing=1
     --led-parallel=3
@@ -30,7 +30,7 @@ if [[ -z $is_emulator ]]; then
   )
 else
   cmd_args=(
-    --led-chain=5
+    --led-chain=3
     --led-cols=64
     --led-parallel=3
     --led-rows=32

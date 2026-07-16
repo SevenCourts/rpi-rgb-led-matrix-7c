@@ -25,8 +25,11 @@ COPY \
     ./commit-id \
     ./emulator_config.json \
     ./m1_emulator.sh \
-    ./m1.py \
+    ./led-test.py \
     ./m1.sh \
+    ./l1.sh \
+    ./xl1.sh \
+    ./run.sh \
     ./samplebase.py \
     ./sevencourts.py \
     ./

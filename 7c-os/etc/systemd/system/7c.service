@@ -15,7 +15,7 @@ Environment=PANEL_CONFIG=/opt/7c/panel.conf
 ProtectHome=true
 WorkingDirectory=/opt/7c/rpi-rgb-led-matrix/bindings/python/rpi-rgb-led-matrix-7c
 
-ExecStart=/bin/bash m1.sh
+ExecStart=/bin/bash run.sh
 
 [Install]
 WantedBy=basic.target
