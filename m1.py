@@ -20,22 +20,36 @@ class SevenCourtsM1(SampleBase):
     def __init__(self, *args, **kwargs):
         super(SevenCourtsM1, self).__init__(*args, **kwargs)
         
+    def load_test_image(self, name):
+        # Prefer an image matching the panel resolution (e.g. 192x64 for M1,
+        # 320x96 for XL1); otherwise scale the M1 image to the panel size.
+        w, h = self.matrix.width, self.matrix.height
+        path = "images/%s_%dx%d.png" % (name, w, h)
+        if not os.path.isfile(path):
+            path = "images/%s_192x64.png" % name
+        image = Image.open(path).convert('RGB')
+        if image.size != (w, h):
+            image = image.resize((w, h))
+        return image
+
     def run(self):
-        logger.info("Starting M1 test instance")
-        
+        logger.info("Starting LED test instance (%dx%d)" % (self.matrix.width, self.matrix.height))
+
         self.canvas = self.matrix.CreateFrameCanvas()
+
+        w, h = self.matrix.width, self.matrix.height
+        test_images = [
+            self.load_test_image("rainbow_up"),
+            self.load_test_image("rainbow_down"),
+            Image.new('RGB', (w, h), (255, 255, 255)),
+        ]
 
         while True:
             delay_s = 3
-            self.canvas.SetImage(Image.open("images/rainbow_up_192x64.png").convert('RGB'), 0, 0)
-            self.canvas = self.matrix.SwapOnVSync(self.canvas)
-            time.sleep(delay_s)
-            self.canvas.SetImage(Image.open("images/rainbow_down_192x64.png").convert('RGB'), 0, 0)
-            self.canvas = self.matrix.SwapOnVSync(self.canvas)
-            time.sleep(delay_s)
-            self.canvas.SetImage(Image.open("images/white-192x64.png").convert('RGB'), 0, 0)
-            self.canvas = self.matrix.SwapOnVSync(self.canvas)
-            time.sleep(delay_s)
+            for image in test_images:
+                self.canvas.SetImage(image, 0, 0)
+                self.canvas = self.matrix.SwapOnVSync(self.canvas)
+                time.sleep(delay_s)
 
 # Main function
 if __name__ == "__main__":
