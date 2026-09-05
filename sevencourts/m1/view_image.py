@@ -25,7 +25,7 @@ def draw_preset_image(cnv, idle_info, time_now):
 
 
 def _can_show_clock(image: Image) -> bool:
-    return image.width < W_LOGO_WITH_CLOCK
+    return image.width <= W_LOGO_WITH_CLOCK
 
 
 def _draw_image_and_maybe_clock(cnv, image: Image, time_now, try_to_show_clock: bool):
