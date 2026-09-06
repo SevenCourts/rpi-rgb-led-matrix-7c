@@ -353,6 +353,21 @@ python runtext.py
 
 Open `http://localhost:8888` in browser, "Hello world!" is to be displayed.
 
+## All three panels side by side (emulators)
+
+```shell
+test/emulators.sh                    # test server + M1, L1, XL1 emulators, opens http://127.0.0.1:8000/
+test/emulators.sh --only logo --no-auto   # only the logo fixtures, stepped by hand
+```
+
+Needs [uv](https://docs.astral.sh/uv/) only; it fetches Python 3.9 and the
+dependencies. Each emulator runs from `.runtime/emu/<panel>/` with its own
+port (8888/8889/8890) and registers as `m1`/`l1`/`xl1`, so the test server can
+hand each one its own asset. Logos laid out per panel under
+`images/logos/<name>/{m1,l1,xl1}/` (as written by `logoprep render --by-panel`)
+appear as "logo — … (full)" and "logo — … (with clock)" fixtures.
+Ctrl-C stops everything; logs are in `.runtime/emu/*/run.log`.
+
 ## Start in container
 
 Use `docker container run -it --rm tennismath.tableau.emulator` command. By default it is registered on DEV SevenCourts
