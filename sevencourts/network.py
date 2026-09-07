@@ -1,3 +1,5 @@
+import os
+import struct
 import subprocess
 import socket
 import re
@@ -8,6 +10,11 @@ import sevencourts.logging as logging
 _log = logging.logger("network")
 
 NETWORK_TIMEOUT_SECONDS = 4
+
+# OpenVPN tunnel interface towards vpn.sevencourts.com (10.8.1.x addresses).
+VPN_INTERFACE = os.getenv("TABLEAU_VPN_INTERFACE", "tun0")
+# ioctl(2) request to read an interface's IPv4 address (linux/sockios.h).
+SIOCGIFADDR = 0x8915
 
 # The host to check for general internet access:
 INET_CHECK_HOST_IP = "8.8.8.8"  # Google's public DNS server
@@ -37,6 +44,29 @@ def ip_address():
         _log.exception(e)
         result = "n.a."
     return result
+
+
+def vpn_ip_address(interface=None):
+    """
+    Returns the IPv4 address of the VPN tunnel interface (default: VPN_INTERFACE,
+    i.e. tun0 unless overridden via TABLEAU_VPN_INTERFACE), or None if the
+    interface does not exist or has no address. Never raises.
+
+    Uses ioctl(SIOCGIFADDR) directly so it works on the BusyBox-based
+    sevencourts.os image, where 'ip' lacks the -br / -j options.
+    """
+    interface = interface or VPN_INTERFACE
+    try:
+        import fcntl  # Unix-only; imported lazily so the module loads anywhere
+
+        ifreq = struct.pack("256s", interface.encode("utf-8")[:15])
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
+            result = fcntl.ioctl(s.fileno(), SIOCGIFADDR, ifreq)
+        # struct ifreq: 16 bytes ifr_name, then sockaddr_in (family, port, addr)
+        return socket.inet_ntoa(result[20:24])
+    except Exception as e:
+        _log.debug(f"No VPN address on interface '{interface}': {e}")
+        return None
 
 
 def get_active_interfaces():

@@ -88,6 +88,9 @@ def register_panel() -> str:
         {
             "code": name,
             "ip": ip_address,
+            # tun0 address (10.8.1.x) -- the one operators can reach via
+            # vpn.sevencourts.com; null when the tunnel is down.
+            "vpn_ip": network.vpn_ip_address(),
             "firmware_version": GIT_COMMIT_ID,
             "firmware_date": GIT_COMMIT_DATE,
             "os_version": os_info.get("os_commit_full", "unknown"),
