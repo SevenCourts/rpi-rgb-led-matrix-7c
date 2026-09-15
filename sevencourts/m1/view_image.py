@@ -32,7 +32,7 @@ def _can_show_clock(image: Image) -> bool:
     # (96 px), and a 96-px-tall asset must decide the same as a 64-px-tall one of
     # the same picture would.
     scaled_width = image.width * (H_PANEL / image.height)
-    return scaled_width < W_LOGO_WITH_CLOCK
+    return scaled_width <= W_LOGO_WITH_CLOCK
 
 
 def _draw_image_and_maybe_clock(cnv, image: Image, time_now, try_to_show_clock: bool):

@@ -1,0 +1,267 @@
+{
+  "name": "natural-elements",
+  "version": 1,
+  "background": "#000000",
+  "trim": true,
+  "sources": {
+    "logo": "natural elements logo - line.svg"
+  },
+  "color": {
+    "palette_size": 3,
+    "bg_key": {
+      "mode": "auto",
+      "color": null,
+      "tolerance": 0.1
+    },
+    "invert": true,
+    "remap": {}
+  },
+  "variants": {
+    "192x64": {
+      "parts": [
+        {
+          "source": "logo",
+          "box": [
+            75,
+            0,
+            41,
+            41
+          ],
+          "visible": true,
+          "crop": [
+            0.0,
+            0.0,
+            0.1165,
+            1.0
+          ]
+        },
+        {
+          "source": "logo",
+          "box": [
+            0,
+            44,
+            192,
+            20
+          ],
+          "visible": true,
+          "crop": [
+            0.168,
+            0.155,
+            0.9695,
+            0.855
+          ]
+        }
+      ],
+      "threshold": 0.5,
+      "phase_search": true,
+      "stroke_boost": 0.0,
+      "soft_edges": 1,
+      "overrides": {}
+    },
+    "120x64": {
+      "parts": [
+        {
+          "source": "logo",
+          "box": [
+            36,
+            0,
+            48,
+            48
+          ],
+          "visible": true,
+          "crop": [
+            0.0,
+            0.0,
+            0.1165,
+            1.0
+          ]
+        },
+        {
+          "source": "logo",
+          "box": [
+            0,
+            51,
+            120,
+            13
+          ],
+          "visible": true,
+          "crop": [
+            0.168,
+            0.155,
+            0.9695,
+            0.855
+          ]
+        }
+      ],
+      "threshold": 0.5,
+      "phase_search": true,
+      "stroke_boost": 0.0,
+      "soft_edges": 1,
+      "overrides": {}
+    },
+    "192x96": {
+      "parts": [
+        {
+          "source": "logo",
+          "box": [
+            60,
+            0,
+            72,
+            72
+          ],
+          "visible": true,
+          "crop": [
+            0.0,
+            0.0,
+            0.1165,
+            1.0
+          ]
+        },
+        {
+          "source": "logo",
+          "box": [
+            0,
+            76,
+            192,
+            20
+          ],
+          "visible": true,
+          "crop": [
+            0.168,
+            0.155,
+            0.9695,
+            0.855
+          ]
+        }
+      ],
+      "threshold": 0.5,
+      "phase_search": true,
+      "stroke_boost": 0.0,
+      "soft_edges": 1,
+      "overrides": {}
+    },
+    "120x96": {
+      "parts": [
+        {
+          "source": "logo",
+          "box": [
+            20,
+            0,
+            79,
+            79
+          ],
+          "visible": true,
+          "crop": [
+            0.0,
+            0.0,
+            0.1165,
+            1.0
+          ]
+        },
+        {
+          "source": "logo",
+          "box": [
+            0,
+            83,
+            120,
+            13
+          ],
+          "visible": true,
+          "crop": [
+            0.168,
+            0.155,
+            0.9695,
+            0.855
+          ]
+        }
+      ],
+      "threshold": 0.5,
+      "phase_search": true,
+      "stroke_boost": 0.0,
+      "soft_edges": 1,
+      "overrides": {}
+    },
+    "320x96": {
+      "parts": [
+        {
+          "source": "logo",
+          "box": [
+            130,
+            0,
+            59,
+            59
+          ],
+          "visible": true,
+          "crop": [
+            0.0,
+            0.0,
+            0.1165,
+            1.0
+          ]
+        },
+        {
+          "source": "logo",
+          "box": [
+            0,
+            63,
+            320,
+            33
+          ],
+          "visible": true,
+          "crop": [
+            0.168,
+            0.155,
+            0.9695,
+            0.855
+          ]
+        }
+      ],
+      "threshold": 0.5,
+      "phase_search": true,
+      "stroke_boost": 0.0,
+      "soft_edges": 1,
+      "overrides": {}
+    },
+    "160x96": {
+      "parts": [
+        {
+          "source": "logo",
+          "box": [
+            42,
+            0,
+            75,
+            75
+          ],
+          "visible": true,
+          "crop": [
+            0.0,
+            0.0,
+            0.1165,
+            1.0
+          ]
+        },
+        {
+          "source": "logo",
+          "box": [
+            0,
+            79,
+            160,
+            17
+          ],
+          "visible": true,
+          "crop": [
+            0.168,
+            0.155,
+            0.9695,
+            0.855
+          ]
+        }
+      ],
+      "threshold": 0.5,
+      "phase_search": true,
+      "stroke_boost": 0.0,
+      "soft_edges": 1,
+      "overrides": {}
+    }
+  }
+}

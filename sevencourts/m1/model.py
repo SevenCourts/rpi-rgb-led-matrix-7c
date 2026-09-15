@@ -64,6 +64,11 @@ def is_clock_trustworthy() -> bool:
     global _clock_trusted
     if _clock_trusted:
         return True
+    if os.getenv("USE_RGB_MATRIX_EMULATOR"):
+        # Dev machine: no RTC sysfs, no adjtimex. Trust the host clock so the
+        # emulator shows real digits instead of "--:--".
+        _clock_trusted = True
+        return True
     rtc = _is_rtc_ticking()
     ntp = _is_ntp_synchronized()
     if rtc or ntp:

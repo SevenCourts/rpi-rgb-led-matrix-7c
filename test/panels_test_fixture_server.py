@@ -1,14 +1,20 @@
-"""XL1 visual-test fixture server.
+"""Visual-test fixture server for all panel types.
 
 Mimics the SevenCourts backend endpoints the panel firmware polls. Cycles a
-curated catalogue of XL1 v1 scenarios (scoreboard variants, idle clock/image/
-message, signage, standby). Auto-advances on a timer; web UI at `/` exposes
-Next / Prev / Pause / Resume / Jump.
+curated catalogue of scenarios (scoreboard variants, idle clock/image/
+message, signage, standby, and the logos under images/logos/*/{m1,l1,xl1}/).
+Auto-advances on a timer; web UI at `/` exposes Next / Prev / Pause / Resume /
+Jump and embeds the three emulators side by side.
+
+Panels that register with code m1 / l1 / xl1 (TABLEAU_PANEL_CODE) get
+panel-specific assets: fixture strings may use {panel}, {full} and {clock}.
+Anything else is served as XL1, as before.
 
 Usage:
-    python3 test/xl1_test_server.py [--port 8000] [--interval 15] [--no-auto]
+    test/emulators.sh [--only logo] [--no-auto]        # server + 3 emulators + page
+    python3 test/panels_test_fixture_server.py [--port 8000] [--interval 15] [--no-auto]
 
-Point the panel at the dev workstation:
+Point a real panel at the dev workstation:
     TABLEAU_SERVER_BASE_URL=http://192.168.178.175:8000 ./xl1.sh
 """
 
@@ -592,6 +598,65 @@ if EXCLUDE_FLAGS_DEMO:
     ]
 
 
+# --- Panel types ----------------------------------------------------------------
+
+# Registration `code` (TABLEAU_PANEL_CODE on the emulators) → canvas sizes.
+# Fixture strings may use {panel}, {full} and {clock} placeholders; they are
+# resolved per polling panel so one fixture shows the right asset everywhere.
+PANEL_SIZES = {
+    "m1": {"panel": "m1", "full": "192x64", "clock": "120x64"},
+    "l1": {"panel": "l1", "full": "192x96", "clock": "120x96"},
+    "xl1": {"panel": "xl1", "full": "320x96", "clock": "160x96"},
+}
+DEFAULT_PANEL = "xl1"
+
+
+def _panel_key(panel_id: str) -> str:
+    key = (panel_id or "").lower()
+    return key if key in PANEL_SIZES else DEFAULT_PANEL
+
+
+def _resolve_for_panel(obj: Any, panel_id: str) -> Any:
+    """Substitute {panel}/{full}/{clock} in every string of a fixture info."""
+    sizes = PANEL_SIZES[_panel_key(panel_id)]
+    if isinstance(obj, str):
+        return obj.replace("{panel}", sizes["panel"]).replace(
+            "{full}", sizes["full"]).replace("{clock}", sizes["clock"])
+    if isinstance(obj, dict):
+        return {k: _resolve_for_panel(v, panel_id) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_resolve_for_panel(v, panel_id) for v in obj]
+    return obj
+
+
+# --- Logo fixtures ----------------------------------------------------------------
+
+LOGOS_DIR = REPO_ROOT / "images" / "logos"
+
+
+def _logo_fixtures() -> List[Dict[str, Any]]:
+    """One 'full' and one 'with clock' fixture per logo laid out by panel:
+    images/logos/<folder>/{m1,l1,xl1}/<name>_<WxH>.png (logoprep --by-panel).
+    A logo is listed when at least its M1 full-screen file exists."""
+    from urllib.parse import quote
+    fixtures = []
+    for folder in sorted(LOGOS_DIR.iterdir() if LOGOS_DIR.is_dir() else []):
+        m1 = folder / "m1"
+        if not m1.is_dir():
+            continue
+        names = sorted({f.name[: -len("_192x64.png")] for f in m1.glob("*_192x64.png")})
+        for name in names:
+            url = f"images/logos/{quote(folder.name)}/{{panel}}/{quote(name)}"
+            fixtures.append({"name": f"logo — {name} (full)",
+                             "info": _idle(**{"image-url": url + "_{full}.png"})})
+            fixtures.append({"name": f"logo — {name} (with clock)",
+                             "info": _idle(clock=True, **{"image-url": url + "_{clock}.png"})})
+    return fixtures
+
+
+FIXTURES[:0] = _logo_fixtures()
+
+
 # --- Server state -------------------------------------------------------------
 
 class State:
@@ -675,9 +740,27 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def _send_image_for_path(self, request_path: str, *, head_only: bool = False):
-        """Serve a synthesized PNG sized appropriately for the requested fixture."""
-        # /panel-image/flags-page-N.png → 320×96 grid of native-size flags.
+        """Serve a real file from images/logos/ when the path names one,
+        else a synthesized PNG sized appropriately for the requested fixture."""
         import re
+        from urllib.parse import unquote
+        real = None
+        if request_path.startswith("/images/logos/"):
+            candidate = (REPO_ROOT / unquote(request_path.lstrip("/"))).resolve()
+            if candidate.is_file() and LOGOS_DIR.resolve() in candidate.parents:
+                real = candidate
+        if real is not None:
+            data = real.read_bytes()
+            etag = f'"{real.stat().st_mtime_ns}-{len(data)}"'
+            self.send_response(200)
+            self.send_header("Content-Type", "image/png")
+            self.send_header("Content-Length", str(len(data)))
+            self.send_header("ETag", etag)
+            self.end_headers()
+            if not head_only:
+                self.wfile.write(data)
+            return
+        # /panel-image/flags-page-N.png → 320×96 grid of native-size flags.
         m = re.search(r"flags-page-(\d+)\.png$", request_path)
         if m:
             data = _synth_flags_page(int(m.group(1)))
@@ -701,8 +784,15 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         if self.path.rstrip("/") == "/panels":
             length = int(self.headers.get("Content-Length", "0"))
-            self.rfile.read(length)  # discard body
-            self._send_json({"id": "test-xl1"})
+            body = self.rfile.read(length)
+            code = ""
+            try:
+                code = str(json.loads(body or b"{}").get("code", ""))
+            except ValueError:
+                pass
+            # Emulators register as m1/l1/xl1 (TABLEAU_PANEL_CODE) and get
+            # panel-specific assets; anything else behaves as before.
+            self._send_json({"id": code if code.lower() in PANEL_SIZES else "test-xl1"})
             return
         self._send_text("not found", 404)
 
@@ -751,7 +841,8 @@ class Handler(BaseHTTPRequestHandler):
 
         # /panels/<id>/match
         if path.startswith("/panels/") and path.endswith("/match"):
-            self._send_json(STATE.current_info())
+            panel_id = path[len("/panels/"):-len("/match")]
+            self._send_json(_resolve_for_panel(STATE.current_info(), panel_id))
             return
 
         # Any image path the firmware tries to fetch — return the default test image.
@@ -765,8 +856,8 @@ class Handler(BaseHTTPRequestHandler):
 # --- Web UI -------------------------------------------------------------------
 
 # Emulator browser-adapter ports for the embedded live previews. Start the
-# emulators (one per panel type) on these ports and they appear in the UI.
-# See `.runtime/emu/` working dirs / `make-emulators` helper.
+# emulators (one per panel type) on these ports and they appear in the UI:
+# `test/emulators.sh` does that (working dirs under `.runtime/emu/`).
 EMULATORS = [
     {"key": "m1", "label": "M1 — 192×64", "port": 8888, "w": 768, "h": 256},
     {"key": "l1", "label": "L1 — 192×96", "port": 8889, "w": 768, "h": 384},
