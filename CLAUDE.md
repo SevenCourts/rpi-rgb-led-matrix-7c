@@ -63,10 +63,10 @@ Integration tests use [Hurl](https://hurl.dev/) (HTTP request testing), not pyte
 # Set target panel (BASE64-encoded hostname)
 export HURL_7c_target_panel=<base64-hostname>
 # Run all tests (Windows: run_full.cmd)
-cd test/hurl && hurl --test *.hurl
+cd tests/hurl && hurl --test *.hurl
 ```
 
-Test files are in `test/hurl/` — they exercise scoreboard rendering modes via the backend API.
+Test files are in `tests/hurl/` — they exercise scoreboard rendering modes via the backend API.
 
 ### Formatting
 

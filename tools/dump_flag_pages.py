@@ -1,6 +1,6 @@
-"""Dump the test-server's synthesised 320x96 flag-page PNGs to disk.
+"""Dump the fixture server's synthesised 320x96 flag-page PNGs to disk.
 
-The test server (`test/panels_test_fixture_server.py`) computes these pages dynamically
+The fixture server (`tools/emulators/fixture_server.py`) computes these pages dynamically
 from `images/flags_27x18/`. This tool freezes the current state to:
     spec/xl1-layouts/mockups/flags-page-N.png
 
@@ -14,9 +14,9 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(REPO_ROOT / "test"))
+sys.path.insert(0, str(Path(__file__).resolve().parent / "emulators"))
 
-from panels_test_fixture_server import _synth_flags_page, _flag_page_count  # noqa: E402
+from fixture_server import _synth_flags_page, _flag_page_count  # noqa: E402
 
 
 OUT_DIR = REPO_ROOT / "spec" / "xl1-layouts" / "mockups"

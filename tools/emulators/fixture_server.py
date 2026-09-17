@@ -11,8 +11,8 @@ panel-specific assets: fixture strings may use {panel}, {full} and {clock}.
 Anything else is served as XL1, as before.
 
 Usage:
-    test/emulators.sh [--only logo] [--no-auto]        # server + 3 emulators + page
-    python3 test/panels_test_fixture_server.py [--port 8000] [--interval 15] [--no-auto]
+    tools/emulators/emulators.sh [--only logo] [--no-auto]   # server + 3 emulators + page
+    python3 tools/emulators/fixture_server.py [--port 8000] [--interval 15] [--no-auto]
 
 Point a real panel at the dev workstation:
     TABLEAU_SERVER_BASE_URL=http://192.168.178.175:8000 ./xl1.sh
@@ -30,7 +30,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def _lan_ip() -> str:
@@ -857,7 +857,7 @@ class Handler(BaseHTTPRequestHandler):
 
 # Emulator browser-adapter ports for the embedded live previews. Start the
 # emulators (one per panel type) on these ports and they appear in the UI:
-# `test/emulators.sh` does that (working dirs under `.runtime/emu/`).
+# `tools/emulators/emulators.sh` does that (working dirs under `.runtime/emu/`).
 EMULATORS = [
     {"key": "m1", "label": "M1 — 192×64", "port": 8888, "w": 768, "h": 256},
     {"key": "l1", "label": "L1 — 192×96", "port": 8889, "w": 768, "h": 384},

@@ -4,7 +4,7 @@
 # XL1), all on this machine, and open the page that shows the three panels
 # side by side: http://127.0.0.1:8000/
 #
-#   test/emulators.sh [test-server args...]     e.g.  test/emulators.sh --only logo --no-auto
+#   tools/emulators/emulators.sh [fixture-server args...]     e.g.  tools/emulators/emulators.sh --only logo --no-auto
 #
 # Ctrl-C stops everything. Logs: .runtime/emu/{server,m1,l1,xl1}/run.log
 #
@@ -17,7 +17,7 @@
 
 set -eu
 
-repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 runtime="$repo/.runtime/emu"
 server_port=8000
 server_url="http://127.0.0.1:$server_port"
@@ -44,7 +44,7 @@ cleanup() {
   for pid in "${pids[@]}"; do kill "$pid" 2>/dev/null || true; done
   # uv spawns the interpreter as a child; make sure those go too
   pkill -f "[s]evencourts.m1.main" 2>/dev/null || true
-  pkill -f "[p]anels_test_fixture_server.py" 2>/dev/null || true
+  pkill -f "[f]ixture_server.py" 2>/dev/null || true
 }
 trap cleanup EXIT INT TERM
 
@@ -89,7 +89,7 @@ mkdir -p "$runtime/server"
 echo "test server on $server_url"
 (
   cd "$repo"
-  exec uv run --no-project --python 3.9 --with Pillow python test/panels_test_fixture_server.py --port "$server_port" "$@"
+  exec uv run --no-project --python 3.9 --with Pillow python tools/emulators/fixture_server.py --port "$server_port" "$@"
 ) > "$runtime/server/run.log" 2>&1 &
 pids+=($!)
 
