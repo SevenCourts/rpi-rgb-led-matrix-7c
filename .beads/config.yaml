@@ -3,12 +3,11 @@ issue-prefix: led
 dolt.auto-start: false
 dolt:
   disable-event-flush: true
-export.auto: false
+export.auto: true
 backup.enabled: false
 gc.endpoint_origin: inherited_city
 gc.endpoint_status: verified
 types.custom: molecule,convoy,message,event,gate,merge-request,agent,role,rig,session,spec,convergence,step
-sync:
-  remote: "git+ssh://git@github.com/SevenCourts/rpi-rgb-led-matrix-7c.git"
+
 sync.remote: "git+ssh://git@github.com/SevenCourts/rpi-rgb-led-matrix-7c.git"
 export.path: issues.jsonl
