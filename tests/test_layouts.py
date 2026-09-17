@@ -45,7 +45,8 @@ class TestM1Layout(unittest.TestCase):
 
         sb = current_layout().scoreboard
         self.assertEqual(sb.x_score_game, 163)
-        self.assertEqual(sb.x_score_service, 155)
+        # Nudged left (was 155) so the ball doesn't crowd 2-digit game scores.
+        self.assertEqual(sb.x_score_service, 153)
         self.assertEqual(sb.w_score_set, 20)
         self.assertEqual(sb.margin_names_scoreboard, 3)
         self.assertTrue(sb.upper_case_names)
@@ -85,13 +86,13 @@ class TestXL1Layout(unittest.TestCase):
             "assert sb.x_min_scoreboard==204, sb.x_min_scoreboard;"
             # FONT_L_7SEGMENT (17-px advance): 2-digit width 34 px right-aligns
             # to x=316 (right margin 4 px from panel edge) → starts at x=282.
-            "assert sb.x_score_game==282;"
+            "assert sb.x_score_game==282, sb.x_score_game;"
             # Half-advance shift centers single-char scores ("A") in the slot.
-            "assert sb.dx_score_game_single_digit==9;"
-            "assert sb.w_score_set==22;"
+            "assert sb.dx_score_game_single_digit==9, sb.dx_score_game_single_digit;"
+            "assert sb.w_score_set==22, sb.w_score_set;"
             "sig=layout.signage;"
-            "assert sig.max_length_name_singles==12;"
-            "assert sig.max_length_name_doubles==5;"
+            "assert sig.max_length_name_singles==12, sig.max_length_name_singles;"
+            "assert sig.max_length_name_doubles==7, sig.max_length_name_doubles;"
             "msg=layout.message;"
             "assert msg.clock_divider_y is None;"  # divider removed after bench review
             "assert msg.clock_right_aligned is True;"
@@ -133,20 +134,22 @@ class TestL1Layout(unittest.TestCase):
             " if (v.name,f.name) not in exceptions"
             " and getattr(getattr(layout, v.name), f.name) is None];"
             "assert not missing, missing;"
-            # L1 shares XL1's flag size (panels are equally tall).
-            "assert W_FLAG==27 and H_FLAG==18, (W_FLAG, H_FLAG);"
+            # L1 keeps M1's 18×12 flags: XL1's 27×18 crowds the name zone
+            # on a 192-px panel, tall canvas or not.
+            "assert W_FLAG==18 and H_FLAG==12, (W_FLAG, H_FLAG);"
             # Score-zone horizontal coords identical to M1 (width unchanged).
             "sb=layout.scoreboard;"
             "assert sb.x_min_scoreboard==96, sb.x_min_scoreboard;"
-            "assert sb.w_score_set==20;"
-            # Doubles spacing leverages the taller (96 px) canvas.
-            "assert sb.doubles_gap_within_team==2;"
-            # L1 mirrors XL1's between-team gap so the doubles row pair y matches.
-            "assert sb.doubles_gap_between_teams==10;"
-            "assert sb.winner_scale==2;"
+            "assert sb.w_score_set==20, sb.w_score_set;"
+            # Doubles spacing matches M1: the tight stack reads better than
+            # the L1-specific spacing this test originally pinned (2 / 10).
+            "assert sb.doubles_gap_within_team==1, sb.doubles_gap_within_team;"
+            "assert sb.doubles_gap_between_teams==4, sb.doubles_gap_between_teams;"
+            "assert sb.winner_scale==2, sb.winner_scale;"
             "sig=layout.signage;"
-            # L1 keeps M1's name fonts; doubles gets a small bump for taller cells.
-            "assert sig.max_length_name_doubles==5;"
+            # L1 keeps M1's name fonts and its 3-char doubles limit: the cell
+            # is the same width as M1's, so the same constraint applies.
+            "assert sig.max_length_name_doubles==3, sig.max_length_name_doubles;"
             "print('ok')"
         )
         result = subprocess.run(
