@@ -1,0 +1,333 @@
+{
+  "name": "padel-club-esslingen",
+  "version": 1,
+  "background": "#000000",
+  "trim": true,
+  "sources": {
+    "logo": "logo-gruen-lg.png"
+  },
+  "color": {
+    "palette_size": 3,
+    "bg_key": {
+      "mode": "auto",
+      "color": null,
+      "tolerance": 0.1
+    },
+    "invert": false,
+    "remap": {
+      "#29463a": "#3fbf7f"
+    }
+  },
+  "variants": {
+    "192x64": {
+      "parts": [
+        {
+          "source": "logo",
+          "box": [
+            1,
+            8,
+            87,
+            48
+          ],
+          "visible": true,
+          "crop": [
+            0.145,
+            0.0932,
+            0.8542,
+            0.6474
+          ]
+        },
+        {
+          "source": "logo",
+          "box": [
+            94,
+            18,
+            96,
+            14
+          ],
+          "visible": true,
+          "crop": [
+            0.1467,
+            0.6769,
+            0.8542,
+            0.8337
+          ]
+        },
+        {
+          "source": "logo",
+          "box": [
+            142,
+            35,
+            48,
+            11
+          ],
+          "visible": true,
+          "crop": [
+            0.5525,
+            0.8597,
+            0.8533,
+            0.9587
+          ]
+        }
+      ],
+      "threshold": 0.4,
+      "phase_search": true,
+      "stroke_boost": 0.0,
+      "soft_edges": 1,
+      "overrides": {}
+    },
+    "120x64": {
+      "parts": [
+        {
+          "source": "logo",
+          "box": [
+            0,
+            0,
+            120,
+            64
+          ],
+          "visible": true,
+          "crop": [
+            0.145,
+            0.0932,
+            0.8542,
+            0.6474
+          ]
+        }
+      ],
+      "threshold": 0.5,
+      "phase_search": true,
+      "stroke_boost": 0.0,
+      "soft_edges": 1,
+      "overrides": {}
+    },
+    "192x96": {
+      "parts": [
+        {
+          "source": "logo",
+          "box": [
+            45,
+            1,
+            102,
+            56
+          ],
+          "visible": true,
+          "crop": [
+            0.145,
+            0.0932,
+            0.8542,
+            0.6474
+          ]
+        },
+        {
+          "source": "logo",
+          "box": [
+            26,
+            59,
+            140,
+            21
+          ],
+          "visible": true,
+          "crop": [
+            0.1467,
+            0.6769,
+            0.8542,
+            0.8337
+          ]
+        },
+        {
+          "source": "logo",
+          "box": [
+            108,
+            82,
+            58,
+            13
+          ],
+          "visible": true,
+          "crop": [
+            0.5525,
+            0.8597,
+            0.8533,
+            0.9587
+          ]
+        }
+      ],
+      "threshold": 0.5,
+      "phase_search": true,
+      "stroke_boost": 0.0,
+      "soft_edges": 1,
+      "overrides": {}
+    },
+    "120x96": {
+      "parts": [
+        {
+          "source": "logo",
+          "box": [
+            11,
+            4,
+            98,
+            54
+          ],
+          "visible": true,
+          "crop": [
+            0.145,
+            0.0932,
+            0.8542,
+            0.6474
+          ]
+        },
+        {
+          "source": "logo",
+          "box": [
+            1,
+            60,
+            118,
+            18
+          ],
+          "visible": true,
+          "crop": [
+            0.1467,
+            0.6769,
+            0.8542,
+            0.8337
+          ]
+        },
+        {
+          "source": "logo",
+          "box": [
+            67,
+            80,
+            52,
+            11
+          ],
+          "visible": true,
+          "crop": [
+            0.5525,
+            0.8597,
+            0.8533,
+            0.9587
+          ]
+        }
+      ],
+      "threshold": 0.5,
+      "phase_search": true,
+      "stroke_boost": 0.0,
+      "soft_edges": 1,
+      "overrides": {}
+    },
+    "320x96": {
+      "parts": [
+        {
+          "source": "logo",
+          "box": [
+            6,
+            8,
+            146,
+            80
+          ],
+          "visible": true,
+          "crop": [
+            0.145,
+            0.0932,
+            0.8542,
+            0.6474
+          ]
+        },
+        {
+          "source": "logo",
+          "box": [
+            164,
+            26,
+            150,
+            23
+          ],
+          "visible": true,
+          "crop": [
+            0.1467,
+            0.6769,
+            0.8542,
+            0.8337
+          ]
+        },
+        {
+          "source": "logo",
+          "box": [
+            239,
+            54,
+            75,
+            16
+          ],
+          "visible": true,
+          "crop": [
+            0.5525,
+            0.8597,
+            0.8533,
+            0.9587
+          ]
+        }
+      ],
+      "threshold": 0.5,
+      "phase_search": true,
+      "stroke_boost": 0.0,
+      "soft_edges": 1,
+      "overrides": {}
+    },
+    "160x96": {
+      "parts": [
+        {
+          "source": "logo",
+          "box": [
+            29,
+            1,
+            102,
+            56
+          ],
+          "visible": true,
+          "crop": [
+            0.145,
+            0.0932,
+            0.8542,
+            0.6474
+          ]
+        },
+        {
+          "source": "logo",
+          "box": [
+            10,
+            59,
+            140,
+            21
+          ],
+          "visible": true,
+          "crop": [
+            0.1467,
+            0.6769,
+            0.8542,
+            0.8337
+          ]
+        },
+        {
+          "source": "logo",
+          "box": [
+            92,
+            82,
+            58,
+            13
+          ],
+          "visible": true,
+          "crop": [
+            0.5525,
+            0.8597,
+            0.8533,
+            0.9587
+          ]
+        }
+      ],
+      "threshold": 0.5,
+      "phase_search": true,
+      "stroke_boost": 0.0,
+      "soft_edges": 1,
+      "overrides": {}
+    }
+  }
+}
