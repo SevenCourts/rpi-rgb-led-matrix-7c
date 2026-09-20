@@ -4,6 +4,7 @@ from datetime import datetime
 from dateutil import tz
 import ctypes
 import ctypes.util
+import time
 import struct
 import orjson
 import os
@@ -157,6 +158,64 @@ def _is_kernel_clock_synced() -> bool:
         raise OSError(errno, os.strerror(errno))
     status = struct.unpack_from('i', buf, 4)[0]
     return (status & STA_UNSYNC) == 0
+
+
+# How often the full state repr is written to the log, regardless of what
+# changed. /tmp is tmpfs (RAM) on a panel, so the log costs memory: a full repr
+# is ~1 KB and this used to be written on every change, which meant once a
+# minute forever, because time_now_in_TZ is part of the state and the clock
+# ticks (led-ys3: 43 MB after 22 days of uptime).
+FULL_STATE_LOG_INTERVAL_S = int(os.getenv("PANEL_FULL_STATE_LOG_INTERVAL_S", "3600"))
+
+
+def changed_fields(old: "PanelState", new: "PanelState") -> list:
+    """Names of the compared fields that differ between two states.
+
+    Fields declared compare=False (last_updated_UTC) are excluded, so this
+    matches what `old == new` means. A None `old` counts as everything changed.
+    """
+    names = [f.name for f in fields(new) if f.compare]
+    if old is None:
+        return names
+    return [n for n in names if getattr(old, n, None) != getattr(new, n, None)]
+
+
+class StateChangeLog:
+    """What to say about a state transition, and how often to say all of it.
+
+    A clock tick is a state change, but it is not news: it happens every minute
+    for the life of the panel and says nothing a reader would want at 3am. It
+    is logged at debug. Anything else is logged by field name at info, and the
+    full repr goes out on a heartbeat so field forensics still have a recent
+    complete picture to anchor on.
+
+    Returns (level, message) pairs rather than logging itself, so the decision
+    is testable without a logger or a panel.
+    """
+
+    def __init__(self, full_interval_s: int = None, clock=None):
+        self._full_interval_s = (
+            FULL_STATE_LOG_INTERVAL_S if full_interval_s is None else full_interval_s
+        )
+        self._clock = clock or time.monotonic
+        self._last_full = None
+
+    def lines(self, old: "PanelState", new: "PanelState") -> list:
+        changed = changed_fields(old, new)
+        if not changed:
+            return []
+
+        out = []
+        if changed == ["time_now_in_TZ"]:
+            out.append(("debug", f"🕑 Clock now {new.time_now_in_TZ}, redrawing"))
+        else:
+            out.append(("info", f"🔄 Panel state changed: {', '.join(changed)} — redrawing"))
+
+        now = self._clock()
+        if self._last_full is None or (now - self._last_full) >= self._full_interval_s:
+            out.append(("info", f"Panel state:\n{new}"))
+            self._last_full = now
+        return out
 
 
 # Skip disk writes when state hasn't changed — called every render cycle,
