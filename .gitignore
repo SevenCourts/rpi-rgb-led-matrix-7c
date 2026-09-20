@@ -83,3 +83,9 @@ install/register/google-credentials.json
 .claude/skills/core.gc-*
 .claude/skills/gascity.*
 .claude/skills/.gc-skill-ownership.json
+
+# Per-bead git worktrees (sevencourts.meta/docs/git-policy.md). Ignored so a
+# 'git add -A' in the repo root cannot commit them as gitlinks -- which is
+# exactly what happened on 2026-09-20 (sevencourts.ops 1d89eb5, reverted).
+worktrees/
+.claude/worktrees/
