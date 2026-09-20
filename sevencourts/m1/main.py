@@ -159,12 +159,14 @@ class SevenCourtsM1(SampleBase):
 
         _log.debug(f"Saved state:\n{state}")
         state_ui: model.PanelState = None
+        state_log = model.StateChangeLog()
         while True:
             with panel_info_lock, weather_info_lock, daemon_state_lock:
                 if state_ui == state:
                     _log.debug("😴 Panel state unchanged, skipping redraw")
                 else:
-                    _log.info(f"🔄 New panel state detected, redrawing\n{state}")
+                    for level, message in state_log.lines(state_ui, state):
+                        getattr(_log, level)(message)
                     model.write_to_file(state)
                     state_ui = copy.deepcopy(state)
                     cnv.Clear()
