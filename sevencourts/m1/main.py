@@ -72,9 +72,19 @@ def _poll_panel_info(period_s: int = 1):
 
 def _refresh_time(period_s: int = 1):
     global state
+    last_error = None
     while True:
-        with panel_info_lock:
-            state.refresh_time()
+        # An exception here used to end the thread, freezing the clock on the
+        # panel until the app restarted. Keep ticking; log each new error once
+        # rather than every second, since /tmp is RAM on a panel.
+        try:
+            with panel_info_lock:
+                state.refresh_time()
+            last_error = None
+        except Exception as ex:
+            if repr(ex) != last_error:
+                _log.error(f"❌ Cannot refresh time: {ex}", exc_info=True)
+                last_error = repr(ex)
         time.sleep(period_s)
 
 
