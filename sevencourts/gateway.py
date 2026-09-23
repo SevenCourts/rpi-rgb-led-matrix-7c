@@ -66,13 +66,19 @@ def fetch_panel_info(panel_id):
         if response.status == 200:
             match = json.loads(response.read().decode("utf-8"))
             _log.debug(f"match: {match}")
-            return (
-                match or None
-            )  # FIX: the server can return False if match is over, this leads to error then
+            # The server can return false when a match is over, and a fresh
+            # panel can get an empty body. Callers only handle a dict.
+            return _as_panel_info(match)
         elif response.status == 205:
             idle_info = json.loads(response.read().decode("utf-8") or "null")
             _log.debug(f"idle-info: {idle_info}")
-            return idle_info
+            return _as_panel_info(idle_info)
+        return {}
+
+
+def _as_panel_info(body) -> dict:
+    """The server's answer as a dict; anything else (false, null, a list) as {}."""
+    return body if isinstance(body, dict) else {}
 
 
 def register_panel() -> str:

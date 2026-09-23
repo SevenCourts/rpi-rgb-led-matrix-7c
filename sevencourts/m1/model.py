@@ -45,7 +45,11 @@ class PanelState:
         return self.time_now_in_TZ
 
     def tz(self) -> str:
-        return self.panel_info.get("idle-info", {}).get("timezone", DEFAULT_TIMEZONE)
+        # panel_info can be None (a falsy server response, or a saved state
+        # file holding null). This runs every second in the clock thread, so
+        # it must not raise: that once froze the clock until the app restarted.
+        idle_info = (self.panel_info or {}).get("idle-info") or {}
+        return idle_info.get("timezone") or DEFAULT_TIMEZONE
 
     @classmethod
     def from_dict(cls, data: dict):

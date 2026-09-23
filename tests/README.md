@@ -18,6 +18,7 @@ python3 -m unittest tests.test_view_image       # one module
 | `test_layouts.py` | scoreboard layout geometry |
 | `test_model_rtc.py` | RTC-backed clock state in the panel model |
 | `test_network_vpn_ip.py` | VPN tunnel IP reported at registration |
+| `test_panel_info_empty.py` | clock keeps ticking when the server sends false/null/empty panel info |
 | `test_view_image.py` | the image + clock split decision |
 
 ## Integration tests (`hurl/`)
