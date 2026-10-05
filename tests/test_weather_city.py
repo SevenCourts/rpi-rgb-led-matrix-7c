@@ -111,7 +111,9 @@ class TestSingleCourtHeaderWeather(unittest.TestCase):
         from sevencourts.club_styles import style_for
 
         with mock.patch.object(vs, "draw_text") as draw_text:
-            vs.draw(mock.MagicMock(), state, style_for(state.panel_info))
+            # the clock is drawn by the real DrawText, which reads the canvas size
+            cnv = mock.MagicMock(width=192, height=64)
+            vs.draw(cnv, state, style_for(state.panel_info))
         return [c.args[3] for c in draw_text.call_args_list]
 
     def test_esslingen_reading_is_in_the_header(self):
