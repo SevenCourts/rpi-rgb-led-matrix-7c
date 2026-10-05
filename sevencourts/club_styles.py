@@ -81,6 +81,8 @@ class Booking:
     c_blocked: graphics.Color = COLOR_ORANGE
 
     is_weather_displayed: bool = True
+    weather_city: str = "Böblingen,DE"
+    """OpenWeatherMap city the weather row is fetched for ("<name>,<country>")."""
 
     one: OneCourt = field(default_factory=OneCourt)
     many: MultipleCourts = field(default_factory=MultipleCourts)
@@ -183,13 +185,34 @@ style_PadelClubEsslingen = ClubStyle(
         ),
     ),
     booking=Booking(
-        # The emblem fills the 66px club area only when the weather row is off.
-        is_weather_displayed=False,
+        is_weather_displayed=True,
+        weather_city="Esslingen am Neckar,DE",
         c_clock=COLOR_CI_PadelClubEsslingen_CREAM,
         c_timebox_countdown=COLOR_CI_PadelClubEsslingen_LIME,
         one=OneCourt(c_prompt=COLOR_CI_PadelClubEsslingen_LIME),
+        many=MultipleCourts(c_weather=COLOR_CI_PadelClubEsslingen_CREAM),
     ),
 )
+
+
+STYLES: Dict[str, ClubStyle] = {
+    "SevenCourts": style_SevenCourts,
+    "SV1845": style_SV1845,
+    "TABB": style_TABB,
+    "MatchCenter": style_MatchCenter,
+    "TC Heidelberg": style_TC_Heidelberg,
+    "Padel Club Esslingen": style_PadelClubEsslingen,
+}
+
+
+def style_for(panel_info) -> ClubStyle:
+    """The style the server selected in panel_info["booking"]["style"].
+
+    Falls back to SevenCourts when there is no booking info or the name is
+    unknown (e.g. a style newer than this firmware).
+    """
+    booking = (panel_info or {}).get("booking") or {}
+    return STYLES.get(booking.get("style", "SevenCourts"), style_SevenCourts)
 
 
 # B-W Vaihingen-Rohr, Stuttgart

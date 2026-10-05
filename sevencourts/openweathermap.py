@@ -13,21 +13,15 @@ _log = logging.logger("openweathermap")
 # FIXME pass the API_KEY via environment
 API_KEY = "c462c344b198f6b837de800561227e2e"
 
-# The city for which you want to get weather data.
-## FIXME must be a parameter
-CITY = "Böblingen,DE"
 # The base URL for the OpenWeatherMap API.
-BASE_URL = "http://api.openweathermap.org/data/2.5/weather?"
-
-# Construct the full URL for the API call.
-# We're using 'units=metric' to get temperature in Celsius.
-complete_url = f"{BASE_URL}appid={API_KEY}&q={CITY}&units=metric"
+BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
 
 
 def fetch_weather(city: str):
     try:
-        url = f"{BASE_URL}appid={API_KEY}&q={CITY}&units=metric"
-        response = requests.get(url, timeout=10)
+        # 'units=metric' gives the temperature in Celsius.
+        params = {"appid": API_KEY, "q": city, "units": "metric"}
+        response = requests.get(BASE_URL, params=params, timeout=10)
         if response.status_code == 200:
             # Parse the JSON data from the response.
             data = response.json()
@@ -68,7 +62,9 @@ def fetch_weather(city: str):
 
 # Main function
 if __name__ == "__main__":
-    weather = fetch_weather(CITY)
+    import sys
+
+    weather = fetch_weather(sys.argv[1] if len(sys.argv) > 1 else "Böblingen,DE")
     print(weather)
     if weather:
         print(f"Weather in {weather.get('city')}:")
