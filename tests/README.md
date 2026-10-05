@@ -15,6 +15,7 @@ python3 -m unittest tests.test_view_image       # one module
 
 | Module | Covers |
 |---|---|
+| `test_booking_prompt.py` | free-court prompt stays on the panel when it wraps to two rows |
 | `test_layouts.py` | scoreboard layout geometry |
 | `test_model_rtc.py` | RTC-backed clock state in the panel model |
 | `test_network_vpn_ip.py` | VPN tunnel IP reported at registration |

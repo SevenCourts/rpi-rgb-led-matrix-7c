@@ -199,6 +199,15 @@ def draw(cnv, state: PanelState, s: ClubStyle):
 
         w_prompt = W_PANEL - w_clock - w_court
 
+    # A prompt that wraps ("Book now via Playtomic") puts its second row 2 rows
+    # above the panel edge, which crops descenders. Give it the missing rows
+    # out of the info area; a one-row prompt already has them.
+    if _prompt_rows(txt_prompt, w_prompt, s)[0]:
+        h_extra = max(0, y_font_descent(s.booking.one.f_prompt) - 2)
+        h_prompt += h_extra
+        y_prompt -= h_extra
+        h_info -= h_extra
+
     if booking:
         ((txt_1, txt_2), _) = booking_info_texts(
             booking, w_info - 2, (s.booking.one.f_info, s.booking.one.f_info)
@@ -361,16 +370,23 @@ def _draw_info(
             draw_text(cnv, x, _y, txt_1, fnt, clr)
 
 
-def _draw_prompt(cnv, x0, y0, w, h, text: str, s: ClubStyle):
-
-    if False:
-        fill_rect(cnv, x0, y0, w, h, COLOR_GREEN)
-
+def _prompt_rows(text: str, w: int, s: ClubStyle) -> tuple[str, str]:
+    """A prompt that fits into one row goes to the lower row, the upper stays empty"""
     t1, t2 = truncate_into_rows(text, w, s.booking.one.f_prompt, 2, True)
 
     if not t2:
         t2 = t1
         t1 = ""
+
+    return t1, t2
+
+
+def _draw_prompt(cnv, x0, y0, w, h, text: str, s: ClubStyle):
+
+    if False:
+        fill_rect(cnv, x0, y0, w, h, COLOR_GREEN)
+
+    t1, t2 = _prompt_rows(text, w, s)
 
     fnt = s.booking.one.f_prompt
     clr = s.booking.one.c_prompt
