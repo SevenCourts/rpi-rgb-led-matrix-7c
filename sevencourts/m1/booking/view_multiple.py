@@ -9,7 +9,7 @@ from dateutil import parser
 from sevencourts.m1.model import PanelState
 import sevencourts.logging as logging
 
-_log = logging.logger("eBuSy-multiple")
+_log = logging.logger("booking-multiple")
 
 # The row heights below are defined for 2 to 4 courts.
 MAX_COURTS = 4
@@ -256,7 +256,7 @@ def _draw_booking_court(
                     f_timebox = s.booking.many.f_timebox_countdown
             else:
                 txt_status = f" {minutes_in_hour_left}'"
-                # raise ValueError('should never happen with eBuSy data')
+                # raise ValueError('should never happen with booking data')
                 """
                 For 2025-08-28T23:01:00
 
@@ -275,7 +275,7 @@ def _draw_booking_court(
                 t3:   2025-08-27 23:55 (!!!)
                 """
         else:
-            raise ValueError("should never happen with eBuSy data")
+            raise ValueError("should never happen with booking data")
 
     elif b_2_next:
 
