@@ -85,7 +85,7 @@ class Booking:
     c_blocked: graphics.Color = COLOR_ORANGE
 
     is_weather_displayed: bool = True
-    weather_city: str = "Böblingen,DE"
+    weather_city: str = "Stuttgart,DE"
     """OpenWeatherMap city the weather row is fetched for ("<name>,<country>")."""
 
     one: OneCourt = field(default_factory=OneCourt)
@@ -107,7 +107,11 @@ style_TABB = ClubStyle(
         c_bg_2=COLOR_CI_TABB_2,
         logo=Logo(path="images/logos/TABB/tabb-logo-transparent-60x13-border-3.png"),
     ),
-    booking=Booking(is_weather_displayed=True, courtname_truncate_to=3),
+    booking=Booking(
+        is_weather_displayed=True,
+        weather_city="Böblingen,DE",
+        courtname_truncate_to=3,
+    ),
 )
 
 # TC Heidelberg

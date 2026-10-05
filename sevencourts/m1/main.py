@@ -28,6 +28,10 @@ daemon_state_lock = t.Lock()
 # Careful with this, since only 60 requests per minute are allowed:
 # FIXME get weather info from server
 UPDATE_WEATHER_PERIOD_S = 120  # seconds
+# How often the weather poller looks whether the booking style's city changed.
+# This is not a request rate: a fetch still happens only every
+# UPDATE_WEATHER_PERIOD_S, or at once when the city changes.
+CHECK_WEATHER_CITY_PERIOD_S = 1  # seconds
 
 
 def _poll_weather_info(period_s: int = UPDATE_WEATHER_PERIOD_S):
@@ -51,7 +55,7 @@ def _poll_weather_info(period_s: int = UPDATE_WEATHER_PERIOD_S):
                     state.weather_info = weather_info
         except:
             pass
-        time.sleep(1)
+        time.sleep(CHECK_WEATHER_CITY_PERIOD_S)
 
 
 def _poll_panel_info(period_s: int = 1):

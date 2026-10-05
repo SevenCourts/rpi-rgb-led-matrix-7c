@@ -64,7 +64,7 @@ def fetch_weather(city: str):
 if __name__ == "__main__":
     import sys
 
-    weather = fetch_weather(sys.argv[1] if len(sys.argv) > 1 else "Böblingen,DE")
+    weather = fetch_weather(sys.argv[1] if len(sys.argv) > 1 else "Stuttgart,DE")
     print(weather)
     if weather:
         print(f"Weather in {weather.get('city')}:")

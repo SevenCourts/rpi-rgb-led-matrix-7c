@@ -37,6 +37,11 @@ class TestStyleWeatherCity(unittest.TestCase):
     def test_tabb_keeps_boeblingen(self):
         self.assertEqual(self._city(_booking("TABB")), BOEBLINGEN)
 
+    def test_default_city_is_stuttgart(self):
+        # Böblingen is TABB's town, not a default.
+        for info in (_booking("SevenCourts"), _booking("No Such Club"), None):
+            self.assertEqual(self._city(info), "Stuttgart,DE")
+
     def test_unknown_style_and_missing_info_fall_back(self):
         from sevencourts.club_styles import style_for, style_SevenCourts
 
