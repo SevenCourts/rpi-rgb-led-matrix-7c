@@ -5,11 +5,11 @@ from sevencourts.m1.model import PanelState
 from sevencourts.club_styles import *
 from sevencourts.rgbmatrix import *
 from sevencourts.m1.dimens import *
-import sevencourts.m1.booking.ebusy.view_single as v_single
-import sevencourts.m1.booking.ebusy.view_multiple as v_multiple
+import sevencourts.m1.booking.view_single as v_single
+import sevencourts.m1.booking.view_multiple as v_multiple
 import sevencourts.logging as logging
 
-_log = logging.logger("eBuSy")
+_log = logging.logger("booking")
 
 
 def draw(cnv, state: PanelState):
@@ -34,14 +34,3 @@ def draw(cnv, state: PanelState):
         v_single.draw(cnv, state, style)
     else:
         v_multiple.draw(cnv, state, style)
-
-
-def draw_ads(cnv, state: PanelState):
-    ebusy_ads = state.panel_info.get("ebusy-ads", {})
-    url = ebusy_ads.get("url")
-    image = imgs.fetch_by_url_with_cache(url)
-
-    x = (W_PANEL - image.width) // 2
-    y = (H_PANEL - image.height) // 2
-
-    cnv.SetImage(image.convert("RGB"), x, y)
