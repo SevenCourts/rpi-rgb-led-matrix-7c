@@ -233,6 +233,11 @@ def y_font_offset(font: graphics.Font) -> int:
     return Y_FONT_SYMBOL_NORMAL_HEIGHTS.get(font)
 
 
+def y_font_descent(font: graphics.Font) -> int:
+    """Rows a glyph such as "y" or "g" can occupy from the baseline row down"""
+    return font.height - font.baseline
+
+
 def y_font_center(font, container_height):
     """Returns y position for the font to be placed vertically centered"""
     y_offset_font = y_font_offset(font)
