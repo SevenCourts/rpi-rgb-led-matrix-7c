@@ -1,8 +1,11 @@
 """The free-court prompt must stay on the panel, descenders included.
 
-"Book now via eBuSy" fits into one row. "Book now via Playtomic" wraps, and its
-second row sat 2 rows above the panel edge while the font needs 3 below the
+"Book now via eBuSy" fitted into one row. "Book now via Playtomic" wrapped, and
+its second row sat 2 rows above the panel edge while the font needs 3 below the
 baseline, so the tail of the "y" was cut off on the M1 (led-df2).
+
+The prompt now reads "Book on <provider>" and both fit into one row (led-dbn);
+a longer provider name still wraps.
 
 Run with: python -m unittest tests.test_booking_prompt
 (or via pytest if installed)
@@ -68,15 +71,17 @@ class FreeCourtPromptTest(unittest.TestCase):
 
     def test_two_row_prompt_keeps_its_descenders_on_the_panel(self):
         for style in self.styles:
-            rows = _prompt_rows(style, "Playtomic")
-            # 8 rows of "Book now via", 8 of "Playtomic", 3 of the "y" tail
-            # and the 2 rows between the lines.
+            rows = _prompt_rows(style, "Playtomic Booking App")
+            # 8 rows of "Book on Playtomic", 8 of "Booking App", 3 of the "g"
+            # tail and the 2 rows between the lines.
             self.assertEqual((rows[0], rows[-1]), (H_PANEL - 21, H_PANEL - 1))
 
     def test_one_row_prompt_stays_where_it_was(self):
         for style in self.styles:
-            rows = _prompt_rows(style, None)  # older backends: eBuSy
-            self.assertEqual((rows[0], rows[-1]), (H_PANEL - 12, H_PANEL - 2))
+            # None: older backends send no provider and get eBuSy.
+            for provider in (None, "Playtomic"):
+                rows = _prompt_rows(style, provider)
+                self.assertEqual((rows[0], rows[-1]), (H_PANEL - 12, H_PANEL - 2))
 
 
 if __name__ == "__main__":

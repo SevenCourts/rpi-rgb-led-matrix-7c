@@ -161,7 +161,7 @@ def draw(cnv, state: PanelState, s: ClubStyle):
         # Booking provider is optional: older backends do not send it and
         # keep showing eBuSy.
         provider = booking_info.get("provider") or "eBuSy"
-        txt_prompt = f"Book now via {provider}"
+        txt_prompt = f"Book on {provider}"
 
     h_prompt = 2 * y_font_offset(s.booking.one.f_prompt) + 4
     y_prompt = H_PANEL - h_prompt
@@ -199,7 +199,7 @@ def draw(cnv, state: PanelState, s: ClubStyle):
 
         w_prompt = W_PANEL - w_clock - w_court
 
-    # A prompt that wraps ("Book now via Playtomic") puts its second row 2 rows
+    # A prompt that wraps (a long provider name) puts its second row 2 rows
     # above the panel edge, which crops descenders. Give it the missing rows
     # out of the info area; a one-row prompt already has them.
     if _prompt_rows(txt_prompt, w_prompt, s)[0]:
