@@ -15,16 +15,7 @@ _log = logging.logger("booking")
 def draw(cnv, state: PanelState):
     info = state.panel_info
 
-    styles = {
-        "SevenCourts": style_SevenCourts,
-        "SV1845": style_SV1845,
-        "TABB": style_TABB,
-        "MatchCenter": style_MatchCenter,
-        "TC Heidelberg": style_TC_Heidelberg,
-    }
-    style = styles.get(info.get("booking").get("style", "SevenCourts"))
-    if style is None:
-        style = style_SevenCourts  # fallback for the case when style name is unknown
+    style = style_for(info)
 
     total_courts = len(info.get("booking").get("courts", []))
     if total_courts == 0:

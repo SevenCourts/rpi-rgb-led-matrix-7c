@@ -27,6 +27,10 @@ class OneCourt:
     is_court_name_on_top: bool = True
     """Otherwise the court name will be displayed on the left"""
 
+    is_weather_in_header: bool = False
+    """Temperature at the right end of the court-name header. Needs
+    is_court_name_on_top and Booking.is_weather_displayed."""
+
     f_info: graphics.Font = FONT_M
     c_prompt: graphics.Color = COLOR_7C_GOLD
     f_prompt: graphics.Font = FONT_S
@@ -81,6 +85,8 @@ class Booking:
     c_blocked: graphics.Color = COLOR_ORANGE
 
     is_weather_displayed: bool = True
+    weather_city: str = "Stuttgart,DE"
+    """OpenWeatherMap city the weather row is fetched for ("<name>,<country>")."""
 
     one: OneCourt = field(default_factory=OneCourt)
     many: MultipleCourts = field(default_factory=MultipleCourts)
@@ -101,7 +107,11 @@ style_TABB = ClubStyle(
         c_bg_2=COLOR_CI_TABB_2,
         logo=Logo(path="images/logos/TABB/tabb-logo-transparent-60x13-border-3.png"),
     ),
-    booking=Booking(is_weather_displayed=True, courtname_truncate_to=3),
+    booking=Booking(
+        is_weather_displayed=True,
+        weather_city="Böblingen,DE",
+        courtname_truncate_to=3,
+    ),
 )
 
 # TC Heidelberg
@@ -168,6 +178,51 @@ style_SevenCourts = ClubStyle(
         is_weather_displayed=True, one=OneCourt(is_court_name_on_top=False)
     ),
 )
+
+# Padel Club Esslingen (padelclubesslingen.de)
+COLOR_CI_PadelClubEsslingen_GREEN = graphics.Color(0x29, 0x46, 0x3A)  # #29463A
+COLOR_CI_PadelClubEsslingen_LIME = graphics.Color(0xD6, 0xDA, 0x63)  # #D6DA63
+COLOR_CI_PadelClubEsslingen_CREAM = graphics.Color(0xF5, 0xF0, 0xE8)  # #F5F0E8
+style_PadelClubEsslingen = ClubStyle(
+    ci=ClubCI(
+        c_text=COLOR_CI_PadelClubEsslingen_CREAM,
+        c_bg_1=COLOR_CI_PadelClubEsslingen_GREEN,
+        c_bg_2=COLOR_CI_PadelClubEsslingen_LIME,
+        logo=Logo(
+            path="images/logos/Padel Club Esslingen/booking/padel-club-esslingen-emblem_66x34.png"
+        ),
+    ),
+    booking=Booking(
+        is_weather_displayed=True,
+        weather_city="Esslingen am Neckar,DE",
+        c_clock=COLOR_CI_PadelClubEsslingen_CREAM,
+        c_timebox_countdown=COLOR_CI_PadelClubEsslingen_LIME,
+        one=OneCourt(
+            c_prompt=COLOR_CI_PadelClubEsslingen_LIME, is_weather_in_header=True
+        ),
+        many=MultipleCourts(c_weather=COLOR_CI_PadelClubEsslingen_CREAM),
+    ),
+)
+
+
+STYLES: Dict[str, ClubStyle] = {
+    "SevenCourts": style_SevenCourts,
+    "SV1845": style_SV1845,
+    "TABB": style_TABB,
+    "MatchCenter": style_MatchCenter,
+    "TC Heidelberg": style_TC_Heidelberg,
+    "Padel Club Esslingen": style_PadelClubEsslingen,
+}
+
+
+def style_for(panel_info) -> ClubStyle:
+    """The style the server selected in panel_info["booking"]["style"].
+
+    Falls back to SevenCourts when there is no booking info or the name is
+    unknown (e.g. a style newer than this firmware).
+    """
+    booking = (panel_info or {}).get("booking") or {}
+    return STYLES.get(booking.get("style", "SevenCourts"), style_SevenCourts)
 
 
 # B-W Vaihingen-Rohr, Stuttgart

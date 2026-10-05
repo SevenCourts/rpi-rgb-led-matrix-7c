@@ -8,6 +8,7 @@ import sevencourts.m1.model as model
 import sevencourts.gateway as gateway
 import sevencourts.m1.view as v
 import sevencourts.openweathermap as openweathermap
+import sevencourts.club_styles as club_styles
 import sevencourts.m1.daemon_state as daemon_state
 import time
 from datetime import datetime
@@ -27,19 +28,34 @@ daemon_state_lock = t.Lock()
 # Careful with this, since only 60 requests per minute are allowed:
 # FIXME get weather info from server
 UPDATE_WEATHER_PERIOD_S = 120  # seconds
+# How often the weather poller looks whether the booking style's city changed.
+# This is not a request rate: a fetch still happens only every
+# UPDATE_WEATHER_PERIOD_S, or at once when the city changes.
+CHECK_WEATHER_CITY_PERIOD_S = 10  # seconds
 
 
 def _poll_weather_info(period_s: int = UPDATE_WEATHER_PERIOD_S):
+    """Keep state.weather_info current for the selected booking style's city.
+
+    Refetches every period_s, and right away when the city changes (the style
+    was switched in the Panel Admin), so a panel never sits on another club's
+    temperature for a whole period.
+    """
     global state
+    fetched_city = None
+    fetched_at = 0.0
     while True:
         try:
-            # FIXME city parameter
-            weather_info = openweathermap.fetch_weather(city="Böblingen,DE")
-            with weather_info_lock:
-                state.weather_info = weather_info
+            city = club_styles.style_for(state.panel_info).booking.weather_city
+            now = time.monotonic()
+            if city != fetched_city or now - fetched_at >= period_s:
+                fetched_city, fetched_at = city, now
+                weather_info = openweathermap.fetch_weather(city=city)
+                with weather_info_lock:
+                    state.weather_info = weather_info
         except:
             pass
-        time.sleep(period_s)
+        time.sleep(CHECK_WEATHER_CITY_PERIOD_S)
 
 
 def _poll_panel_info(period_s: int = 1):
