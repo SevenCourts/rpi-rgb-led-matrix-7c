@@ -85,5 +85,57 @@ class TestWeatherRowMatchesCity(unittest.TestCase):
         self.assertEqual(texts, [])
 
 
+class TestSingleCourtHeaderWeather(unittest.TestCase):
+    """Single-court view: the temperature sits in the court-name header."""
+
+    def _header_texts(self, style_name, weather_info):
+        import sevencourts.m1.booking.view_single as vs
+        from sevencourts.m1.model import PanelState
+
+        state = PanelState()
+        state.panel_info = {
+            "booking": {
+                "style": style_name,
+                "_dev_timestamp": "2026-05-25T14:30:00+02:00",
+                "courts": [
+                    {
+                        "court": {"id": 1, "name": "Court 1", "shortName": "C1"},
+                        "past": None,
+                        "current": None,
+                        "next": None,
+                    }
+                ],
+            }
+        }
+        state.weather_info = weather_info
+        from sevencourts.club_styles import style_for
+
+        with mock.patch.object(vs, "draw_text") as draw_text:
+            vs.draw(mock.MagicMock(), state, style_for(state.panel_info))
+        return [c.args[3] for c in draw_text.call_args_list]
+
+    def test_esslingen_reading_is_in_the_header(self):
+        texts = self._header_texts(
+            "Padel Club Esslingen", {"city": ESSLINGEN, "temperature": 17}
+        )
+        self.assertIn("17°", texts)
+        self.assertIn("Court 1", texts)
+
+    def test_boeblingen_reading_is_not_shown_for_esslingen(self):
+        texts = self._header_texts(
+            "Padel Club Esslingen", {"city": BOEBLINGEN, "temperature": 14}
+        )
+        self.assertNotIn("14°", texts)
+
+    def test_no_weather_info_draws_no_temperature(self):
+        for info in (None, {}):
+            texts = self._header_texts("Padel Club Esslingen", info)
+            self.assertFalse([t for t in texts if "°" in t])
+
+    def test_other_styles_single_court_view_is_unchanged(self):
+        texts = self._header_texts("TABB", {"city": BOEBLINGEN, "temperature": 14})
+        self.assertNotIn("14°", texts)
+
+
 if __name__ == "__main__":
     unittest.main()

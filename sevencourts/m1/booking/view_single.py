@@ -214,7 +214,21 @@ def draw(cnv, state: PanelState, s: ClubStyle):
     v_clock.draw_clock_by_coordinates(
         cnv, time_now.strftime("%H:%M"), x_clock, y_clock, f_clock, c_clock
     )
-    _draw_court(cnv, 0, 0, w_court, h_court, h_courtname_text, txt_court, f_court, s)
+    txt_weather = ""
+    if s.booking.one.is_weather_in_header:
+        txt_weather = weather_text(state.weather_info, s)
+    _draw_court(
+        cnv,
+        0,
+        0,
+        w_court,
+        h_court,
+        h_courtname_text,
+        txt_court,
+        f_court,
+        s,
+        txt_weather,
+    )
     _draw_timebox(
         cnv, x_timebox, y_timebox, w_timebox, h_timebox, txts_timebox, c_timebox, s
     )
@@ -232,6 +246,7 @@ def _draw_court(
     txt: str,
     fnt: graphics.Font,
     s: ClubStyle,
+    txt_weather: str = "",
 ):
     """Retuns the y coordinate (height) of the header section"""
 
@@ -246,6 +261,12 @@ def _draw_court(
         _x = x0 + 1
         _y = y0 + y_font_center(fnt, h) - 1
         y_separator = h - 1
+
+        if txt_weather:
+            # temperature at the right end; the court name gives way to it
+            w_weather = width_in_pixels(fnt, txt_weather)
+            draw_text(cnv, x0 + w - w_weather - 1, _y, txt_weather, fnt, s.ci.c_text)
+            _w -= w_weather + 4
 
         txt = ellipsize(txt, _w, fnt)
 

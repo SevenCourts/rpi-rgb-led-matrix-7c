@@ -84,3 +84,18 @@ def _booking_team(booking, isTeam1=True):
             txt += " "
         txt = (txt or "") + _booking_player(tp2)
     return txt
+
+
+def weather_text(weather_info, s) -> str:
+    """The temperature to show for style `s`, e.g. "21°", or "" for none.
+
+    Only a reading fetched for this style's city counts: after a style switch
+    the previous city's reading lingers until the next fetch.
+    """
+    if (
+        weather_info
+        and s.booking.is_weather_displayed
+        and weather_info.get("city") == s.booking.weather_city
+    ):
+        return f"{weather_info.get('temperature')}°"
+    return ""

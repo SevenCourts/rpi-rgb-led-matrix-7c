@@ -27,6 +27,10 @@ class OneCourt:
     is_court_name_on_top: bool = True
     """Otherwise the court name will be displayed on the left"""
 
+    is_weather_in_header: bool = False
+    """Temperature at the right end of the court-name header. Needs
+    is_court_name_on_top and Booking.is_weather_displayed."""
+
     f_info: graphics.Font = FONT_M
     c_prompt: graphics.Color = COLOR_7C_GOLD
     f_prompt: graphics.Font = FONT_S
@@ -189,7 +193,9 @@ style_PadelClubEsslingen = ClubStyle(
         weather_city="Esslingen am Neckar,DE",
         c_clock=COLOR_CI_PadelClubEsslingen_CREAM,
         c_timebox_countdown=COLOR_CI_PadelClubEsslingen_LIME,
-        one=OneCourt(c_prompt=COLOR_CI_PadelClubEsslingen_LIME),
+        one=OneCourt(
+            c_prompt=COLOR_CI_PadelClubEsslingen_LIME, is_weather_in_header=True
+        ),
         many=MultipleCourts(c_weather=COLOR_CI_PadelClubEsslingen_CREAM),
     ),
 )

@@ -105,14 +105,9 @@ def _draw_club_area(cnv, weather_info, x0: int, y0: int, w: int, s: ClubStyle):
     f_weather = s.booking.many.f_weather
     c_weather = s.booking.many.c_weather
     h_weather = 0
-    # Only draw a temperature fetched for this style's city: after a style
-    # switch the previous city's reading lingers until the next fetch.
-    if (
-        weather_info
-        and s.booking.is_weather_displayed
-        and weather_info.get("city") == s.booking.weather_city
-    ):
-        temperature = f" {weather_info.get('temperature')}°"
+    txt_weather = weather_text(weather_info, s)
+    if txt_weather:
+        temperature = f" {txt_weather}"
         x_weather = x0 + x_font_center(temperature, w, f_weather)
 
         h_weather = y_font_offset(f_weather) + 2
