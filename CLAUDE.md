@@ -127,7 +127,8 @@ install/m1-deploy.sh install/m1-setup/_setup.sh <panel-ip> [branch] [daemon-url]
 - **`sevencourts/m1/view.py`** - Top-level view dispatcher
   - Routes to appropriate view based on panel_info content:
     - Scoreboard mode (`team1` in info) → `view_scoreboard.py`
-    - Booking mode (`booking` in info) → `booking/ebusy/view.py`
+    - Booking mode (`booking` in info) → `booking/view.py` (any booking provider)
+    - eBuSy ads (`ebusy-ads` in info) → `booking/view_ads.py`
     - Signage mode (`signage-info` in info) → `view_signage.py`
     - Idle mode (`idle-info` in info) → `view_clock.py` / `view_image.py` / `view_message.py`
     - Standby mode (`standby` flag) → standby indicator
@@ -158,7 +159,7 @@ install/m1-deploy.sh install/m1-setup/_setup.sh <panel-ip> [branch] [daemon-url]
 
 ### View Modules
 
-View modules live in `sevencourts/m1/` and follow the naming convention `view_*.py`. The top-level dispatcher (`view.py`) routes to the appropriate view based on `panel_info` content. Key views: `view_scoreboard.py` (tennis scores), `view_clock.py`, `view_image.py`, `view_message.py`, `view_signage.py`, and `booking/ebusy/` (court bookings).
+View modules live in `sevencourts/m1/` and follow the naming convention `view_*.py`. The top-level dispatcher (`view.py`) routes to the appropriate view based on `panel_info` content. Key views: `view_scoreboard.py` (tennis scores), `view_clock.py`, `view_image.py`, `view_message.py`, `view_signage.py`, and `booking/` (court bookings, any provider).
 
 ## Important Patterns
 

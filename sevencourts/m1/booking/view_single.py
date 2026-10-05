@@ -7,9 +7,9 @@ from dateutil import parser
 from sevencourts.m1.model import PanelState
 import sevencourts.logging as logging
 
-_log = logging.logger("eBuSy-single")
+_log = logging.logger("booking-single")
 
-unexpected_error_msg = "Should have never happened with eBuSy data"
+unexpected_error_msg = "Should have never happened with booking data"
 
 
 def draw(cnv, state: PanelState, s: ClubStyle):
@@ -85,7 +85,7 @@ def draw(cnv, state: PanelState, s: ClubStyle):
         elif time_now < t_end:
             c_timebox = s.booking.c_timebox_countdown
         else:
-            # raise ValueError('should never happen with eBuSy data')
+            # raise ValueError('should never happen with booking data')
             """
             This data is twice formally incorrect:
 

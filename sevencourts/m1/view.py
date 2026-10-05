@@ -1,7 +1,8 @@
 from sevencourts.rgbmatrix import *
 from sevencourts.m1.model import PanelState
 from sevencourts.m1.dimens import *
-import sevencourts.m1.booking.ebusy.view as v_booking_ebusy
+import sevencourts.m1.booking.view as v_booking
+import sevencourts.m1.booking.view_ads as v_booking_ads
 import sevencourts.m1.view_scoreboard as v_scoreboard
 import sevencourts.m1.view_signage as v_signage
 
@@ -45,9 +46,9 @@ def draw(cnv, state: PanelState):
     elif info.get("standby"):
         _draw_standby_mode_indicator(cnv, state.time_now_in_TZ)
     elif "booking" in info:
-        v_booking_ebusy.draw(cnv, state)
+        v_booking.draw(cnv, state)
     elif "ebusy-ads" in info:
-        v_booking_ebusy.draw_ads(cnv, state)
+        v_booking_ads.draw(cnv, state)
     elif "idle-info" in info:
         _draw_idle_mode(cnv, info.get("idle-info"), state.time_now_in_TZ)
     elif "signage-info" in info:
