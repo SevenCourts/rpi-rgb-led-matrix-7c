@@ -281,12 +281,16 @@ def _bcourt(cid: int, name: str, *, past=None, current=None, next=None,
     }
 
 
-def _booking(style: str, *courts) -> Dict[str, Any]:
-    return {"booking": {
+def _booking(style: str, *courts, provider: Optional[str] = None) -> Dict[str, Any]:
+    booking: Dict[str, Any] = {
         "style": style,
         "_dev_timestamp": _EBUSY_NOW,
         "courts": list(courts),
-    }}
+    }
+    if provider is not None:
+        # Optional field: absent means eBuSy (older backends never send it).
+        booking["provider"] = provider
+    return {"booking": booking}
 
 
 def _ebusy_ads(url: str) -> Dict[str, Any]:
@@ -335,6 +339,30 @@ def _court_training(cid: int, name: str, trainer: str) -> Dict[str, Any]:
     return _bcourt(cid, name, short_name=f"P{cid:02d}",
         current=_bslot("06:00:00", "08:00:00", text=trainer),
     )
+
+
+# Playtomic-like court sample: invented first names only (no last names),
+# court names "Single" / "Double N" with short names S / D1 / D2 / D3.
+def _playtomic_courts() -> List[Dict[str, Any]]:
+    return [
+        # Free: no current booking, nothing next.
+        _bcourt(1, "Single", short_name="S"),
+        # Current doubles match, four first names.
+        _bcourt(2, "Double 1", short_name="D1",
+                current=_bslot("14:00:00", "15:30:00",
+                               p1=_bp("Anna", ""), p2=_bp("Boris", ""),
+                               p3=_bp("Clara", ""), p4=_bp("Dmitri", "")),
+                next=_bslot("15:30:00", "17:00:00",
+                            p1=_bp("Elena", ""))),
+        # Free right now, booked next: single name.
+        _bcourt(3, "Double 2", short_name="D2",
+                next=_bslot("15:00:00", "16:30:00", p1=_bp("Fiona", ""))),
+        # Current booking with a title (tournament name) in display-text.
+        _bcourt(4, "Double 3", short_name="D3",
+                current=_bslot("14:00:00", "16:00:00", text="Spring Open Cup",
+                               p1=_bp("Gita", "")),
+                next=_bslot("16:00:00", "17:30:00", p1=_bp("Hugo", ""))),
+    ]
 
 
 FIXTURES: List[Dict[str, Any]] = [
@@ -508,6 +536,16 @@ FIXTURES: List[Dict[str, Any]] = [
              _court_training(3, "Platz 3", "Trainer C. Jussli"),
          ],
      }}},
+    # Playtomic-like provider ("provider" field): free-court prompt names it.
+    {"name": "booking — Playtomic, 1-court (free)",
+     "info": _booking("SevenCourts", _playtomic_courts()[0],
+                      provider="Playtomic")},
+    {"name": "booking — Playtomic, 4-court (free/doubles/next/title)",
+     "info": _booking("SevenCourts", *_playtomic_courts(),
+                      provider="Playtomic")},
+    {"name": "booking — 5 courts (over the limit, shows first 4)",
+     "info": _booking("SevenCourts", *_playtomic_courts(),
+                      _court_empty(5, "Platz 5"), provider="Playtomic")},
     {"name": "ebusy-ads — promotional image",
      # Full URL is required: draw_ads → fetch_by_url_with_cache → gateway.head
      # passes the URL through without prepending TABLEAU_SERVER_BASE_URL.

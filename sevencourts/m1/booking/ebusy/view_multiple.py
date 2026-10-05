@@ -7,6 +7,12 @@ import sevencourts.m1.view_clock as v_clock
 import sevencourts.images as imgs
 from dateutil import parser
 from sevencourts.m1.model import PanelState
+import sevencourts.logging as logging
+
+_log = logging.logger("eBuSy-multiple")
+
+# The row heights below are defined for 2 to 4 courts.
+MAX_COURTS = 4
 
 
 def draw(cnv, state: PanelState, s: ClubStyle):
@@ -43,13 +49,20 @@ def draw(cnv, state: PanelState, s: ClubStyle):
     _draw_club_area(cnv, state.weather_info, x_clubarea, 0, w_clock, s)
 
     ## booking infos
-    courts_number = len(booking_info.get("courts"))
+    courts = booking_info["courts"]
+    if len(courts) > MAX_COURTS:
+        _log.warning(
+            f"Booking info has {len(courts)} courts, only {MAX_COURTS} are supported: "
+            f"showing the first {MAX_COURTS}"
+        )
+        courts = courts[:MAX_COURTS]
+    courts_number = len(courts)
     (h_booking, rows_spacing) = _booking_height(courts_number)
     w_booking = W_PANEL - max(w_clock, w_logo)
     y_court = 0
-    for b in booking_info["courts"]:
+    for i, b in enumerate(courts):
 
-        last_row = b == booking_info["courts"][-1]
+        last_row = i == courts_number - 1
 
         _draw_booking_court(
             cnv,

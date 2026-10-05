@@ -158,8 +158,10 @@ def draw(cnv, state: PanelState, s: ClubStyle):
         txts_timebox = (t_start.strftime("%H:%M"), t_end.strftime("%H:%M"))
     else:
         # court is free
-        txt_prompt = "Book now with code 7CAB for 10% discount"
-        txt_prompt = "Book now via eBuSy"
+        # Booking provider is optional: older backends do not send it and
+        # keep showing eBuSy.
+        provider = booking_info.get("provider") or "eBuSy"
+        txt_prompt = f"Book now via {provider}"
 
     h_prompt = 2 * y_font_offset(s.booking.one.f_prompt) + 4
     y_prompt = H_PANEL - h_prompt
