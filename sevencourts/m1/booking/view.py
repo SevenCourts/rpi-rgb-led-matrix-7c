@@ -21,6 +21,7 @@ def draw(cnv, state: PanelState):
         "TABB": style_TABB,
         "MatchCenter": style_MatchCenter,
         "TC Heidelberg": style_TC_Heidelberg,
+        "Padel Club Esslingen": style_PadelClubEsslingen,
     }
     style = styles.get(info.get("booking").get("style", "SevenCourts"))
     if style is None:

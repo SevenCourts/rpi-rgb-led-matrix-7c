@@ -499,13 +499,14 @@ FIXTURES: List[Dict[str, Any]] = [
      )},
 
     # --- eBusy / booking -----------------------------------------------------
-    # 5 styles × 4 court counts + edge cases (blocking, empty, ads).
+    # 6 styles × 4 court counts + edge cases (blocking, empty, ads).
     # Court samples are sharable across styles since the schema is the same.
 ] + [
     {"name": f"booking — {style}, {n}-court",
      "info": _booking(style, *[_court_busy_singles(i + 1, f"Platz {i + 1}")
                                 for i in range(n)])}
-    for style in ("SevenCourts", "SV1845", "TABB", "MatchCenter", "TC Heidelberg")
+    for style in ("SevenCourts", "SV1845", "TABB", "MatchCenter", "TC Heidelberg",
+                  "Padel Club Esslingen")
     for n in (1, 2, 3, 4)
 ] + [
     # Edge cases on the SevenCourts style.
@@ -542,6 +543,9 @@ FIXTURES: List[Dict[str, Any]] = [
                       provider="Playtomic")},
     {"name": "booking — Playtomic, 4-court (free/doubles/next/title)",
      "info": _booking("SevenCourts", *_playtomic_courts(),
+                      provider="Playtomic")},
+    {"name": "booking — Playtomic, Padel Club Esslingen style, 4-court",
+     "info": _booking("Padel Club Esslingen", *_playtomic_courts(),
                       provider="Playtomic")},
     {"name": "booking — 5 courts (over the limit, shows first 4)",
      "info": _booking("SevenCourts", *_playtomic_courts(),

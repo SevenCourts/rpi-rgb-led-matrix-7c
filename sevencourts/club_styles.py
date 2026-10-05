@@ -169,6 +169,28 @@ style_SevenCourts = ClubStyle(
     ),
 )
 
+# Padel Club Esslingen (padelclubesslingen.de)
+COLOR_CI_PadelClubEsslingen_GREEN = graphics.Color(0x29, 0x46, 0x3A)  # #29463A
+COLOR_CI_PadelClubEsslingen_LIME = graphics.Color(0xD6, 0xDA, 0x63)  # #D6DA63
+COLOR_CI_PadelClubEsslingen_CREAM = graphics.Color(0xF5, 0xF0, 0xE8)  # #F5F0E8
+style_PadelClubEsslingen = ClubStyle(
+    ci=ClubCI(
+        c_text=COLOR_CI_PadelClubEsslingen_CREAM,
+        c_bg_1=COLOR_CI_PadelClubEsslingen_GREEN,
+        c_bg_2=COLOR_CI_PadelClubEsslingen_LIME,
+        logo=Logo(
+            path="images/logos/Padel Club Esslingen/booking/padel-club-esslingen-emblem_66x34.png"
+        ),
+    ),
+    booking=Booking(
+        # The emblem fills the 66px club area only when the weather row is off.
+        is_weather_displayed=False,
+        c_clock=COLOR_CI_PadelClubEsslingen_CREAM,
+        c_timebox_countdown=COLOR_CI_PadelClubEsslingen_LIME,
+        one=OneCourt(c_prompt=COLOR_CI_PadelClubEsslingen_LIME),
+    ),
+)
+
 
 # B-W Vaihingen-Rohr, Stuttgart
 COLOR_BW_VAIHINGEN_ROHR_BLUE = graphics.Color(0x09, 0x65, 0xA6)  # #0965A6
