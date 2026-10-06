@@ -336,7 +336,7 @@ def _draw_timebox(
         y_txt_1 = y + y_delta_txt
         draw_text(cnv, x_txt_1, y_txt_1, txt_1, font, color)
     else:
-        _draw_logo(cnv, x0, y0, w, h, s.ci.logo.path, s)
+        _draw_logo(cnv, x0, y0, w, h, s.ci.logo.single(), s)
 
 
 def _draw_logo(cnv, x0, y0, w, h, logo_path, s: ClubStyle):

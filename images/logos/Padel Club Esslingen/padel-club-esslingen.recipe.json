@@ -328,6 +328,64 @@
       "stroke_boost": 0.0,
       "soft_edges": 1,
       "overrides": {}
+    },
+    "m1-booking-single": {
+      "parts": [
+        {
+          "source": "logo",
+          "box": [
+            0,
+            0,
+            64,
+            30
+          ],
+          "visible": true,
+          "crop": [
+            0.17667,
+            0.16757,
+            0.82167,
+            0.5954
+          ],
+          "ink": "#f5f0e8"
+        }
+      ],
+      "threshold": 0.5,
+      "phase_search": true,
+      "stroke_boost": 0.1,
+      "soft_edges": 255,
+      "overrides": {},
+      "background": "#29463a",
+      "corner_radius": 3.0,
+      "corner_color": "#000000"
+    },
+    "m1-booking-multi": {
+      "parts": [
+        {
+          "source": "logo",
+          "box": [
+            0,
+            0,
+            64,
+            25
+          ],
+          "visible": true,
+          "crop": [
+            0.17667,
+            0.22606,
+            0.82167,
+            0.5826
+          ],
+          "ink": "#f5f0e8"
+        }
+      ],
+      "threshold": 0.5,
+      "phase_search": true,
+      "stroke_boost": 0.1,
+      "soft_edges": 255,
+      "overrides": {},
+      "background": "#29463a",
+      "corner_radius": 3.0,
+      "corner_color": "#000000"
     }
   }
 }
