@@ -120,10 +120,10 @@ def _draw_club_area(cnv, weather_info, x0: int, y0: int, w: int, s: ClubStyle):
     f_clock = s.booking.f_clock
     h_clock = y_font_offset(f_clock) + 1
 
-    if s.ci.logo.path:
+    if s.ci.logo.multi():
         ## logo
         h_logo_max = H_PANEL - h_clock - h_weather - 6
-        img_logo = Image.open(s.ci.logo.path)
+        img_logo = Image.open(s.ci.logo.multi())
         imgs.shrink_to_fit(img_logo, w, min(h_logo_max, img_logo.height))
         h_logo = img_logo.height
         w_logo = img_logo.width

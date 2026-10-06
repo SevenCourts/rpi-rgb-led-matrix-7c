@@ -6,7 +6,17 @@ from typing import Dict
 @dataclass
 class Logo:
     path: str = None
+    # Per-view emblems, for styles whose emblem is cut to the free area of one
+    # view. Each falls back to `path` when unset.
+    path_single: str = None
+    path_multi: str = None
     round_corners: bool = False
+
+    def single(self):
+        return self.path_single or self.path
+
+    def multi(self):
+        return self.path_multi or self.path
 
 
 @dataclass
@@ -189,7 +199,11 @@ style_PadelClubEsslingen = ClubStyle(
         c_bg_1=COLOR_CI_PadelClubEsslingen_GREEN,
         c_bg_2=COLOR_CI_PadelClubEsslingen_LIME,
         logo=Logo(
-            path="images/logos/Padel Club Esslingen/booking/padel-club-esslingen-emblem_66x34.png"
+            # rendered by sevencourts.logoprep from padel-club-esslingen.recipe.json:
+            # 64x30 fits the 66x32 free area of the single-court view, 64x25 the
+            # multi-court view with the weather row; both are drawn unscaled
+            path_single="images/logos/Padel Club Esslingen/m1/padel-club-esslingen_m1-booking-single_64x30.png",
+            path_multi="images/logos/Padel Club Esslingen/m1/padel-club-esslingen_m1-booking-multi_64x25.png",
         ),
     ),
     booking=Booking(
