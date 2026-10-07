@@ -30,6 +30,9 @@ def draw(cnv, state: PanelState, s: ClubStyle):
     _dev_timestamp = booking_info.get("_dev_timestamp")
     if _dev_timestamp and len(_dev_timestamp):
         time_now = parser.parse(_dev_timestamp)
+        is_next_booking_turn = is_current_second_in_period(
+            time_now, PERIOD_INTERCHANGE_ADJACENT_S
+        )
     else:
         # Parse string timestamp to datetime for comparison operations
         from dateutil import tz
@@ -38,6 +41,8 @@ def draw(cnv, state: PanelState, s: ClubStyle):
         # Make timezone-aware if it's naive to allow comparison with booking dates
         if time_now.tzinfo is None:
             time_now = time_now.replace(tzinfo=tz.gettz(state.tz()))
+        # time_now has no seconds here, the state says whose turn it is
+        is_next_booking_turn = state.is_next_booking_turn
 
     ## draw clock
     f_clock = s.booking.f_clock
@@ -128,9 +133,7 @@ def draw(cnv, state: PanelState, s: ClubStyle):
             elif time_now < t_end:
                 c_timebox = s.booking.c_timebox_countdown
                 # Adjacent bookings handling: interchange every 10 seconds
-                if b_2_next and is_current_second_in_period(
-                    time_now, PERIOD_INTERCHANGE_ADJACENT_S
-                ):
+                if b_2_next and is_next_booking_turn:
                     # next booking
                     booking = b_2_next
                     txt_prompt = "Next booking"
