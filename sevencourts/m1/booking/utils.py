@@ -1,19 +1,13 @@
 from datetime import timedelta, datetime
 from sevencourts.rgbmatrix import *
-
-# Period of of interchanging adjacent bookings display, in seconds
-PERIOD_INTERCHANGE_ADJACENT_S = 10
+from sevencourts.m1.model import (
+    PERIOD_INTERCHANGE_ADJACENT_S,
+    is_current_second_in_period,
+)
 
 TD_1_WELCOME = timedelta(minutes=2)
 TD_3_COUNTDOWN = TD_0_UPCOMING = timedelta(minutes=-5)  # these two should be equal
 TD_4_GAMEOVER = timedelta(minutes=2)
-
-
-def is_current_second_in_period(time_now, period_seconds: int = 60) -> bool:
-    """
-    Returns true if the current time second is in the specified period.
-    """
-    return (time_now.second // period_seconds) % 2 == 0
 
 
 def hours_minutes_diff(t1: datetime, t2: datetime) -> tuple[int, int, int]:

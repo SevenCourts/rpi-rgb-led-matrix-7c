@@ -17,6 +17,16 @@ DEFAULT_TIMEZONE = "Europe/Berlin"
 
 PANEL_STATE_FILE = os.getenv("PANEL_STATE_FILE", "/opt/7c/last_panel_state.json")
 
+# Period of of interchanging adjacent bookings display, in seconds
+PERIOD_INTERCHANGE_ADJACENT_S = 10
+
+
+def is_current_second_in_period(time_now, period_seconds: int = 60) -> bool:
+    """
+    Returns true if the current time second is in the specified period.
+    """
+    return (time_now.second // period_seconds) % 2 == 0
+
 
 @dataclass
 class PanelState:
@@ -30,6 +40,12 @@ class PanelState:
     server_communication_error: bool = None
     time_now_in_TZ: str = None
     daemon: DaemonState = field(default_factory=DaemonState, metadata={"transient": True})
+    # Which of two adjacent bookings the booking views show in the last minutes
+    # of the current one; flips every PERIOD_INTERCHANGE_ADJACENT_S. It is part
+    # of the state because time_now_in_TZ has no seconds and the render loop
+    # redraws only on a state change (led-pbx). Transient: it must not rewrite
+    # the state file on the SD card every 10 seconds.
+    is_next_booking_turn: bool = field(default=False, metadata={"transient": True})
 
     last_updated_UTC: datetime = field(default=None, compare=False)
 
@@ -39,9 +55,15 @@ class PanelState:
     def refresh_time(self):
         if not is_clock_trustworthy():
             self.time_now_in_TZ = None
+            self.is_next_booking_turn = False
             return self.time_now_in_TZ
         dt = datetime.now(tz.gettz(self.tz()))
         self.time_now_in_TZ = dt.strftime("%H:%M")
+        # Only the booking views interchange; any other mode keeps redrawing
+        # once a minute.
+        self.is_next_booking_turn = "booking" in (
+            self.panel_info or {}
+        ) and is_current_second_in_period(dt, PERIOD_INTERCHANGE_ADJACENT_S)
         return self.time_now_in_TZ
 
     def tz(self) -> str:
@@ -171,6 +193,9 @@ def _is_kernel_clock_synced() -> bool:
 # ticks (led-ys3: 43 MB after 22 days of uptime).
 FULL_STATE_LOG_INTERVAL_S = int(os.getenv("PANEL_FULL_STATE_LOG_INTERVAL_S", "3600"))
 
+# Fields that change because time passes, not because anything happened.
+_TICK_FIELDS = {"time_now_in_TZ", "is_next_booking_turn"}
+
 
 def changed_fields(old: "PanelState", new: "PanelState") -> list:
     """Names of the compared fields that differ between two states.
@@ -188,8 +213,9 @@ class StateChangeLog:
     """What to say about a state transition, and how often to say all of it.
 
     A clock tick is a state change, but it is not news: it happens every minute
-    for the life of the panel and says nothing a reader would want at 3am. It
-    is logged at debug. Anything else is logged by field name at info, and the
+    for the life of the panel (every 10 seconds in booking mode, where adjacent
+    bookings interchange) and says nothing a reader would want at 3am. It is
+    logged at debug. Anything else is logged by field name at info, and the
     full repr goes out on a heartbeat so field forensics still have a recent
     complete picture to anchor on.
 
@@ -210,7 +236,7 @@ class StateChangeLog:
             return []
 
         out = []
-        if changed == ["time_now_in_TZ"]:
+        if _TICK_FIELDS.issuperset(changed):
             out.append(("debug", f"🕑 Clock now {new.time_now_in_TZ}, redrawing"))
         else:
             out.append(("info", f"🔄 Panel state changed: {', '.join(changed)} — redrawing"))
