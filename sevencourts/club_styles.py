@@ -199,7 +199,8 @@ style_PadelClubEsslingen = ClubStyle(
         c_bg_1=COLOR_CI_PadelClubEsslingen_GREEN,
         c_bg_2=COLOR_CI_PadelClubEsslingen_LIME,
         logo=Logo(
-            # rendered by sevencourts.logoprep from padel-club-esslingen.recipe.json:
+            # rendered by sevencourts.logoprep from padel-club-esslingen.recipe.json
+            # (in the sevencourts.logos repo):
             # 64x30 fits the 66x32 free area of the single-court view, 64x25 the
             # multi-court view with the weather row; both are drawn unscaled
             path_single="images/logos/Padel Club Esslingen/m1/padel-club-esslingen_m1-booking-single_64x30.png",
