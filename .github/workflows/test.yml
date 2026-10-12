@@ -1,0 +1,43 @@
+name: Test
+
+# Unit tests, including the golden PNGs of the headless renderer.
+# 3.9 is what the panels run; 3.12 is what the tableau server runs the
+# renderer on (sevencourts/render/).
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.9', '3.12']
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python }}
+
+    - name: Install dependencies
+      run: |
+        pip install --no-deps -r sevencourts/render/requirements.txt
+        pip install pytest
+
+    - name: Run unit tests
+      run: python -m pytest tests
+
+    - name: Keep what the renderer drew instead of the goldens
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: render-actual-py${{ matrix.python }}
+        path: .runtime/render-actual/
+        if-no-files-found: ignore

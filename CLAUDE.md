@@ -58,7 +58,13 @@ The sevencourts.os supervisor (`/etc/init.d/S10sevencourts`) must invoke `run.sh
 
 ### Testing
 
-Integration tests use [Hurl](https://hurl.dev/) (HTTP request testing), not pytest:
+Unit tests are plain `unittest` (see `tests/README.md`) and run in CI on Python 3.9 and 3.12 (`.github/workflows/test.yml`):
+```bash
+python3 -m unittest discover -s tests -t .
+python3 -m tests.render_goldens --update   # after a deliberate change to a view; look at the PNG diff
+```
+
+Integration tests use [Hurl](https://hurl.dev/) (HTTP request testing) against a live panel:
 ```bash
 # Set target panel (BASE64-encoded hostname)
 export HURL_7c_target_panel=<base64-hostname>
@@ -151,6 +157,10 @@ install/m1-deploy.sh install/m1-setup/_setup.sh <panel-ip> [branch] [daemon-url]
   - `ip_address()` - gets external IP by connecting to 8.8.8.8
   - Network connectivity checks
   - Default socket timeout: 30 seconds
+
+- **`sevencourts/render/`** - Headless renderer: `render(panel_info, now)` returns a PNG drawn with the views below
+  - Used server-side for the panel preview in tableau; not started on a panel
+  - One process draws one `PANEL_TYPE`; see `sevencourts/render/README.md`
 
 - **`sevencourts/images.py`** - Image loading and caching
   - Downloads images from backend server paths

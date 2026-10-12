@@ -39,6 +39,20 @@ def draw_error(cnv, ex: Exception):
     )
 
 
+def draw_safely(cnv, state: PanelState):
+    """Draw the state, or the error screen when that fails.
+
+    The panel must not go blank and must keep working. Returns the exception
+    that was caught, or None, so the caller can log it.
+    """
+    try:
+        draw(cnv, state)
+    except Exception as ex:
+        draw_error(cnv, ex)
+        return ex
+    return None
+
+
 def draw(cnv, state: PanelState):
     info = state.panel_info
     if not info or not state.is_registered():

@@ -1,0 +1,25 @@
+# Everything sevencourts.render needs, pinned, and nothing else. The list is
+# complete, so install it without dependency resolution:
+#
+#     pip install --no-deps -r sevencourts/render/requirements.txt
+#
+# --no-deps matters for RGBMatrixEmulator: only its pure-Python drawing code is
+# used, and its own requirements would add a web server and two display
+# toolkits (tornado, pygame, libsixel-python).
+#
+# The versions are the ones the firmware is developed against on Python 3.9;
+# they also install on 3.12, where the tableau server runs the renderer.
+# .github/workflows/test.yml runs the tests on both.
+
+RGBMatrixEmulator==0.14.1
+bdfparser==2.2.0
+numpy==2.0.2
+pillow==11.3.0
+orjson==3.10.0
+python-dateutil==2.9.0.post0
+six==1.17.0
+requests==2.32.5
+certifi==2025.11.12
+charset-normalizer==3.4.4
+idna==3.11
+urllib3==2.5.0
