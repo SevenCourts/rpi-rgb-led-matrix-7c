@@ -35,7 +35,20 @@ GIT_COMMIT_ID = _read_commit_info("commit-id", ["git", "rev-parse", "HEAD"])
 GIT_COMMIT_DATE = _read_commit_info("commit-date", ["git", "show", "-s", "--format=%as", "HEAD"])
 
 
-TIMEOUT_S = 10
+DEFAULT_TIMEOUT_S = 10
+
+
+def _timeout_s(value):
+    """Seconds to wait for the server; anything unusable gives the default."""
+    try:
+        seconds = float(value)
+    except (TypeError, ValueError):
+        return DEFAULT_TIMEOUT_S
+    return seconds if seconds > 0 else DEFAULT_TIMEOUT_S
+
+
+# The server-side renderer runs with a short one: it must not hang on an image.
+TIMEOUT_S = _timeout_s(os.getenv("TABLEAU_TIMEOUT_S"))
 
 BASE_URL = os.getenv("TABLEAU_SERVER_BASE_URL", "https://prod.tableau.tennismath.com")
 
@@ -130,4 +143,5 @@ def head(url):
 
 
 def get_raw(url):
-    return requests.get(url, stream=True).raw
+    # Without a timeout a hanging image server blocks the draw loop forever.
+    return requests.get(url, stream=True, timeout=TIMEOUT_S).raw

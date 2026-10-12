@@ -42,6 +42,7 @@ Environment variables in `m1-emulator.sh` control behavior:
 - `USE_RGB_MATRIX_EMULATOR=True` - enables emulator mode
 - `TABLEAU_SERVER_BASE_URL` - backend server URL (dev/staging/prod)
 - `TABLEAU_DEBUG=True` - enables DEBUG logging level (otherwise INFO)
+- `TABLEAU_TIMEOUT_S` - seconds to wait for the backend and for image downloads (default 10)
 - `PANEL_STATE_FILE` - path to persistent state JSON file
 - `IMAGES_CACHE_DIR` - path for cached images
 
