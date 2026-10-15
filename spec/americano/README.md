@@ -20,10 +20,14 @@ dots.
 | M1 content | Round number, minutes since the round appeared, clock, the two teams. |
 | Between rounds | Once the court's result is entered and until the next round exists, M1 shows the score next to the teams. |
 | Elapsed time | From when the server first sees the round. Playtomic stores no round start time; when the organiser creates rounds late or in bulk, this is off. |
-| Names | First names. |
+| Names | First names; when two players share one, both get their surname's initial ("Kai F.", "Kai B."), in teams and leaderboard alike. |
 | XL1 layout | Side by side: the current round, one row per court, left; the leaderboard right. |
-| Leaderboard | Position, name, matches (Sp), wins (S), points (Pkt), sorted by points then wins, as Manager does. Paged through all players, 8 per page. |
+| Leaderboard | Position, name, matches (M), wins (W), points (Pts), sorted by points then wins, as Manager does. Paged through all players, 8 per page. Once finished, Playtomic's `final_standings` give the order. |
 | Style | Padel Club Esslingen: cream text, green boxes, lime accents. |
+| Language | English labels (Round, Final results, M, W, Pts). |
+| Courts on XL1 | Three, as Padel Club Esslingen plays its Americanos. |
+| Court name on M1 | None; the panel stands at the court. |
+| End | A final screen as soon as the organiser presses Finish in Manager (`operative_status` `FINISHED`); until then the last round stays up. |
 
 ## M1 (192x64), at a court
 
@@ -39,6 +43,10 @@ Long names: both teams drop from Spleen 12x24 to 8x16 together, so the two
 lines always match:
 
 ![](m1-court-long-names.leds.png)
+
+Final, once the organiser presses Finish: the top three.
+
+![](m1-final.leds.png)
 
 Layout: a 12 px header (round in the booking views' court box, elapsed time in
 lime, clock in cream at the right), then two 24 px team rows split by a green
@@ -57,24 +65,36 @@ shown as dashes:
 
 ![](xl1-overview-round1.leds.png)
 
+Two players with the same first name (a fake clash):
+
+![](xl1-overview-name-clash.leds.png)
+
+Final, once the organiser presses Finish: a podium in Manager's 2-1-3 order
+beside the final standings, paged:
+
+![](xl1-final-page1.leds.png)
+
+![](xl1-final-page2.leds.png)
+
 Layout: a 12 px header across the panel (round, elapsed time, tournament
 name, clock); left of x=186 one 27 px row per court (court box, the two teams in
 Spleen 6x12, the score at the right once entered); right of it the
 leaderboard in Spleen 5x8 with the top three in lime.
 
+## Ties
+
+Points then wins reproduced Playtomic's final standings of the Women's
+Americano exactly. In the Fortgeschritten Americano two players finished level
+on everything we can see (32 points, 0 wins, 64 points against, partnered and
+opposed each other) and Playtomic ranked them 11 and 12 in an order we cannot
+derive. So: our order while the tournament runs, `final_standings` once it is
+finished. Fully tied players keep consecutive positions, as in Manager.
+
 ## Open questions
 
-- **Court name on M1.** Left out (the panel stands at the court). Room for it
-  in the header if wanted.
-- **Language.** Labels are German (Runde, Sp, S, Pkt); the firmware has `de`
-  and `en` locales, the views should go through them.
-- **Name clashes.** Two players with the same first name are not told apart
-  yet. Proposal: add the surname's initial to both, only when they clash.
-- **More than 3 courts on XL1.** 27 px rows fit three courts; four need
-  20 px rows with the teams on one line.
 - **Page interval.** 8 s per leaderboard page is a guess.
 - **Compensation points** for players sitting out a round (player counts not a
   multiple of four) are not in this data; the columns stay the same.
-- **After the last round.** Manager only marks a tournament finished when the
-  organiser presses Finish, which may never happen; the end needs to come
-  from the booking's end time too. A final podium screen is not designed yet.
+- **Never finished.** A tournament whose organiser never presses Finish keeps
+  showing its last round. When the panel goes back to bookings or idle
+  afterwards (booking end time plus some grace?) is for `led-u9b`/`srv-4i7`.

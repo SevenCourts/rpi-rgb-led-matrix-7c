@@ -2,6 +2,7 @@
  {
   "t": "2026-10-15T18:00:00Z",
   "kind": "synthetic",
+  "finished": false,
   "clock": "20:00",
   "name": "Fortgeschritten Americano",
   "round": 1,
@@ -153,6 +154,7 @@
  {
   "t": "2026-10-15T18:05:00Z",
   "kind": "synthetic",
+  "finished": false,
   "clock": "20:05",
   "name": "Fortgeschritten Americano",
   "round": 1,
@@ -304,6 +306,7 @@
  {
   "t": "2026-10-15T18:10:00Z",
   "kind": "observed",
+  "finished": false,
   "clock": "20:10",
   "name": "Fortgeschritten Americano",
   "round": 1,
@@ -455,6 +458,7 @@
  {
   "t": "2026-10-15T18:15:00Z",
   "kind": "synthetic",
+  "finished": false,
   "clock": "20:15",
   "name": "Fortgeschritten Americano",
   "round": 1,
@@ -606,6 +610,7 @@
  {
   "t": "2026-10-15T18:20:00Z",
   "kind": "observed",
+  "finished": false,
   "clock": "20:20",
   "name": "Fortgeschritten Americano",
   "round": 1,
@@ -757,6 +762,7 @@
  {
   "t": "2026-10-15T18:25:00Z",
   "kind": "synthetic",
+  "finished": false,
   "clock": "20:25",
   "name": "Fortgeschritten Americano",
   "round": 2,
@@ -972,6 +978,7 @@
  {
   "t": "2026-10-15T18:30:00Z",
   "kind": "synthetic",
+  "finished": false,
   "clock": "20:30",
   "name": "Fortgeschritten Americano",
   "round": 3,
@@ -1190,6 +1197,7 @@
  {
   "t": "2026-10-15T18:35:00Z",
   "kind": "real",
+  "finished": false,
   "clock": "20:35",
   "name": "Fortgeschritten Americano",
   "round": 4,
@@ -1405,6 +1413,7 @@
  {
   "t": "2026-10-15T18:40:00Z",
   "kind": "real",
+  "finished": false,
   "clock": "20:40",
   "name": "Fortgeschritten Americano",
   "round": 5,
@@ -1620,6 +1629,7 @@
  {
   "t": "2026-10-15T18:45:00Z",
   "kind": "real",
+  "finished": false,
   "clock": "20:45",
   "name": "Fortgeschritten Americano",
   "round": 6,
@@ -1835,6 +1845,7 @@
  {
   "t": "2026-10-15T18:50:00Z",
   "kind": "real",
+  "finished": false,
   "clock": "20:50",
   "name": "Fortgeschritten Americano",
   "round": 7,
@@ -2050,6 +2061,7 @@
  {
   "t": "2026-10-15T18:55:00Z",
   "kind": "real",
+  "finished": false,
   "clock": "20:55",
   "name": "Fortgeschritten Americano",
   "round": 7,
@@ -2265,6 +2277,7 @@
  {
   "t": "2026-10-15T19:00:00Z",
   "kind": "real",
+  "finished": false,
   "clock": "21:00",
   "name": "Fortgeschritten Americano",
   "round": 8,
@@ -2474,6 +2487,231 @@
     "matches": 7,
     "wins": 0,
     "points": 26
+   }
+  ]
+ },
+ {
+  "t": "2026-10-15T19:05:00Z",
+  "kind": "real",
+  "finished": true,
+  "clock": "21:05",
+  "name": "Fortgeschritten Americano",
+  "round": 8,
+  "round_elapsed_min": 5,
+  "matchups": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Dana Vogel",
+       "Fiona Lang"
+      ]
+     },
+     {
+      "players": [
+       "Gregor Hahn",
+       "Hanna Roth"
+      ]
+     }
+    ],
+    "result": [
+     6,
+     6
+    ]
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Bianca Kraus",
+       "Jana Busch"
+      ]
+     },
+     {
+      "players": [
+       "Ivo Seidel",
+       "Kai Frank"
+      ]
+     }
+    ],
+    "result": [
+     7,
+     5
+    ]
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Lena Sommer",
+       "Elias Brandt"
+      ]
+     },
+     {
+      "players": [
+       "Alex Berger",
+       "Chris Wolf"
+      ]
+     }
+    ],
+    "result": [
+     8,
+     4
+    ]
+   }
+  ],
+  "previous_round": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Elias Brandt",
+       "Fiona Lang"
+      ]
+     },
+     {
+      "players": [
+       "Bianca Kraus",
+       "Chris Wolf"
+      ]
+     }
+    ],
+    "result": [
+     4,
+     8
+    ]
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Lena Sommer",
+       "Kai Frank"
+      ]
+     },
+     {
+      "players": [
+       "Ivo Seidel",
+       "Hanna Roth"
+      ]
+     }
+    ],
+    "result": [
+     11,
+     1
+    ]
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Alex Berger",
+       "Gregor Hahn"
+      ]
+     },
+     {
+      "players": [
+       "Dana Vogel",
+       "Jana Busch"
+      ]
+     }
+    ],
+    "result": [
+     9,
+     3
+    ]
+   }
+  ],
+  "leaderboard": [
+   {
+    "position": 1,
+    "name": "Elias Brandt",
+    "matches": 8,
+    "wins": 5,
+    "points": 59
+   },
+   {
+    "position": 2,
+    "name": "Lena Sommer",
+    "matches": 8,
+    "wins": 5,
+    "points": 58
+   },
+   {
+    "position": 3,
+    "name": "Kai Frank",
+    "matches": 8,
+    "wins": 5,
+    "points": 57
+   },
+   {
+    "position": 4,
+    "name": "Gregor Hahn",
+    "matches": 8,
+    "wins": 4,
+    "points": 56
+   },
+   {
+    "position": 5,
+    "name": "Bianca Kraus",
+    "matches": 8,
+    "wins": 5,
+    "points": 52
+   },
+   {
+    "position": 6,
+    "name": "Alex Berger",
+    "matches": 8,
+    "wins": 4,
+    "points": 51
+   },
+   {
+    "position": 7,
+    "name": "Jana Busch",
+    "matches": 8,
+    "wins": 3,
+    "points": 50
+   },
+   {
+    "position": 8,
+    "name": "Chris Wolf",
+    "matches": 8,
+    "wins": 4,
+    "points": 48
+   },
+   {
+    "position": 9,
+    "name": "Fiona Lang",
+    "matches": 8,
+    "wins": 3,
+    "points": 44
+   },
+   {
+    "position": 10,
+    "name": "Dana Vogel",
+    "matches": 8,
+    "wins": 0,
+    "points": 37
+   },
+   {
+    "position": 11,
+    "name": "Ivo Seidel",
+    "matches": 8,
+    "wins": 0,
+    "points": 32
+   },
+   {
+    "position": 12,
+    "name": "Hanna Roth",
+    "matches": 8,
+    "wins": 0,
+    "points": 32
    }
   ]
  }

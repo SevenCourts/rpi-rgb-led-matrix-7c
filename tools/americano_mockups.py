@@ -125,41 +125,86 @@ def truncate(font, s, w):
     return s
 
 
-def team_name(team):
-    return " & ".join(p.split()[0] for p in team["players"])
+def display_names(state):
+    """Full name -> what the panel shows: the first name, plus the surname's
+    initial for everyone whose first name another player shares."""
+    full = [r["name"] for r in state["leaderboard"]]
+    firsts = [n.split()[0] for n in full]
+    out = {}
+    for n, first in zip(full, firsts):
+        rest = n.split()[1:]
+        out[n] = f"{first} {rest[0][0]}." if firsts.count(first) > 1 and rest else first
+    return out
 
 
-def elapsed(state):
-    return f"{state['round_elapsed_min']} min"
+def team_name(team, names):
+    return " & ".join(names.get(p, p.split()[0]) for p in team["players"])
+
+
+def header(cnv, W, label, elapsed=None, title=None):
+    """12 px: label in the booking views' court box, then elapsed time in
+    lime, the tournament name, and the clock at the right."""
+    f = FONT_S_SPLEEN
+    w_box = width_in_pixels(f, label) + 6
+    box(cnv, 0, 0, w_box, 11)
+    text(cnv, 3, 2, label, f, C_TEXT)
+    x = w_box + 6
+    if elapsed is not None:
+        x += text(cnv, x, 2, elapsed, f, C_ACCENT) + 8
+    if title:
+        text(cnv, x, 2, truncate(f, title, W - x - 36), f, C_TEXT)
+
+
+def clock(cnv, W, state):
+    text_right(cnv, W, 2, state["clock"], FONT_S_SPLEEN, C_TEXT)
+
+
+def leaderboard(cnv, x0, y0, W, state, page, per_page=8):
+    """Position, name, matches, wins, points; Spleen 5x8, 9 px rows, the top
+    three in lime. No ranking before the first result."""
+    fs = FONT_XS_SPLEEN
+    names = display_names(state)
+    rows = state["leaderboard"]
+    started = any(r["matches"] for r in rows)
+    if not started:
+        rows = sorted(rows, key=lambda r: r["name"])
+    pages = (len(rows) + per_page - 1) // per_page
+    for title, cx, right in (("#", x0 + 10, True), ("Name", x0 + 14, False),
+                             ("M", W - 38, True), ("W", W - 22, True), ("Pts", W, True)):
+        (text_right if right else text)(cnv, cx, y0, title, fs, C_ACCENT)
+    if pages > 1:
+        text(cnv, x0 + 44, y0, f"{page + 1}/{pages}", fs, C_DIM)
+    for k, r in enumerate(rows[page * per_page:(page + 1) * per_page]):
+        y = y0 + 10 + k * 9
+        c = C_ACCENT if started and r["position"] <= 3 else C_TEXT
+        text_right(cnv, x0 + 10, y, str(r["position"]) if started else "-", fs, c)
+        text(cnv, x0 + 14, y, truncate(fs, names[r["name"]], W - 40 - x0 - 14), fs, C_TEXT)
+        text_right(cnv, W - 38, y, str(r["matches"]), fs, C_DIM)
+        text_right(cnv, W - 22, y, str(r["wins"]), fs, C_DIM)
+        text_right(cnv, W, y, str(r["points"]), fs, C_TEXT)
 
 
 # --- M1: one court ----------------------------------------------------------
 
 
 def m1_court(state, court, show_result=True):
-    """192x64. Header: round box, minutes since the round appeared, clock.
+    """192x64. Header: round, minutes since the round appeared, clock.
     Body: the two teams, one per line, the score right-aligned once entered."""
     W, H = 192, 64
     cnv = Canvas(W, H)
+    names = display_names(state)
     m = next(x for x in state["matchups"] if x["court"] == court)
-
-    # header, 12 px
-    f = FONT_S_SPLEEN
-    label = f"Runde {state['round']}"
-    w_box = width_in_pixels(f, label) + 6
-    box(cnv, 0, 0, w_box, 11)
-    text(cnv, 3, 2, label, f, C_TEXT)
-    text(cnv, w_box + 6, 2, elapsed(state), f, C_ACCENT)
-    text_right(cnv, W, 2, state["clock"], f, C_TEXT)
+    header(cnv, W, f"Round {state['round']}", f"{state['round_elapsed_min']} min")
+    clock(cnv, W, state)
 
     # teams: two rows of 24 px from y=14
     result = m.get("result") if show_result else None
     w_score = width_in_pixels(FONT_L_SPLEEN, "00") + 4 if result else 0
     w_names = W - w_score
-    names = [team_name(t) for t in m["teams"]]
+    team_names = [team_name(t, names) for t in m["teams"]]
     # Both rows in the same font, the largest that fits the longer name.
-    font = fit([FONT_L_SPLEEN, FONT_M_SPLEEN, FONT_S_SPLEEN], max(names, key=len), w_names)
-    for i, (t, name) in enumerate(zip(m["teams"], names)):
+    font = fit([FONT_L_SPLEEN, FONT_M_SPLEEN, FONT_S_SPLEEN], max(team_names, key=len), w_names)
+    for i, name in enumerate(team_names):
         y_row = 14 + i * 26
         text_in_row(cnv, 0, y_row, 24, truncate(font, name, w_names), font, C_TEXT)
         if result:
@@ -170,31 +215,40 @@ def m1_court(state, court, show_result=True):
     return cnv
 
 
+def m1_final(state):
+    """192x64, once the organiser presses Finish: the top three."""
+    W, H = 192, 64
+    cnv = Canvas(W, H)
+    names = display_names(state)
+    header(cnv, W, "Final results")
+    clock(cnv, W, state)
+    f = FONT_M_SPLEEN
+    for k, r in enumerate(state["leaderboard"][:3]):
+        y_row = 14 + k * 17
+        text_in_row(cnv, 0, y_row, 16, str(r["position"]), f, C_ACCENT)
+        text_in_row(cnv, 14, y_row, 16, truncate(f, names[r["name"]], W - 14 - 60), f, C_TEXT)
+        text_in_row(cnv, W, y_row, 16, f"{r['points']} pts", f, C_ACCENT if k == 0 else C_TEXT, right=True)
+    return cnv
+
+
 # --- XL1: overview ----------------------------------------------------------
+
+X_SPLIT = 186
 
 
 def xl1_overview(state, page, per_page=8):
-    """320x96. Header across the panel; current round left, one row per court;
-    leaderboard right, paged."""
+    """320x96. Header across the panel; current round left, one row per court
+    (three courts); leaderboard right, paged."""
     W, H = 320, 96
     cnv = Canvas(W, H)
     f = FONT_S_SPLEEN
+    names = display_names(state)
+    header(cnv, W, f"Round {state['round']}", f"{state['round_elapsed_min']} min", state["name"])
+    clock(cnv, W, state)
 
-    # header, 12 px
-    label = f"Runde {state['round']}"
-    w_box = width_in_pixels(f, label) + 6
-    box(cnv, 0, 0, w_box, 11)
-    text(cnv, 3, 2, label, f, C_TEXT)
-    x = w_box + 6
-    x += text(cnv, x, 2, elapsed(state), f, C_ACCENT) + 8
-    text(cnv, x, 2, truncate(f, state["name"], 300 - x - 40), f, C_TEXT)
-    text_right(cnv, W, 2, state["clock"], f, C_TEXT)
-
-    # left: courts, 3 rows of 27 px from y=15
-    x_split = 186
     fs = FONT_XS_SPLEEN
     w_court = width_in_pixels(fs, "Double 3") + 4
-    for i, m in enumerate(state["matchups"]):
+    for i, m in enumerate(state["matchups"][:3]):
         y = 15 + i * 27
         box(cnv, 0, y, w_court, 25)
         court = m["court"].split()
@@ -202,39 +256,49 @@ def xl1_overview(state, page, per_page=8):
         text(cnv, 2, y + 14, " ".join(court[1:]), FONT_S_SPLEEN, C_ACCENT)
         x_names = w_court + 4
         result = m.get("result")
-        w_names = x_split - x_names - (16 if result else 4)
+        w_names = X_SPLIT - x_names - (16 if result else 4)
         for j, t in enumerate(m["teams"]):
             yy = y + 1 + j * 12
-            text(cnv, x_names, yy, truncate(f, team_name(t), w_names), f, C_TEXT)
+            text(cnv, x_names, yy, truncate(f, team_name(t, names), w_names), f, C_TEXT)
             if result:
                 won = result[j] > result[1 - j]
-                text_right(cnv, x_split - 4, yy, str(result[j]), f, C_ACCENT if won else C_DIM)
+                text_right(cnv, X_SPLIT - 4, yy, str(result[j]), f, C_ACCENT if won else C_DIM)
 
-    # divider
-    graphics.DrawLine(cnv, x_split, 15, x_split, H - 1, C_BOX)
+    graphics.DrawLine(cnv, X_SPLIT, 15, X_SPLIT, H - 1, C_BOX)
+    leaderboard(cnv, X_SPLIT + 4, 15, W, state, page, per_page)
+    return cnv
 
-    # right: leaderboard
-    x0 = x_split + 4
-    rows = state["leaderboard"]
-    started = any(r["matches"] for r in rows)
-    if not started:
-        # No result yet: no ranking to show, list the players alphabetically.
-        rows = sorted(rows, key=lambda r: r["name"])
-    pages = (len(rows) + per_page - 1) // per_page
-    cols = [("#", x0 + 10, "r"), ("Name", x0 + 14, "l"),
-            ("Sp", W - 38, "r"), ("S", W - 22, "r"), ("Pkt", W, "r")]
-    for title, cx, align in cols:
-        (text_right if align == "r" else text)(cnv, cx, 15, title, fs, C_ACCENT)
-    if pages > 1:
-        text(cnv, x0 + 44, 15, f"{page + 1}/{pages}", fs, C_DIM)
-    for k, r in enumerate(rows[page * per_page:(page + 1) * per_page]):
-        y = 25 + k * 9
-        c = C_ACCENT if started and r["position"] <= 3 else C_TEXT
-        text_right(cnv, x0 + 10, y, str(r["position"]) if started else "-", fs, c)
-        text(cnv, x0 + 14, y, truncate(fs, r["name"].split()[0], W - 40 - x0 - 14), fs, C_TEXT)
-        text_right(cnv, W - 38, y, str(r["matches"]), fs, C_DIM)
-        text_right(cnv, W - 22, y, str(r["wins"]), fs, C_DIM)
-        text_right(cnv, W, y, str(r["points"]), fs, C_TEXT)
+
+def xl1_final(state, page, per_page=8):
+    """320x96, once the organiser presses Finish: a podium left (2nd, 1st,
+    3rd, as Manager draws it), the final standings right, paged."""
+    W, H = 320, 96
+    cnv = Canvas(W, H)
+    names = display_names(state)
+    header(cnv, W, "Final", title=state["name"])
+    clock(cnv, W, state)
+
+    top = state["leaderboard"][:3]
+    w_col = (X_SPLIT - 8) // 3
+    heights = {1: 40, 2: 30, 3: 22}
+    for r, col in zip(top, (1, 0, 2)):
+        x = 2 + col * (w_col + 2)
+        h = heights[r["position"]]
+        y = H - h
+        box(cnv, x, y, w_col, h - 1)
+        f_pos = FONT_L_SPLEEN if r["position"] == 1 else FONT_M_SPLEEN
+        pos = str(r["position"])
+        text(cnv, x + (w_col - width_in_pixels(f_pos, pos)) // 2, y + 3, pos, f_pos, C_ACCENT)
+        # name, then points, above the block
+        pts = f"{r['points']} pts"
+        text(cnv, x + (w_col - width_in_pixels(FONT_XS_SPLEEN, pts)) // 2, y - 9, pts,
+             FONT_XS_SPLEEN, C_ACCENT if r["position"] == 1 else C_DIM)
+        name = truncate(FONT_S_SPLEEN, names[r["name"]], w_col)
+        text(cnv, x + (w_col - width_in_pixels(FONT_S_SPLEEN, name)) // 2, y - 21, name,
+             FONT_S_SPLEEN, C_TEXT)
+
+    graphics.DrawLine(cnv, X_SPLIT, 15, X_SPLIT, H - 1, C_BOX)
+    leaderboard(cnv, X_SPLIT + 4, 15, W, state, page, per_page)
     return cnv
 
 
@@ -243,7 +307,9 @@ def xl1_overview(state, page, per_page=8):
 
 def extract(timeline_dir):
     """Turn the anonymised timeline into the small, id-free states the mockups
-    need: per 5-minute slot, the current round's matchups and the leaderboard."""
+    need: per 5-minute slot, the current round's matchups and the leaderboard.
+    Once the tournament is FINISHED, Playtomic's final_standings decide the
+    order (they break full ties our points-then-wins order cannot)."""
     snaps = [json.load(open(f)) for f in sorted(glob.glob(os.path.join(timeline_dir, "*.json")))]
     first_seen = {}
     states = []
@@ -253,11 +319,10 @@ def extract(timeline_dir):
         for n in range(1, len(op["rounds"]) + 1):
             first_seen.setdefault(n, t)
         courts = {c["court_id"]: c["display_name"] for c in op["courts"]}
-        party_names = {}
-        for p in op["parties"]:
-            party_names[p["party_id"]] = [
-                next(v["name"] for k, v in s["players"].items() if k == pid) for pid in p["player_ids"]
-            ]
+        party_names = {
+            p["party_id"]: [s["players"][pid]["name"] for pid in p["player_ids"]]
+            for p in op["parties"]
+        }
 
         def matchups(r):
             out = []
@@ -273,10 +338,17 @@ def extract(timeline_dir):
                 })
             return sorted(out, key=lambda m: m["court"])
 
+        finished = op["operative_status"] == "FINISHED" and op["final_standings"]
+        board = s["leaderboard"]
+        if finished:
+            pos = {x["party_id"]: x["position"] for x in op["final_standings"]}
+            board = sorted((dict(r, position=pos[r["party_id"]]) for r in board),
+                           key=lambda r: r["position"])
         n = len(op["rounds"])
         states.append({
             "t": s["t"],
             "kind": s["kind"],
+            "finished": bool(finished),
             "clock": (t + TZ_OFFSET).strftime("%H:%M"),
             "name": "Fortgeschritten Americano",
             "round": n,
@@ -286,7 +358,7 @@ def extract(timeline_dir):
             "leaderboard": [
                 {"position": r["position"], "name": party_names[r["party_id"]][0],
                  "matches": r["matches"], "wins": r["wins"], "points": r["points"]}
-                for r in s["leaderboard"]
+                for r in board
             ],
         })
     os.makedirs(SPEC, exist_ok=True)
@@ -295,9 +367,13 @@ def extract(timeline_dir):
 
 
 def render():
-    states = {s["t"][11:16]: s for s in json.load(open(DATA))}
-    latest = states[max(states)]
-    start = states[min(states)]
+    states = json.load(open(DATA))
+    final = states[-1]
+    assert final["finished"], "the last state should be the finished tournament"
+    live = [s for s in states if not s["finished"]][-1]
+    start = states[0]
+    for f in glob.glob(os.path.join(SPEC, "*.png")):
+        os.remove(f)
     out = []
 
     def save(cnv, name):
@@ -306,19 +382,26 @@ def render():
         out.append(p)
 
     # M1: the current round on Double 1, no result yet
-    save(m1_court(latest, "Double 1"), "m1-court-round-in-progress")
+    save(m1_court(live, "Double 1"), "m1-court-round-in-progress")
     # M1: the previous round with its result, as shown until the next round exists
-    between = dict(latest, round=latest["round"] - 1, matchups=latest["previous_round"],
-                   round_elapsed_min=latest["round_elapsed_min"] + 5)
+    between = dict(live, round=live["round"] - 1, matchups=live["previous_round"],
+                   round_elapsed_min=live["round_elapsed_min"] + 5)
     save(m1_court(between, "Double 2"), "m1-court-result-entered")
     # M1: long names fall back to a smaller font
-    long = dict(latest, matchups=[{"court": "Double 3", "result": None, "teams": [
+    long = dict(live, matchups=[{"court": "Double 3", "result": None, "teams": [
         {"players": ["Maximilian X", "Konstantin X"]}, {"players": ["Anna-Lena X", "Christopher X"]}]}])
     save(m1_court(long, "Double 3"), "m1-court-long-names")
-    # XL1: both leaderboard pages of the latest state, and the start
-    save(xl1_overview(latest, 0), "xl1-overview-page1")
-    save(xl1_overview(latest, 1), "xl1-overview-page2")
+    # M1: the final screen
+    save(m1_final(final), "m1-final")
+    # XL1: both leaderboard pages of the live state, the start, the final
+    save(xl1_overview(live, 0), "xl1-overview-page1")
+    save(xl1_overview(live, 1), "xl1-overview-page2")
     save(xl1_overview(start, 0), "xl1-overview-round1")
+    save(xl1_final(final, 0), "xl1-final-page1")
+    save(xl1_final(final, 1), "xl1-final-page2")
+    # Two players named Kai: both get their surname's initial, everywhere
+    clash = json.loads(json.dumps(live).replace("Elias Brandt", "Kai Brandt"))
+    save(xl1_overview(clash, 0), "xl1-overview-name-clash")
     print("\n".join(out))
 
 
