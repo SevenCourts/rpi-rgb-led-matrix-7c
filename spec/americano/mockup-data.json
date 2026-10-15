@@ -1,0 +1,2480 @@
+[
+ {
+  "t": "2026-10-15T18:00:00Z",
+  "kind": "synthetic",
+  "clock": "20:00",
+  "name": "Fortgeschritten Americano",
+  "round": 1,
+  "round_elapsed_min": 0,
+  "matchups": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Alex Berger",
+       "Fiona Lang"
+      ]
+     },
+     {
+      "players": [
+       "Kai Frank",
+       "Elias Brandt"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Jana Busch",
+       "Lena Sommer"
+      ]
+     },
+     {
+      "players": [
+       "Hanna Roth",
+       "Dana Vogel"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Chris Wolf",
+       "Ivo Seidel"
+      ]
+     },
+     {
+      "players": [
+       "Gregor Hahn",
+       "Bianca Kraus"
+      ]
+     }
+    ],
+    "result": null
+   }
+  ],
+  "previous_round": null,
+  "leaderboard": [
+   {
+    "position": 1,
+    "name": "Alex Berger",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 2,
+    "name": "Fiona Lang",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 3,
+    "name": "Kai Frank",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 4,
+    "name": "Elias Brandt",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 5,
+    "name": "Jana Busch",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 6,
+    "name": "Lena Sommer",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 7,
+    "name": "Hanna Roth",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 8,
+    "name": "Dana Vogel",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 9,
+    "name": "Chris Wolf",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 10,
+    "name": "Ivo Seidel",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 11,
+    "name": "Gregor Hahn",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 12,
+    "name": "Bianca Kraus",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   }
+  ]
+ },
+ {
+  "t": "2026-10-15T18:05:00Z",
+  "kind": "synthetic",
+  "clock": "20:05",
+  "name": "Fortgeschritten Americano",
+  "round": 1,
+  "round_elapsed_min": 5,
+  "matchups": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Alex Berger",
+       "Fiona Lang"
+      ]
+     },
+     {
+      "players": [
+       "Kai Frank",
+       "Elias Brandt"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Jana Busch",
+       "Lena Sommer"
+      ]
+     },
+     {
+      "players": [
+       "Hanna Roth",
+       "Dana Vogel"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Chris Wolf",
+       "Ivo Seidel"
+      ]
+     },
+     {
+      "players": [
+       "Gregor Hahn",
+       "Bianca Kraus"
+      ]
+     }
+    ],
+    "result": null
+   }
+  ],
+  "previous_round": null,
+  "leaderboard": [
+   {
+    "position": 1,
+    "name": "Alex Berger",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 2,
+    "name": "Fiona Lang",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 3,
+    "name": "Kai Frank",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 4,
+    "name": "Elias Brandt",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 5,
+    "name": "Jana Busch",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 6,
+    "name": "Lena Sommer",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 7,
+    "name": "Hanna Roth",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 8,
+    "name": "Dana Vogel",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 9,
+    "name": "Chris Wolf",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 10,
+    "name": "Ivo Seidel",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 11,
+    "name": "Gregor Hahn",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 12,
+    "name": "Bianca Kraus",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   }
+  ]
+ },
+ {
+  "t": "2026-10-15T18:10:00Z",
+  "kind": "observed",
+  "clock": "20:10",
+  "name": "Fortgeschritten Americano",
+  "round": 1,
+  "round_elapsed_min": 10,
+  "matchups": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Alex Berger",
+       "Fiona Lang"
+      ]
+     },
+     {
+      "players": [
+       "Kai Frank",
+       "Elias Brandt"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Jana Busch",
+       "Lena Sommer"
+      ]
+     },
+     {
+      "players": [
+       "Hanna Roth",
+       "Dana Vogel"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Chris Wolf",
+       "Ivo Seidel"
+      ]
+     },
+     {
+      "players": [
+       "Gregor Hahn",
+       "Bianca Kraus"
+      ]
+     }
+    ],
+    "result": null
+   }
+  ],
+  "previous_round": null,
+  "leaderboard": [
+   {
+    "position": 1,
+    "name": "Alex Berger",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 2,
+    "name": "Fiona Lang",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 3,
+    "name": "Kai Frank",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 4,
+    "name": "Elias Brandt",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 5,
+    "name": "Jana Busch",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 6,
+    "name": "Lena Sommer",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 7,
+    "name": "Hanna Roth",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 8,
+    "name": "Dana Vogel",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 9,
+    "name": "Chris Wolf",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 10,
+    "name": "Ivo Seidel",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 11,
+    "name": "Gregor Hahn",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 12,
+    "name": "Bianca Kraus",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   }
+  ]
+ },
+ {
+  "t": "2026-10-15T18:15:00Z",
+  "kind": "synthetic",
+  "clock": "20:15",
+  "name": "Fortgeschritten Americano",
+  "round": 1,
+  "round_elapsed_min": 15,
+  "matchups": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Alex Berger",
+       "Fiona Lang"
+      ]
+     },
+     {
+      "players": [
+       "Kai Frank",
+       "Elias Brandt"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Jana Busch",
+       "Lena Sommer"
+      ]
+     },
+     {
+      "players": [
+       "Hanna Roth",
+       "Dana Vogel"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Chris Wolf",
+       "Ivo Seidel"
+      ]
+     },
+     {
+      "players": [
+       "Gregor Hahn",
+       "Bianca Kraus"
+      ]
+     }
+    ],
+    "result": null
+   }
+  ],
+  "previous_round": null,
+  "leaderboard": [
+   {
+    "position": 1,
+    "name": "Alex Berger",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 2,
+    "name": "Fiona Lang",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 3,
+    "name": "Kai Frank",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 4,
+    "name": "Elias Brandt",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 5,
+    "name": "Jana Busch",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 6,
+    "name": "Lena Sommer",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 7,
+    "name": "Hanna Roth",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 8,
+    "name": "Dana Vogel",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 9,
+    "name": "Chris Wolf",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 10,
+    "name": "Ivo Seidel",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 11,
+    "name": "Gregor Hahn",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 12,
+    "name": "Bianca Kraus",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   }
+  ]
+ },
+ {
+  "t": "2026-10-15T18:20:00Z",
+  "kind": "observed",
+  "clock": "20:20",
+  "name": "Fortgeschritten Americano",
+  "round": 1,
+  "round_elapsed_min": 20,
+  "matchups": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Alex Berger",
+       "Fiona Lang"
+      ]
+     },
+     {
+      "players": [
+       "Kai Frank",
+       "Elias Brandt"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Jana Busch",
+       "Lena Sommer"
+      ]
+     },
+     {
+      "players": [
+       "Hanna Roth",
+       "Dana Vogel"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Chris Wolf",
+       "Ivo Seidel"
+      ]
+     },
+     {
+      "players": [
+       "Gregor Hahn",
+       "Bianca Kraus"
+      ]
+     }
+    ],
+    "result": null
+   }
+  ],
+  "previous_round": null,
+  "leaderboard": [
+   {
+    "position": 1,
+    "name": "Alex Berger",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 2,
+    "name": "Fiona Lang",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 3,
+    "name": "Kai Frank",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 4,
+    "name": "Elias Brandt",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 5,
+    "name": "Jana Busch",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 6,
+    "name": "Lena Sommer",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 7,
+    "name": "Hanna Roth",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 8,
+    "name": "Dana Vogel",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 9,
+    "name": "Chris Wolf",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 10,
+    "name": "Ivo Seidel",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 11,
+    "name": "Gregor Hahn",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   },
+   {
+    "position": 12,
+    "name": "Bianca Kraus",
+    "matches": 0,
+    "wins": 0,
+    "points": 0
+   }
+  ]
+ },
+ {
+  "t": "2026-10-15T18:25:00Z",
+  "kind": "synthetic",
+  "clock": "20:25",
+  "name": "Fortgeschritten Americano",
+  "round": 2,
+  "round_elapsed_min": 0,
+  "matchups": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Hanna Roth",
+       "Bianca Kraus"
+      ]
+     },
+     {
+      "players": [
+       "Fiona Lang",
+       "Lena Sommer"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Chris Wolf",
+       "Gregor Hahn"
+      ]
+     },
+     {
+      "players": [
+       "Kai Frank",
+       "Dana Vogel"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Alex Berger",
+       "Elias Brandt"
+      ]
+     },
+     {
+      "players": [
+       "Jana Busch",
+       "Ivo Seidel"
+      ]
+     }
+    ],
+    "result": null
+   }
+  ],
+  "previous_round": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Alex Berger",
+       "Fiona Lang"
+      ]
+     },
+     {
+      "players": [
+       "Kai Frank",
+       "Elias Brandt"
+      ]
+     }
+    ],
+    "result": [
+     7,
+     5
+    ]
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Jana Busch",
+       "Lena Sommer"
+      ]
+     },
+     {
+      "players": [
+       "Hanna Roth",
+       "Dana Vogel"
+      ]
+     }
+    ],
+    "result": [
+     6,
+     6
+    ]
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Chris Wolf",
+       "Ivo Seidel"
+      ]
+     },
+     {
+      "players": [
+       "Gregor Hahn",
+       "Bianca Kraus"
+      ]
+     }
+    ],
+    "result": [
+     4,
+     8
+    ]
+   }
+  ],
+  "leaderboard": [
+   {
+    "position": 1,
+    "name": "Gregor Hahn",
+    "matches": 1,
+    "wins": 1,
+    "points": 8
+   },
+   {
+    "position": 2,
+    "name": "Bianca Kraus",
+    "matches": 1,
+    "wins": 1,
+    "points": 8
+   },
+   {
+    "position": 3,
+    "name": "Alex Berger",
+    "matches": 1,
+    "wins": 1,
+    "points": 7
+   },
+   {
+    "position": 4,
+    "name": "Fiona Lang",
+    "matches": 1,
+    "wins": 1,
+    "points": 7
+   },
+   {
+    "position": 5,
+    "name": "Jana Busch",
+    "matches": 1,
+    "wins": 0,
+    "points": 6
+   },
+   {
+    "position": 6,
+    "name": "Lena Sommer",
+    "matches": 1,
+    "wins": 0,
+    "points": 6
+   },
+   {
+    "position": 7,
+    "name": "Hanna Roth",
+    "matches": 1,
+    "wins": 0,
+    "points": 6
+   },
+   {
+    "position": 8,
+    "name": "Dana Vogel",
+    "matches": 1,
+    "wins": 0,
+    "points": 6
+   },
+   {
+    "position": 9,
+    "name": "Kai Frank",
+    "matches": 1,
+    "wins": 0,
+    "points": 5
+   },
+   {
+    "position": 10,
+    "name": "Elias Brandt",
+    "matches": 1,
+    "wins": 0,
+    "points": 5
+   },
+   {
+    "position": 11,
+    "name": "Chris Wolf",
+    "matches": 1,
+    "wins": 0,
+    "points": 4
+   },
+   {
+    "position": 12,
+    "name": "Ivo Seidel",
+    "matches": 1,
+    "wins": 0,
+    "points": 4
+   }
+  ]
+ },
+ {
+  "t": "2026-10-15T18:30:00Z",
+  "kind": "synthetic",
+  "clock": "20:30",
+  "name": "Fortgeschritten Americano",
+  "round": 3,
+  "round_elapsed_min": 0,
+  "matchups": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Alex Berger",
+       "Lena Sommer"
+      ]
+     },
+     {
+      "players": [
+       "Fiona Lang",
+       "Ivo Seidel"
+      ]
+     }
+    ],
+    "result": [
+     8,
+     4
+    ]
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Kai Frank",
+       "Bianca Kraus"
+      ]
+     },
+     {
+      "players": [
+       "Hanna Roth",
+       "Chris Wolf"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Elias Brandt",
+       "Dana Vogel"
+      ]
+     },
+     {
+      "players": [
+       "Jana Busch",
+       "Gregor Hahn"
+      ]
+     }
+    ],
+    "result": null
+   }
+  ],
+  "previous_round": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Hanna Roth",
+       "Bianca Kraus"
+      ]
+     },
+     {
+      "players": [
+       "Fiona Lang",
+       "Lena Sommer"
+      ]
+     }
+    ],
+    "result": [
+     4,
+     8
+    ]
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Chris Wolf",
+       "Gregor Hahn"
+      ]
+     },
+     {
+      "players": [
+       "Kai Frank",
+       "Dana Vogel"
+      ]
+     }
+    ],
+    "result": [
+     8,
+     4
+    ]
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Alex Berger",
+       "Elias Brandt"
+      ]
+     },
+     {
+      "players": [
+       "Jana Busch",
+       "Ivo Seidel"
+      ]
+     }
+    ],
+    "result": [
+     9,
+     3
+    ]
+   }
+  ],
+  "leaderboard": [
+   {
+    "position": 1,
+    "name": "Alex Berger",
+    "matches": 3,
+    "wins": 3,
+    "points": 24
+   },
+   {
+    "position": 2,
+    "name": "Lena Sommer",
+    "matches": 3,
+    "wins": 2,
+    "points": 22
+   },
+   {
+    "position": 3,
+    "name": "Fiona Lang",
+    "matches": 3,
+    "wins": 2,
+    "points": 19
+   },
+   {
+    "position": 4,
+    "name": "Gregor Hahn",
+    "matches": 2,
+    "wins": 2,
+    "points": 16
+   },
+   {
+    "position": 5,
+    "name": "Elias Brandt",
+    "matches": 2,
+    "wins": 1,
+    "points": 14
+   },
+   {
+    "position": 6,
+    "name": "Chris Wolf",
+    "matches": 2,
+    "wins": 1,
+    "points": 12
+   },
+   {
+    "position": 7,
+    "name": "Bianca Kraus",
+    "matches": 2,
+    "wins": 1,
+    "points": 12
+   },
+   {
+    "position": 8,
+    "name": "Ivo Seidel",
+    "matches": 3,
+    "wins": 0,
+    "points": 11
+   },
+   {
+    "position": 9,
+    "name": "Hanna Roth",
+    "matches": 2,
+    "wins": 0,
+    "points": 10
+   },
+   {
+    "position": 10,
+    "name": "Dana Vogel",
+    "matches": 2,
+    "wins": 0,
+    "points": 10
+   },
+   {
+    "position": 11,
+    "name": "Kai Frank",
+    "matches": 2,
+    "wins": 0,
+    "points": 9
+   },
+   {
+    "position": 12,
+    "name": "Jana Busch",
+    "matches": 2,
+    "wins": 0,
+    "points": 9
+   }
+  ]
+ },
+ {
+  "t": "2026-10-15T18:35:00Z",
+  "kind": "real",
+  "clock": "20:35",
+  "name": "Fortgeschritten Americano",
+  "round": 4,
+  "round_elapsed_min": 0,
+  "matchups": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Elias Brandt",
+       "Bianca Kraus"
+      ]
+     },
+     {
+      "players": [
+       "Fiona Lang",
+       "Gregor Hahn"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Jana Busch",
+       "Hanna Roth"
+      ]
+     },
+     {
+      "players": [
+       "Lena Sommer",
+       "Ivo Seidel"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Alex Berger",
+       "Dana Vogel"
+      ]
+     },
+     {
+      "players": [
+       "Kai Frank",
+       "Chris Wolf"
+      ]
+     }
+    ],
+    "result": null
+   }
+  ],
+  "previous_round": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Alex Berger",
+       "Lena Sommer"
+      ]
+     },
+     {
+      "players": [
+       "Fiona Lang",
+       "Ivo Seidel"
+      ]
+     }
+    ],
+    "result": [
+     8,
+     4
+    ]
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Kai Frank",
+       "Bianca Kraus"
+      ]
+     },
+     {
+      "players": [
+       "Hanna Roth",
+       "Chris Wolf"
+      ]
+     }
+    ],
+    "result": [
+     8,
+     4
+    ]
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Elias Brandt",
+       "Dana Vogel"
+      ]
+     },
+     {
+      "players": [
+       "Jana Busch",
+       "Gregor Hahn"
+      ]
+     }
+    ],
+    "result": [
+     6,
+     6
+    ]
+   }
+  ],
+  "leaderboard": [
+   {
+    "position": 1,
+    "name": "Alex Berger",
+    "matches": 3,
+    "wins": 3,
+    "points": 24
+   },
+   {
+    "position": 2,
+    "name": "Lena Sommer",
+    "matches": 3,
+    "wins": 2,
+    "points": 22
+   },
+   {
+    "position": 3,
+    "name": "Gregor Hahn",
+    "matches": 3,
+    "wins": 2,
+    "points": 22
+   },
+   {
+    "position": 4,
+    "name": "Bianca Kraus",
+    "matches": 3,
+    "wins": 2,
+    "points": 20
+   },
+   {
+    "position": 5,
+    "name": "Elias Brandt",
+    "matches": 3,
+    "wins": 1,
+    "points": 20
+   },
+   {
+    "position": 6,
+    "name": "Fiona Lang",
+    "matches": 3,
+    "wins": 2,
+    "points": 19
+   },
+   {
+    "position": 7,
+    "name": "Kai Frank",
+    "matches": 3,
+    "wins": 1,
+    "points": 17
+   },
+   {
+    "position": 8,
+    "name": "Chris Wolf",
+    "matches": 3,
+    "wins": 1,
+    "points": 16
+   },
+   {
+    "position": 9,
+    "name": "Dana Vogel",
+    "matches": 3,
+    "wins": 0,
+    "points": 16
+   },
+   {
+    "position": 10,
+    "name": "Jana Busch",
+    "matches": 3,
+    "wins": 0,
+    "points": 15
+   },
+   {
+    "position": 11,
+    "name": "Hanna Roth",
+    "matches": 3,
+    "wins": 0,
+    "points": 14
+   },
+   {
+    "position": 12,
+    "name": "Ivo Seidel",
+    "matches": 3,
+    "wins": 0,
+    "points": 11
+   }
+  ]
+ },
+ {
+  "t": "2026-10-15T18:40:00Z",
+  "kind": "real",
+  "clock": "20:40",
+  "name": "Fortgeschritten Americano",
+  "round": 5,
+  "round_elapsed_min": 0,
+  "matchups": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Fiona Lang",
+       "Hanna Roth"
+      ]
+     },
+     {
+      "players": [
+       "Lena Sommer",
+       "Gregor Hahn"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Elias Brandt",
+       "Chris Wolf"
+      ]
+     },
+     {
+      "players": [
+       "Alex Berger",
+       "Ivo Seidel"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Dana Vogel",
+       "Bianca Kraus"
+      ]
+     },
+     {
+      "players": [
+       "Kai Frank",
+       "Jana Busch"
+      ]
+     }
+    ],
+    "result": null
+   }
+  ],
+  "previous_round": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Elias Brandt",
+       "Bianca Kraus"
+      ]
+     },
+     {
+      "players": [
+       "Fiona Lang",
+       "Gregor Hahn"
+      ]
+     }
+    ],
+    "result": [
+     8,
+     4
+    ]
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Jana Busch",
+       "Hanna Roth"
+      ]
+     },
+     {
+      "players": [
+       "Lena Sommer",
+       "Ivo Seidel"
+      ]
+     }
+    ],
+    "result": [
+     6,
+     6
+    ]
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Alex Berger",
+       "Dana Vogel"
+      ]
+     },
+     {
+      "players": [
+       "Kai Frank",
+       "Chris Wolf"
+      ]
+     }
+    ],
+    "result": [
+     5,
+     7
+    ]
+   }
+  ],
+  "leaderboard": [
+   {
+    "position": 1,
+    "name": "Alex Berger",
+    "matches": 4,
+    "wins": 3,
+    "points": 29
+   },
+   {
+    "position": 2,
+    "name": "Bianca Kraus",
+    "matches": 4,
+    "wins": 3,
+    "points": 28
+   },
+   {
+    "position": 3,
+    "name": "Elias Brandt",
+    "matches": 4,
+    "wins": 2,
+    "points": 28
+   },
+   {
+    "position": 4,
+    "name": "Lena Sommer",
+    "matches": 4,
+    "wins": 2,
+    "points": 28
+   },
+   {
+    "position": 5,
+    "name": "Gregor Hahn",
+    "matches": 4,
+    "wins": 2,
+    "points": 26
+   },
+   {
+    "position": 6,
+    "name": "Kai Frank",
+    "matches": 4,
+    "wins": 2,
+    "points": 24
+   },
+   {
+    "position": 7,
+    "name": "Fiona Lang",
+    "matches": 4,
+    "wins": 2,
+    "points": 23
+   },
+   {
+    "position": 8,
+    "name": "Chris Wolf",
+    "matches": 4,
+    "wins": 2,
+    "points": 23
+   },
+   {
+    "position": 9,
+    "name": "Jana Busch",
+    "matches": 4,
+    "wins": 0,
+    "points": 21
+   },
+   {
+    "position": 10,
+    "name": "Dana Vogel",
+    "matches": 4,
+    "wins": 0,
+    "points": 21
+   },
+   {
+    "position": 11,
+    "name": "Hanna Roth",
+    "matches": 4,
+    "wins": 0,
+    "points": 20
+   },
+   {
+    "position": 12,
+    "name": "Ivo Seidel",
+    "matches": 4,
+    "wins": 0,
+    "points": 17
+   }
+  ]
+ },
+ {
+  "t": "2026-10-15T18:45:00Z",
+  "kind": "real",
+  "clock": "20:45",
+  "name": "Fortgeschritten Americano",
+  "round": 6,
+  "round_elapsed_min": 0,
+  "matchups": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Dana Vogel",
+       "Chris Wolf"
+      ]
+     },
+     {
+      "players": [
+       "Fiona Lang",
+       "Kai Frank"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Ivo Seidel",
+       "Gregor Hahn"
+      ]
+     },
+     {
+      "players": [
+       "Alex Berger",
+       "Bianca Kraus"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Lena Sommer",
+       "Hanna Roth"
+      ]
+     },
+     {
+      "players": [
+       "Elias Brandt",
+       "Jana Busch"
+      ]
+     }
+    ],
+    "result": null
+   }
+  ],
+  "previous_round": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Fiona Lang",
+       "Hanna Roth"
+      ]
+     },
+     {
+      "players": [
+       "Lena Sommer",
+       "Gregor Hahn"
+      ]
+     }
+    ],
+    "result": [
+     3,
+     9
+    ]
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Elias Brandt",
+       "Chris Wolf"
+      ]
+     },
+     {
+      "players": [
+       "Alex Berger",
+       "Ivo Seidel"
+      ]
+     }
+    ],
+    "result": [
+     9,
+     3
+    ]
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Dana Vogel",
+       "Bianca Kraus"
+      ]
+     },
+     {
+      "players": [
+       "Kai Frank",
+       "Jana Busch"
+      ]
+     }
+    ],
+    "result": [
+     3,
+     9
+    ]
+   }
+  ],
+  "leaderboard": [
+   {
+    "position": 1,
+    "name": "Elias Brandt",
+    "matches": 5,
+    "wins": 3,
+    "points": 37
+   },
+   {
+    "position": 2,
+    "name": "Lena Sommer",
+    "matches": 5,
+    "wins": 3,
+    "points": 37
+   },
+   {
+    "position": 3,
+    "name": "Gregor Hahn",
+    "matches": 5,
+    "wins": 3,
+    "points": 35
+   },
+   {
+    "position": 4,
+    "name": "Kai Frank",
+    "matches": 5,
+    "wins": 3,
+    "points": 33
+   },
+   {
+    "position": 5,
+    "name": "Alex Berger",
+    "matches": 5,
+    "wins": 3,
+    "points": 32
+   },
+   {
+    "position": 6,
+    "name": "Chris Wolf",
+    "matches": 5,
+    "wins": 3,
+    "points": 32
+   },
+   {
+    "position": 7,
+    "name": "Bianca Kraus",
+    "matches": 5,
+    "wins": 3,
+    "points": 31
+   },
+   {
+    "position": 8,
+    "name": "Jana Busch",
+    "matches": 5,
+    "wins": 1,
+    "points": 30
+   },
+   {
+    "position": 9,
+    "name": "Fiona Lang",
+    "matches": 5,
+    "wins": 2,
+    "points": 26
+   },
+   {
+    "position": 10,
+    "name": "Dana Vogel",
+    "matches": 5,
+    "wins": 0,
+    "points": 24
+   },
+   {
+    "position": 11,
+    "name": "Hanna Roth",
+    "matches": 5,
+    "wins": 0,
+    "points": 23
+   },
+   {
+    "position": 12,
+    "name": "Ivo Seidel",
+    "matches": 5,
+    "wins": 0,
+    "points": 20
+   }
+  ]
+ },
+ {
+  "t": "2026-10-15T18:50:00Z",
+  "kind": "real",
+  "clock": "20:50",
+  "name": "Fortgeschritten Americano",
+  "round": 7,
+  "round_elapsed_min": 0,
+  "matchups": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Elias Brandt",
+       "Fiona Lang"
+      ]
+     },
+     {
+      "players": [
+       "Bianca Kraus",
+       "Chris Wolf"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Lena Sommer",
+       "Kai Frank"
+      ]
+     },
+     {
+      "players": [
+       "Ivo Seidel",
+       "Hanna Roth"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Alex Berger",
+       "Gregor Hahn"
+      ]
+     },
+     {
+      "players": [
+       "Dana Vogel",
+       "Jana Busch"
+      ]
+     }
+    ],
+    "result": null
+   }
+  ],
+  "previous_round": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Dana Vogel",
+       "Chris Wolf"
+      ]
+     },
+     {
+      "players": [
+       "Fiona Lang",
+       "Kai Frank"
+      ]
+     }
+    ],
+    "result": [
+     4,
+     8
+    ]
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Ivo Seidel",
+       "Gregor Hahn"
+      ]
+     },
+     {
+      "players": [
+       "Alex Berger",
+       "Bianca Kraus"
+      ]
+     }
+    ],
+    "result": [
+     6,
+     6
+    ]
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Lena Sommer",
+       "Hanna Roth"
+      ]
+     },
+     {
+      "players": [
+       "Elias Brandt",
+       "Jana Busch"
+      ]
+     }
+    ],
+    "result": [
+     2,
+     10
+    ]
+   }
+  ],
+  "leaderboard": [
+   {
+    "position": 1,
+    "name": "Elias Brandt",
+    "matches": 6,
+    "wins": 4,
+    "points": 47
+   },
+   {
+    "position": 2,
+    "name": "Kai Frank",
+    "matches": 6,
+    "wins": 4,
+    "points": 41
+   },
+   {
+    "position": 3,
+    "name": "Gregor Hahn",
+    "matches": 6,
+    "wins": 3,
+    "points": 41
+   },
+   {
+    "position": 4,
+    "name": "Jana Busch",
+    "matches": 6,
+    "wins": 2,
+    "points": 40
+   },
+   {
+    "position": 5,
+    "name": "Lena Sommer",
+    "matches": 6,
+    "wins": 3,
+    "points": 39
+   },
+   {
+    "position": 6,
+    "name": "Alex Berger",
+    "matches": 6,
+    "wins": 3,
+    "points": 38
+   },
+   {
+    "position": 7,
+    "name": "Bianca Kraus",
+    "matches": 6,
+    "wins": 3,
+    "points": 37
+   },
+   {
+    "position": 8,
+    "name": "Chris Wolf",
+    "matches": 6,
+    "wins": 3,
+    "points": 36
+   },
+   {
+    "position": 9,
+    "name": "Fiona Lang",
+    "matches": 6,
+    "wins": 3,
+    "points": 34
+   },
+   {
+    "position": 10,
+    "name": "Dana Vogel",
+    "matches": 6,
+    "wins": 0,
+    "points": 28
+   },
+   {
+    "position": 11,
+    "name": "Ivo Seidel",
+    "matches": 6,
+    "wins": 0,
+    "points": 26
+   },
+   {
+    "position": 12,
+    "name": "Hanna Roth",
+    "matches": 6,
+    "wins": 0,
+    "points": 25
+   }
+  ]
+ },
+ {
+  "t": "2026-10-15T18:55:00Z",
+  "kind": "real",
+  "clock": "20:55",
+  "name": "Fortgeschritten Americano",
+  "round": 7,
+  "round_elapsed_min": 5,
+  "matchups": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Elias Brandt",
+       "Fiona Lang"
+      ]
+     },
+     {
+      "players": [
+       "Bianca Kraus",
+       "Chris Wolf"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Lena Sommer",
+       "Kai Frank"
+      ]
+     },
+     {
+      "players": [
+       "Ivo Seidel",
+       "Hanna Roth"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Alex Berger",
+       "Gregor Hahn"
+      ]
+     },
+     {
+      "players": [
+       "Dana Vogel",
+       "Jana Busch"
+      ]
+     }
+    ],
+    "result": null
+   }
+  ],
+  "previous_round": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Dana Vogel",
+       "Chris Wolf"
+      ]
+     },
+     {
+      "players": [
+       "Fiona Lang",
+       "Kai Frank"
+      ]
+     }
+    ],
+    "result": [
+     4,
+     8
+    ]
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Ivo Seidel",
+       "Gregor Hahn"
+      ]
+     },
+     {
+      "players": [
+       "Alex Berger",
+       "Bianca Kraus"
+      ]
+     }
+    ],
+    "result": [
+     6,
+     6
+    ]
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Lena Sommer",
+       "Hanna Roth"
+      ]
+     },
+     {
+      "players": [
+       "Elias Brandt",
+       "Jana Busch"
+      ]
+     }
+    ],
+    "result": [
+     2,
+     10
+    ]
+   }
+  ],
+  "leaderboard": [
+   {
+    "position": 1,
+    "name": "Elias Brandt",
+    "matches": 6,
+    "wins": 4,
+    "points": 47
+   },
+   {
+    "position": 2,
+    "name": "Kai Frank",
+    "matches": 6,
+    "wins": 4,
+    "points": 41
+   },
+   {
+    "position": 3,
+    "name": "Gregor Hahn",
+    "matches": 6,
+    "wins": 3,
+    "points": 41
+   },
+   {
+    "position": 4,
+    "name": "Jana Busch",
+    "matches": 6,
+    "wins": 2,
+    "points": 40
+   },
+   {
+    "position": 5,
+    "name": "Lena Sommer",
+    "matches": 6,
+    "wins": 3,
+    "points": 39
+   },
+   {
+    "position": 6,
+    "name": "Alex Berger",
+    "matches": 6,
+    "wins": 3,
+    "points": 38
+   },
+   {
+    "position": 7,
+    "name": "Bianca Kraus",
+    "matches": 6,
+    "wins": 3,
+    "points": 37
+   },
+   {
+    "position": 8,
+    "name": "Chris Wolf",
+    "matches": 6,
+    "wins": 3,
+    "points": 36
+   },
+   {
+    "position": 9,
+    "name": "Fiona Lang",
+    "matches": 6,
+    "wins": 3,
+    "points": 34
+   },
+   {
+    "position": 10,
+    "name": "Dana Vogel",
+    "matches": 6,
+    "wins": 0,
+    "points": 28
+   },
+   {
+    "position": 11,
+    "name": "Ivo Seidel",
+    "matches": 6,
+    "wins": 0,
+    "points": 26
+   },
+   {
+    "position": 12,
+    "name": "Hanna Roth",
+    "matches": 6,
+    "wins": 0,
+    "points": 25
+   }
+  ]
+ },
+ {
+  "t": "2026-10-15T19:00:00Z",
+  "kind": "real",
+  "clock": "21:00",
+  "name": "Fortgeschritten Americano",
+  "round": 8,
+  "round_elapsed_min": 0,
+  "matchups": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Dana Vogel",
+       "Fiona Lang"
+      ]
+     },
+     {
+      "players": [
+       "Gregor Hahn",
+       "Hanna Roth"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Bianca Kraus",
+       "Jana Busch"
+      ]
+     },
+     {
+      "players": [
+       "Ivo Seidel",
+       "Kai Frank"
+      ]
+     }
+    ],
+    "result": null
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Lena Sommer",
+       "Elias Brandt"
+      ]
+     },
+     {
+      "players": [
+       "Alex Berger",
+       "Chris Wolf"
+      ]
+     }
+    ],
+    "result": null
+   }
+  ],
+  "previous_round": [
+   {
+    "court": "Double 1",
+    "teams": [
+     {
+      "players": [
+       "Elias Brandt",
+       "Fiona Lang"
+      ]
+     },
+     {
+      "players": [
+       "Bianca Kraus",
+       "Chris Wolf"
+      ]
+     }
+    ],
+    "result": [
+     4,
+     8
+    ]
+   },
+   {
+    "court": "Double 2",
+    "teams": [
+     {
+      "players": [
+       "Lena Sommer",
+       "Kai Frank"
+      ]
+     },
+     {
+      "players": [
+       "Ivo Seidel",
+       "Hanna Roth"
+      ]
+     }
+    ],
+    "result": [
+     11,
+     1
+    ]
+   },
+   {
+    "court": "Double 3",
+    "teams": [
+     {
+      "players": [
+       "Alex Berger",
+       "Gregor Hahn"
+      ]
+     },
+     {
+      "players": [
+       "Dana Vogel",
+       "Jana Busch"
+      ]
+     }
+    ],
+    "result": [
+     9,
+     3
+    ]
+   }
+  ],
+  "leaderboard": [
+   {
+    "position": 1,
+    "name": "Kai Frank",
+    "matches": 7,
+    "wins": 5,
+    "points": 52
+   },
+   {
+    "position": 2,
+    "name": "Elias Brandt",
+    "matches": 7,
+    "wins": 4,
+    "points": 51
+   },
+   {
+    "position": 3,
+    "name": "Lena Sommer",
+    "matches": 7,
+    "wins": 4,
+    "points": 50
+   },
+   {
+    "position": 4,
+    "name": "Gregor Hahn",
+    "matches": 7,
+    "wins": 4,
+    "points": 50
+   },
+   {
+    "position": 5,
+    "name": "Alex Berger",
+    "matches": 7,
+    "wins": 4,
+    "points": 47
+   },
+   {
+    "position": 6,
+    "name": "Bianca Kraus",
+    "matches": 7,
+    "wins": 4,
+    "points": 45
+   },
+   {
+    "position": 7,
+    "name": "Chris Wolf",
+    "matches": 7,
+    "wins": 4,
+    "points": 44
+   },
+   {
+    "position": 8,
+    "name": "Jana Busch",
+    "matches": 7,
+    "wins": 2,
+    "points": 43
+   },
+   {
+    "position": 9,
+    "name": "Fiona Lang",
+    "matches": 7,
+    "wins": 3,
+    "points": 38
+   },
+   {
+    "position": 10,
+    "name": "Dana Vogel",
+    "matches": 7,
+    "wins": 0,
+    "points": 31
+   },
+   {
+    "position": 11,
+    "name": "Ivo Seidel",
+    "matches": 7,
+    "wins": 0,
+    "points": 27
+   },
+   {
+    "position": 12,
+    "name": "Hanna Roth",
+    "matches": 7,
+    "wins": 0,
+    "points": 26
+   }
+  ]
+ }
+]
