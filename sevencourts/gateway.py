@@ -94,30 +94,38 @@ def _as_panel_info(body) -> dict:
     return body if isinstance(body, dict) else {}
 
 
-def register_panel() -> str:
-    """Return panel_id of the registered panel"""
-    name = os.getenv("TABLEAU_PANEL_CODE", network.hostname())
-    ip_address = network.ip_address()
-    url = _url_panel_registration()
-    _log.debug(f"Registering panel at: {url}")
+def _panel_type() -> str:
+    """The form factor this process draws for, as sevencourts/m1/dimens.py reads it."""
+    panel_type = os.environ.get("PANEL_TYPE", "M1")
+    return panel_type if panel_type in ("L1", "XL1") else "M1"
+
+
+def _registration_body() -> dict:
     # OS image provenance, stamped into /etc/7c-os-release at build time.
     # TODO: also report the running daemon version -- see TODO-report-daemon-version.md
     os_info = sys.os_release()
-    data = json.dumps(
-        {
-            "code": name,
-            "ip": ip_address,
-            # tun0 address (10.8.1.x) -- the one operators can reach via
-            # vpn.sevencourts.com; null when the tunnel is down.
-            "vpn_ip": network.vpn_ip_address(),
-            "firmware_version": GIT_COMMIT_ID,
-            "firmware_date": GIT_COMMIT_DATE,
-            "os_version": os_info.get("os_commit_full", "unknown"),
-            "os_buildroot": os_info.get("buildroot", "unknown"),
-            "os_build_date": os_info.get("build_date", "unknown"),
-            "rgbmatrix_version": os_info.get("rgbmatrix_commit", "unknown"),
-        }
-    ).encode("utf-8")
+    return {
+        "code": os.getenv("TABLEAU_PANEL_CODE", network.hostname()),
+        "ip": network.ip_address(),
+        # tun0 address (10.8.1.x) -- the one operators can reach via
+        # vpn.sevencourts.com; null when the tunnel is down.
+        "vpn_ip": network.vpn_ip_address(),
+        # M1 / L1 / XL1 -- the server has no other way to know the canvas size.
+        "panel_type": _panel_type(),
+        "firmware_version": GIT_COMMIT_ID,
+        "firmware_date": GIT_COMMIT_DATE,
+        "os_version": os_info.get("os_commit_full", "unknown"),
+        "os_buildroot": os_info.get("buildroot", "unknown"),
+        "os_build_date": os_info.get("build_date", "unknown"),
+        "rgbmatrix_version": os_info.get("rgbmatrix_commit", "unknown"),
+    }
+
+
+def register_panel() -> str:
+    """Return panel_id of the registered panel"""
+    url = _url_panel_registration()
+    _log.debug(f"Registering panel at: {url}")
+    data = json.dumps(_registration_body()).encode("utf-8")
     request = urllib.request.Request(url, data=data, method="POST")
     request.add_header("7C-Time", datetime.now(tz.gettz(DEFAULT_TIMEZONE)).isoformat())
     with urllib.request.urlopen(request, timeout=TIMEOUT_S) as response:
