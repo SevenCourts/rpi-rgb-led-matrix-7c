@@ -17,6 +17,7 @@ python3 -m unittest tests.test_view_image       # one module
 |---|---|
 | `test_booking_interchange.py` | current and next booking take turns every 10 seconds in the last 5 minutes |
 | `test_booking_prompt.py` | free-court prompt stays on the panel when it wraps to two rows |
+| `test_gateway_timeout.py` | image downloads give up after `TIMEOUT_S`, settable through `TABLEAU_TIMEOUT_S` |
 | `test_layouts.py` | scoreboard layout geometry |
 | `test_model_rtc.py` | RTC-backed clock state in the panel model |
 | `test_network_vpn_ip.py` | VPN tunnel IP reported at registration |
